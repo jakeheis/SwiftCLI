@@ -23,6 +23,12 @@ class Router {
     }
     
     func route(#arguments: [String]) -> (command: Command?, parameters: [String], options: Options) {
+        self.prepSpecialCommands()
+        
+        if arguments.count == 1 {
+            return (self.helpCommand, [], Options(args: []))
+        }
+        
         let commandString = arguments[1]
         
         var commandParameters = [String]()
@@ -51,11 +57,7 @@ class Router {
         return (command: command, parameters: commandParameters, options: Options(args: commandOptions))
     }
     
-    func prepSpecialCommands() {
-        self.helpCommand.allCommands = self.commands
-    }
-    
-    func findCommand(commandName: String) -> Command? {
+    private func findCommand(commandName: String) -> Command? {
         var availableCommands = self.commands
         availableCommands += self.helpCommand
         
@@ -77,5 +79,10 @@ class Router {
     
         return nil
     }
+    
+    private func prepSpecialCommands() {
+        self.helpCommand.allCommands = self.commands
+    }
+    
     
 }
