@@ -1,0 +1,289 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		EF92BF71198AEF7900BAA12B /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF92BF70198AEF7900BAA12B /* main.swift */; };
+		EF92BF81198AF19B00BAA12B /* CLI.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF92BF78198AF19B00BAA12B /* CLI.swift */; };
+		EF92BF82198AF19B00BAA12B /* ChainableCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF92BF7A198AF19B00BAA12B /* ChainableCommand.swift */; };
+		EF92BF83198AF19B00BAA12B /* Command.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF92BF7B198AF19B00BAA12B /* Command.swift */; };
+		EF92BF84198AF19B00BAA12B /* HelpCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF92BF7C198AF19B00BAA12B /* HelpCommand.swift */; };
+		EF92BF85198AF19B00BAA12B /* LightweightCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF92BF7D198AF19B00BAA12B /* LightweightCommand.swift */; };
+		EF92BF86198AF19B00BAA12B /* Options.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF92BF7E198AF19B00BAA12B /* Options.swift */; };
+		EF92BF87198AF19B00BAA12B /* Router.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF92BF7F198AF19B00BAA12B /* Router.swift */; };
+		EF92BF88198AF19B00BAA12B /* SignatureParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF92BF80198AF19B00BAA12B /* SignatureParser.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		EF92BF6B198AEF7900BAA12B /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		EF92BF6D198AEF7900BAA12B /* Example */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Example; sourceTree = BUILT_PRODUCTS_DIR; };
+		EF92BF70198AEF7900BAA12B /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
+		EF92BF78198AF19B00BAA12B /* CLI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CLI.swift; sourceTree = "<group>"; };
+		EF92BF7A198AF19B00BAA12B /* ChainableCommand.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChainableCommand.swift; sourceTree = "<group>"; };
+		EF92BF7B198AF19B00BAA12B /* Command.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Command.swift; sourceTree = "<group>"; };
+		EF92BF7C198AF19B00BAA12B /* HelpCommand.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HelpCommand.swift; sourceTree = "<group>"; };
+		EF92BF7D198AF19B00BAA12B /* LightweightCommand.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LightweightCommand.swift; sourceTree = "<group>"; };
+		EF92BF7E198AF19B00BAA12B /* Options.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Options.swift; sourceTree = "<group>"; };
+		EF92BF7F198AF19B00BAA12B /* Router.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Router.swift; sourceTree = "<group>"; };
+		EF92BF80198AF19B00BAA12B /* SignatureParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignatureParser.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		EF92BF6A198AEF7900BAA12B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		EF92BF64198AEF7900BAA12B = {
+			isa = PBXGroup;
+			children = (
+				EF92BF6F198AEF7900BAA12B /* Example */,
+				EF92BF6E198AEF7900BAA12B /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		EF92BF6E198AEF7900BAA12B /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				EF92BF6D198AEF7900BAA12B /* Example */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		EF92BF6F198AEF7900BAA12B /* Example */ = {
+			isa = PBXGroup;
+			children = (
+				EF92BF70198AEF7900BAA12B /* main.swift */,
+				EF92BF77198AF19B00BAA12B /* SwiftCLI */,
+			);
+			path = Example;
+			sourceTree = "<group>";
+		};
+		EF92BF77198AF19B00BAA12B /* SwiftCLI */ = {
+			isa = PBXGroup;
+			children = (
+				EF92BF78198AF19B00BAA12B /* CLI.swift */,
+				EF92BF79198AF19B00BAA12B /* Commands */,
+				EF92BF7E198AF19B00BAA12B /* Options.swift */,
+				EF92BF7F198AF19B00BAA12B /* Router.swift */,
+				EF92BF80198AF19B00BAA12B /* SignatureParser.swift */,
+			);
+			name = SwiftCLI;
+			path = ../../SwiftCLI;
+			sourceTree = "<group>";
+		};
+		EF92BF79198AF19B00BAA12B /* Commands */ = {
+			isa = PBXGroup;
+			children = (
+				EF92BF7A198AF19B00BAA12B /* ChainableCommand.swift */,
+				EF92BF7B198AF19B00BAA12B /* Command.swift */,
+				EF92BF7C198AF19B00BAA12B /* HelpCommand.swift */,
+				EF92BF7D198AF19B00BAA12B /* LightweightCommand.swift */,
+			);
+			path = Commands;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		EF92BF6C198AEF7900BAA12B /* Example */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = EF92BF74198AEF7900BAA12B /* Build configuration list for PBXNativeTarget "Example" */;
+			buildPhases = (
+				EF92BF69198AEF7900BAA12B /* Sources */,
+				EF92BF6A198AEF7900BAA12B /* Frameworks */,
+				EF92BF6B198AEF7900BAA12B /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Example;
+			productName = Example;
+			productReference = EF92BF6D198AEF7900BAA12B /* Example */;
+			productType = "com.apple.product-type.tool";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		EF92BF65198AEF7900BAA12B /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0600;
+				ORGANIZATIONNAME = jakeheis;
+				TargetAttributes = {
+					EF92BF6C198AEF7900BAA12B = {
+						CreatedOnToolsVersion = 6.0;
+					};
+				};
+			};
+			buildConfigurationList = EF92BF68198AEF7900BAA12B /* Build configuration list for PBXProject "Example" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = EF92BF64198AEF7900BAA12B;
+			productRefGroup = EF92BF6E198AEF7900BAA12B /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				EF92BF6C198AEF7900BAA12B /* Example */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		EF92BF69198AEF7900BAA12B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EF92BF87198AF19B00BAA12B /* Router.swift in Sources */,
+				EF92BF85198AF19B00BAA12B /* LightweightCommand.swift in Sources */,
+				EF92BF82198AF19B00BAA12B /* ChainableCommand.swift in Sources */,
+				EF92BF81198AF19B00BAA12B /* CLI.swift in Sources */,
+				EF92BF88198AF19B00BAA12B /* SignatureParser.swift in Sources */,
+				EF92BF71198AEF7900BAA12B /* main.swift in Sources */,
+				EF92BF83198AF19B00BAA12B /* Command.swift in Sources */,
+				EF92BF84198AF19B00BAA12B /* HelpCommand.swift in Sources */,
+				EF92BF86198AF19B00BAA12B /* Options.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		EF92BF72198AEF7900BAA12B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		EF92BF73198AEF7900BAA12B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		EF92BF75198AEF7900BAA12B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		EF92BF76198AEF7900BAA12B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		EF92BF68198AEF7900BAA12B /* Build configuration list for PBXProject "Example" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EF92BF72198AEF7900BAA12B /* Debug */,
+				EF92BF73198AEF7900BAA12B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		EF92BF74198AEF7900BAA12B /* Build configuration list for PBXNativeTarget "Example" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EF92BF75198AEF7900BAA12B /* Debug */,
+				EF92BF76198AEF7900BAA12B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = EF92BF65198AEF7900BAA12B /* Project object */;
+}
