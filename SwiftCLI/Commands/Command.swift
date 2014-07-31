@@ -10,7 +10,7 @@ import Foundation
 
 class Command: NSObject {
     
-    var parameters: NSDictionary
+    var arguments: NSDictionary
     var options: Options
     
     class var command: Command {
@@ -18,13 +18,13 @@ class Command: NSObject {
     }
     
     init() {
-        self.parameters = [:]
+        self.arguments = [:]
         self.options = Options(args: []) // placeholder
         super.init()
     }
     
-    func prepForExecution(parameters: NSDictionary, options: Options) {
-        self.parameters = parameters
+    func prepForExecution(arguments: NSDictionary, options: Options) {
+        self.arguments = arguments
         self.options = options
     }
     

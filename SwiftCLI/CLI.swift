@@ -48,7 +48,7 @@ class CLI: NSObject {
     class func go() -> Bool {
         var args = NSProcessInfo.processInfo().arguments as [String]
         
-        let (commandTry, parameters, options) = router.route(arguments: args)
+        let (commandTry, arguments, options) = router.route(arguments: args)
         
         if let command = commandTry {
            
@@ -57,19 +57,19 @@ class CLI: NSObject {
                 return false
             }
             
-            let (namedParameters, errorString) = SignatureParser.parse(command.commandSignature(), parameters: parameters)
+            let (namedArguments, errorString) = SignatureParser.parse(command.commandSignature(), arguments: arguments)
             
-            if !namedParameters {
+            if !namedArguments {
                 println(errorString!)
                 return false
             }
             
-            command.prepForExecution(namedParameters!, options: options)
+            command.prepForExecution(namedArguments!, options: options)
             
             let (success, error) = command.execute()
 
             if !success {
-                println(error)
+                println(error!)
                 return false
             }
             

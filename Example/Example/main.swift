@@ -11,8 +11,8 @@ import Foundation
 CLI.registerChainableCommand(commandName: "eat")
     .withShortDescription("Eats the given food")
     .withSignature("<food>")
-    .onExecution({parameters, options in
-        let yummyFood = parameters["food"] as String
+    .onExecution({arguments, options in
+        let yummyFood = arguments["food"] as String
         println("Eating \(yummyFood).")
         return (true, nil)
     })

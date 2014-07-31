@@ -10,51 +10,51 @@ import Foundation
 
 class SignatureParser {
     
-    class func parse(signature: String, parameters: [String]) -> (NSDictionary?, String?) {
+    class func parse(signature: String, arguments: [String]) -> (NSDictionary?, String?) {
         if signature == "" {
-            if parameters.count == 0 {
+            if arguments.count == 0 {
                 return (NSDictionary.dictionary(), nil)
             } else {
-                return (nil, "Expected no arguments, got \(parameters.count).")
+                return (nil, "Expected no arguments, got \(arguments.count).")
             }
         }
         
-        var expectedParams = signature.componentsSeparatedByString(" ")
+        var expectedArguments = signature.componentsSeparatedByString(" ")
         
-        if expectedParams[expectedParams.count-1] == "..." {
-            expectedParams.removeLast()
-        } else if parameters.count > expectedParams.count {
-            return (nil, self.errorMessage(expectedCount: expectedParams.count, givenCount: parameters.count))
+        if expectedArguments[expectedArguments.count-1] == "..." {
+            expectedArguments.removeLast()
+        } else if arguments.count > expectedArguments.count {
+            return (nil, self.errorMessage(expectedCount: expectedArguments.count, givenCount: arguments.count))
         }
 
-        if parameters.count < expectedParams.count {
-            return (nil, self.errorMessage(expectedCount: expectedParams.count, givenCount: parameters.count))
+        if arguments.count < expectedArguments.count {
+            return (nil, self.errorMessage(expectedCount: expectedArguments.count, givenCount: arguments.count))
         }
 
-        var namedParams: NSMutableDictionary = [:]
+        var namedArgs: NSMutableDictionary = [:]
         
-        for i in 0..<expectedParams.count {
-            let name = self.sanitizeKey(expectedParams[i])
+        for i in 0..<expectedArguments.count {
+            let name = self.sanitizeKey(expectedArguments[i])
             
-            let value = parameters[i]
+            let value = arguments[i]
             
-            namedParams[name] = value
+            namedArgs[name] = value
         }
         
-        if parameters.count > expectedParams.count {
-            let name = self.sanitizeKey(expectedParams[expectedParams.count-1])
+        if arguments.count > expectedArguments.count {
+            let name = self.sanitizeKey(expectedArguments[expectedArguments.count-1])
             var lastArray: [String] = []
             
-            lastArray.append(namedParams[name] as String)
+            lastArray.append(namedArgs[name] as String)
             
-            for i in expectedParams.count..<parameters.count {
-                lastArray.append(parameters[i])
+            for i in expectedArguments.count..<arguments.count {
+                lastArray.append(arguments[i])
             }
             
-            namedParams[name] = lastArray
+            namedArgs[name] = lastArray
         }
                 
-        return (namedParams, nil)
+        return (namedArgs, nil)
     }
     
     class func sanitizeKey(key: String) -> String {

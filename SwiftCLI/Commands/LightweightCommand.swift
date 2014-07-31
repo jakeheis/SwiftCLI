@@ -8,7 +8,7 @@
 
 import Foundation
 
-typealias CommandExecutionBlock = ((parameters: NSDictionary, options: Options) -> (Bool, NSError?))
+typealias CommandExecutionBlock = ((arguments: NSDictionary, options: Options) -> (Bool, NSError?))
 
 class LightweightCommand: Command {
     
@@ -51,7 +51,7 @@ class LightweightCommand: Command {
     }
 
     override func execute() -> (success: Bool, error: NSError?) {
-        return self.lightweightExecutionBlock!(parameters: self.parameters, options: self.options)
+        return self.lightweightExecutionBlock!(arguments: self.arguments, options: self.options)
     }
 }
 
