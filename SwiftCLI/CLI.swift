@@ -57,11 +57,10 @@ class CLI: NSObject {
                 return false
             }
             
-            let namedParameters = SignatureParser.parse(command.commandSignature(), parameters: parameters)
+            let (namedParameters, errorString) = SignatureParser.parse(command.commandSignature(), parameters: parameters)
             
             if !namedParameters {
-//                println("Incorrect number of parameters: got \(command.parameters.count), expected \(expectedParameterCount)")
-                println("Incorrect number of parameters")
+                println(errorString!)
                 return false
             }
             
