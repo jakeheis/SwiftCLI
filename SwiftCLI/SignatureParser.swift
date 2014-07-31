@@ -21,19 +21,16 @@ class SignatureParser {
         
         var expectedParams = signature.componentsSeparatedByString(" ")
         
-        println("par \(parameters) exp \(expectedParams)")
-        
         if expectedParams[expectedParams.count-1] == "..." {
             expectedParams.removeLast()
         } else if parameters.count > expectedParams.count {
             return nil
         }
-        println("par \(parameters) exp \(expectedParams)")
+
         if parameters.count < expectedParams.count {
-            println("less parameteres than expected \(parameters.count) vs \(expectedParams.count)f")
             return nil
         }
-        println("par \(parameters) exp \(expectedParams)")
+
         var namedParams: NSMutableDictionary = [:]
         
         for i in 0..<expectedParams.count {
@@ -45,15 +42,11 @@ class SignatureParser {
             namedParams[name] = value
         }
         
-        println("params \(parameters) expec \(expectedParams)")
-        
         if parameters.count > expectedParams.count {
             let name = self.sanitizeKey(expectedParams[expectedParams.count-1])
             var lastArray: [String] = []
             
             lastArray.append(namedParams[name] as String)
-            
-            println("name \(name) value \(lastArray)")
             
             for i in expectedParams.count..<parameters.count {
                 lastArray.append(parameters[i])
@@ -61,9 +54,7 @@ class SignatureParser {
             
             namedParams[name] = lastArray
         }
-        
-        println("returning \(namedParams)")
-        
+                
         return namedParams
     }
     
