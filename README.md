@@ -60,3 +60,6 @@ ChainableCommand(commandName: "eat")
         return (true, nil)
     })
 ```
+
+## Parameters
+Each command has a command signature. A command signature looks like "<firstParam> <secondParam>".
