@@ -22,8 +22,6 @@ class Options {
         options = [String: String]()
         combinedFlagsAndOptions = args
         
-        super.init()
-        
         splitArguments()
     }
     

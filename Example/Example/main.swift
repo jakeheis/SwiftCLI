@@ -8,22 +8,14 @@
 
 import Foundation
 
-CLI.registerChainableCommand(commandName: "eat")
-    .withShortDescription("Eats the given food")
-    .withSignature("<food> [<secondFood>]")
-    .allowFlags(["-f", "--quickly"])
+CLI.registerChainableCommand(commandName: "init")
+    .withShortDescription("Creates a Bakefile in the current or given directory")
+    .withSignature("[<directory>]")
     .onExecution({arguments, options in
-        let yummyFood = arguments["food"] as String
-        let secondFood = arguments["secondFood"] as String?
+        let givenDirectory = arguments["directory"] as String?
         
-        var str = ""
-        if let food2 = secondFood {
-            str = "Eating \(yummyFood) and \(food2)"
-        } else {
-            str = "Eating \(yummyFood)"
-        }
-        
-        println("options \(options)")
+        let fileName = givenDirectory ? givenDirectory!.stringByAppendingPathComponent("Bakefile") : "./Bakefile"
+        NSFileManager.defaultManager().createFileAtPath(fileName, contents: nil, attributes: nil)
         
         return (true, nil)
     })
