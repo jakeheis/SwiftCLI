@@ -57,7 +57,8 @@ class CLI: NSObject {
                 return false
             }
             
-            let (namedArguments, errorString) = SignatureParser.parse(command.commandSignature(), arguments: arguments)
+            let parser = SignatureParser(signature: command.commandSignature(), arguments: arguments)
+            let (namedArguments, errorString) = parser.parse()
             
             if !namedArguments {
                 println(errorString!)

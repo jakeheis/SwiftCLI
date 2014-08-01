@@ -10,10 +10,15 @@ import Foundation
 
 CLI.registerChainableCommand(commandName: "eat")
     .withShortDescription("Eats the given food")
-    .withSignature("<food>")
+    .withSignature("<food> [<secondFood>]")
     .onExecution({arguments, options in
         let yummyFood = arguments["food"] as String
-        println("Eating \(yummyFood).")
+        let secondFood = arguments["secondFood"] as String?
+        if let food2 = secondFood {
+            println("Eating \(yummyFood) and \(food2).")
+        } else {
+            println("Eating \(yummyFood).")
+        }
         return (true, nil)
     })
 
