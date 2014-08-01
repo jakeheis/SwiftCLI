@@ -18,7 +18,7 @@ class Router {
     
     init() {
         self.commands = []
-        self.helpCommand = HelpCommand.command
+        self.helpCommand = HelpCommand.command()
         self.versionComand = nil
     }
     

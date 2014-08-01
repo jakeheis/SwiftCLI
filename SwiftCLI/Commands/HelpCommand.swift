@@ -12,8 +12,8 @@ class HelpCommand: Command {
     
     var allCommands: [Command] = []
     
-    override class var command: HelpCommand {
-        return HelpCommand()
+    init()  {
+        super.init()
     }
     
     override var commandName: String  {

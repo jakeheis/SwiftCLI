@@ -20,6 +20,10 @@ class LightweightCommand: Command {
     var strictOnOptions = true
     var lightweightAcceptableFlags: [String] = []
     var lightweightAcceptableOptions: [String] = []
+    
+    init()  {
+        super.init()
+    }
 
     override var commandName: String {
         return self.lightweightCommandName

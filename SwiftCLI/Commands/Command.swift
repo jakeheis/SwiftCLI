@@ -13,11 +13,11 @@ class Command: NSObject {
     var arguments: NSDictionary
     var options: Options
     
-    class var command: Command {
-        return Command()
+    class func command() -> Self {
+        return self()
     }
     
-    init() {
+    required init() {
         self.arguments = [:]
         self.options = Options(args: []) // placeholder
         super.init()

@@ -10,6 +10,10 @@ import Foundation
 
 class ChainableCommand: LightweightCommand {
     
+    init()  {
+        super.init()
+    }
+    
     init(commandName: String) {
         super.init()
         
