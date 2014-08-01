@@ -20,10 +20,8 @@ class HelpCommand: Command {
         return "help"
     }
     
-    override func handleOptions() -> Bool  {
+    override func handleOptions()  {
         self.options.handleAll()
-        
-        return super.handleOptions()
     }
     
     override func execute() -> (success: Bool, error: NSError?)  {

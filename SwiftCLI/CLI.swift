@@ -52,7 +52,7 @@ class CLI: NSObject {
         
         if let command = commandTry {
            
-            if !command.handleOptions() && strictOnOptions {
+            if !command.optionsAccountedFor() && strictOnOptions {
                 println(command.options.unaccountedForMessage())
                 return false
             }

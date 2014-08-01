@@ -28,8 +28,13 @@ class Command: NSObject {
         self.options = options
     }
     
-    func handleOptions() -> Bool {
+    func optionsAccountedFor() -> Bool {
+        self.handleOptions()
         return self.options.allAccountedFor()
+    }
+    
+    func handleOptions() {
+        
     }
     
     func execute() -> (success: Bool, error: NSError?) {

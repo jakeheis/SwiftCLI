@@ -33,10 +33,10 @@ class LightweightCommand: Command {
         return self.lightweightCommandShortDescription
     }
     
-    override func handleOptions() -> Bool  {
+    override func handleOptions()  {
         if self.strictOnOptions {
             self.options.handleAll()
-            return true
+            return
         }
         
         for flag in self.lightweightAcceptableFlags {
@@ -46,8 +46,6 @@ class LightweightCommand: Command {
         for option in self.lightweightAcceptableOptions {
             self.options.onOption(option, block: nil)
         }
-        
-        return super.handleOptions()
     }
 
     override func execute() -> (success: Bool, error: NSError?) {
