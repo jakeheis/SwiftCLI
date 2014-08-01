@@ -15,9 +15,27 @@ CLI.registerChainableCommand(commandName: "init")
         let givenDirectory = arguments["directory"] as String?
         
         let fileName = givenDirectory ? givenDirectory!.stringByAppendingPathComponent("Bakefile") : "./Bakefile"
-        NSFileManager.defaultManager().createFileAtPath(fileName, contents: nil, attributes: nil)
-        
-        return (true, nil)
+        let success = NSFileManager.defaultManager().createFileAtPath(fileName, contents: nil, attributes: nil)
+        let message: String? = success ? nil : "The Bakefile was not able to be created"
+        return (success, message)
     })
+
+let exoticFlags = ["-e", "--exotics-included"]
+let listCommand = LightweightCommand(commandName: "list")
+listCommand.lightweightCommandShortDescription = "Lists the possible things baker can bake for you."
+listCommand.lightweightAcceptableFlags = exoticFlags
+listCommand.lightweightExecutionBlock = {arguments, options in
+    var foods = ["bread", "cookies", "cake"]
+    options.onFlags(exoticFlags, block: {flag in
+        foods += ["exotic baker item 1", "exotic baker item 2"]
+    })
+    println("Items that baker can bake for you:")
+    for i in 0..<foods.count {
+        println("\(i+1). \(foods[i])")
+    }
+    return (true, nil)
+}
+
+CLI.registerCommand(listCommand)
 
 CLI.go()

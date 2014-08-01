@@ -49,7 +49,7 @@ class Command: NSObject {
         
     }
     
-    func execute() -> (success: Bool, error: NSError?) {
+    func execute() -> (success: Bool, error: String?) {
         return (true, nil)
     }
     

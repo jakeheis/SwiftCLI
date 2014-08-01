@@ -28,7 +28,7 @@ class HelpCommand: Command {
         self.options.handleAll()
     }
     
-    override func execute() -> (success: Bool, error: NSError?)  {
+    override func execute() -> (Bool, String?)  {
         println("Available commands: ")
 
         for command in self.allCommands {

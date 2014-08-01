@@ -15,9 +15,7 @@ class ChainableCommand: LightweightCommand {
     }
     
     init(commandName: String) {
-        super.init()
-        
-        lightweightCommandName = commandName
+        super.init(commandName: commandName)
     }
  
     func withSignature(signature: String) -> ChainableCommand {
