@@ -68,17 +68,17 @@ class Router {
         }
     
         for command in availableCommands {
-            if commandName == command.commandName() {
-                return command
+            if commandName.hasPrefix("-") {
+                if commandName == command.commandShortcut() {
+                    return command
+                }
+            } else {
+                if commandName == command.commandName() {
+                    return command
+                }
             }
         }
         
-        if commandName == "-h" {
-            return self.helpCommand
-        } else if commandName == "-v" {
-            return self.versionComand
-        }
-    
         return nil
     }
     

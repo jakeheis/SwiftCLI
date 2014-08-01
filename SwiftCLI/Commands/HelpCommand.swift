@@ -24,6 +24,10 @@ class HelpCommand: Command {
         return "Prints this help information"
     }
     
+    override func commandShortcut() -> String?  {
+        return "-h"
+    }
+    
     override func handleOptions()  {
         self.options.handleAll()
     }

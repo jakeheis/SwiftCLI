@@ -35,6 +35,10 @@ class Command: NSObject {
         return ""
     }
     
+    func commandShortcut() -> String? {
+        return nil
+    }
+    
     func prepForExecution(arguments: NSDictionary, options: Options) {
         self.arguments = arguments
         self.options = options

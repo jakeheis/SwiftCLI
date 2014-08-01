@@ -38,6 +38,7 @@ class CLI: NSObject {
     class func registerVersionForVersionCommand(version: String) {
         router.versionComand = ChainableCommand(commandName: "version")
             .withShortDescription("Prints the current version of this app")
+            .withShortcut("-v")
             .allowAllFlagsAndOptions()
             .onExecution({params, options in
                 println("Version: \(version)")

@@ -28,6 +28,11 @@ class ChainableCommand: LightweightCommand {
         return self
     }
     
+    func withShortcut(shortcut: String) -> ChainableCommand {
+        self.lightweightCommandShortcut = shortcut
+        return self
+    }
+    
     func allowFlags(flags: [String]) -> ChainableCommand {
         self.lightweightAcceptableFlags = flags
         return self

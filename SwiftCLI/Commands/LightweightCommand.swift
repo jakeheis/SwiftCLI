@@ -15,6 +15,7 @@ class LightweightCommand: Command {
     var lightweightCommandName: String = ""
     var lightweightCommandSignature: String = ""
     var lightweightCommandShortDescription: String = ""
+    var lightweightCommandShortcut: String? = nil
     var lightweightExecutionBlock: CommandExecutionBlock? = nil
     
     var strictOnOptions = true
@@ -41,6 +42,10 @@ class LightweightCommand: Command {
     
     override func commandShortDescription() -> String  {
         return self.lightweightCommandShortDescription
+    }
+    
+    override func commandShortcut() -> String?  {
+        return self.lightweightCommandShortcut
     }
     
     override func handleOptions()  {
