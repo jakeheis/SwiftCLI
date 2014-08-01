@@ -45,6 +45,10 @@ class CLI: NSObject {
             })
     }
     
+    class func registerDefaultCommand(command: Command) {
+        router.defaultCommand = command
+    }
+    
     class func go() -> Bool {
         var args = NSProcessInfo.processInfo().arguments as [String]
         

@@ -22,6 +22,7 @@ CLI.registerChainableCommand(commandName: "init")
         return (success, message)
     })
 
+
 let exoticFlags = ["-e", "--exotics-included"]
 let listCommand = LightweightCommand(commandName: "list")
 listCommand.lightweightCommandShortDescription = "Lists the possible things baker can bake for you."
@@ -37,8 +38,10 @@ listCommand.lightweightExecutionBlock = {arguments, options in
     }
     return (true, nil)
 }
-
 CLI.registerCommand(listCommand)
-CLI.registerCommand(BakeCommand.command())
+
+let bakerCommand = BakeCommand.command()
+CLI.registerCommand(bakerCommand)
+CLI.registerDefaultCommand(bakerCommand)
 
 CLI.go()

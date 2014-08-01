@@ -15,18 +15,20 @@ class Router {
     // Special built-in commands
     var helpCommand: HelpCommand
     var versionComand: Command?
+    var defaultCommand: Command
     
     init() {
         self.commands = []
         self.helpCommand = HelpCommand.command()
         self.versionComand = nil
+        self.defaultCommand = self.helpCommand
     }
     
     func route(#arguments: [String]) -> (command: Command?, parameters: [String], options: Options) {
         self.prepSpecialCommands()
         
         if arguments.count == 1 {
-            return (self.helpCommand, [], Options(args: []))
+            return (self.defaultCommand, [], Options(args: []))
         }
         
         let commandString = arguments[1]
