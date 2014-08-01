@@ -16,8 +16,12 @@ class HelpCommand: Command {
         super.init()
     }
     
-    override var commandName: String  {
+    override func commandName() -> String  {
         return "help"
+    }
+    
+    override func commandShortDescription() -> String  {
+        return "Prints this help information"
     }
     
     override func handleOptions()  {
@@ -38,10 +42,6 @@ class HelpCommand: Command {
     
     func printCommand(command: Command) {
         println("- \(command.commandName) \t \(command.commandShortDescription)")
-    }
-    
-    override var commandShortDescription: String {
-        return "Prints this help information"
     }
     
 }

@@ -23,6 +23,18 @@ class Command: NSObject {
         super.init()
     }
     
+    func commandName() -> String {
+        return "command"
+    }
+    
+    func commandSignature() -> String {
+        return ""
+    }
+    
+    func commandShortDescription() -> String {
+        return ""
+    }
+    
     func prepForExecution(arguments: NSDictionary, options: Options) {
         self.arguments = arguments
         self.options = options
@@ -39,18 +51,6 @@ class Command: NSObject {
     
     func execute() -> (success: Bool, error: NSError?) {
         return (true, nil)
-    }
-    
-    var commandName: String {
-        return "command"
-    }
-    
-    func commandSignature() -> String {
-        return ""
-    }
-    
-    var commandShortDescription: String {
-        return ""
     }
     
 }

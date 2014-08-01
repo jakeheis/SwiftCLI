@@ -25,7 +25,7 @@ class LightweightCommand: Command {
         super.init()
     }
 
-    override var commandName: String {
+    override func commandName() -> String  {
         return self.lightweightCommandName
     }
     
@@ -33,7 +33,7 @@ class LightweightCommand: Command {
         return self.lightweightCommandSignature
     }
     
-    override var commandShortDescription: String {
+    override func commandShortDescription() -> String  {
         return self.lightweightCommandShortDescription
     }
     

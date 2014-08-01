@@ -66,7 +66,7 @@ class Router {
         }
     
         for command in availableCommands {
-            if commandName == command.commandName {
+            if commandName == command.commandName() {
                 return command
             }
         }
