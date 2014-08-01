@@ -8,7 +8,7 @@
 
 import Foundation
 
-class Options: NSObject {
+class Options {
     
     let combinedFlagsAndOptions: [String]
     var flags: [String]

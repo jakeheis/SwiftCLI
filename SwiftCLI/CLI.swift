@@ -51,11 +51,6 @@ class CLI: NSObject {
         let (commandTry, arguments, options) = router.route(arguments: args)
         
         if let command = commandTry {
-           
-            if !command.optionsAccountedFor() && strictOnOptions {
-                println(command.options.unaccountedForMessage())
-                return false
-            }
             
             let parser = SignatureParser(signature: command.commandSignature(), arguments: arguments)
             let (namedArguments, errorString) = parser.parse()
@@ -66,6 +61,11 @@ class CLI: NSObject {
             }
             
             command.prepForExecution(namedArguments!, options: options)
+           
+            if !command.optionsAccountedFor() && strictOnOptions {
+                println(command.options.unaccountedForMessage())
+                return false
+            }
             
             let (success, error) = command.execute()
 

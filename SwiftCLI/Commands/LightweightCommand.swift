@@ -38,7 +38,7 @@ class LightweightCommand: Command {
     }
     
     override func handleOptions()  {
-        if self.strictOnOptions {
+        if !self.strictOnOptions {
             self.options.handleAll()
             return
         }
