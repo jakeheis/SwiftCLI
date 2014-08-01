@@ -32,6 +32,10 @@ class SignatureParser {
         if optionalArgs.isEmpty && terminatedList && arguments.count != requiredArgs.count {
             return (nil, self.errorMessage(expectedCount: requiredArgs.count, givenCount: self.arguments.count))
         }
+        
+        if terminatedList && self.arguments.count > requiredArgs.count + optionalArgs.count {
+            return (nil, self.errorMessage(expectedCount: requiredArgs.count + optionalArgs.count, givenCount: self.arguments.count))
+        }
 
         var namedArgs: NSMutableDictionary = [:]
         
@@ -42,23 +46,29 @@ class SignatureParser {
         }
         
         if arguments.count > requiredArgs.count {
-            if !terminatedList {
-                let name = self.sanitizeKey(requiredArgs.lastObject()!)
+            for i in 0..<optionalArgs.count {
+                let index = i + requiredArgs.count
+                if index >= arguments.count {
+                    break
+                }
+                let name = self.sanitizeKey(optionalArgs[i])
+                let value = self.arguments[index]
+                namedArgs[name] = value
+            }
+            
+            if !terminatedList && arguments.count > requiredArgs.count + optionalArgs.count {
+                let lastKey = optionalArgs.isEmpty ? requiredArgs.lastObject()! : optionalArgs.lastObject()!
+                let name = self.sanitizeKey(lastKey)
                 var lastArray: [String] = []
                 
                 lastArray.append(namedArgs[name] as String)
                 
-                for i in requiredArgs.count..<self.arguments.count {
+                let startingIndex = requiredArgs.count + optionalArgs.count
+                for i in startingIndex..<self.arguments.count {
                     lastArray.append(self.arguments[i])
                 }
                 
                 namedArgs[name] = lastArray
-            } else {
-                for i in 0..<optionalArgs.count {
-                    let name = self.sanitizeKey(optionalArgs[i])
-                    let value = self.arguments[i + requiredArgs.count]
-                    namedArgs[name] = value
-                }
             }
         }
         
@@ -83,7 +93,6 @@ class SignatureParser {
         for argument in expectedArguments {
             if argument == "..." {
                 assert(argument == expectedArguments.lastObject()!, "The non-terminal parameter must be at the end of a command signature.")
-                assert(optionalArgs.isEmpty, "There can not be optional arguments and a non-terminal parametrs in a command signature.")
                 terminatedList = false
                 continue
             }
