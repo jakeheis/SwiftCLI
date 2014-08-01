@@ -16,6 +16,7 @@
 		EF92BF86198AF19B00BAA12B /* Options.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF92BF7E198AF19B00BAA12B /* Options.swift */; };
 		EF92BF87198AF19B00BAA12B /* Router.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF92BF7F198AF19B00BAA12B /* Router.swift */; };
 		EF92BF88198AF19B00BAA12B /* SignatureParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF92BF80198AF19B00BAA12B /* SignatureParser.swift */; };
+		EFEB0B55198C4D200040AFF0 /* BakeCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFEB0B54198C4D200040AFF0 /* BakeCommand.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -41,6 +42,7 @@
 		EF92BF7E198AF19B00BAA12B /* Options.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Options.swift; sourceTree = "<group>"; };
 		EF92BF7F198AF19B00BAA12B /* Router.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Router.swift; sourceTree = "<group>"; };
 		EF92BF80198AF19B00BAA12B /* SignatureParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignatureParser.swift; sourceTree = "<group>"; };
+		EFEB0B54198C4D200040AFF0 /* BakeCommand.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BakeCommand.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -74,6 +76,7 @@
 			isa = PBXGroup;
 			children = (
 				EF92BF70198AEF7900BAA12B /* main.swift */,
+				EFEB0B54198C4D200040AFF0 /* BakeCommand.swift */,
 				EF92BF77198AF19B00BAA12B /* SwiftCLI */,
 			);
 			path = Example;
@@ -159,6 +162,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EFEB0B55198C4D200040AFF0 /* BakeCommand.swift in Sources */,
 				EF92BF87198AF19B00BAA12B /* Router.swift in Sources */,
 				EF92BF85198AF19B00BAA12B /* LightweightCommand.swift in Sources */,
 				EF92BF82198AF19B00BAA12B /* ChainableCommand.swift in Sources */,
@@ -282,6 +286,7 @@
 				EF92BF76198AEF7900BAA12B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

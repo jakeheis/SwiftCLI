@@ -15,7 +15,9 @@ CLI.registerChainableCommand(commandName: "init")
         let givenDirectory = arguments["directory"] as String?
         
         let fileName = givenDirectory ? givenDirectory!.stringByAppendingPathComponent("Bakefile") : "./Bakefile"
-        let success = NSFileManager.defaultManager().createFileAtPath(fileName, contents: nil, attributes: nil)
+        
+        let dict = ["items": []]
+        let success = NSFileManager.defaultManager().createFileAtPath(fileName, contents: NSJSONSerialization.dataWithJSONObject(dict, options: NSJSONWritingOptions.PrettyPrinted, error: nil), attributes: nil)
         let message: String? = success ? nil : "The Bakefile was not able to be created"
         return (success, message)
     })
@@ -37,5 +39,6 @@ listCommand.lightweightExecutionBlock = {arguments, options in
 }
 
 CLI.registerCommand(listCommand)
+CLI.registerCommand(BakeCommand.command())
 
 CLI.go()
