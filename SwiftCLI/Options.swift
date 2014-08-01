@@ -61,9 +61,7 @@ class Options: NSObject {
     func onFlag(flag: String, block: ( (flag: String) -> () )?) -> Bool {
         if contains(self.flags, flag) {
             accountedForFlags += flag
-            if let literalBlock = block {
-                literalBlock(flag: flag)
-            }
+            block?(flag: flag)
             return true
         }
         return false
@@ -71,19 +69,14 @@ class Options: NSObject {
     
     func onFlags(flags: [String], block: ( (flag: String) -> () )) {
         for flag in flags {
-            let hasFlag = self.onFlag(flag, block: block)
-            if hasFlag {
-                break
-            }
+            self.onFlag(flag, block: block)
         }
     }
     
     func onOption(option: String, block: ( (option: String, arg: String) -> () )?) {
         if contains(Array(self.options.keys), option) {
             accountedForOptions += option
-            if let literalBlock = block {
-                literalBlock(option: option, arg: self.options[option]!)
-            }
+            block?(option: option, arg: self.options[option]!)
         }
     }
     
