@@ -148,10 +148,20 @@ class Options {
             message += "\n\t\(option) \(self.keyedOptions[option]!)"
         }
         
-        message += "\nUsage: \(CLIName) \(command.commandName()) \(command.commandSignature())"
+        message += "\nUsage: \(CLIName) \(command.commandName())"
 
-        for usage in self.usageStatements {
-            message += "\n\t\(usage)"
+        if command.commandSignature().utf16Count > 0 {
+            message += " \(command.commandSignature())"
+        }
+        
+        if self.usageStatements.count > 0 {
+            message += " [options]\n"
+            
+            for usage in self.usageStatements {
+                message += "\n\t\(usage)"
+            }
+            
+            message += "\n"
         }
         
         return message
