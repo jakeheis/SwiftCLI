@@ -8,6 +8,9 @@
 
 import Foundation
 
+typealias OptionsFlagBlock = (flag: String) -> ()
+typealias OptionsKeyBlock = (key: String, value: String) -> ()
+
 class Options {
     
     let combinedFlagsAndKeys: [String]
@@ -16,6 +19,8 @@ class Options {
     
     var accountedForFlags: [String] = []
     var accountedForKeys: [String] = []
+    
+    var usageStatements: [String] = []
     
     init(args: [String]) {
         self.combinedFlagsAndKeys = args
@@ -54,27 +59,81 @@ class Options {
         return "Flag options: \(self.flagOptions) Keyed options: \(self.keyedOptions)"
     }
     
-    func onFlag(flag: String, block: ( (flag: String) -> () )?) -> Bool {
+    // Flags
+
+    func onFlag(flag: String, block: OptionsFlagBlock?) {
+        self.onFlag(flag, block: block, usage: "")
+    }
+    
+    func onFlag(flag: String, block: OptionsFlagBlock?, usage: String?) {
         if contains(self.flagOptions, flag) {
             self.accountedForFlags += flag
             block?(flag: flag)
-            return true
         }
-        return false
+        
+        if usage {
+            self.usageStatements += "\(flag)\t\t\(usage!)"
+        }
+    }
+
+    func onFlags(flags: [String], block: OptionsFlagBlock?) {
+        return self.onFlags(flags, block: block, usage: "")
     }
     
-    func onFlags(flags: [String], block: ( (flag: String) -> () )) {
+    func onFlags(flags: [String], block: OptionsFlagBlock?, usage: String?) {
         for flag in flags {
-            self.onFlag(flag, block: block)
+            self.onFlag(flag, block: block, usage: nil)
+        }
+        
+        if usage {
+            let nsFlags = flags as NSArray
+            let comps = nsFlags.componentsJoinedByString(", ")
+            self.usageStatements += "\(comps)\t\t\(usage!)"
         }
     }
     
-    func onKey(option: String, block: ( (option: String, arg: String) -> () )?) {
-        if contains(Array(self.keyedOptions.keys), option) {
-            self.accountedForKeys += option
-            block?(option: option, arg: self.keyedOptions[option]!)
+    // Keys
+
+    func onKey(key: String, block: OptionsKeyBlock?) {
+        self.onKey(key, block: block, usage: "")
+    }
+
+    func onKey(key: String, block: OptionsKeyBlock?, usage: String?) {
+        self.onKey(key, block: block, usage: usage, valueSignature: "value")
+    }
+    
+    func onKey(key: String, block: OptionsKeyBlock?, usage: String?, valueSignature: String?) {
+        if contains(Array(self.keyedOptions.keys), key) {
+            self.accountedForKeys += key
+            block?(key: key, value: self.keyedOptions[key]!)
+        }
+        
+        if usage {
+            self.usageStatements += "\(key) <\(valueSignature!)>\t\t\(usage!)"
         }
     }
+    
+    func onKeys(keys: [String], block: OptionsKeyBlock?) {
+        self.onKeys(keys, block: block, usage: "")
+    }
+    
+    func onKeys(keys: [String], block: OptionsKeyBlock?, usage: String?) {
+        self.onKeys(keys, block: block, usage: usage, valueSignature: "value")
+    }
+    
+    func onKeys(keys: [String], block: OptionsKeyBlock?, usage: String?, valueSignature: String?) {
+        for key in keys {
+            self.onKey(key, block: block, usage: nil, valueSignature: nil)
+        }
+        
+        if usage {
+            let nsFlags = keys as NSArray
+            let comps = nsFlags.componentsJoinedByString(", ")
+            self.usageStatements += "\(comps) <\(valueSignature!)>\t\t\(usage!)"
+        }
+    }
+    
+    // Other publics
     
     func handleAll() {
         self.accountedForFlags = self.flagOptions
@@ -85,29 +144,38 @@ class Options {
         return self.remainingFlags().count == 0 && self.remainingOptions().count == 0
     }
     
-    func remainingFlags() -> [String] {
+    func unaccountedForMessage() -> String {
+        var message = "Unrecognized flags and options:"
+        for flag in self.remainingFlags() {
+            message += "\n\t\(flag)"
+        }
+        for option in self.remainingOptions() {
+            message += "\n\t\(option): \(self.keyedOptions[option])"
+        }
+        
+        message += "\nUsage:"
+        
+        for usage in self.usageStatements {
+            message += "\n\t\(usage)"
+        }
+        
+        return message
+    }
+    
+    // Privates
+    
+    private func remainingFlags() -> [String] {
         let remainingFlags = NSMutableArray(array: self.flagOptions)
         remainingFlags.removeObjectsInArray(self.accountedForFlags)
         var stringArray = NSArray(array: remainingFlags) as [String]
         return stringArray
     }
     
-    func remainingOptions() -> [String] {
+    private func remainingOptions() -> [String] {
         let remainingOptions = NSMutableArray(array: Array(self.keyedOptions.keys))
         remainingOptions.removeObjectsInArray(self.accountedForKeys)
         var stringArray = NSArray(array: remainingOptions) as [String]
         return stringArray
-    }
-    
-    func unaccountedForMessage() -> String {
-        var starter = "Unrecognized flags and options:"
-        for flag in self.remainingFlags() {
-            starter += "\n \(flag)"
-        }
-        for option in self.remainingOptions() {
-            starter += "\n \(option): \(self.keyedOptions[option])"
-        }
-        return starter
     }
     
 }

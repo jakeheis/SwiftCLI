@@ -10,7 +10,9 @@ import Foundation
 
 class BakeCommand: Command {
     
-    var quickly = false
+    private var quickly = false
+    private var silently = false
+    private var topping: String? = nil
     
     init()  {
         super.init()
@@ -31,7 +33,15 @@ class BakeCommand: Command {
     override func handleOptions()  {
         self.options.onFlags(["-q", "--quickly"], block: {flag in
             self.quickly = true
-        })
+        }, usage: "Bake more quickly")
+        
+        self.options.onFlag("-s", block: {flag in
+            self.silently = true
+        }, usage: "Bake silently")
+        
+        self.options.onKeys(["-t", "--with-topping"], block: {key, value in
+            self.topping = value
+        }, usage: "Adds a topping to the baked good", valueSignature: "topping")
     }
     
     override func execute() -> (success: Bool, error: String?)  {
@@ -59,12 +69,16 @@ class BakeCommand: Command {
     }
     
     func bakeItem(item: String) {
-        let quicklyStr = self.quickly ? " quickly!" : "."
-        println("Baking a \(item)\(quicklyStr)")
+        let quicklyStr = self.quickly ? " quickly" : ""
+        let toppingStr = self.topping ? " topped with \(self.topping!)" : ""
+
+        println("Baking a \(item)\(quicklyStr)\(toppingStr)")
         
         for _ in 1...(self.quickly ? 2 : 4) {
             NSThread.sleepForTimeInterval(1)
-            println("...")
+            if !self.silently {
+                println("...")
+            }
         }
         
         println("Your \(item) is now ready!")
