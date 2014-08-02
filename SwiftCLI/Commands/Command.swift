@@ -53,6 +53,10 @@ class Command: NSObject {
         
     }
     
+    func failOnUnhandledOptions() -> Bool {
+        return true
+    }
+    
     func execute() -> (success: Bool, error: String?) {
         return (true, nil)
     }

@@ -28,10 +28,6 @@ class HelpCommand: Command {
         return "-h"
     }
     
-    override func handleOptions()  {
-        self.options.handleAll()
-    }
-    
     override func execute() -> (Bool, String?)  {
         println("Available commands: ")
 

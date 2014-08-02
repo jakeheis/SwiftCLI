@@ -134,27 +134,22 @@ class Options {
     }
     
     // Other publics
-    
-    func handleAll() {
-        self.accountedForFlags = self.flagOptions
-        self.accountedForKeys = Array(self.keyedOptions.keys)
-    }
 
     func allAccountedFor() -> Bool {
         return self.remainingFlags().count == 0 && self.remainingOptions().count == 0
     }
     
-    func unaccountedForMessage() -> String {
-        var message = "Unrecognized flags and options:"
+    func unaccountedForMessage(#command: Command) -> String {
+        var message = "Unrecognized options:"
         for flag in self.remainingFlags() {
             message += "\n\t\(flag)"
         }
         for option in self.remainingOptions() {
-            message += "\n\t\(option): \(self.keyedOptions[option])"
+            message += "\n\t\(option) \(self.keyedOptions[option]!)"
         }
         
-        message += "\nUsage:"
-        
+        message += "\nUsage: \(CLIName) \(command.commandName()) \(command.commandSignature())"
+
         for usage in self.usageStatements {
             message += "\n\t\(usage)"
         }

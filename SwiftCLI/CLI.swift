@@ -10,9 +10,21 @@ import Foundation
 
 let router = Router()
 
-var strictOnOptions = true
+var CLIName = "" // Transition to class variable once available
 
 class CLI: NSObject {
+
+    class func setup(#name: String) {
+        self.setup(name: name, version: "1.0")
+    }
+    
+    class func setup(#name: String, version: String) {
+        CLIName = name
+        
+        if router.versionComand {
+            router.versionComand!.version = version
+        }
+    }
     
     class func registerCommands(commands: [Command]) {
         for command in commands {
@@ -33,12 +45,6 @@ class CLI: NSObject {
     
     class func registerCustomHelpCommand(helpCommand: HelpCommand) {
         router.helpCommand = helpCommand
-    }
-    
-    class func setAppVersion(version: String) {
-        if router.versionComand {
-            router.versionComand!.version = version
-        }
     }
     
     class func registerCustomVersionCommand(versionCommand: VersionCommand) {
@@ -66,9 +72,12 @@ class CLI: NSObject {
             
             command.prepForExecution(namedArguments!, options: options)
            
-            if !command.optionsAccountedFor() && strictOnOptions {
-                println(command.options.unaccountedForMessage())
-                return false
+            if !command.optionsAccountedFor() {
+                let message = command.options.unaccountedForMessage(command: command)
+                println(message)
+                if (command.failOnUnhandledOptions()) {
+                    return false
+                }
             }
             
             let (success, error) = command.execute()

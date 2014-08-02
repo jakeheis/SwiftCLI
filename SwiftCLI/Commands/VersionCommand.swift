@@ -28,10 +28,6 @@ class VersionCommand: Command {
         return "-v"
     }
     
-    override func handleOptions()  {
-        self.options.handleAll()
-    }
-    
     override func execute() -> (Bool, String?)  {
         println("Version: \(self.version)")
         

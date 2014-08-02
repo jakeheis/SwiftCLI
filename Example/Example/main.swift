@@ -8,6 +8,8 @@
 
 import Foundation
 
+CLI.setup(name: "baker")
+
 CLI.registerChainableCommand(commandName: "init")
     .withShortDescription("Creates a Bakefile in the current or given directory")
     .withSignature("[<directory>]")
@@ -42,7 +44,5 @@ CLI.registerCommand(listCommand)
 
 let bakerCommand = BakeCommand.command()
 CLI.registerCommand(bakerCommand)
-
-CLI.setAppVersion("1.0")
 
 CLI.go()
