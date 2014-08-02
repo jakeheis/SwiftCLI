@@ -59,7 +59,7 @@ class LightweightCommand: Command {
         }
         
         for option in self.lightweightAcceptableOptions {
-            self.options.onOption(option, block: nil)
+            self.options.onKey(option, block: nil)
         }
     }
 

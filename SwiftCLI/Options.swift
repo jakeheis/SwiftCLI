@@ -10,55 +10,53 @@ import Foundation
 
 class Options {
     
-    let combinedFlagsAndOptions: [String]
-    var flags: [String]
-    var options: [String: String]
+    let combinedFlagsAndKeys: [String]
+    var flagOptions: [String] = []
+    var keyedOptions: [String: String] = [:]
     
     var accountedForFlags: [String] = []
-    var accountedForOptions: [String] = []
+    var accountedForKeys: [String] = []
     
     init(args: [String]) {
-        flags = [String]()
-        options = [String: String]()
-        combinedFlagsAndOptions = args
+        self.combinedFlagsAndKeys = args
         
-        splitArguments()
+        self.splitArguments()
     }
     
     func splitArguments() {
         var skipNext = false
-        for index in 0..<combinedFlagsAndOptions.count {
+        for index in 0..<self.combinedFlagsAndKeys.count {
             if skipNext {
                 skipNext = false
                 continue
             }
             
-            let argument = combinedFlagsAndOptions[index]
+            let argument = self.combinedFlagsAndKeys[index]
             
-            if index < combinedFlagsAndOptions.count-1 {
-                let nextArgument = combinedFlagsAndOptions[index+1]
+            if index < self.combinedFlagsAndKeys.count-1 {
+                let nextArgument = self.combinedFlagsAndKeys[index+1]
                 
                 if nextArgument.hasPrefix("-") {
-                    flags += argument
+                    self.flagOptions += argument
                 } else {
-                    options[argument] = nextArgument
+                    self.keyedOptions[argument] = nextArgument
                     skipNext = true
                 }
                 
             } else {
-                flags += argument
+                self.flagOptions += argument
             }
             
         }
     }
     
     func description() -> String {
-        return "Flags: \(flags) Options: \(options)"
+        return "Flag options: \(self.flagOptions) Keyed options: \(self.keyedOptions)"
     }
     
     func onFlag(flag: String, block: ( (flag: String) -> () )?) -> Bool {
-        if contains(self.flags, flag) {
-            accountedForFlags += flag
+        if contains(self.flagOptions, flag) {
+            self.accountedForFlags += flag
             block?(flag: flag)
             return true
         }
@@ -71,16 +69,16 @@ class Options {
         }
     }
     
-    func onOption(option: String, block: ( (option: String, arg: String) -> () )?) {
-        if contains(Array(self.options.keys), option) {
-            accountedForOptions += option
-            block?(option: option, arg: self.options[option]!)
+    func onKey(option: String, block: ( (option: String, arg: String) -> () )?) {
+        if contains(Array(self.keyedOptions.keys), option) {
+            self.accountedForKeys += option
+            block?(option: option, arg: self.keyedOptions[option]!)
         }
     }
     
     func handleAll() {
-        self.accountedForFlags = self.flags
-        self.accountedForOptions = Array(self.options.keys)
+        self.accountedForFlags = self.flagOptions
+        self.accountedForKeys = Array(self.keyedOptions.keys)
     }
 
     func allAccountedFor() -> Bool {
@@ -88,15 +86,15 @@ class Options {
     }
     
     func remainingFlags() -> [String] {
-        let remainingFlags = NSMutableArray(array: self.flags)
+        let remainingFlags = NSMutableArray(array: self.flagOptions)
         remainingFlags.removeObjectsInArray(self.accountedForFlags)
         var stringArray = NSArray(array: remainingFlags) as [String]
         return stringArray
     }
     
     func remainingOptions() -> [String] {
-        let remainingOptions = NSMutableArray(array: Array(self.options.keys))
-        remainingOptions.removeObjectsInArray(self.accountedForOptions)
+        let remainingOptions = NSMutableArray(array: Array(self.keyedOptions.keys))
+        remainingOptions.removeObjectsInArray(self.accountedForKeys)
         var stringArray = NSArray(array: remainingOptions) as [String]
         return stringArray
     }
@@ -107,7 +105,7 @@ class Options {
             starter += "\n \(flag)"
         }
         for option in self.remainingOptions() {
-            starter += "\n \(option): \(self.options[option])"
+            starter += "\n \(option): \(self.keyedOptions[option])"
         }
         return starter
     }
