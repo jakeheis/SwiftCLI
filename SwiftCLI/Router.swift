@@ -27,17 +27,36 @@ class Router {
     func route(#arguments: [String]) -> (command: Command?, parameters: [String], options: Options) {
         self.prepForRouting()
         
-        if arguments.count == 1 {
+        if arguments.count == 1 { // e.g. "bundle"
             return (self.defaultCommand, [], Options(args: []))
         }
         
         let commandString = arguments[1]
+
+        var command: Command?
+        var argumentsStartingIndex = 2
+        
+        if commandString.hasPrefix("-") {
+            command = self.findCommandWithShortcut(commandString)
+            
+            // If no command with shorcut found, pass the -arg as a flag to the default command
+            if !command {
+                command = self.defaultCommand
+                argumentsStartingIndex = 1
+            }
+        } else {
+            command = self.findCommandWithName(commandString)
+        }
+        
+        if !command {
+            return (nil, [], Options(args: []))
+        }
         
         var commandParameters = [String]()
         var commandOptions = [String]()
         
-        if arguments.count > 2 {
-            let commandArguments = arguments[2..<arguments.count]
+        if arguments.count > argumentsStartingIndex {
+            let commandArguments = arguments[argumentsStartingIndex..<arguments.count]
             
             var splitIndex: Int = commandArguments.count
             for index in 0..<commandArguments.count {
@@ -52,34 +71,40 @@ class Router {
             commandOptions = Array(commandArguments[splitIndex..<commandArguments.count])
         }
         
-        let command = self.findCommand(commandString)
-        
         return (command: command, parameters: commandParameters, options: Options(args: commandOptions))
     }
     
-    private func findCommand(commandName: String) -> Command? {
+    private func findCommandWithShortcut(commandShortcut: String) -> Command? {
+        for command in self.allAvailableCommands() {
+            if commandShortcut == command.commandShortcut() {
+                return command
+            }
+        }
+        
+        return nil
+    }
+    
+    private func findCommandWithName(commandName: String) -> Command? {
+        for command in self.allAvailableCommands() {
+            if commandName == command.commandName() {
+                return command
+            }
+        }
+        
+        return nil
+    }
+    
+    private func allAvailableCommands() -> [Command] {
         var availableCommands = self.commands
-
+        
         if self.helpCommand {
             availableCommands += self.helpCommand!
         }
         if self.versionComand {
             availableCommands += self.versionComand!
         }
-    
-        for command in availableCommands {
-            if commandName.hasPrefix("-") {
-                if commandName == command.commandShortcut() {
-                    return command
-                }
-            } else {
-                if commandName == command.commandName() {
-                    return command
-                }
-            }
-        }
         
-        return nil
+        return availableCommands;
     }
     
     private func prepForRouting() {

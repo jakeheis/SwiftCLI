@@ -42,7 +42,6 @@ CLI.registerCommand(listCommand)
 
 let bakerCommand = BakeCommand.command()
 CLI.registerCommand(bakerCommand)
-CLI.registerDefaultCommand(bakerCommand)
 
 CLI.setAppVersion("1.0")
 
