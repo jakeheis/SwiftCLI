@@ -35,15 +35,14 @@ class CLI: NSObject {
         router.helpCommand = helpCommand
     }
     
-    class func registerVersionForVersionCommand(version: String) {
-        router.versionComand = ChainableCommand(commandName: "version")
-            .withShortDescription("Prints the current version of this app")
-            .withShortcut("-v")
-            .allowAllFlagsAndOptions()
-            .onExecution({params, options in
-                println("Version: \(version)")
-                return (true, nil)
-            })
+    class func setAppVersion(version: String) {
+        if router.versionComand {
+            router.versionComand!.version = version
+        }
+    }
+    
+    class func registerCustomVersionCommand(versionCommand: VersionCommand) {
+        router.versionComand = versionCommand
     }
     
     class func registerDefaultCommand(command: Command) {

@@ -17,6 +17,7 @@
 		EF92BF87198AF19B00BAA12B /* Router.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF92BF7F198AF19B00BAA12B /* Router.swift */; };
 		EF92BF88198AF19B00BAA12B /* SignatureParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF92BF80198AF19B00BAA12B /* SignatureParser.swift */; };
 		EFEB0B55198C4D200040AFF0 /* BakeCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFEB0B54198C4D200040AFF0 /* BakeCommand.swift */; };
+		EFEB0B57198D17EB0040AFF0 /* VersionCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFEB0B56198D17EB0040AFF0 /* VersionCommand.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -43,6 +44,7 @@
 		EF92BF7F198AF19B00BAA12B /* Router.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Router.swift; sourceTree = "<group>"; };
 		EF92BF80198AF19B00BAA12B /* SignatureParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignatureParser.swift; sourceTree = "<group>"; };
 		EFEB0B54198C4D200040AFF0 /* BakeCommand.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BakeCommand.swift; sourceTree = "<group>"; };
+		EFEB0B56198D17EB0040AFF0 /* VersionCommand.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VersionCommand.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -101,6 +103,7 @@
 				EF92BF7A198AF19B00BAA12B /* ChainableCommand.swift */,
 				EF92BF7B198AF19B00BAA12B /* Command.swift */,
 				EF92BF7C198AF19B00BAA12B /* HelpCommand.swift */,
+				EFEB0B56198D17EB0040AFF0 /* VersionCommand.swift */,
 				EF92BF7D198AF19B00BAA12B /* LightweightCommand.swift */,
 			);
 			path = Commands;
@@ -170,6 +173,7 @@
 				EF92BF88198AF19B00BAA12B /* SignatureParser.swift in Sources */,
 				EF92BF71198AEF7900BAA12B /* main.swift in Sources */,
 				EF92BF83198AF19B00BAA12B /* Command.swift in Sources */,
+				EFEB0B57198D17EB0040AFF0 /* VersionCommand.swift in Sources */,
 				EF92BF84198AF19B00BAA12B /* HelpCommand.swift in Sources */,
 				EF92BF86198AF19B00BAA12B /* Options.swift in Sources */,
 			);

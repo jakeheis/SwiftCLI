@@ -13,19 +13,19 @@ class Router {
     var commands: [Command]
     
     // Special built-in commands
-    var helpCommand: HelpCommand
-    var versionComand: Command?
+    var helpCommand: HelpCommand?
+    var versionComand: VersionCommand?
     var defaultCommand: Command
     
     init() {
         self.commands = []
         self.helpCommand = HelpCommand.command()
-        self.versionComand = nil
-        self.defaultCommand = self.helpCommand
+        self.versionComand = VersionCommand.command()
+        self.defaultCommand = self.helpCommand!
     }
     
     func route(#arguments: [String]) -> (command: Command?, parameters: [String], options: Options) {
-        self.prepSpecialCommands()
+        self.prepForRouting()
         
         if arguments.count == 1 {
             return (self.defaultCommand, [], Options(args: []))
@@ -52,8 +52,6 @@ class Router {
             commandOptions = Array(commandArguments[splitIndex..<commandArguments.count])
         }
         
-        self.prepSpecialCommands()
-        
         let command = self.findCommand(commandString)
         
         return (command: command, parameters: commandParameters, options: Options(args: commandOptions))
@@ -61,10 +59,12 @@ class Router {
     
     private func findCommand(commandName: String) -> Command? {
         var availableCommands = self.commands
-        availableCommands += self.helpCommand
-        
-        if let vc = self.versionComand {
-            availableCommands += vc
+
+        if self.helpCommand {
+            availableCommands += self.helpCommand!
+        }
+        if self.versionComand {
+            availableCommands += self.versionComand!
         }
     
         for command in availableCommands {
@@ -82,8 +82,10 @@ class Router {
         return nil
     }
     
-    private func prepSpecialCommands() {
-        self.helpCommand.allCommands = self.commands
+    private func prepForRouting() {
+        if self.helpCommand {
+            self.helpCommand!.allCommands = self.commands;
+        }
     }
     
     
