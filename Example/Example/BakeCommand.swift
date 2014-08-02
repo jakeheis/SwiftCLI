@@ -61,11 +61,12 @@ class BakeCommand: Command {
     func bakeItem(item: String) {
         let quicklyStr = self.quickly ? " quickly!" : "."
         println("Baking a \(item)\(quicklyStr)")
-        println("...")
-        if !self.quickly {
-            println("...")
+        
+        for _ in 1...(self.quickly ? 2 : 4) {
+            NSThread.sleepForTimeInterval(1)
             println("...")
         }
+        
         println("Your \(item) is now ready!")
     }
     

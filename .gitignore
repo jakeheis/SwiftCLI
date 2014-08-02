@@ -7,5 +7,6 @@
 # Pods/
 
 xcuserdata
+xcshareddata
 
 .DS_Store
