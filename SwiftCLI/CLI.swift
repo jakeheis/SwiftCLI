@@ -10,19 +10,21 @@ import Foundation
 
 let router = Router()
 
-var CLIName = "" // TODO: Transition to class variable once available
-var CLIDescription = "" // TODO: Transition to class variable once available
-
 class CLI: NSObject {
     
+    struct CLIInformation {
+        static var name = ""
+        static var description = ""
+    }
+    
     class func setup(#name: String, version: String = "1.0", description: String = "") {
-        CLIName = name
+        CLIInformation.name = name
         
         if router.versionComand {
             router.versionComand!.version = version
         }
         
-        CLIDescription = description
+        CLIInformation.description = description
     }
     
     class func registerCommands(commands: [Command]) {
