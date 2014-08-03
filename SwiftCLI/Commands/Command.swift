@@ -82,6 +82,15 @@ class Command: NSObject {
     
     func optionsAccountedFor() -> Bool { // Add final modifier once possible
         self.handleOptions()
+        
+        if self.showHelpOnHFlag() {
+            self.onFlags(["-h", "--help"], block: {flag in
+                self.showingHelp = true
+                
+                println(self.commandUsageStatement())
+            }, usage: "Show help information for this command")
+        }
+        
         return self.options.allAccountedFor()
     }
     
@@ -121,12 +130,12 @@ class Command: NSObject {
         return "\(spacing)\(usage)"
     }
     
+    func showHelpOnHFlag() -> Bool {
+        return true
+    }
+    
     func handleOptions() {
-        self.onFlags(["-h", "--help"], block: {flag in
-            self.showingHelp = true
-            
-            println(self.commandUsageStatement())
-        }, usage: "Show help information for this command")
+        
     }
 
     func unhandledOptionsPrintingBehavior() -> UnhandledOptionsPrintingBehavior {

@@ -28,9 +28,9 @@ class HelpCommand: Command {
         return "-h"
     }
     
-//    override func unhandledOptionsPrintingBehavior() -> UnhandledOptionsPrintingBehavior  {
-//        return .PrintOnlyUnrecognizedOptions
-//    }
+    override func showHelpOnHFlag() -> Bool  {
+        return false
+    }
     
     override func failOnUnhandledOptions() -> Bool  {
         return false

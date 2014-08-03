@@ -49,4 +49,6 @@ CLI.registerCommand(listCommand)
 let bakerCommand = BakeCommand.command()
 CLI.registerCommand(bakerCommand)
 
+CLI.registerDefaultCommand(bakerCommand)
+
 CLI.go()
