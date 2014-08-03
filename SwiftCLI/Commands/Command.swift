@@ -86,10 +86,7 @@ class Command: NSObject {
     }
     
     func onFlag(flag: String, block: OptionsFlagBlock?, usage: String = "") { // Add final modifier once possible
-        let padded = self.padUsageForLength(usage, length: flag.utf16Count);
-        self.usageStatements += "\(flag)\(padded)"
-
-        self.options.onFlag(flag, block: block)
+        self.onFlags([flag], block: block, usage: usage)
     }
     
     func onFlags(flags: [String], block: OptionsFlagBlock?, usage: String = "") { // Add final modifier once possible
@@ -102,11 +99,7 @@ class Command: NSObject {
     }
     
     func onKey(key: String, block: OptionsKeyBlock?, usage: String = "", valueSignature: String = "value") { // Add final modifier once possible
-        let firstPart = "\(key) <\(valueSignature)>"
-        let padded = self.padUsageForLength(usage, length: firstPart.utf16Count);
-        self.usageStatements += "\(firstPart)\(padded)"
-
-        self.options.onKey(key, block: block)
+        self.onKeys([key], block: block, usage: usage, valueSignature: valueSignature)
     }
     
     func onKeys(keys: [String], block: OptionsKeyBlock?, usage: String = "", valueSignature: String = "value") { // Add final modifier once possible

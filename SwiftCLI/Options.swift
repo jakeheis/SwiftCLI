@@ -59,31 +59,23 @@ class Options {
     
     // Flags
 
-    func onFlag(flag: String, block: OptionsFlagBlock?) {
-        if contains(self.flagOptions, flag) {
-            self.accountedForFlags += flag
-            block?(flag: flag)
-        }
-    }
-
     func onFlags(flags: [String], block: OptionsFlagBlock?) {
         for flag in flags {
-            self.onFlag(flag, block: block)
+            if contains(self.flagOptions, flag) {
+                self.accountedForFlags += flag
+                block?(flag: flag)
+            }
         }
     }
     
     // Keys
-
-    func onKey(key: String, block: OptionsKeyBlock?) {
-        if contains(Array(self.keyedOptions.keys), key) {
-            self.accountedForKeys += key
-            block?(key: key, value: self.keyedOptions[key]!)
-        }
-    }
     
     func onKeys(keys: [String], block: OptionsKeyBlock?) {
         for key in keys {
-            self.onKey(key, block: block)
+            if contains(Array(self.keyedOptions.keys), key) {
+                self.accountedForKeys += key
+                block?(key: key, value: self.keyedOptions[key]!)
+            }
         }
     }
     
