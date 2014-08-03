@@ -12,6 +12,8 @@ let router = Router()
 
 class CLI: NSObject {
     
+    // MARK: - Information
+    
     struct CLIInformation {
         static var name = ""
         static var description = ""
@@ -27,14 +29,16 @@ class CLI: NSObject {
         CLIInformation.description = description
     }
     
+    // MARK: - Registering commands
+    
+    class func registerCommand(command: Command) {
+        router.commands += command;
+    }
+    
     class func registerCommands(commands: [Command]) {
         for command in commands {
             self.registerCommand(command)
         }
-    }
-    
-    class func registerCommand(command: Command) {
-        router.commands += command;
     }
     
     class func registerChainableCommand(#commandName: String) -> ChainableCommand {
@@ -42,7 +46,6 @@ class CLI: NSObject {
         router.commands += chainable
         return chainable
     }
-    
     
     class func registerCustomHelpCommand(helpCommand: HelpCommand) {
         router.helpCommand = helpCommand
@@ -55,6 +58,8 @@ class CLI: NSObject {
     class func registerDefaultCommand(command: Command) {
         router.defaultCommand = command
     }
+    
+    // MARK: - Go
     
     class func go() -> Bool {
         var args = NSProcessInfo.processInfo().arguments as [String]

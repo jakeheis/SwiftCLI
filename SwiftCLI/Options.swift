@@ -57,7 +57,7 @@ class Options {
         return "Flag options: \(self.flagOptions) Keyed options: \(self.keyedOptions)"
     }
     
-    // Flags
+    // MARK: - Flags
 
     func onFlags(flags: [String], block: OptionsFlagBlock?) {
         for flag in flags {
@@ -68,7 +68,7 @@ class Options {
         }
     }
     
-    // Keys
+    // MAKR: - Keys
     
     func onKeys(keys: [String], block: OptionsKeyBlock?) {
         for key in keys {
@@ -79,8 +79,8 @@ class Options {
         }
     }
     
-    // Other publics
-
+    // MARK: - Other publics
+    
     func allAccountedFor() -> Bool {
         return self.remainingFlags().count == 0 && self.remainingOptions().count == 0
     }
@@ -113,7 +113,7 @@ class Options {
         return message
     }
     
-    // Privates
+    // MARK: - Privates
     
     private func remainingFlags() -> [String] {
         let remainingFlags = NSMutableArray(array: self.flagOptions)
