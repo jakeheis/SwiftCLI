@@ -8,31 +8,31 @@
 
 import Foundation
 
-let router = Router()
-
 class CLI: NSObject {
     
     // MARK: - Information
     
-    struct CLIInformation {
+    struct CLIStatic {
         static var name = ""
+        static var appVersion = "1.0"
         static var description = ""
+        
+        static var commands: [Command] = []
+        static var helpCommand: HelpCommand? = HelpCommand.command()
+        static var versionComand: VersionCommand? = VersionCommand.command()
+        static var defaultCommand: Command = CLIStatic.helpCommand!
     }
     
     class func setup(#name: String, version: String = "1.0", description: String = "") {
-        CLIInformation.name = name
-        
-        if router.versionComand {
-            router.versionComand!.version = version
-        }
-        
-        CLIInformation.description = description
+        CLIStatic.name = name
+        CLIStatic.appVersion = version
+        CLIStatic.description = description
     }
     
     // MARK: - Registering commands
     
     class func registerCommand(command: Command) {
-        router.commands += command;
+        CLIStatic.commands += command;
     }
     
     class func registerCommands(commands: [Command]) {
@@ -43,20 +43,20 @@ class CLI: NSObject {
     
     class func registerChainableCommand(#commandName: String) -> ChainableCommand {
         let chainable = ChainableCommand(commandName: commandName)
-        router.commands += chainable
+        CLIStatic.commands += chainable
         return chainable
     }
     
-    class func registerCustomHelpCommand(helpCommand: HelpCommand) {
-        router.helpCommand = helpCommand
+    class func registerCustomHelpCommand(helpCommand: HelpCommand?) {
+        CLIStatic.helpCommand = helpCommand
     }
     
-    class func registerCustomVersionCommand(versionCommand: VersionCommand) {
-        router.versionComand = versionCommand
+    class func registerCustomVersionCommand(versionCommand: VersionCommand?) {
+        CLIStatic.versionComand = versionCommand
     }
     
     class func registerDefaultCommand(command: Command) {
-        router.defaultCommand = command
+        CLIStatic.defaultCommand = command
     }
     
     // MARK: - Go
@@ -64,7 +64,18 @@ class CLI: NSObject {
     class func go() -> Bool {
         var args = NSProcessInfo.processInfo().arguments as [String]
         
-        let result = router.route(arguments: args)
+        self.prepareForRouting();
+        
+        var allCommands = CLIStatic.commands
+        if let hc = CLIStatic.helpCommand {
+            allCommands += hc
+        }
+        if let vc = CLIStatic.versionComand {
+            allCommands += vc
+        }
+        
+        let router = Router(commands: allCommands, arguments: args, defaultCommand: CLIStatic.defaultCommand)
+        let result = router.route()
         
         switch result {
         case let .Success(command, arguments, options, routedName):
@@ -102,6 +113,12 @@ class CLI: NSObject {
         case .Failure:
             println("Command not found")
             return false
+        }
+    }
+    
+    class private func prepareForRouting() {
+        if let hc = CLIStatic.helpCommand {
+            hc.allCommands = CLIStatic.commands
         }
     }
     

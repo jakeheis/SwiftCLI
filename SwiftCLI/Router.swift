@@ -15,30 +15,37 @@ enum RouterResult {
 
 class Router {
     
-    var commands: [Command]
+    private let commands: [Command]
+    private let arguments: [String]
+    private var defaultCommand: Command
     
-    // TODO: move these to CLI once class variables are supported
-    // Special built-in commands
-    var helpCommand: HelpCommand?
-    var versionComand: VersionCommand?
-    var defaultCommand: Command
-    
-    init() {
-        self.commands = []
-        self.helpCommand = HelpCommand.command()
-        self.versionComand = VersionCommand.command()
-        self.defaultCommand = self.helpCommand!
+    init(commands: [Command], arguments: [String], defaultCommand: Command) {
+        self.commands = commands
+        self.arguments = arguments
+        self.defaultCommand = defaultCommand
     }
     
-    func route(#arguments: [String]) -> RouterResult {
-        self.prepForRouting()
-        
-        if arguments.count == 1 { // e.g. "bundle"
+    func route() -> RouterResult {
+        if self.arguments.count == 1 { // e.g. "bundle"
             return .Success(self.defaultCommand, [], Options(args: []), "")
         }
         
-        let commandString = arguments[1]
+        let commandString = self.arguments[1]
 
+        let (command, commandName, remainingArgumentsIndex) = self.findCommand(commandString)
+        
+        if !command {
+            return .Failure
+        }
+        
+        let segmentedArguments = self.segmentArgumentsWithStartingIndex(remainingArgumentsIndex)
+        
+        return .Success(command!, segmentedArguments.commandArguments, Options(args: segmentedArguments.optionArguments), commandName)
+    }
+    
+    // MARK: - Privates
+    
+    private func findCommand(commandString: String) -> (command: Command?, commandName: String, remainingArgumentsIndex: Int) {
         var command: Command?
         var cmdName: String = commandString
         var argumentsStartingIndex = 2
@@ -56,34 +63,11 @@ class Router {
             command = self.findCommandWithName(commandString)
         }
         
-        if !command {
-            return .Failure
-        }
-        
-        var commandParameters = [String]()
-        var commandOptions = [String]()
-        
-        if arguments.count > argumentsStartingIndex {
-            let commandArguments = arguments[argumentsStartingIndex..<arguments.count]
-            
-            var splitIndex: Int = commandArguments.count
-            for index in 0..<commandArguments.count {
-                let arg = commandArguments[index] as String
-                if arg.hasPrefix("-") {
-                    splitIndex = index
-                    break
-                }
-            }
-            
-            commandParameters = Array(commandArguments[0..<splitIndex])
-            commandOptions = Array(commandArguments[splitIndex..<commandArguments.count])
-        }
-        
-        return .Success(command!, commandParameters, Options(args: commandOptions), cmdName)
+        return (command, cmdName, argumentsStartingIndex)
     }
     
     private func findCommandWithShortcut(commandShortcut: String) -> Command? {
-        for command in self.allAvailableCommands() {
+        for command in self.commands {
             if commandShortcut == command.commandShortcut() {
                 return command
             }
@@ -93,7 +77,7 @@ class Router {
     }
     
     private func findCommandWithName(commandName: String) -> Command? {
-        for command in self.allAvailableCommands() {
+        for command in self.commands {
             if commandName == command.commandName() {
                 return command
             }
@@ -102,24 +86,26 @@ class Router {
         return nil
     }
     
-    private func allAvailableCommands() -> [Command] {
-        var availableCommands = self.commands
-        
-        if self.helpCommand {
-            availableCommands += self.helpCommand!
-        }
-        if self.versionComand {
-            availableCommands += self.versionComand!
+    private func segmentArgumentsWithStartingIndex(argumentsStartingIndex: Int) -> (commandArguments: [String], optionArguments: [String]){
+        if self.arguments.count <= argumentsStartingIndex {
+            return ([], [])
         }
         
-        return availableCommands;
-    }
-    
-    private func prepForRouting() {
-        if self.helpCommand {
-            self.helpCommand!.allCommands = self.commands;
+        let remainingArguments = self.arguments[argumentsStartingIndex..<self.arguments.count]
+        
+        var splitIndex: Int = remainingArguments.count
+        for index in 0..<remainingArguments.count {
+            let arg = remainingArguments[index] as String
+            if arg.hasPrefix("-") {
+                splitIndex = index
+                break
+            }
         }
+        
+        let commandArguments = Array(remainingArguments[0..<splitIndex])
+        let optionArguments = Array(remainingArguments[splitIndex..<remainingArguments.count])
+        
+        return (commandArguments, optionArguments)
     }
-    
     
 }
