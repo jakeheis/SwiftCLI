@@ -57,7 +57,7 @@ class CLI: NSObject {
     class func go() -> Bool {
         var args = NSProcessInfo.processInfo().arguments as [String]
         
-        let (commandTry, arguments, options) = router.route(arguments: args)
+        let (commandTry, arguments, options, routedName) = router.route(arguments: args)
         
         if let command = commandTry {
             
@@ -72,8 +72,9 @@ class CLI: NSObject {
             command.prepForExecution(namedArguments!, options: options)
            
             if !command.optionsAccountedFor() {
-                let message = command.options.unaccountedForMessage(command: command)
-                println(message)
+                if let message = command.options.unaccountedForMessage(command: command, routedName: routedName) {
+                    println(message)
+                }
                 if (command.failOnUnhandledOptions()) {
                     return false
                 }

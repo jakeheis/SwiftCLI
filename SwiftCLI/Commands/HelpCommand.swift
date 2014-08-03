@@ -28,6 +28,14 @@ class HelpCommand: Command {
         return "-h"
     }
     
+//    override func unhandledOptionsPrintingBehavior() -> UnhandledOptionsPrintingBehavior  {
+//        return .PrintOnlyUnrecognizedOptions
+//    }
+    
+    override func failOnUnhandledOptions() -> Bool  {
+        return false
+    }
+    
     override func execute() -> (Bool, String?)  {
         println("\(CLIDescription)\n")
         println("Available commands: ")

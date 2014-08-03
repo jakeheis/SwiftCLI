@@ -8,6 +8,13 @@
 
 import Foundation
 
+enum UnhandledOptionsPrintingBehavior {
+    case PrintNone
+    case PrintOnlyUnrecognizedOptions
+    case PrintOnlyUsage
+    case PrintAll
+}
+
 class Command: NSObject {
     
     var arguments: NSDictionary
@@ -44,8 +51,13 @@ class Command: NSObject {
         return nil
     }
     
-    func commandUsageStatement() -> String {
-        var message = "Usage: \(CLIName) \(self.commandName())"
+    func commandUsageStatement(commandName: String? = nil) -> String {
+        var message = "Usage: \(CLIName)"
+        
+        let name = commandName ? commandName! : self.commandName()
+        if name.utf16Count > 0 {
+            message += " \(name)"
+        }
 
         if self.commandSignature().utf16Count > 0 {
             message += " \(self.commandSignature())"
@@ -59,6 +71,8 @@ class Command: NSObject {
             }
             
             message += "\n"
+        } else {
+            message += "     (no options)\n"
         }
         
         return message
@@ -107,6 +121,10 @@ class Command: NSObject {
         })
     }
 
+    func unhandledOptionsPrintingBehavior() -> UnhandledOptionsPrintingBehavior {
+        return .PrintAll
+    }
+    
     func failOnUnhandledOptions() -> Bool {
         return true
     }

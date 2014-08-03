@@ -25,16 +25,17 @@ class Router {
         self.defaultCommand = self.helpCommand!
     }
     
-    func route(#arguments: [String]) -> (command: Command?, parameters: [String], options: Options) {
+    func route(#arguments: [String]) -> (command: Command?, parameters: [String], options: Options, routedName: String) {
         self.prepForRouting()
         
         if arguments.count == 1 { // e.g. "bundle"
-            return (self.defaultCommand, [], Options(args: []))
+            return (self.defaultCommand, [], Options(args: []), "")
         }
         
         let commandString = arguments[1]
 
         var command: Command?
+        var cmdName: String = commandString
         var argumentsStartingIndex = 2
         
         if commandString.hasPrefix("-") {
@@ -44,13 +45,14 @@ class Router {
             if !command {
                 command = self.defaultCommand
                 argumentsStartingIndex = 1
+                cmdName = ""
             }
         } else {
             command = self.findCommandWithName(commandString)
         }
         
         if !command {
-            return (nil, [], Options(args: []))
+            return (nil, [], Options(args: []), "")
         }
         
         var commandParameters = [String]()
@@ -72,7 +74,7 @@ class Router {
             commandOptions = Array(commandArguments[splitIndex..<commandArguments.count])
         }
         
-        return (command: command, parameters: commandParameters, options: Options(args: commandOptions))
+        return (command: command, parameters: commandParameters, options: Options(args: commandOptions), routedName: cmdName)
     }
     
     private func findCommandWithShortcut(commandShortcut: String) -> Command? {
