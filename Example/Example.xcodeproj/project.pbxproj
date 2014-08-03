@@ -19,7 +19,41 @@
 		EFEB0B55198C4D200040AFF0 /* BakeCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFEB0B54198C4D200040AFF0 /* BakeCommand.swift */; };
 		EFEB0B57198D17EB0040AFF0 /* VersionCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFEB0B56198D17EB0040AFF0 /* VersionCommand.swift */; };
 		EFEB0BCA198DCEDA0040AFF0 /* SwiftCLITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFEB0BC9198DCEDA0040AFF0 /* SwiftCLITests.swift */; };
+		EFEB0BD2198DD0E90040AFF0 /* SignatureParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFEB0BD1198DD0E90040AFF0 /* SignatureParserTests.swift */; };
+		EFEB0C08198DD2570040AFF0 /* CLI.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF92BF78198AF19B00BAA12B /* CLI.swift */; };
+		EFEB0C09198DD2570040AFF0 /* ChainableCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF92BF7A198AF19B00BAA12B /* ChainableCommand.swift */; };
+		EFEB0C0A198DD2570040AFF0 /* Command.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF92BF7B198AF19B00BAA12B /* Command.swift */; };
+		EFEB0C0B198DD2570040AFF0 /* HelpCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF92BF7C198AF19B00BAA12B /* HelpCommand.swift */; };
+		EFEB0C0C198DD2570040AFF0 /* VersionCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFEB0B56198D17EB0040AFF0 /* VersionCommand.swift */; };
+		EFEB0C0D198DD2570040AFF0 /* LightweightCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF92BF7D198AF19B00BAA12B /* LightweightCommand.swift */; };
+		EFEB0C0E198DD2570040AFF0 /* Options.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF92BF7E198AF19B00BAA12B /* Options.swift */; };
+		EFEB0C0F198DD2570040AFF0 /* Router.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF92BF7F198AF19B00BAA12B /* Router.swift */; };
+		EFEB0C10198DD2570040AFF0 /* SignatureParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF92BF80198AF19B00BAA12B /* SignatureParser.swift */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		EFEB0BD3198DD1790040AFF0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = EF92BF65198AEF7900BAA12B /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = EF92BF6C198AEF7900BAA12B;
+			remoteInfo = Example;
+		};
+		EFEB0BD5198DD1850040AFF0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = EF92BF65198AEF7900BAA12B /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = EF92BF6C198AEF7900BAA12B;
+			remoteInfo = Example;
+		};
+		EFEB0C06198DD1B40040AFF0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = EF92BF65198AEF7900BAA12B /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = EF92BF6C198AEF7900BAA12B;
+			remoteInfo = Example;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
 		EF92BF6B198AEF7900BAA12B /* CopyFiles */ = {
@@ -49,6 +83,7 @@
 		EFEB0BC5198DCEDA0040AFF0 /* SwiftCLITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SwiftCLITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		EFEB0BC8198DCEDA0040AFF0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		EFEB0BC9198DCEDA0040AFF0 /* SwiftCLITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftCLITests.swift; sourceTree = "<group>"; };
+		EFEB0BD1198DD0E90040AFF0 /* SignatureParserTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignatureParserTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -126,6 +161,7 @@
 			isa = PBXGroup;
 			children = (
 				EFEB0BC9198DCEDA0040AFF0 /* SwiftCLITests.swift */,
+				EFEB0BD1198DD0E90040AFF0 /* SignatureParserTests.swift */,
 				EFEB0BC7198DCEDA0040AFF0 /* Supporting Files */,
 			);
 			name = SwiftCLITests;
@@ -171,6 +207,9 @@
 			buildRules = (
 			);
 			dependencies = (
+				EFEB0BD4198DD1790040AFF0 /* PBXTargetDependency */,
+				EFEB0BD6198DD1850040AFF0 /* PBXTargetDependency */,
+				EFEB0C07198DD1B40040AFF0 /* PBXTargetDependency */,
 			);
 			name = SwiftCLITests;
 			productName = SwiftCLITests;
@@ -191,6 +230,7 @@
 					};
 					EFEB0BC4198DCEDA0040AFF0 = {
 						CreatedOnToolsVersion = 6.0;
+						TestTargetID = EF92BF6C198AEF7900BAA12B;
 					};
 				};
 			};
@@ -245,11 +285,39 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EFEB0C08198DD2570040AFF0 /* CLI.swift in Sources */,
+				EFEB0C09198DD2570040AFF0 /* ChainableCommand.swift in Sources */,
+				EFEB0C0A198DD2570040AFF0 /* Command.swift in Sources */,
+				EFEB0C0B198DD2570040AFF0 /* HelpCommand.swift in Sources */,
+				EFEB0C0C198DD2570040AFF0 /* VersionCommand.swift in Sources */,
+				EFEB0C0D198DD2570040AFF0 /* LightweightCommand.swift in Sources */,
+				EFEB0C0E198DD2570040AFF0 /* Options.swift in Sources */,
+				EFEB0C0F198DD2570040AFF0 /* Router.swift in Sources */,
+				EFEB0C10198DD2570040AFF0 /* SignatureParser.swift in Sources */,
 				EFEB0BCA198DCEDA0040AFF0 /* SwiftCLITests.swift in Sources */,
+				EFEB0BD2198DD0E90040AFF0 /* SignatureParserTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		EFEB0BD4198DD1790040AFF0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = EF92BF6C198AEF7900BAA12B /* Example */;
+			targetProxy = EFEB0BD3198DD1790040AFF0 /* PBXContainerItemProxy */;
+		};
+		EFEB0BD6198DD1850040AFF0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = EF92BF6C198AEF7900BAA12B /* Example */;
+			targetProxy = EFEB0BD5198DD1850040AFF0 /* PBXContainerItemProxy */;
+		};
+		EFEB0C07198DD1B40040AFF0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = EF92BF6C198AEF7900BAA12B /* Example */;
+			targetProxy = EFEB0C06198DD1B40040AFF0 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		EF92BF72198AEF7900BAA12B /* Debug */ = {
@@ -353,7 +421,7 @@
 					"DEBUG=1",
 					"$(inherited)",
 				);
-				INFOPLIST_FILE = SwiftCLITests/Info.plist;
+				INFOPLIST_FILE = ../SwiftCLITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -367,7 +435,7 @@
 					"$(DEVELOPER_FRAMEWORKS_DIR)",
 					"$(inherited)",
 				);
-				INFOPLIST_FILE = SwiftCLITests/Info.plist;
+				INFOPLIST_FILE = ../SwiftCLITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
