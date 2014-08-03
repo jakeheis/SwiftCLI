@@ -8,7 +8,7 @@
 
 import Foundation
 
-CLI.setup(name: "baker")
+CLI.setup(name: "baker", description: "Baker, your own personal cook, here to bake you whatever you desire.")
 
 CLI.registerChainableCommand(commandName: "init")
     .withShortDescription("Creates a Bakefile in the current or given directory")
