@@ -34,12 +34,12 @@ class ChainableCommand: LightweightCommand {
     }
     
     func allowFlags(flags: [String]) -> ChainableCommand {
-        self.lightweightAcceptableFlags = flags
+//        self.lightweightAcceptableFlags = flags
         return self
     }
     
     func allowOptions(options: [String]) -> ChainableCommand {
-        self.lightweightAcceptableOptions = options
+//        self.lightweightAcceptableOptions = options
         return self
     }
     

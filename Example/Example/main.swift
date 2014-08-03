@@ -25,15 +25,19 @@ CLI.registerChainableCommand(commandName: "init")
     })
 
 
-let exoticFlags = ["-e", "--exotics-included"]
 let listCommand = LightweightCommand(commandName: "list")
 listCommand.lightweightCommandShortDescription = "Lists the possible things baker can bake for you."
-listCommand.lightweightAcceptableFlags = exoticFlags
+
+var showExoticFoods = false
+listCommand.handleFlags(["-e", "--exotics-included"], block: {flag in
+    showExoticFoods = true
+}, usage: "Include exotic foods in the list of items baker can bake you")
+
 listCommand.lightweightExecutionBlock = {arguments, options in
     var foods = ["bread", "cookies", "cake"]
-    options.onFlags(exoticFlags, block: {flag in
+    if showExoticFoods {
         foods += ["exotic baker item 1", "exotic baker item 2"]
-    })
+    }
     println("Items that baker can bake for you:")
     for i in 0..<foods.count {
         println("\(i+1). \(foods[i])")
