@@ -19,9 +19,7 @@ class Options {
     
     var accountedForFlags: [String] = []
     var accountedForKeys: [String] = []
-    
-    var usageStatements: [String] = []
-    
+        
     init(args: [String]) {
         self.combinedFlagsAndKeys = args
         
@@ -62,74 +60,30 @@ class Options {
     // Flags
 
     func onFlag(flag: String, block: OptionsFlagBlock?) {
-        self.onFlag(flag, block: block, usage: "")
-    }
-    
-    func onFlag(flag: String, block: OptionsFlagBlock?, usage: String?) {
         if contains(self.flagOptions, flag) {
             self.accountedForFlags += flag
             block?(flag: flag)
         }
-        
-        if usage {
-            self.usageStatements += "\(flag)\t\t\(usage!)"
-        }
     }
 
     func onFlags(flags: [String], block: OptionsFlagBlock?) {
-        return self.onFlags(flags, block: block, usage: "")
-    }
-    
-    func onFlags(flags: [String], block: OptionsFlagBlock?, usage: String?) {
         for flag in flags {
-            self.onFlag(flag, block: block, usage: nil)
-        }
-        
-        if usage {
-            let nsFlags = flags as NSArray
-            let comps = nsFlags.componentsJoinedByString(", ")
-            self.usageStatements += "\(comps)\t\t\(usage!)"
+            self.onFlag(flag, block: block)
         }
     }
     
     // Keys
 
     func onKey(key: String, block: OptionsKeyBlock?) {
-        self.onKey(key, block: block, usage: "")
-    }
-
-    func onKey(key: String, block: OptionsKeyBlock?, usage: String?) {
-        self.onKey(key, block: block, usage: usage, valueSignature: "value")
-    }
-    
-    func onKey(key: String, block: OptionsKeyBlock?, usage: String?, valueSignature: String?) {
         if contains(Array(self.keyedOptions.keys), key) {
             self.accountedForKeys += key
             block?(key: key, value: self.keyedOptions[key]!)
         }
-        
-        if usage {
-            self.usageStatements += "\(key) <\(valueSignature!)>\t\t\(usage!)"
-        }
     }
     
     func onKeys(keys: [String], block: OptionsKeyBlock?) {
-        self.onKeys(keys, block: block, usage: "")
-    }
-    
-    func onKeys(keys: [String], block: OptionsKeyBlock?, usage: String?) {
-        self.onKeys(keys, block: block, usage: usage, valueSignature: "value")
-    }
-    
-    func onKeys(keys: [String], block: OptionsKeyBlock?, usage: String?, valueSignature: String?) {
         for key in keys {
-            self.onKey(key, block: block, usage: nil, valueSignature: nil)
-        }
-        
-        if usage {
-            let nsFlags = keys as NSArray
-            let comps = nsFlags.componentsJoinedByString(", ")
-            self.usageStatements += "\(comps) <\(valueSignature!)>\t\t\(usage!)"
+            self.onKey(key, block: block)
         }
     }
     
@@ -148,21 +102,9 @@ class Options {
             message += "\n\t\(option) \(self.keyedOptions[option]!)"
         }
         
-        message += "\nUsage: \(CLIName) \(command.commandName())"
-
-        if command.commandSignature().utf16Count > 0 {
-            message += " \(command.commandSignature())"
-        }
+        message += "\n"
         
-        if self.usageStatements.count > 0 {
-            message += " [options]\n"
-            
-            for usage in self.usageStatements {
-                message += "\n\t\(usage)"
-            }
-            
-            message += "\n"
-        }
+        message += command.commandUsageStatement()
         
         return message
     }

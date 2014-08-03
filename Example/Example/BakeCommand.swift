@@ -31,15 +31,15 @@ class BakeCommand: Command {
     }
     
     override func handleOptions()  {
-        self.options.onFlags(["-q", "--quickly"], block: {flag in
+        self.onFlags(["-q", "--quickly"], block: {flag in
             self.quickly = true
         }, usage: "Bake more quickly")
         
-        self.options.onFlag("-s", block: {flag in
+        self.onFlag("-s", block: {flag in
             self.silently = true
         }, usage: "Bake silently")
         
-        self.options.onKeys(["-t", "--with-topping"], block: {key, value in
+        self.onKeys(["-t", "--with-topping"], block: {key, value in
             self.topping = value
         }, usage: "Adds a topping to the baked good", valueSignature: "topping")
     }
