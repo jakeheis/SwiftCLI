@@ -12,6 +12,7 @@ class Router {
     
     var commands: [Command]
     
+    // TODO: move these to CLI once class variables are supported
     // Special built-in commands
     var helpCommand: HelpCommand?
     var versionComand: VersionCommand?

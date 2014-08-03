@@ -10,7 +10,7 @@ import Foundation
 
 let router = Router()
 
-var CLIName = "" // Transition to class variable once available
+var CLIName = "" // TODO: Transition to class variable once available
 
 class CLI: NSObject {
 
