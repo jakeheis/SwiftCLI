@@ -80,6 +80,10 @@ class CLI: NSObject {
                 }
             }
             
+            if command.showingHelp {
+                return true
+            }
+            
             let (success, error) = command.execute()
 
             if !success {

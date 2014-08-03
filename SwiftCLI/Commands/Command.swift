@@ -14,6 +14,7 @@ class Command: NSObject {
     var options: Options
     
     var usageStatements: [String] = []
+    var showingHelp = false
     
     class func command() -> Self {
         return self()
@@ -99,7 +100,11 @@ class Command: NSObject {
     }
     
     func handleOptions() {
-        
+        self.options.onFlags(["-h", "--help"], block: {flag in
+            self.showingHelp = true
+            
+            println(self.commandUsageStatement())
+        })
     }
 
     func failOnUnhandledOptions() -> Bool {

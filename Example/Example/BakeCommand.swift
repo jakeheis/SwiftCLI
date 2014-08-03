@@ -42,6 +42,8 @@ class BakeCommand: Command {
         self.onKeys(["-t", "--with-topping"], block: {key, value in
             self.topping = value
         }, usage: "Adds a topping to the baked good", valueSignature: "topping")
+        
+        super.handleOptions()
     }
     
     override func execute() -> (success: Bool, error: String?)  {
