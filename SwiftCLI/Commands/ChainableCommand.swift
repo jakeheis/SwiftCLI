@@ -33,22 +33,22 @@ class ChainableCommand: LightweightCommand {
         return self
     }
     
-    func allowFlags(flags: [String]) -> ChainableCommand {
-//        self.lightweightAcceptableFlags = flags
+    func withFlagsHandled(flags: [String], block: OptionsFlagBlock?, usage: String) -> ChainableCommand {
+        self.handleFlags(flags, block: block, usage: usage)
         return self
     }
     
-    func allowOptions(options: [String]) -> ChainableCommand {
-//        self.lightweightAcceptableOptions = options
+    func withKeysHandled(keys: [String], block: OptionsKeyBlock?, usage: String = "", valueSignature: String = "value") -> ChainableCommand {
+        self.handleKeys(keys, block: block, usage: usage, valueSignature: valueSignature)
         return self
     }
     
-    func allowAllFlagsAndOptions() -> ChainableCommand {
+    func withAllFlagsAndOptionsAllowed() -> ChainableCommand {
         self.strictOnOptions = false
         return self
     }
     
-    func onExecution(execution: CommandExecutionBlock) -> ChainableCommand {
+    func withExecutionBlock(execution: CommandExecutionBlock) -> ChainableCommand {
         self.lightweightExecutionBlock = execution
         return self
     }

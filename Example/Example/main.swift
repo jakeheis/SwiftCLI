@@ -13,7 +13,7 @@ CLI.setup(name: "baker", description: "Baker, your own personal cook, here to ba
 CLI.registerChainableCommand(commandName: "init")
     .withShortDescription("Creates a Bakefile in the current or given directory")
     .withSignature("[<directory>]")
-    .onExecution({arguments, options in
+    .withExecutionBlock({arguments, options in
         let givenDirectory = arguments["directory"] as String?
         
         let fileName = givenDirectory ? givenDirectory!.stringByAppendingPathComponent("Bakefile") : "./Bakefile"
