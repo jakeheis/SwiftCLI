@@ -57,10 +57,10 @@ class CLI: NSObject {
     class func go() -> Bool {
         var args = NSProcessInfo.processInfo().arguments as [String]
         
-        let (commandTry, arguments, options, routedName) = router.route(arguments: args)
+        let result = router.route(arguments: args)
         
-        if let command = commandTry {
-            
+        switch result {
+        case let .Success(command, arguments, options, routedName):
             let parser = SignatureParser(signature: command.commandSignature(), arguments: arguments)
             let (namedArguments, errorString) = parser.parse()
             
@@ -70,7 +70,7 @@ class CLI: NSObject {
             }
             
             command.prepForExecution(namedArguments!, options: options)
-           
+            
             if !command.optionsAccountedFor() {
                 if let message = command.options.unaccountedForMessage(command: command, routedName: routedName) {
                     println(message)
@@ -85,14 +85,14 @@ class CLI: NSObject {
             }
             
             let (success, error) = command.execute()
-
+            
             if !success {
                 println(error!)
                 return false
             }
             
             return true
-        } else {
+        case .Failure:
             println("Command not found")
             return false
         }

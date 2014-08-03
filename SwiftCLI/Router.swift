@@ -8,6 +8,11 @@
 
 import Foundation
 
+enum RouterResult {
+    case Success(Command, [String], Options, String)
+    case Failure
+}
+
 class Router {
     
     var commands: [Command]
@@ -25,11 +30,11 @@ class Router {
         self.defaultCommand = self.helpCommand!
     }
     
-    func route(#arguments: [String]) -> (command: Command?, parameters: [String], options: Options, routedName: String) {
+    func route(#arguments: [String]) -> RouterResult {
         self.prepForRouting()
         
         if arguments.count == 1 { // e.g. "bundle"
-            return (self.defaultCommand, [], Options(args: []), "")
+            return .Success(self.defaultCommand, [], Options(args: []), "")
         }
         
         let commandString = arguments[1]
@@ -52,7 +57,7 @@ class Router {
         }
         
         if !command {
-            return (nil, [], Options(args: []), "")
+            return .Failure
         }
         
         var commandParameters = [String]()
@@ -74,7 +79,7 @@ class Router {
             commandOptions = Array(commandArguments[splitIndex..<commandArguments.count])
         }
         
-        return (command: command, parameters: commandParameters, options: Options(args: commandOptions), routedName: cmdName)
+        return .Success(command!, commandParameters, Options(args: commandOptions), cmdName)
     }
     
     private func findCommandWithShortcut(commandShortcut: String) -> Command? {
