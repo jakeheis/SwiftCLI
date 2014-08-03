@@ -67,7 +67,7 @@ class Command: NSObject {
             message += " [options]\n"
             
             for usage in self.usageStatements {
-                message += "\n\t\(usage)"
+                message += "\n\(usage)"
             }
             
             message += "\n"
@@ -86,7 +86,8 @@ class Command: NSObject {
     }
     
     func onFlag(flag: String, block: OptionsFlagBlock?, usage: String = "") { // Add final modifier once possible
-        self.usageStatements += "\(flag)\t\t\(usage)"
+        let padded = self.padUsageForLength(usage, length: flag.utf16Count);
+        self.usageStatements += "\(flag)\(padded)"
 
         self.options.onFlag(flag, block: block)
     }
@@ -94,13 +95,16 @@ class Command: NSObject {
     func onFlags(flags: [String], block: OptionsFlagBlock?, usage: String = "") { // Add final modifier once possible
         let nsFlags = flags as NSArray
         let comps = nsFlags.componentsJoinedByString(", ")
-        self.usageStatements += "\(comps)\t\t\(usage)"
+        let padded = self.padUsageForLength(usage, length: comps.utf16Count);
+        self.usageStatements += "\(comps)\(padded)"
         
         self.options.onFlags(flags, block: block)
     }
     
     func onKey(key: String, block: OptionsKeyBlock?, usage: String = "", valueSignature: String = "value") { // Add final modifier once possible
-        self.usageStatements += "\(key) <\(valueSignature)>\t\t\(usage)"
+        let firstPart = "\(key) <\(valueSignature)>"
+        let padded = self.padUsageForLength(usage, length: firstPart.utf16Count);
+        self.usageStatements += "\(firstPart)\(padded)"
 
         self.options.onKey(key, block: block)
     }
@@ -108,9 +112,20 @@ class Command: NSObject {
     func onKeys(keys: [String], block: OptionsKeyBlock?, usage: String = "", valueSignature: String = "value") { // Add final modifier once possible
         let nsFlags = keys as NSArray
         let comps = nsFlags.componentsJoinedByString(", ")
-        self.usageStatements += "\(comps) <\(valueSignature)>\t\t\(usage)"
+        let firstPart = "\(comps) <\(valueSignature)>"
+        let padded = self.padUsageForLength(usage, length: firstPart.utf16Count);
+        self.usageStatements += "\(firstPart)\(padded)"
         
         self.options.onKeys(keys, block: block)
+    }
+    
+    private func padUsageForLength(usage: String, length: Int) -> String {
+        var spacing = ""
+        for _ in length...40 {
+            spacing += " "
+        }
+        
+        return "\(spacing)\(usage)"
     }
     
     func handleOptions() {
