@@ -86,39 +86,39 @@ class Command: NSObject {
     }
     
     func onFlag(flag: String, block: OptionsFlagBlock?, usage: String = "") { // Add final modifier once possible
-        self.options.onFlag(flag, block: block)
-        
         self.usageStatements += "\(flag)\t\t\(usage)"
+
+        self.options.onFlag(flag, block: block)
     }
     
     func onFlags(flags: [String], block: OptionsFlagBlock?, usage: String = "") { // Add final modifier once possible
-        self.options.onFlags(flags, block: block)
-        
         let nsFlags = flags as NSArray
         let comps = nsFlags.componentsJoinedByString(", ")
         self.usageStatements += "\(comps)\t\t\(usage)"
+        
+        self.options.onFlags(flags, block: block)
     }
     
     func onKey(key: String, block: OptionsKeyBlock?, usage: String = "", valueSignature: String = "value") { // Add final modifier once possible
-        self.options.onKey(key, block: block)
-        
         self.usageStatements += "\(key) <\(valueSignature)>\t\t\(usage)"
+
+        self.options.onKey(key, block: block)
     }
     
     func onKeys(keys: [String], block: OptionsKeyBlock?, usage: String = "", valueSignature: String = "value") { // Add final modifier once possible
-        self.options.onKeys(keys, block: block)
-        
         let nsFlags = keys as NSArray
         let comps = nsFlags.componentsJoinedByString(", ")
         self.usageStatements += "\(comps) <\(valueSignature)>\t\t\(usage)"
+        
+        self.options.onKeys(keys, block: block)
     }
     
     func handleOptions() {
-        self.options.onFlags(["-h", "--help"], block: {flag in
+        self.onFlags(["-h", "--help"], block: {flag in
             self.showingHelp = true
             
             println(self.commandUsageStatement())
-        })
+        }, usage: "Show help information for this command")
     }
 
     func unhandledOptionsPrintingBehavior() -> UnhandledOptionsPrintingBehavior {
