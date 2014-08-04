@@ -298,3 +298,9 @@ Then drag the SwiftCLI/SwiftCLI folder into your Xcode project:
 ![alt tag](https://github.com/jakeheis/SwiftCLI/blob/master/Example/DragScreenshot.png)
 
 ![alt tag](https://github.com/jakeheis/SwiftCLI/blob/master/Example/AddFilesDialog.png)
+
+## Making your CLI executable in terminal
+Open the "Products" group and right click on the exectuable product. Choose "Show in Finder". Then in your terminal, enter in:
+```bash
+ln -s /usr/local/bin/product_name product_location
+```
