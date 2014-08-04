@@ -101,7 +101,12 @@ greetCommand.lightweightExecutionBlock = {arguments, options in
 ## Parameters
 Each command must have a command signature describing its expected/permitted arguments. The command signature is used to map an array of arguments into a keyed dictionary. When a command is being executed, it is passed this dictionary of arguments, with the command signature segments used as keys and the user-passed arguments as values.
 
-A signature of ```<sourceFile> <targetFile>``` and a call of ```cp myfile.file newfile.file``` would result in the arguments dictionary ```["sourceFile": "myfile.file", "targetFile": "newfile.file"]``` being passed to the ```cp``` command.
+A signature of ```<person> <greeting>``` and a call of ```greeter greet Jack Hello``` would result in the arguments dictionary ```["greeting": "Hello", "person": "Jack"]```.
+
+To set a command's signature:
+- **Command subclass**: ```override func commandSignature() -> String  {}```
+- **ChainableCommand**: ```.withSignature("")```
+- **LightweightCommand**: ```cmd.lightweightCommandSignature = ""```
 
 ### Required parameters
 
@@ -226,7 +231,7 @@ Baker, your own personal cook, here to bake you whatever you desire.
 
 Available commands: 
 - init   Creates a Bakefile in the current or given directory
-- list 	 Lists the possible things baker can bake for you.
+- list      Lists the possible things baker can bake for you.
 - bake 	 Bakes the items in the Bakefile
 - help 	 Prints this help information
 ```
