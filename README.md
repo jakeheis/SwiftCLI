@@ -154,8 +154,6 @@ With multiple arguments: ```greeter greet Jack Jill Hill``` -> ```["person": ["J
 ## Options
 Commands have support for two types of options: flag options and keyed options.
 
-All option handling should be done in ```handleOptions()```.
-
 ### Flag options
 Flag options are simple options that act as boolean switches. They turn a part of a Command on or off. Using "git commit" as an example, "-a" would be a flag option - it signifies that the CommitCommand should stage and commit all files.
 
@@ -222,6 +220,12 @@ class GreetCommand: Command {
 }
 ```
 
+### Handling all options
+By default, if a command does not handle all options, the command will fail. This behavior can be changed to allow unhandled options:
+- **Command subclass**: ```override func failOnUnhandledOptions() -> Bool { return false}```
+- **ChainableCommand**: ```.withAllFlagsAndOptionsAllowed()```
+- **LightweightCommand**: ```cmd.strictOnOptions = false```
+
 ### Options' usage
 As seen in the above examples, ```onFlags``` and ```onKeys``` both take a ```usage``` parameter. A useful, concise description of what the option does should be included here. This allows the command's ```usageStatement()``` to be computed.
 
@@ -254,7 +258,7 @@ Available commands:
 - init   Creates a Bakefile in the current or given directory
 - list      Lists the possible things baker can bake for you.
 - bake      Bakes the items in the Bakefile
-- help 	 Prints this help information
+- help      Prints this help information
 ```
 
 A custom HelpCommand can be used by calling ```CLI.registerCustomHelpCommand(customHelp)```.
