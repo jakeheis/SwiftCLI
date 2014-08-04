@@ -52,7 +52,7 @@ class Command: NSObject {
     }
     
     func commandUsageStatement(commandName: String? = nil) -> String {
-        var message = "Usage: \(CLI.CLIStatic.name)"
+        var message = "Usage: \(CLI.appName())"
         
         let name = commandName ? commandName! : self.commandName()
         if name.utf16Count > 0 {

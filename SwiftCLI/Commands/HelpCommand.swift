@@ -37,7 +37,7 @@ class HelpCommand: Command {
     }
     
     override func execute() -> (Bool, String?)  {
-        println("\(CLI.CLIStatic.description)\n")
+        println("\(CLI.appDescription())\n")
         println("Available commands: ")
 
         for command in self.allCommands {

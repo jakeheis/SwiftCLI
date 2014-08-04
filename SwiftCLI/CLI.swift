@@ -12,10 +12,10 @@ class CLI: NSObject {
     
     // MARK: - Information
     
-    struct CLIStatic {
-        static var name = ""
+    private struct CLIStatic {
+        static var appName = ""
         static var appVersion = "1.0"
-        static var description = ""
+        static var appDescription = ""
         
         static var commands: [Command] = []
         static var helpCommand: HelpCommand? = HelpCommand.command()
@@ -24,9 +24,17 @@ class CLI: NSObject {
     }
     
     class func setup(#name: String, version: String = "1.0", description: String = "") {
-        CLIStatic.name = name
+        CLIStatic.appName = name
         CLIStatic.appVersion = version
-        CLIStatic.description = description
+        CLIStatic.appDescription = description
+    }
+    
+    class func appName() -> String {
+        return CLIStatic.appName
+    }
+    
+    class func appDescription() -> String {
+        return CLIStatic.appDescription
     }
     
     // MARK: - Registering commands
@@ -62,43 +70,24 @@ class CLI: NSObject {
     // MARK: - Go
     
     class func go() -> Bool {
-        var args = NSProcessInfo.processInfo().arguments as [String]
+        let routingResult = self.routeCommand()
         
-        self.prepareForRouting();
-        
-        var allCommands = CLIStatic.commands
-        if let hc = CLIStatic.helpCommand {
-            allCommands += hc
-        }
-        if let vc = CLIStatic.versionComand {
-            allCommands += vc
-        }
-        
-        let router = Router(commands: allCommands, arguments: args, defaultCommand: CLIStatic.defaultCommand)
-        let result = router.route()
-        
-        switch result {
+        switch routingResult {
         case let .Success(command, arguments, options, routedName):
-            let parser = SignatureParser(signature: command.commandSignature(), arguments: arguments)
-            let (namedArguments, errorString) = parser.parse()
             
+            let namedArguments = self.parseSignatureAndArguments(command.commandSignature(), arguments: arguments)
             if !namedArguments {
-                println(errorString!)
                 return false
             }
             
             command.prepForExecution(namedArguments!, options: options)
             
-            if !command.optionsAccountedFor() {
-                if let message = command.options.unaccountedForMessage(command: command, routedName: routedName) {
-                    println(message)
-                }
-                if (command.failOnUnhandledOptions()) {
-                    return false
-                }
+            let cmdArgs = self.handleCommandArguments(command, routedName: routedName)
+            if !cmdArgs {
+                return false
             }
             
-            if command.showingHelp {
+            if command.showingHelp { // Don't actually execute command if showing help, e.g. git clone -h
                 return true
             }
             
@@ -114,6 +103,50 @@ class CLI: NSObject {
             println("Command not found")
             return false
         }
+    }
+    
+    // MARK: - Privates
+    
+    class private func routeCommand() -> RouterResult {
+        var args = NSProcessInfo.processInfo().arguments as [String]
+        
+        self.prepareForRouting();
+        
+        var allCommands = CLIStatic.commands
+        if let hc = CLIStatic.helpCommand {
+            allCommands += hc
+        }
+        if let vc = CLIStatic.versionComand {
+            allCommands += vc
+        }
+        
+        let router = Router(commands: allCommands, arguments: args, defaultCommand: CLIStatic.defaultCommand)
+        
+        return router.route()
+    }
+    
+    class private func parseSignatureAndArguments(signature: String, arguments: [String]) -> NSDictionary? {
+        let parser = SignatureParser(signature: signature, arguments: arguments)
+        let (namedArguments, errorString) = parser.parse()
+        
+        if !namedArguments {
+            println(errorString!)
+            return nil
+        }
+        
+        return namedArguments
+    }
+    
+    class private func handleCommandArguments(command: Command, routedName: String) -> Bool {
+        if !command.optionsAccountedFor() {
+            if let message = command.options.unaccountedForMessage(command: command, routedName: routedName) {
+                println(message)
+            }
+            if (command.failOnUnhandledOptions()) {
+                return false
+            }
+        }
+        return true
     }
     
     class private func prepareForRouting() {
