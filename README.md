@@ -28,22 +28,18 @@ Hey there!
 ```
 
 ## Commands
-There are 3 ways to create a command.
+There are 3 ways to create a command. You should decided which way based upon how complex a command is. In order to clearly show how each method compares, the same command "eat" will be implemented each way.
 ### Subclass Command
 You should create a command this way if it does some heavy lifting, i.e. there is a non trivial amount of code involved.
 ```swift
 class EatCommand: Command {
-    
-    override class var command: EatCommand {
-        return EatCommand()
-    }
     
     override var commandName: String  {
         return "eat"
     }
     
     override var commandShortDescription: String {
-        return "Eats all given food"
+        return "Eats the given food"
     }
     
     override func commandSignature() -> String  {
@@ -58,21 +54,8 @@ class EatCommand: Command {
     
 }
 ```
-### Create an instance of LightweightCommand
-This type of command is the middleground between subclassing Command and creating a ChainableCommand - its for if the command involves a decent amount of execution code, but not enough to warrant its own subclass.
-```swift
-let lightweightCommand = LightweightCommand()
-lightweightCommand.lightweightCommandName = "eat"
-lightweightCommand.lightweightCommandShortDescription = "Eats the given food"
-lightweightCommand.lightweightCommandSignature = "<food>"
-lightweightCommand.lightweightExecutionBlock = {parameters, options in
-    let yummyFood = parameters["food"] as String
-    println("Eating \(yummyFood).")
-    return (true, nil)
-}
-```
 ### Create a ChainableCommand
-You should create this kind of command if the command is relatively simple and doesn't involve a lot of execution or option-handling code.
+You should only create this kind of command if the command is very simple and doesn't involve a lot of execution or option-handling code. It has all the same capabilities as a subclass of Command does, but in can quickly become bloated and hard to understand if there is a large amount of code involved. The greet command shown above is a good example of when ChainableCommands are appropriate to use. This is also the best implementation of the "eat" command.
 ```swift
 ChainableCommand(commandName: "eat")
     .withShortDescription("Eats the given food")
@@ -83,6 +66,19 @@ ChainableCommand(commandName: "eat")
         return (true, nil)
     })
 ```
+### Create a LightweightCommand
+This type of command is very similar to ChainableCommand. In fact, all ChainableCommand does is provide an alternative interface to its underlying LightweightCommand. As said above with ChainableCommands, this type of command should only be used when the command is relatively simple.
+```swift
+let lightweightCommand = LightweightCommand("eat")
+lightweightCommand.lightweightCommandShortDescription = "Eats the given food"
+lightweightCommand.lightweightCommandSignature = "<food>"
+lightweightCommand.lightweightExecutionBlock = {parameters, options in
+    let yummyFood = parameters["food"] as String
+    println("Eating \(yummyFood).")
+    return (true, nil)
+}
+```
+
 
 ## Parameters
 Each command has a command signature. A command signature looks like ```<firstParam> <secondParam>```. A command signature is used to map an arguments into a keyed dictionary. When a command is being executed, it is passed an ```NSDictionary``` of arguments, with the command signature segments used as keys, and the user-passed arguments as values.
