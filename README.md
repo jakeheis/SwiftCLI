@@ -18,7 +18,7 @@ CLI.setup(name: "greeter")
 CLI.registerChainableCommand(commandName: "greet")
     .withExecutionBlock({arguments, options in
         println("Hey there!")
-        return (true, nil)
+        return .Success
     })
 CLI.go()
 ```
@@ -63,7 +63,7 @@ class GreetCommand: Command {
     override func execute() -> (success: Bool, error: String?)  {
         let person = self.arguments["person"] as String
         println("Hey there, \(person)!")
-        return (true, nil)
+        return .Success
     }
 }
 ```
@@ -76,7 +76,7 @@ let greetCommand = ChainableCommand(commandName: "greet")
     .withExecutionBlock({arguments, options in
         let person = arguments["person"] as String
         println("Hey there, \(person)!")
-        return (true, nil)
+        return .Success
     })
 ```
 CLI also offers a shortcut method to register a ChainableCommand:
@@ -93,7 +93,7 @@ greetCommand.lightweightCommandSignature = "<person>"
 greetCommand.lightweightExecutionBlock = {arguments, options in
     let person = arguments["person"] as String
     println("Hey there, \(person)!")
-    return (true, nil)
+    return .Success
 }
 ```
 
