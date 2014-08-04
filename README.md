@@ -28,21 +28,21 @@ Hey there!
 ```
 
 ## Creating a CLI
-The first step is to setup the CLI:
+Setup the CLI:
 ```swift 
 CLI.setup(name: "greeter", version: "1.0", description: "Greeter - your own personal greeter") 
 ```
-Then register all commands:
+Register all commands:
 ```swift
 CLI.registerCommand(GreetCommand())
 ```
-Finally, just call go:
+Just call go:
 ```swift
 CLI.go()
 ```
 
 ## Commands
-There are 3 ways to create a command. You should decided which way based upon how complex a command is. In order to clearly show how each method compares, the same command "greet" will be implemented each way.
+There are three ways to create a command. You should decided which way based upon how complex a command is. In order to clearly show how each method compares, the same command "greet" will be implemented each way.
 ### Subclass Command
 You should create a command this way if it does some heavy lifting, i.e. there is a non trivial amount of code involved.
 ```swift
