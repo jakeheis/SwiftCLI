@@ -23,7 +23,7 @@ CLI.registerChainableCommand(commandName: "greet")
 CLI.go()
 ```
 ```bash
-~ > baker greet
+~ > greeter greet
 Hey there!
 ```
 
