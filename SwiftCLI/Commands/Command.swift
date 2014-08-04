@@ -25,23 +25,50 @@ class Command {
     
     // MARK: - Command info
     
+    /**
+    *  The name this command can be invoked with
+    *
+    *  @return the command name
+    */
     func commandName() -> String {
         assert(false, "Subclasses of Command must override this method")
         return ""
     }
     
+    /**
+    *  The signature for this command
+    *
+    *  @return the command signature
+    */
     func commandSignature() -> String {
         return ""
     }
     
+    /**
+    *  A short description for this command printed by the HelpCommand
+    *
+    *  @return the short description
+    */
     func commandShortDescription() -> String {
         return ""
     }
     
+    /**
+    *  A shortcut for this command prefixed with "-"; e.g. "-h" for help, "-v" for version
+    *
+    *  @return the shortcut
+    */
     func commandShortcut() -> String? {
         return nil
     }
     
+    /**
+    *  The usage statement for this command, including the signature and available options
+    *
+    *  @param commandName the name used to invoke this command
+    *
+    *  @return the usage statement
+    */
     func commandUsageStatement(commandName: String? = nil) -> String {
         var message = "Usage: \(CLI.appName())"
         
@@ -114,6 +141,11 @@ class Command {
     
     // MARK: Sublcass option config
     
+    /**
+    *  Describes if this command should print its usage statement when passed the "-h" flag
+    *
+    *  @return if usage statement should be printed
+    */
     func showHelpOnHFlag() -> Bool {
         return true
     }
@@ -122,10 +154,20 @@ class Command {
         
     }
 
+    /**
+    *  The printing behavior of this command when it is passed an unrecognized option
+    *
+    *  @return the printing behavior
+    */
     func unhandledOptionsPrintingBehavior() -> UnhandledOptionsPrintingBehavior {
         return .PrintAll
     }
     
+    /**
+    *  Describes if this command should fail on unrecognized options
+    *
+    *  @return if command should fail on unrecgonized options
+    */
     func failOnUnhandledOptions() -> Bool {
         return true
     }
