@@ -32,7 +32,7 @@ class HelpCommand: Command {
         return false
     }
     
-    override func execute() -> (Bool, String?)  {
+    override func execute() -> CommandResult  {
         println("\(CLI.appDescription())\n")
         println("Available commands: ")
 
@@ -42,7 +42,7 @@ class HelpCommand: Command {
         
         self.printCommand(self)
         
-        return (true, nil)
+        return .Success
     }
     
     func printCommand(command: Command) {

@@ -91,14 +91,15 @@ class CLI: NSObject {
             }
             command.arguments = namedArguments!
             
-            let (success, error) = command.execute()
+            let result = command.execute()
             
-            if !success {
-                println(error!)
+            switch result {
+            case .Success:
+                return true
+            case let .Failure(errorMessage):
+                println(errorMessage)
                 return false
             }
-            
-            return true
         case .Failure:
             println("Command not found")
             return false

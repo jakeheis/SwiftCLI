@@ -8,7 +8,7 @@
 
 import Foundation
 
-typealias CommandExecutionBlock = ((arguments: NSDictionary, options: Options) -> (Bool, String?))
+typealias CommandExecutionBlock = ((arguments: NSDictionary, options: Options) -> CommandResult)
 
 class LightweightCommand: Command {
     
@@ -68,7 +68,7 @@ class LightweightCommand: Command {
         return self.strictOnOptions
     }
 
-    override func execute() -> (Bool, String?) {
+    override func execute() -> CommandResult {
         return self.lightweightExecutionBlock!(arguments: self.arguments, options: self.options)
     }
     

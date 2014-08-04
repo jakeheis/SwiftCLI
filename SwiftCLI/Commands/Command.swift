@@ -15,6 +15,11 @@ enum UnhandledOptionsPrintingBehavior {
     case PrintAll
 }
 
+enum CommandResult {
+    case Success
+    case Failure(String)
+}
+
 class Command {
     
     var arguments: NSDictionary = [:]
@@ -174,8 +179,8 @@ class Command {
     
     // MARK: - Execution
     
-    func execute() -> (success: Bool, error: String?) {
-        return (true, nil)
+    func execute() -> CommandResult {
+        return .Success
     }
     
     // MARK - Helper

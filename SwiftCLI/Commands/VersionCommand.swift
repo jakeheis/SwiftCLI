@@ -24,10 +24,10 @@ class VersionCommand: Command {
         return "-v"
     }
     
-    override func execute() -> (Bool, String?)  {
+    override func execute() -> CommandResult  {
         println("Version: \(self.version)")
         
-        return (true, nil)
+        return .Success
     }
     
 }

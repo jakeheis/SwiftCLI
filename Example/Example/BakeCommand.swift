@@ -42,19 +42,19 @@ class BakeCommand: Command {
         super.handleOptions()
     }
     
-    override func execute() -> (success: Bool, error: String?)  {
+    override func execute() -> CommandResult  {
         let item = self.arguments["item"] as String?
         if item {
             self.bakeItem(item!)
         } else {
             let data = NSData.dataWithContentsOfFile("./Bakefile", options: nil, error: nil)
             if !data {
-                return (false, "No Bakefile could be found in the current directory")
+                return .Failure("No Bakefile could be found in the current directory")
             }
             
             let dict = NSJSONSerialization.JSONObjectWithData(data, options: nil, error: nil) as NSDictionary!
             if !dict {
-                return (false, "The Bakefile could not be parsed")
+                return .Failure("The Bakefile could not be parsed")
             }
             
             let items = dict["items"] as [String]
@@ -63,7 +63,7 @@ class BakeCommand: Command {
             }
         }
         
-        return (true, nil)
+        return .Success
     }
     
     func bakeItem(item: String) {
