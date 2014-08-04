@@ -92,8 +92,7 @@ class Command {
     }
     
     func onFlags(flags: [String], block: OptionsFlagBlock?, usage: String = "") { // TODO: Add final modifier once possible
-        let nsFlags = flags as NSArray
-        let comps = nsFlags.componentsJoinedByString(", ")
+        let comps = ", ".join(flags)
         let padded = self.padUsageForLength(usage, length: comps.utf16Count);
         self.usageStatements += "\(comps)\(padded)"
         
@@ -105,8 +104,7 @@ class Command {
     }
     
     func onKeys(keys: [String], block: OptionsKeyBlock?, usage: String = "", valueSignature: String = "value") { // TODO: Add final modifier once possible
-        let nsFlags = keys as NSArray
-        let comps = nsFlags.componentsJoinedByString(", ")
+        let comps = ", ".join(keys)
         let firstPart = "\(comps) <\(valueSignature)>"
         let padded = self.padUsageForLength(usage, length: firstPart.utf16Count);
         self.usageStatements += "\(firstPart)\(padded)"
