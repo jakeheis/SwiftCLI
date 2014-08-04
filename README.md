@@ -255,8 +255,8 @@ The default HelpCommand. It can be invoked with ```myapp help``` or ```myapp -h`
 Greeter - your own personal greeter
 
 Available commands: 
-- greet 	 Greets the given person
-- help 	 Prints this help information
+- greet                Greets the given person
+- help                 Prints this help information
 ```
 
 A custom HelpCommand can be used by calling ```CLI.registerCustomHelpCommand(customHelp)```.
@@ -278,8 +278,8 @@ The default command is the command that is invoked if no command is specified. B
 Greeter - your own personal greeter
 
 Available commands: 
-- greet 	 Greets the given person
-- help 	 Prints this help information
+- greet                Greets the given person
+- help                 Prints this help information
 ```
 
 A custom default command can be specified by calling ```CLI.registerDefaultCommand(customDefault)```. Examples of when a custom default command would be used include ```cp```, ```bundle```, and many others.
