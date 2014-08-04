@@ -283,3 +283,18 @@ Available commands:
 ```
 
 A custom default command can be specified by calling ```CLI.registerDefaultCommand(customDefault)```. Examples of when a custom default command would be used include ```cp```, ```bundle```, and many others.
+
+## Installation
+
+Pending Swift file support in Cocoapods (https://github.com/CocoaPods/CocoaPods/pull/2222), the best way to install SwiftCLI is by cloning the repository and adding the SwiftCLI files to your project.
+
+### Clone
+First clone the project:
+```bash
+git clone https://github.com/jakeheis/SwiftCLI.git
+```
+Then drag the SwiftCLI/SwiftCLI folder into your Xcode project:
+
+![alt tag](https://github.com/jakeheis/SwiftCLI/blob/master/Example/DragScreenshot.png)
+
+![alt tag](https://github.com/jakeheis/SwiftCLI/blob/master/Example/AddFilesDialog.png)
