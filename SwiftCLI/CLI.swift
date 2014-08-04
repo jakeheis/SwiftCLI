@@ -75,14 +75,8 @@ class CLI: NSObject {
         switch routingResult {
         case let .Success(command, arguments, options, routedName):
             
-            let namedArguments = self.parseSignatureAndArguments(command.commandSignature(), arguments: arguments)
-            if !namedArguments {
-                return false
-            }
-            
-            command.prepForExecution(namedArguments!, options: options)
-            
-            let cmdArgs = self.handleCommandArguments(command, routedName: routedName)
+            command.options = options;
+            let cmdArgs = self.handleCommandOptions(command, routedName: routedName)
             if !cmdArgs {
                 return false
             }
@@ -90,6 +84,12 @@ class CLI: NSObject {
             if command.showingHelp { // Don't actually execute command if showing help, e.g. git clone -h
                 return true
             }
+            
+            let namedArguments = self.parseSignatureAndArguments(command.commandSignature(), arguments: arguments)
+            if !namedArguments {
+                return false
+            }
+            command.arguments = namedArguments!
             
             let (success, error) = command.execute()
             
@@ -137,7 +137,7 @@ class CLI: NSObject {
         return namedArguments
     }
     
-    class private func handleCommandArguments(command: Command, routedName: String) -> Bool {
+    class private func handleCommandOptions(command: Command, routedName: String) -> Bool {
         if !command.optionsAccountedFor() {
             if let message = command.options.unaccountedForMessage(command: command, routedName: routedName) {
                 println(message)

@@ -143,11 +143,6 @@ class Command {
     
     // MARK: - Execution
     
-    func prepForExecution(arguments: NSDictionary, options: Options) { // TODO: Add final modifier once possible
-        self.arguments = arguments
-        self.options = options
-    }
-    
     func execute() -> (success: Bool, error: String?) {
         return (true, nil)
     }
