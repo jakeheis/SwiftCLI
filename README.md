@@ -29,60 +29,70 @@ Hey there!
 
 ## Creating a CLI
 The first step is to setup the CLI:
-```CLI.setup(name: "greeter", version: "1.0", description: "Eater - your own personal greeter") // Version and description are optional, defaulting to "1.0" and an empty string, respectively ```
-All commands must then be registered:
-```CLI.registerCommand(MyCommand())```.
+```swift 
+CLI.setup(name: "greeter", version: "1.0", description: "Greeter - your own personal greeter") 
+```
+Then register all commands:
+```swift
+CLI.registerCommand(GreetCommand())
+```
 Finally, just call go:
-```CLI.go()```
+```swift
+CLI.go()
+```
 
 ## Commands
-There are 3 ways to create a command. You should decided which way based upon how complex a command is. In order to clearly show how each method compares, the same command "eat" will be implemented each way.
+There are 3 ways to create a command. You should decided which way based upon how complex a command is. In order to clearly show how each method compares, the same command "greet" will be implemented each way.
 ### Subclass Command
 You should create a command this way if it does some heavy lifting, i.e. there is a non trivial amount of code involved.
 ```swift
-class EatCommand: Command {
+class GreetCommand: Command {
     
-    override var commandName: String  {
-        return "eat"
+    override func commandName() -> String  {
+        return "greet"
     }
     
-    override var commandShortDescription: String {
-        return "Eats the given food"
+    override func commandShortcut() -> String?  {
+        return "Greets the given person"
     }
     
     override func commandSignature() -> String  {
-        return "<food>"
+        return "<person>"
     }
     
-    override func execute() -> (success: Bool, error: NSError?)  {
-        let yummyFood = self.parameters["food"] as String
-        println("Eating \(yummyFood).")
+    override func execute() -> (success: Bool, error: String?)  {
+        let person = self.arguments["person"] as String
+        println("Hey there, \(person)!")
         return (true, nil)
     }
-    
 }
 ```
 ### Create a ChainableCommand
 You should only create this kind of command if the command is very simple and doesn't involve a lot of execution or option-handling code. It has all the same capabilities as a subclass of Command does, but in can quickly become bloated and hard to understand if there is a large amount of code involved. The greet command shown above is a good example of when ChainableCommands are appropriate to use. This is also the best implementation of the "eat" command.
 ```swift
-ChainableCommand(commandName: "eat")
-    .withShortDescription("Eats the given food")
-    .withSignature("<food>")
-    .onExecution({parameters, options in
-        let yummyFood = parameters["food"] as String
-        println("Eating \(yummyFood).")
+let greetCommand = ChainableCommand(commandName: "greet")
+    .withShortDescription("Greets the given person")
+    .withSignature("<person>")
+    .withExecutionBlock({arguments, options in
+        let person = arguments["person"] as String
+        println("Hey there, \(person)!")
         return (true, nil)
     })
+```
+CLI also offers a shortcut method to register a ChainableCommand:
+```swift
+CLI.registerChainableCommand(commandName: "greet")
+    .with...
 ```
 ### Create a LightweightCommand
 This type of command is very similar to ChainableCommand. In fact, all ChainableCommand does is provide an alternative interface to its underlying LightweightCommand. As said above with ChainableCommands, this type of command should only be used when the command is relatively simple.
 ```swift
-let lightweightCommand = LightweightCommand("eat")
-lightweightCommand.lightweightCommandShortDescription = "Eats the given food"
-lightweightCommand.lightweightCommandSignature = "<food>"
-lightweightCommand.lightweightExecutionBlock = {parameters, options in
-    let yummyFood = parameters["food"] as String
-    println("Eating \(yummyFood).")
+let greetCommand = LightweightCommand(commandName: "greet")
+greetCommand.lightweightCommandShortDescription = "Greets the given person"
+greetCommand.lightweightCommandSignature = "<person>"
+greetCommand.lightweightExecutionBlock = {arguments, options in
+    let person = arguments["person"] as String
+    println("Hey there, \(person)!")
     return (true, nil)
 }
 ```
@@ -150,7 +160,7 @@ The default HelpCommand. It can be invoked with ```myapp help``` or ```myapp -h`
 Baker, your own personal cook, here to bake you whatever you desire.
 
 Available commands: 
-- init 	 Creates a Bakefile in the current or given directory
+- init      Creates a Bakefile in the current or given directory
 - list 	 Lists the possible things baker can bake for you.
 - bake 	 Bakes the items in the Bakefile
 - help 	 Prints this help information
