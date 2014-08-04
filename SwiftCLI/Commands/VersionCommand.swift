@@ -12,10 +12,6 @@ class VersionCommand: Command {
     
     var version = "1.0"
     
-    init()  {
-        super.init()
-    }
-    
     override func commandName() -> String  {
         return "version"
     }

@@ -12,10 +12,6 @@ class HelpCommand: Command {
     
     var allCommands: [Command] = []
     
-    init()  {
-        super.init()
-    }
-    
     override func commandName() -> String  {
         return "help"
     }
