@@ -19,14 +19,24 @@ class Options {
     
     var accountedForFlags: [String] = []
     var accountedForKeys: [String] = []
-        
-    init(args: [String]) {
-        self.combinedFlagsAndKeys = args
+    
+    convenience init() {
+        self.init(arguments: [])
+    }
+    
+    init(arguments: [String]) {
+        self.combinedFlagsAndKeys = arguments
         
         self.splitArguments()
     }
     
-    func splitArguments() {
+    func description() -> String {
+        return "Flag options: \(self.flagOptions) Keyed options: \(self.keyedOptions)"
+    }
+    
+    // MARK: - Argument splitting
+    
+    private func splitArguments() {
         var skipNext = false
         for index in 0..<self.combinedFlagsAndKeys.count {
             if skipNext {
@@ -51,10 +61,6 @@ class Options {
             }
             
         }
-    }
-    
-    func description() -> String {
-        return "Flag options: \(self.flagOptions) Keyed options: \(self.keyedOptions)"
     }
     
     // MARK: - Flags

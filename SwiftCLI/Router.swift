@@ -27,7 +27,7 @@ class Router {
     
     func route() -> RouterResult {
         if self.arguments.count == 1 { // e.g. "bundle"
-            return .Success(self.defaultCommand, [], Options(args: []), "")
+            return .Success(self.defaultCommand, [], Options(), "")
         }
         
         let commandString = self.arguments[1]
@@ -40,7 +40,7 @@ class Router {
         
         let segmentedArguments = self.segmentArgumentsWithStartingIndex(remainingArgumentsIndex)
         
-        return .Success(command!, segmentedArguments.commandArguments, Options(args: segmentedArguments.optionArguments), commandName)
+        return .Success(command!, segmentedArguments.commandArguments, Options(arguments: segmentedArguments.optionArguments), commandName)
     }
     
     // MARK: - Privates

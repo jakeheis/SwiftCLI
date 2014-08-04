@@ -29,7 +29,7 @@ class Command: NSObject {
     
     required init() {
         self.arguments = [:]
-        self.options = Options(args: []) // placeholder
+        self.options = Options() // placeholder
         super.init()
     }
     
