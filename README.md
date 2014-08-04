@@ -85,10 +85,20 @@ ChainableCommand(commandName: "eat")
 ```
 
 ## Parameters
-Each command has a command signature. A command signature looks like ```<firstParam> <secondParam>```.
+Each command has a command signature. A command signature looks like ```<firstParam> <secondParam>```. A command signature is used to map an arguments into a keyed dictionary. When a command is being executed, it is passed an ```NSDictionary``` of arguments, with the command signature segments used as keys, and the user-passed arguments as values.
+
+A command signature of ```<food>``` and a command invocation of ```baker bake cake``` would result in ```["food": "cake"]``` being passed to the ```bake``` command. Similarly, if you were implementing a copy-file command, the signature might look like "<sourceFile> <targetFile>", the call might look like "cp myfile.file newfile.file", and the resulting arguments dictionary would look like ```["sourceFile": "myfile.file", "targetFile": "newfile.file"]```
+
 ### Required parameters
-Required parameters are surrounded by a less-than and a greater-than sign: ```<requiredParameter>```
+
+Required parameters are surrounded by a less-than and a greater-than sign: ```<requiredParameter>``` If the command is not passed enough arguments to satisfy all required parameters, the command will fail, returning a message with the format "Expected 1 argument, but got 0."
+
 ### Optional parameters
-Optional parameters are surrounded by a less-than and a greater-than sign, and a set of brackets: ```[<optionalParameter>]```
+
+Optional parameters are surrounded by a less-than and a greater-than sign, and a set of brackets: ```[<optionalParameter>]``` Optional parameters must come after all required parameters.
+
 ### Non-terminal parameter
-The non-terminal paremter is an elipses placed at the end of a command signature to signify that the last last parameter can take an indefinite number of arguments. The signature ```<food> ...``` means that at least one food must be passed to the command, but it will also accept any more. ```eater eat cake``` and ```eater eat cake cookie frosting``` are both valid command invocations with this signature. 
+
+The non-terminal paremter is an elipses placed at the end of a command signature to signify that the last last parameter can take an indefinite number of arguments. 
+
+The signature ```<food> ...``` means that at least one food must be passed to the command, but it will also accept any more. ```eater eat cake``` and ```eater eat cake cookie frosting``` are both valid command invocations with this signature. 
