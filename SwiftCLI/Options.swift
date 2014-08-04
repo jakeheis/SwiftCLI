@@ -88,7 +88,7 @@ class Options {
     // MARK: - Other publics
     
     func allAccountedFor() -> Bool {
-        return self.remainingFlags().count == 0 && self.remainingOptions().count == 0
+        return self.remainingFlagOptions().count == 0 && self.remainingKeyedOptions().count == 0
     }
     
     func unaccountedForMessage(#command: Command, routedName: String) -> String? {
@@ -100,10 +100,10 @@ class Options {
         
         if command.unhandledOptionsPrintingBehavior() != .PrintOnlyUsage {
             message += "Unrecognized options:"
-            for flag in self.remainingFlags() {
+            for flag in self.remainingFlagOptions() {
                 message += "\n\t\(flag)"
             }
-            for option in self.remainingOptions() {
+            for option in self.remainingKeyedOptions() {
                 message += "\n\t\(option) \(self.keyedOptions[option]!)"
             }
             
@@ -121,18 +121,14 @@ class Options {
     
     // MARK: - Privates
     
-    private func remainingFlags() -> [String] {
-        let remainingFlags = NSMutableArray(array: self.flagOptions)
-        remainingFlags.removeObjectsInArray(self.accountedForFlags)
-        var stringArray = NSArray(array: remainingFlags) as [String]
-        return stringArray
+    private func remainingFlagOptions() -> [String] {
+        let remainingFlags = self.flagOptions.filter({ !contains(self.accountedForFlags, $0) })
+        return remainingFlags
     }
     
-    private func remainingOptions() -> [String] {
-        let remainingOptions = NSMutableArray(array: Array(self.keyedOptions.keys))
-        remainingOptions.removeObjectsInArray(self.accountedForKeys)
-        var stringArray = NSArray(array: remainingOptions) as [String]
-        return stringArray
+    private func remainingKeyedOptions() -> [String] {
+        let remainingKeys = self.keyedOptions.keys.filter({ !contains(self.accountedForKeys, $0) })
+        return Array(remainingKeys)
     }
     
 }
