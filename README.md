@@ -27,6 +27,14 @@ CLI.go()
 Hey there!
 ```
 
+## Creating a CLI
+The first step is to setup the CLI:
+```CLI.setup(name: "greeter", version: "1.0", description: "Eater - your own personal greeter") // Version and description are optional, defaulting to "1.0" and an empty string, respectively ```
+All commands must then be registered:
+```CLI.registerCommand(MyCommand())```.
+Finally, just call go:
+```CLI.go()```
+
 ## Commands
 There are 3 ways to create a command. You should decided which way based upon how complex a command is. In order to clearly show how each method compares, the same command "eat" will be implemented each way.
 ### Subclass Command
@@ -129,9 +137,11 @@ In the arguments dictionary, the non-terminal parameter results in all the last 
 
 ## Options
 
-## Special commands
 
+
+## Special commands
 ```CLI``` has three special commands: ```helpCommand```, ```versionCommand```, and ```defaultCommand```.
+
 ### Help Command
 The default HelpCommand. It can be invoked with ```myapp help``` or ```myapp -h```. The HelpCommand first prints the app description (if any was given during ```CLI.setup()```). It then iterates through all available commands, printing their name and their short description.
 
