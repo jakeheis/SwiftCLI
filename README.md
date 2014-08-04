@@ -159,6 +159,17 @@ All option handling should be done in ```handleOptions()```.
 ### Flag options
 Flag options are simple options that act as boolean switches. They turn a part of a Command on or off. Using "git commit" as an example, "-a" would be a flag option - it signifies that the CommitCommand should stage and commit all files.
 
+To configure a command for flag options:
+- **Command subclass**: 
+```
+override func handleOptions() -> String  {
+    self.onFlag("", block: {}, usage: "")
+    self.onFlags([], block: {}, usage: "")
+}
+```
+- **ChainableCommand**: ```.withFlagsHandled([], block: {}, usage: "")```
+- **LightweightCommand**: ```cmd.handleFlags([], block: {}, usage: "")```
+
 The ```GreetCommand``` could be modified to take a "loudly" flag:
 ```swift
 class GreetCommand: Command {
@@ -180,6 +191,16 @@ class GreetCommand: Command {
 ### Keyed options
 Keyed options are options that have an associated value. Using "git commit" as an example again, "-m" would be a keyed option - it signifies the commit should have the associated message.
 
+To configure a command for keyed options:
+- **Command subclass**: 
+```
+override func handleOptions() -> String  {
+    self.onKey("", block: {}, usage: "", valueSignature: "")
+    self.onKeys([], block: {}, usage: "", valueSignature: "")
+}
+```
+- **ChainableCommand**: ```.withKeysHandled([], block: {}, usage: "", valueSignature: "")```
+- **LightweightCommand**: ```cmd.handleKeys([], block: {}, usage: "", valueSignature: "")```
 
 The ```GreetCommand``` could be modified to take a "number of times" option:
 ```swift
@@ -201,7 +222,7 @@ class GreetCommand: Command {
 }
 ```
 
-### Options usage
+### Options' usage
 As seen in the above examples, ```onFlags``` and ```onKeys``` both take a ```usage``` parameter. A useful, concise description of what the option does should be included here. This allows the command's ```usageStatement()``` to be computed.
 
 A command's ```usageStatement()``` is shown in two situations: 
@@ -232,7 +253,7 @@ Baker, your own personal cook, here to bake you whatever you desire.
 Available commands: 
 - init   Creates a Bakefile in the current or given directory
 - list      Lists the possible things baker can bake for you.
-- bake 	 Bakes the items in the Bakefile
+- bake      Bakes the items in the Bakefile
 - help 	 Prints this help information
 ```
 
