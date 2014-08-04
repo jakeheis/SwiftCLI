@@ -22,7 +22,10 @@ CLI.registerChainableCommand(commandName: "greet")
     })
 CLI.go()
 ```
-
+```bash
+~ > baker greet
+Hey there!
+```
 
 ## Commands
 There are 3 ways to create a command.
