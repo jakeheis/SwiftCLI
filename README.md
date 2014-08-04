@@ -81,25 +81,49 @@ lightweightCommand.lightweightExecutionBlock = {parameters, options in
 
 
 ## Parameters
-Each command has a command signature. A command signature looks like ```<firstParam> <secondParam>```. A command signature is used to map an arguments into a keyed dictionary. When a command is being executed, it is passed an ```NSDictionary``` of arguments, with the command signature segments used as keys, and the user-passed arguments as values.
+Each command must have a command signature describing its expected/permitted arguments. The command signature is used to map an array of arguments into a keyed dictionary. When a command is being executed, it is passed this dictionary of arguments, with the command signature segments used as keys and the user-passed arguments as values.
 
-A command signature of ```<food>``` and a command invocation of ```baker bake cake``` would result in ```["food": "cake"]``` being passed to the ```bake``` command. Similarly, if you were implementing a copy-file command, the signature might look like "<sourceFile> <targetFile>", the call might look like "cp myfile.file newfile.file", and the resulting arguments dictionary would look like ```["sourceFile": "myfile.file", "targetFile": "newfile.file"]```
+A signature of ```<sourceFile> <targetFile>``` and a call of ```cp myfile.file newfile.file``` would result in the arguments dictionary ```["sourceFile": "myfile.file", "targetFile": "newfile.file"]``` being passed to the ```cp``` command.
 
 ### Required parameters
 
-Required parameters are surrounded by a less-than and a greater-than sign: ```<requiredParameter>``` If the command is not passed enough arguments to satisfy all required parameters, the command will fail, returning a message with the format "Expected 1 argument, but got 0."
+Required parameters are surrounded by a less-than and a greater-than sign: ```<requiredParameter>``` If the command is not passed enough arguments to satisfy all required parameters, it will fail.
+
+```bash
+~ > # Eat command with a signature of "<food> <drink>"
+~ > eater eat donut
+"Expected 2 arguments, but got 1."
+~ > eater eat donut coffee
+"Eating donut and drinking coffee"
+```
 
 ### Optional parameters
 
-Optional parameters are surrounded by a less-than and a greater-than sign, and a set of brackets: ```[<optionalParameter>]``` Optional parameters must come after all required parameters. This ensures that all required parameters are satisifed before optional parameters begin to be satisfied.
+Optional parameters are surrounded by a less-than and a greater-than sign, and a set of brackets: ```[<optionalParameter>]``` Optional parameters must come after all required parameters.
+```bash
+~ > # Eat command with a signature of "<food> [<drink>]"
+~ > eater eat donut
+"Eating donut"
+~ > eater eat donut coffee
+"Eating donut and drinking coffee"
+``` 
 
 ### Non-terminal parameter
 
-The non-terminal paremter is an elipses placed at the end of a command signature to signify that the last last parameter can take an indefinite number of arguments. The non-terminal parameter must appear at the very end of a command signature, after all required parameters and optional parameters. This way, all required parameters and optional parameters are fulfilled before arguments are grouped into an array for the last parameter.
+The non-terminal paremter is an elipses placed at the end of a command signature to signify that the last parameter can take an indefinite number of arguments. It must come at the very end of a command signature, after all required parameters and optional parameters.
 
-The signature ```<food> ...``` means that at least one food must be passed to the command, but it will also accept any more. ```eater eat cake``` and ```eater eat cake cookie frosting``` are both valid command invocations with this signature.
+```bash
+~ > # Eat command with a signature of "<food> ..."
+~ > eater eat donut
+"Eating donut"
+~ > eater eat donut bagel
+"Eating donut, bagel"
+~ > eater eat donut bagel muffin
+"Eating donut, bagel, muffin"
+``` 
 
-In the arguments dictionary, the non-terminal parameter results in all following argumetns to be grouped in an array and passed to the parameter immediately before it (required or optional).
-```eater eat cake``` -> ```["food": ["cake"]]```
-```eater eat cake cookie frosting``` -> ```["food": ["cake", "cookie", "frosting"]]```
+In the arguments dictionary, the non-terminal parameter results in all the last arguments being grouped into an array and passed to the parameter immediately before it (required or optional).
+
+```eater eat donut``` -> ```["food": ["donut"]]```
+```eater eat donut bagel muffin``` -> ```["food": ["donut", "bagel", "muffin"]]```
 
