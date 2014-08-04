@@ -3,6 +3,26 @@ SwiftCLI
 
 A lightweight framework than can be used to develop a CLI in Swift
 
+```swift
+//
+//  main.swift
+//  Example
+//
+//  Created by Jake Heiser on 7/31/14.
+//  Copyright (c) 2014 jakeheis. All rights reserved.
+//
+
+import Foundation
+
+CLI.setup(name: "greeter")
+CLI.registerChainableCommand(commandName: "greet")
+    .withExecutionBlock({arguments, options in
+        println("Hey there!")
+        return (true, nil)
+    })
+CLI.go()
+```
+
 
 ## Commands
 There are 3 ways to create a command.
@@ -62,4 +82,10 @@ ChainableCommand(commandName: "eat")
 ```
 
 ## Parameters
-Each command has a command signature. A command signature looks like "<firstParam> <secondParam>".
+Each command has a command signature. A command signature looks like ```<firstParam> <secondParam>```.
+### Required parameters
+Required parameters are surrounded by a less-than and a greater-than sign: ```<requiredParameter>```
+### Optional parameters
+Optional parameters are surrounded by a less-than and a greater-than sign, and a set of brackets: ```[<optionalParameter>]```
+### Non-terminal parameter
+The non-terminal paremter is an elipses placed at the end of a command signature to signify that the last last parameter can take an indefinite number of arguments. The signature ```<food> ...``` means that at least one food must be passed to the command, but it will also accept any more. ```eater eat cake``` and ```eater eat cake cookie frosting``` are both valid command invocations with this signature. 
