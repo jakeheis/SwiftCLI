@@ -95,10 +95,15 @@ Required parameters are surrounded by a less-than and a greater-than sign: ```<r
 
 ### Optional parameters
 
-Optional parameters are surrounded by a less-than and a greater-than sign, and a set of brackets: ```[<optionalParameter>]``` Optional parameters must come after all required parameters.
+Optional parameters are surrounded by a less-than and a greater-than sign, and a set of brackets: ```[<optionalParameter>]``` Optional parameters must come after all required parameters. This ensures that all required parameters are satisifed before optional parameters begin to be satisfied.
 
 ### Non-terminal parameter
 
-The non-terminal paremter is an elipses placed at the end of a command signature to signify that the last last parameter can take an indefinite number of arguments. 
+The non-terminal paremter is an elipses placed at the end of a command signature to signify that the last last parameter can take an indefinite number of arguments. The non-terminal parameter must appear at the very end of a command signature, after all required parameters and optional parameters. This way, all required parameters and optional parameters are fulfilled before arguments are grouped into an array for the last parameter.
 
-The signature ```<food> ...``` means that at least one food must be passed to the command, but it will also accept any more. ```eater eat cake``` and ```eater eat cake cookie frosting``` are both valid command invocations with this signature. 
+The signature ```<food> ...``` means that at least one food must be passed to the command, but it will also accept any more. ```eater eat cake``` and ```eater eat cake cookie frosting``` are both valid command invocations with this signature.
+
+In the arguments dictionary, the non-terminal parameter results in all following argumetns to be grouped in an array and passed to the parameter immediately before it (required or optional).
+```eater eat cake``` -> ```["food": ["cake"]]```
+```eater eat cake cookie frosting``` -> ```["food": ["cake", "cookie", "frosting"]]```
+
