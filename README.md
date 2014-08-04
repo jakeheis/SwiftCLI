@@ -68,7 +68,7 @@ class GreetCommand: Command {
 }
 ```
 ### Create a ChainableCommand
-You should only create this kind of command if the command is very simple and doesn't involve a lot of execution or option-handling code. It has all the same capabilities as a subclass of Command does, but in can quickly become bloated and hard to understand if there is a large amount of code involved. The greet command shown above is a good example of when ChainableCommands are appropriate to use. This is also the best implementation of the "eat" command.
+You should only create this kind of command if the command is very simple and doesn't involve a lot of execution or option-handling code. It has all the same capabilities as a subclass of Command does, but it can quickly become bloated and hard to understand if there is a large amount of code involved.
 ```swift
 let greetCommand = ChainableCommand(commandName: "greet")
     .withShortDescription("Greets the given person")
@@ -85,7 +85,7 @@ CLI.registerChainableCommand(commandName: "greet")
     .with...
 ```
 ### Create a LightweightCommand
-This type of command is very similar to ChainableCommand. In fact, all ChainableCommand does is provide an alternative interface to its underlying LightweightCommand. As said above with ChainableCommands, this type of command should only be used when the command is relatively simple.
+This type of command is very similar to ChainableCommand. In fact, all ChainableCommand does is provide an alternative interface to its underlying LightweightCommand. As with ChainableCommands, this type of command should only be used when the command is relatively simple.
 ```swift
 let greetCommand = LightweightCommand(commandName: "greet")
 greetCommand.lightweightCommandShortDescription = "Greets the given person"
