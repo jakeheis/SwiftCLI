@@ -36,7 +36,8 @@ class Command: NSObject {
     // MARK: - Command info
     
     func commandName() -> String {
-        return "command"
+        assert(false, "Subclasses of Command must override this method")
+        return ""
     }
     
     func commandSignature() -> String {
@@ -80,7 +81,7 @@ class Command: NSObject {
     
     // MARK: - Options
     
-    func optionsAccountedFor() -> Bool { // Add final modifier once possible
+    func optionsAccountedFor() -> Bool { // TODO: Add final modifier once possible
         self.handleOptions()
         
         if self.showHelpOnHFlag() {
@@ -94,11 +95,13 @@ class Command: NSObject {
         return self.options.allAccountedFor()
     }
     
-    func onFlag(flag: String, block: OptionsFlagBlock?, usage: String = "") { // Add final modifier once possible
+    // MARK: On options
+    
+    func onFlag(flag: String, block: OptionsFlagBlock?, usage: String = "") { // TODO: Add final modifier once possible
         self.onFlags([flag], block: block, usage: usage)
     }
     
-    func onFlags(flags: [String], block: OptionsFlagBlock?, usage: String = "") { // Add final modifier once possible
+    func onFlags(flags: [String], block: OptionsFlagBlock?, usage: String = "") { // TODO: Add final modifier once possible
         let nsFlags = flags as NSArray
         let comps = nsFlags.componentsJoinedByString(", ")
         let padded = self.padUsageForLength(usage, length: comps.utf16Count);
@@ -107,11 +110,11 @@ class Command: NSObject {
         self.options.onFlags(flags, block: block)
     }
     
-    func onKey(key: String, block: OptionsKeyBlock?, usage: String = "", valueSignature: String = "value") { // Add final modifier once possible
+    func onKey(key: String, block: OptionsKeyBlock?, usage: String = "", valueSignature: String = "value") { // TODO: Add final modifier once possible
         self.onKeys([key], block: block, usage: usage, valueSignature: valueSignature)
     }
     
-    func onKeys(keys: [String], block: OptionsKeyBlock?, usage: String = "", valueSignature: String = "value") { // Add final modifier once possible
+    func onKeys(keys: [String], block: OptionsKeyBlock?, usage: String = "", valueSignature: String = "value") { // TODO: Add final modifier once possible
         let nsFlags = keys as NSArray
         let comps = nsFlags.componentsJoinedByString(", ")
         let firstPart = "\(comps) <\(valueSignature)>"
@@ -129,6 +132,8 @@ class Command: NSObject {
         
         return "\(spacing)\(usage)"
     }
+    
+    // MARK: Sublcass option config
     
     func showHelpOnHFlag() -> Bool {
         return true
@@ -148,7 +153,7 @@ class Command: NSObject {
     
     // MARK: - Execution
     
-    func prepForExecution(arguments: NSDictionary, options: Options) {
+    func prepForExecution(arguments: NSDictionary, options: Options) { // TODO: Add final modifier once possible
         self.arguments = arguments
         self.options = options
     }
