@@ -46,7 +46,8 @@ class HelpCommand: Command {
     }
     
     func printCommand(command: Command) {
-        println("- \(command.commandName()) \t \(command.commandShortDescription())")
+        let str = self.padString(command.commandShortDescription(), toLength: 20, firstComponent: command.commandName())
+        println("- \(command.commandName())\(str)")
     }
     
 }

@@ -93,7 +93,7 @@ class Command {
     
     func onFlags(flags: [String], block: OptionsFlagBlock?, usage: String = "") { // TODO: Add final modifier once possible
         let comps = ", ".join(flags)
-        let padded = self.padUsageForLength(usage, length: comps.utf16Count);
+        let padded = self.padString(usage, toLength: 40, firstComponent: comps)
         self.usageStatements += "\(comps)\(padded)"
         
         self.options.onFlags(flags, block: block)
@@ -106,19 +106,10 @@ class Command {
     func onKeys(keys: [String], block: OptionsKeyBlock?, usage: String = "", valueSignature: String = "value") { // TODO: Add final modifier once possible
         let comps = ", ".join(keys)
         let firstPart = "\(comps) <\(valueSignature)>"
-        let padded = self.padUsageForLength(usage, length: firstPart.utf16Count);
+        let padded = self.padString(usage, toLength: 40, firstComponent: firstPart)
         self.usageStatements += "\(firstPart)\(padded)"
         
         self.options.onKeys(keys, block: block)
-    }
-    
-    private func padUsageForLength(usage: String, length: Int) -> String {
-        var spacing = ""
-        for _ in length...40 {
-            spacing += " "
-        }
-        
-        return "\(spacing)\(usage)"
     }
     
     // MARK: Sublcass option config
@@ -143,6 +134,17 @@ class Command {
     
     func execute() -> (success: Bool, error: String?) {
         return (true, nil)
+    }
+    
+    // MARK - Helper
+    
+    func padString(string: String, toLength: Int, firstComponent: String) -> String {
+        var spacing = ""
+        for _ in firstComponent.utf16Count...toLength {
+            spacing += " "
+        }
+        
+        return "\(spacing)\(string)"
     }
     
 }
