@@ -61,7 +61,7 @@ class SignatureParser {
         
         // Finally group unlimited argument list into last argument if ... is present
         if !terminatedList {
-            let lastKey = optionalArgs.isEmpty ? requiredArgs.lastObject()! : optionalArgs.lastObject()!
+            let lastKey = optionalArgs.isEmpty ? requiredArgs[requiredArgs.count-1] : optionalArgs[optionalArgs.count-1]
             let name = self.sanitizeKey(lastKey)
             var lastArray: [String] = []
             
@@ -77,6 +77,8 @@ class SignatureParser {
         
         return (namedArgs, nil)
     }
+    
+    // MARK: - Privates
     
     private func handleEmptySignature()-> (NSDictionary?, String?) {
         if self.arguments.count == 0 {
@@ -95,7 +97,8 @@ class SignatureParser {
         
         for argument in expectedArguments {
             if argument == "..." {
-                assert(argument == expectedArguments.lastObject()!, "The non-terminal parameter must be at the end of a command signature.")
+                let lastObject = expectedArguments[expectedArguments.count-1]
+                assert(argument == lastObject, "The non-terminal parameter must be at the end of a command signature.")
                 terminatedList = false
                 continue
             }
@@ -121,12 +124,4 @@ class SignatureParser {
         let argString = expectedCount == 1 ? "argument" : "arguments"
         return "Expected \(expectedCount) \(argString), but got \(givenCount)."
     }
-}
-
-extension Array {
-    
-    func lastObject() -> T? {
-        return self.count > 0 ? self[self.count-1] : nil;
-    }
-    
 }

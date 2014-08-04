@@ -143,6 +143,16 @@ class SignatureParserTests: XCTestCase {
         self.assertParserReturnsDictionary(["req1": "arg1", "req2": "arg2", "opt1": "arg3", "opt2": "arg4"], assertMessage: "A signature with two required arguments and two optional arguments and four given arguments should return a valid dictionary")
     }
     
+    func testNonterminalArgumentPosition() {
+        self.arguments = ["arg1", "arg2", "arg3"]
+        
+        self.signature = "<req1> ... <req2>"
+//        self.assertParserFails(assertMessage: "A signature with the nonterminal argument not at the end should fail") TODO: Fix this test - right now an assert() fails on the whole thing crashes
+        
+        self.signature = "<req1> <req2> ..."
+        self.assertParserReturnsDictionary(["req1": "arg1", "req2": ["arg2", "arg3"]], assertMessage: "A signature with the nonterminal argument at the end should return a valid dictionary")
+    }
+    
     func assertParserReturnsDictionary(returnDictionary: NSDictionary, assertMessage: String) {
         signatureParser = SignatureParser(signature: self.signature, arguments: self.arguments)
         let retVal = signatureParser.parse()
