@@ -108,22 +108,22 @@ A signature of ```<sourceFile> <targetFile>``` and a call of ```cp myfile.file n
 Required parameters are surrounded by a less-than and a greater-than sign: ```<requiredParameter>``` If the command is not passed enough arguments to satisfy all required parameters, it will fail.
 
 ```bash
-~ > # Eat command with a signature of "<food> <drink>"
-~ > eater eat donut
-"Expected 2 arguments, but got 1."
-~ > eater eat donut coffee
-"Eating donut and drinking coffee"
+~ > # Greet command with a signature of "<person> <greeting>"
+~ > greeter greet Jack
+Expected 2 arguments, but got 1.
+~ > greeter greet Jack Hello
+Hello, Jack!
 ```
 
 ### Optional parameters
 
 Optional parameters are surrounded by a less-than and a greater-than sign, and a set of brackets: ```[<optionalParameter>]``` Optional parameters must come after all required parameters.
 ```bash
-~ > # Eat command with a signature of "<food> [<drink>]"
-~ > eater eat donut
-"Eating donut"
-~ > eater eat donut coffee
-"Eating donut and drinking coffee"
+~ > # Greet command with a signature of "<food> [<greeting>]"
+~ > greeter greet Jack
+Hey there, Jack!
+~ > greeter greet Jack Hello
+Hello, Jack!
 ``` 
 
 ### Non-terminal parameter
@@ -131,19 +131,20 @@ Optional parameters are surrounded by a less-than and a greater-than sign, and a
 The non-terminal paremter is an elipses placed at the end of a command signature to signify that the last parameter can take an indefinite number of arguments. It must come at the very end of a command signature, after all required parameters and optional parameters.
 
 ```bash
-~ > # Eat command with a signature of "<food> ..."
-~ > eater eat donut
-"Eating donut"
-~ > eater eat donut bagel
-"Eating donut, bagel"
-~ > eater eat donut bagel muffin
-"Eating donut, bagel, muffin"
+~ > # Greet command with a signature of "<person> ..."
+~ > greeter greet Jack
+Hey there, Jack!
+~ > greeter greet Jack Jill
+Hey there, Jack and Jill!
+~ > greeter greet Jack Jill Hill
+Hey there, Jack, Jill, and Hill!
 ``` 
 
 In the arguments dictionary, the non-terminal parameter results in all the last arguments being grouped into an array and passed to the parameter immediately before it (required or optional).
 
-```eater eat donut``` -> ```["food": ["donut"]]```
-```eater eat donut bagel muffin``` -> ```["food": ["donut", "bagel", "muffin"]]```
+With one argument: ```greeter greet Jack``` -> ```["person": ["Jack"]]```
+
+With multiple arguments: ```greeter greet Jack Jill Hill``` -> ```["person": ["Jack", "Jill", "Hill"]]```
 
 ## Options
 Commands have support for two types of options: flag options and keyed options.
@@ -210,7 +211,7 @@ Usage: greeter greet <person> [options]
 -h, --help                               Show help information for this command
 ```
 
-Also worth noting, the ```valueSignature``` argument passed into ```onKeys``` is shown for keyed arguments as such: ```<valueSignature>```
+Also worth noting, the ```valueSignature``` argument is what is shown for keyed arguments as such: ```<valueSignature>```
 
 
 ## Special commands
@@ -236,7 +237,7 @@ A custom HelpCommand can be used by calling ```CLI.registerCustomHelpCommand(cus
 It can be invoked with ```myapp version``` or ```myapp -v```. The VersionCommand prints the version of the app given during ```CLI.setup()```. 
 
 ```bash
-~ > baker -v
+~ > greeter -v
 Version: 1.0
 ```
 
