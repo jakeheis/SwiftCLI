@@ -251,14 +251,12 @@ Also worth noting, the ```valueSignature``` argument is what is shown for keyed 
 The default HelpCommand. It can be invoked with ```myapp help``` or ```myapp -h```. The HelpCommand first prints the app description (if any was given during ```CLI.setup()```). It then iterates through all available commands, printing their name and their short description.
 
 ```bash
-~ > baker help
-Baker, your own personal cook, here to bake you whatever you desire.
+~ > greeter help
+Greeter - your own personal greeter
 
 Available commands: 
-- init   Creates a Bakefile in the current or given directory
-- list      Lists the possible things baker can bake for you.
-- bake      Bakes the items in the Bakefile
-- help      Prints this help information
+- greet 	 Greets the given person
+- help 	 Prints this help information
 ```
 
 A custom HelpCommand can be used by calling ```CLI.registerCustomHelpCommand(customHelp)```.
@@ -276,13 +274,11 @@ A custom VersionCommand can be used by calling ```CLI.registerCustomVersionComma
 ### Default command
 The default command is the command that is invoked if no command is specified. By default, this is simply the help command.
 ```bash
-~ > baker
-Baker, your own personal cook, here to bake you whatever you desire.
+~ > greeter
+Greeter - your own personal greeter
 
 Available commands: 
-- init 	 Creates a Bakefile in the current or given directory
-- list 	 Lists the possible things baker can bake for you.
-- bake 	 Bakes the items in the Bakefile
+- greet 	 Greets the given person
 - help 	 Prints this help information
 ```
 
