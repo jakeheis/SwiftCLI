@@ -155,7 +155,7 @@ With multiple arguments: ```greeter greet Jack Jill Hill``` -> ```["person": ["J
 Commands have support for two types of options: flag options and keyed options.
 
 ### Flag options
-Flag options are simple options that act as boolean switches. They turn a part of a Command on or off. Using "git commit" as an example, "-a" would be a flag option - it signifies that the CommitCommand should stage and commit all files.
+Flag options are simple options that act as boolean switches. Using "git commit" as an example, "-a" would be a flag option.
 
 To configure a command for flag options:
 - **Command subclass**: 
@@ -226,8 +226,8 @@ By default, if a command does not handle all options, the command will fail. Thi
 - **ChainableCommand**: ```.withAllFlagsAndOptionsAllowed()```
 - **LightweightCommand**: ```cmd.strictOnOptions = false```
 
-### Options' usage
-As seen in the above examples, ```onFlags``` and ```onKeys``` both take a ```usage``` parameter. A useful, concise description of what the option does should be included here. This allows the command's ```usageStatement()``` to be computed.
+### Usage of options
+As seen in the above examples, ```onFlags``` and ```onKeys``` both take a ```usage``` parameter. A concise description of what the option does should be included here. This allows the command's ```usageStatement()``` to be computed.
 
 A command's ```usageStatement()``` is shown in two situations: 
 - The user passed an option that the command does not support -- ```greeter greet -z```
