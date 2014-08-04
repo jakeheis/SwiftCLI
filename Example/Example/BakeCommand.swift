@@ -14,10 +14,6 @@ class BakeCommand: Command {
     private var silently = false
     private var topping: String? = nil
     
-    init()  {
-        super.init()
-    }
-    
     override func commandName() -> String  {
         return "bake"
     }

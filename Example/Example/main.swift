@@ -46,7 +46,7 @@ listCommand.lightweightExecutionBlock = {arguments, options in
 }
 CLI.registerCommand(listCommand)
 
-let bakerCommand = BakeCommand.command()
+let bakerCommand = BakeCommand()
 CLI.registerCommand(bakerCommand)
 
 CLI.registerDefaultCommand(bakerCommand)

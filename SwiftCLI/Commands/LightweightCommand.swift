@@ -22,10 +22,6 @@ class LightweightCommand: Command {
     private var flagHandlingBlocks: [LightweightCommandFlagOptionHandler] = []
     private var keyHandlingBlocks: [LightweightCommandKeyOptionHandler] = []
     
-    init()  {
-        super.init()
-    }
-    
     init(commandName: String) {
         super.init()
         

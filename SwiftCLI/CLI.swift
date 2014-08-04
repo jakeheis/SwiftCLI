@@ -18,8 +18,8 @@ class CLI: NSObject {
         static var appDescription = ""
         
         static var commands: [Command] = []
-        static var helpCommand: HelpCommand? = HelpCommand.command()
-        static var versionComand: VersionCommand? = VersionCommand.command()
+        static var helpCommand: HelpCommand? = HelpCommand()
+        static var versionComand: VersionCommand? = VersionCommand()
         static var defaultCommand: Command = CLIStatic.helpCommand!
     }
     

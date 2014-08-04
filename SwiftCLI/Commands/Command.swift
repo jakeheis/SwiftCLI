@@ -15,23 +15,13 @@ enum UnhandledOptionsPrintingBehavior {
     case PrintAll
 }
 
-class Command: NSObject {
+class Command {
     
-    var arguments: NSDictionary
-    var options: Options
+    var arguments: NSDictionary = [:]
+    var options: Options = Options()
     
     var usageStatements: [String] = []
     var showingHelp = false
-    
-    class func command() -> Self {
-        return self()
-    }
-    
-    required init() {
-        self.arguments = [:]
-        self.options = Options() // placeholder
-        super.init()
-    }
     
     // MARK: - Command info
     
