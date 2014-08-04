@@ -52,7 +52,7 @@ class GreetCommand: Command {
         return "greet"
     }
     
-    override func commandShortcut() -> String?  {
+    override func commandShortDescription() -> String  {
         return "Greets the given person"
     }
     
