@@ -127,3 +127,48 @@ In the arguments dictionary, the non-terminal parameter results in all the last 
 ```eater eat donut``` -> ```["food": ["donut"]]```
 ```eater eat donut bagel muffin``` -> ```["food": ["donut", "bagel", "muffin"]]```
 
+## Options
+
+## Special commands
+
+```CLI``` has three special commands: ```helpCommand```, ```versionCommand```, and ```defaultCommand```.
+### Help Command
+The default HelpCommand. It can be invoked with ```myapp help``` or ```myapp -h```. The HelpCommand first prints the app description (if any was given during ```CLI.setup()```). It then iterates through all available commands, printing their name and their short description.
+
+```bash
+~ > baker help
+Baker, your own personal cook, here to bake you whatever you desire.
+
+Available commands: 
+- init 	 Creates a Bakefile in the current or given directory
+- list 	 Lists the possible things baker can bake for you.
+- bake 	 Bakes the items in the Bakefile
+- help 	 Prints this help information
+```
+
+A custom HelpCommand can be used by calling ```CLI.registerCustomHelpCommand(customHelp)```.
+
+### Version Command
+It can be invoked with ```myapp version``` or ```myapp -v```. The VersionCommand prints the version of the app given during ```CLI.setup()```. 
+
+```bash
+~ > baker -v
+Version: 1.0
+```
+
+A custom VersionCommand can be used by calling ```CLI.registerCustomVersionCommand(customVersion)```.
+
+### Default command
+The default command is the command that is invoked if no command is specified. By default, this is simply the help command.
+```bash
+~ > baker
+Baker, your own personal cook, here to bake you whatever you desire.
+
+Available commands: 
+- init 	 Creates a Bakefile in the current or given directory
+- list 	 Lists the possible things baker can bake for you.
+- bake 	 Bakes the items in the Bakefile
+- help 	 Prints this help information
+```
+
+A custom default command can be specified by calling ```CLI.registerDefaultCommand(customDefault)```. Examples of when a custom default command would be used include ```cp```, ```bundle```, and many others.
