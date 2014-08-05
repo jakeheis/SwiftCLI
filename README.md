@@ -28,17 +28,24 @@ Hey there!
 ```
 
 ## Creating a CLI
-Setup the CLI:
+### Setup
+In the call to ```CLI.setup()```, a ```name``` must be passed, and a ```version``` and a ```description``` are both optional.
 ```swift 
-CLI.setup(name: "greeter", version: "1.0", description: "Greeter - your own personal greeter") 
+CLI.setup(name: "greeter", version: "1.0", description: "Greeter - your own personal greeter")
 ```
-Register all commands:
+### Registering commands
 ```swift
-CLI.registerCommand(GreetCommand())
+CLI.registerCommand(myCommand)
+CLI.registerCommands([myCommand, myOtherCommand])
 ```
-Just call go:
+### Calling go
+In any production app, ```go()``` should be used. This method uses the arguments passed to it on launch.
 ```swift
 CLI.go()
+```
+When you are creating and debugging your app, ```debugGoWithArgumentString()``` is the better choice. Xcode does make it possible to pass arguments to a command line app on launch by editing app's scheme, but this can be a pain. ```debugGoWithArgumentString()``` makes it easier to pass an argument string to your app during development.
+```swift
+CLI.debugGoWithArgumentString("greeter greet Jack)
 ```
 
 ## Commands
