@@ -1,7 +1,7 @@
 SwiftCLI
 ========
 
-A powerful framework than can be used to develop a CLI in Swift
+A powerful framework than can be used to develop a CLI in Swift, regardless of complexity.
 
 ```swift
 //
