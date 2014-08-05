@@ -35,7 +35,8 @@ Hey there!
 * [Special Commands](#special-commands)
 * [Running your CLI](#running-your-cli)
 * [Installation](#installation)
-
+* [Example](#example)
+* 
 ## Creating a CLI
 ### Setup
 In the call to ```CLI.setup()```, a ```name``` must be passed, and a ```version``` and a ```description``` are both optional.
@@ -342,3 +343,10 @@ Then drag the SwiftCLI/SwiftCLI folder into your Xcode project:
 ![alt tag](https://github.com/jakeheis/SwiftCLI/blob/master/Example/DragScreenshot.png)
 
 ![alt tag](https://github.com/jakeheis/SwiftCLI/blob/master/Example/AddFilesDialog.png)
+
+## Example
+An example of a CLI developed with SwfitCLI can be found in the Example directory in this repo.
+
+The example project is a command called "baker" - a command to cook you whatever food you would like. It includes three commands, one implemented in each method described in the "Commands" section above - init, list, and bake.
+
+To run the Example project, Build it, and then in your terminal enter in "baker".
