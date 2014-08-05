@@ -27,6 +27,15 @@ CLI.go()
 Hey there!
 ```
 
+## Contents
+* [Creating a CLI](#creating-a-cli)
+* [Commands](#commands)
+* [Parameters](#parameters)
+* [Options](#options)
+* [Special Commands](#special-commands)
+* [Running your CLI](#running-your-cli)
+* [Installation](#installation)
+
 ## Creating a CLI
 ### Setup
 In the call to ```CLI.setup()```, a ```name``` must be passed, and a ```version``` and a ```description``` are both optional.
