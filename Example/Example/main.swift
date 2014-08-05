@@ -8,7 +8,7 @@
 
 import Foundation
 
-CLI.setup(name: "baker", description: "Baker, your own personal cook, here to bake you whatever you desire.")
+CLI.setup(name: "baker", description: "Baker - your own personal baker, here to bake you whatever you desire.")
 
 CLI.registerChainableCommand(commandName: "init")
     .withShortDescription("Creates a Bakefile in the current or given directory")
@@ -29,7 +29,7 @@ CLI.registerChainableCommand(commandName: "init")
 
 
 let listCommand = LightweightCommand(commandName: "list")
-listCommand.lightweightCommandShortDescription = "Lists the possible things baker can bake for you."
+listCommand.lightweightCommandShortDescription = "Lists some possible items the baker can bake for you."
 
 var showExoticFoods = false
 listCommand.handleFlags(["-e", "--exotics-included"], block: {flag in
