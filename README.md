@@ -307,9 +307,12 @@ Make sure to use ```CLI.go()``` with this method, **not** ```CLI.debugGoWithArgu
 ### In Terminal
 To actually make your CLI accessible and executable outside of Xcode, you need to add a symbolic link somewhere in your $PATH to the exectuable product Xcode outputs. The easiest way to do this is to click on your project in Xcode, then your executable target, then Build Phases. Add a new Run Script with this command:
 ```sh
-ln -s $BUILT_PRODUCTS_DIR/$PRODUCT_NAME /usr/local/bin/$PRODUCT_NAME
+lowercase_name=`echo $PRODUCT_NAME | tr '[A-Z]' '[a-z]'`
+new_path=/usr/local/bin/$lowercase_name
+
+if [ ! -f $new_path ]; then ln -s "$BUILT_PRODUCTS_DIR/$PRODUCT_NAME" "$new_path";fi
 ```
-If you would rather have the symbolic link be placed in a different directory on your $PATH, change the ```/usr/local/bin``` to your directory of choice. Also, if you would like the app to be executed with a different name then the product name, change the 2nd ```$PRODUCT_NAME``` to your custom name.
+If you would rather have the symbolic link be placed in a different directory on your $PATH, change ```/usr/local/bin``` to your directory of choice. Also, if you would like the app to be executed with a different name then the product name, change the ```$PRODUCT_NAME``` on the first line to your custom name.
 
 You then need to Build and Run your app once inside of Xcode. From then on, you should be able to access your CLI in terminal.
 
