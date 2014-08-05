@@ -329,7 +329,7 @@ You then need to Build and Run your app once inside of Xcode. From then on, you 
 
 Again, be sure to use ```CLI.go()``` with this method, not ```CLI.debugGoWithArgumentString("")```.
 
-## Installation
+## SwiftCLI Installation
 
 Pending Swift file support in Cocoapods (https://github.com/CocoaPods/CocoaPods/pull/2222), the best way to install SwiftCLI is by cloning the repository and adding the SwiftCLI files to your project.
 
