@@ -275,7 +275,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "ln -s $BUILT_PRODUCTS_DIR/$PRODUCT_NAME /usr/local/bin/$PRODUCT_NAME";
+			shellScript = "lowercase_name=`echo $PRODUCT_NAME | tr '[A-Z]' '[a-z]'`\nnew_path=/usr/local/bin/$lowercase_name\n\nif [ ! -f $new_path ]; then ln -s \"$BUILT_PRODUCTS_DIR/$PRODUCT_NAME\" \"$new_path\";fi\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
