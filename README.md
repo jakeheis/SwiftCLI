@@ -227,11 +227,11 @@ class GreetCommand: Command {
 }
 ```
 
-### Handling all options
-By default, if a command does not handle all options, the command will fail. This behavior can be changed to allow unhandled options:
-- **Command subclass**: ```override func failOnUnhandledOptions() -> Bool { return false}```
+### Unrecognized options
+By default, if a command is passed any options it does not handle through ```onFlag(s)``` or ```onKey(s)```, or their respective equivalents in ChainableCommand and LightweightCommand, the command will fail. This behavior can be changed to allow unrecognized options:
+- **Command subclass**: ```override func failOnUnrecognizedOptions() -> Bool { return false}```
 - **ChainableCommand**: ```.withAllFlagsAndOptionsAllowed()```
-- **LightweightCommand**: ```cmd.strictOnOptions = false```
+- **LightweightCommand**: ```cmd.shouldFailOnUnrecognizedOptions = false```
 
 ### Usage of options
 As seen in the above examples, ```onFlags``` and ```onKeys``` both take a ```usage``` parameter. A concise description of what the option does should be included here. This allows the command's ```usageStatement()``` to be computed.
