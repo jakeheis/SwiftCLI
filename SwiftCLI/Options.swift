@@ -92,13 +92,13 @@ class Options {
     }
     
     func unaccountedForMessage(#command: Command, routedName: String) -> String? {
-        if command.unhandledOptionsPrintingBehavior() == UnhandledOptionsPrintingBehavior.PrintNone {
+        if command.unrecognizedOptionsPrintingBehavior() == UnrecognizedOptionsPrintingBehavior.PrintNone {
             return nil
         }
         
         var message = ""
         
-        if command.unhandledOptionsPrintingBehavior() != .PrintOnlyUsage {
+        if command.unrecognizedOptionsPrintingBehavior() != .PrintOnlyUsage {
             message += "Unrecognized options:"
             for flag in self.remainingFlagOptions() {
                 message += "\n\t\(flag)"
@@ -107,12 +107,12 @@ class Options {
                 message += "\n\t\(option) \(self.keyedOptions[option]!)"
             }
             
-            if command.unhandledOptionsPrintingBehavior() == .PrintAll {
+            if command.unrecognizedOptionsPrintingBehavior() == .PrintAll {
                 message += "\n" // Padding if more will be printed
             }
         }
        
-        if command.unhandledOptionsPrintingBehavior() != .PrintOnlyUnrecognizedOptions {
+        if command.unrecognizedOptionsPrintingBehavior() != .PrintOnlyUnrecognizedOptions {
             message += command.commandUsageStatement(commandName: routedName)
         }
         

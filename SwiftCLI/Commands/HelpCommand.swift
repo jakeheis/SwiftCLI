@@ -28,7 +28,7 @@ class HelpCommand: Command {
         return false
     }
     
-    override func failOnUnhandledOptions() -> Bool  {
+    override func failOnUnrecognizedOptions() -> Bool  {
         return false
     }
     

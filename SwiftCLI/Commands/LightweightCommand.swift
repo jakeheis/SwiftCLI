@@ -18,7 +18,7 @@ class LightweightCommand: Command {
     var lightweightCommandShortcut: String? = nil
     var lightweightExecutionBlock: CommandExecutionBlock? = nil
     
-    var shouldFailOnUnrecgonizedOptions = true
+    var shouldFailOnUnrecognizedOptions = true
     private var flagHandlingBlocks: [LightweightCommandFlagOptionHandler] = []
     private var keyHandlingBlocks: [LightweightCommandKeyOptionHandler] = []
     
@@ -64,8 +64,8 @@ class LightweightCommand: Command {
         }
     }
     
-    override func failOnUnrecgonizedOptions() -> Bool  {
-        return self.shouldFailOnUnrecgonizedOptions
+    override func failOnUnrecognizedOptions() -> Bool  {
+        return self.shouldFailOnUnrecognizedOptions
     }
 
     override func execute() -> CommandResult {

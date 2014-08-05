@@ -40,7 +40,7 @@ class ChainableCommand: LightweightCommand {
     }
     
     func withAllFlagsAndOptionsAllowed() -> ChainableCommand {
-        self.shouldFailOnUnrecgonizedOptions = false
+        self.shouldFailOnUnrecognizedOptions = false
         return self
     }
     

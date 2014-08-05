@@ -150,7 +150,7 @@ class CLI: NSObject {
             if let message = command.options.unaccountedForMessage(command: command, routedName: routedName) {
                 println(message)
             }
-            if (command.failOnUnhandledOptions()) {
+            if (command.failOnUnrecognizedOptions()) {
                 return false
             }
         }
