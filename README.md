@@ -97,7 +97,7 @@ let greetCommand = ChainableCommand(commandName: "greet")
         return .Success
     })
 ```
-CLI also offers a shortcut method to register a ChainableCommand:
+```CLI``` also offers a shortcut method to register a ChainableCommand:
 ```swift
 CLI.registerChainableCommand(commandName: "greet")
     .with...
@@ -119,7 +119,7 @@ greetCommand.lightweightExecutionBlock = {arguments, options in
 ## Parameters
 Each command must have a command signature describing its expected/permitted arguments. The command signature is used to map the array of user-passed arguments into a keyed dictionary. When a command is being executed, it is passed this dictionary of arguments, with the command signature segments used as keys and the user-passed arguments as values.
 
-Foe example, a signature of ```<person> <greeting>``` and a call of ```greeter greet Jack Hello``` would result in the arguments dictionary ```["greeting": "Hello", "person": "Jack"]```.
+For example, a signature of ```<person> <greeting>``` and a call of ```greeter greet Jack Hello``` would result in the arguments dictionary ```["greeting": "Hello", "person": "Jack"]```.
 
 To set a command's signature:
 - **Command subclass**: ```override func commandSignature() -> String  {}```
@@ -142,7 +142,7 @@ Hello, Jack!
 
 Optional parameters are surrounded by a less-than and a greater-than sign, and a set of brackets: ```[<optionalParameter>]``` Optional parameters must come after all required parameters.
 ```bash
-~ > # Greet command with a signature of "<food> [<greeting>]"
+~ > # Greet command with a signature of "<person> [<greeting>]"
 ~ > greeter greet Jack
 Hey there, Jack!
 ~ > greeter greet Jack Hello
@@ -239,7 +239,7 @@ class GreetCommand: Command {
 ```
 
 ### Unrecognized options
-By default, if a command is passed any options it does not handle through ```onFlag(s)``` or ```onKey(s)```, or their respective equivalents in ChainableCommand and LightweightCommand, the command will fail. This behavior can be changed to allow unrecognized options:
+By default, if a command is passed any options it does not handle through ```onFlag(s)``` or ```onKey(s)```, or their respective equivalents in ```ChainableCommand``` and ```LightweightCommand```, the command will fail. This behavior can be changed to allow unrecognized options:
 - **Command subclass**: ```override func failOnUnrecognizedOptions() -> Bool { return false}```
 - **ChainableCommand**: ```.withAllFlagsAndOptionsAllowed()```
 - **LightweightCommand**: ```cmd.shouldFailOnUnrecognizedOptions = false```
@@ -259,7 +259,7 @@ Usage: greeter greet <person> [options]
 -h, --help                               Show help information for this command
 ```
 
-The ```valueSignature``` argument in the ```onKeys``` family of methods is displayed like a parameter following the key: "--my-key <valueSignature>".
+The ```valueSignature``` argument in the ```onKeys``` family of methods is displayed like a parameter following the key: ```--my-key <valueSignature>```.
 
 
 ## Special commands
@@ -305,13 +305,13 @@ A custom default command can be specified by calling ```CLI.registerDefaultComma
 ## Running your CLI
 
 ### Within Xcode
-There are two methods to pass in arguments to your CLI within Xcode, explained below. After arguments are set up, just Build and Run, and your app will execute and print ouput in Xcode's Console.
+There are two methods to pass in arguments to your CLI within Xcode, explained below. After the arguments are set up using one of these methods, you just need to Build and Run, and your app will execute and print its ouput in Xcode's Console.
 
 ##### CLI ```debugGoWithArgumentString()```
-As discussed before, this is the easiest way to invoke the CLI. Just replace the ```CLI.go()``` call with ```CLI.debugGoWithArgumentString("")```. This is only appropriate for development, as when this method is called, the CLI disregards any arguments passed in on launch.
+As discussed before, this is the easiest way to pass arguments to the CLI. Just replace the ```CLI.go()``` call with ```CLI.debugGoWithArgumentString("")```. This is only appropriate for development, as when this method is called, the CLI disregards any arguments passed in on launch.
 
 ##### Xcode Scheme
-First click on your app's scheme, then "Edit Scheme...". Go to the "Run" section, then the "Arguments" tab. You can then add arguments where it says "Arguments Passed On Launch".
+This is not recommended, as the above option is simpler, but it is included for completions's sake. First click on your app's scheme, then "Edit Scheme...". Go to the "Run" section, then the "Arguments" tab. You can then add arguments where it says "Arguments Passed On Launch".
 
 Make sure to use ```CLI.go()``` with this method, **not** ```CLI.debugGoWithArgumentString("")```.
 
@@ -323,9 +323,9 @@ new_path=/usr/local/bin/$lowercase_name
 
 if [ ! -f $new_path ]; then ln -s "$BUILT_PRODUCTS_DIR/$PRODUCT_NAME" "$new_path";fi
 ```
-If you would rather have the symbolic link be placed in a different directory on your $PATH, change ```/usr/local/bin``` to your directory of choice. Also, if you would like the app to be executed with a different name then the product name, change the ``lowercase_name``` on the first line to your custom name.
+If you would rather have the symbolic link be placed in a different directory on your $PATH, change ```/usr/local/bin``` to your directory of choice. Also, if you would like the app to be executed with a different name then the product name, change the ```lowercase_name``` on the first line to your custom name.
 
-You then need to Build and Run your app once inside of Xcode. From then on, you should be able to access your CLI in terminal.
+You then need to Build your app once inside of Xcode. From then on, you should be able to access your CLI in your terminal.
 
 Again, be sure to use ```CLI.go()``` with this method, not ```CLI.debugGoWithArgumentString("")```.
 
