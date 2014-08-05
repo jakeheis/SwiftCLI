@@ -1,7 +1,7 @@
 SwiftCLI
 ========
 
-A powerful framework than can be used to develop a CLI in Swift, regardless of complexity.
+A powerful framework than can be used to develop a CLI, from the simplest to the most complex, in Swift.
 
 ```swift
 //
@@ -53,7 +53,7 @@ In any production app, ```go()``` should be used. This method uses the arguments
 ```swift
 CLI.go()
 ```
-When you are creating and debugging your app, ```debugGoWithArgumentString()``` is the better choice. Xcode does make it possible to pass arguments to a command line app on launch by editing app's scheme, but this can be a pain. ```debugGoWithArgumentString()``` makes it easier to pass an argument string to your app during development.
+When you are creating and debugging your app, ```debugGoWithArgumentString()``` is the better choice. Xcode does make it possible to pass arguments to a command line app on launch by editing the app's scheme, but this can be a pain. ```debugGoWithArgumentString()``` makes it easier to pass an argument string to your app during development.
 ```swift
 CLI.debugGoWithArgumentString("greeter greet")
 ```
