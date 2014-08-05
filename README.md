@@ -266,7 +266,7 @@ Available commands:
 - help                 Prints this help information
 ```
 
-A custom HelpCommand can be used by calling ```CLI.registerCustomHelpCommand(customHelp)```.
+A custom ```HelpCommand``` can be used by calling ```CLI.registerCustomHelpCommand(customHelp)```.
 
 ### Version Command
 The ```VersionCommand``` can be invoked with ```myapp version``` or ```myapp -v```. The VersionCommand prints the version of the app given during ```CLI.setup()```. 
@@ -276,7 +276,7 @@ The ```VersionCommand``` can be invoked with ```myapp version``` or ```myapp -v`
 Version: 1.0
 ```
 
-A custom VersionCommand can be used by calling ```CLI.registerCustomVersionCommand(customVersion)```.
+A custom ```VersionCommand``` can be used by calling ```CLI.registerCustomVersionCommand(customVersion)```.
 
 ### Default command
 The default command is the command that is invoked if no command is specified. By default, this is simply the help command.
