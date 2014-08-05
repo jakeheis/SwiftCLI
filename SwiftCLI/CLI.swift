@@ -70,7 +70,16 @@ class CLI: NSObject {
     // MARK: - Go
     
     class func go() -> Bool {
-        let routingResult = self.routeCommand()
+       return self.goWithArguments(NSProcessInfo.processInfo().arguments as [String])
+    }
+    
+    class func debugGoWithArgumentString(argumentString: String) -> Bool {
+        let arguments = argumentString.componentsSeparatedByString(" ")
+        return self.goWithArguments(arguments)
+    }
+    
+    private class func goWithArguments(arguments: [String]) -> Bool {
+        let routingResult = self.routeCommand(arguments: arguments)
         
         switch routingResult {
         case let .Success(command, arguments, options, routedName):
@@ -108,9 +117,7 @@ class CLI: NSObject {
     
     // MARK: - Privates
     
-    class private func routeCommand() -> RouterResult {
-        var args = NSProcessInfo.processInfo().arguments as [String]
-        
+    class private func routeCommand(#arguments: [String]) -> RouterResult {
         self.prepareForRouting();
         
         var allCommands = CLIStatic.commands
@@ -121,7 +128,7 @@ class CLI: NSObject {
             allCommands += vc
         }
         
-        let router = Router(commands: allCommands, arguments: args, defaultCommand: CLIStatic.defaultCommand)
+        let router = Router(commands: allCommands, arguments: arguments, defaultCommand: CLIStatic.defaultCommand)
         
         return router.route()
     }
