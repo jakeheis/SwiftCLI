@@ -186,6 +186,7 @@
 				EF92BF69198AEF7900BAA12B /* Sources */,
 				EF92BF6A198AEF7900BAA12B /* Frameworks */,
 				EF92BF6B198AEF7900BAA12B /* CopyFiles */,
+				EFC9E18D19910A4500BC9B48 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -261,6 +262,23 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		EFC9E18D19910A4500BC9B48 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "ln -s $BUILT_PRODUCTS_DIR/$PRODUCT_NAME /usr/local/bin/$PRODUCT_NAME";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		EF92BF69198AEF7900BAA12B /* Sources */ = {
@@ -469,6 +487,7 @@
 				EFEB0BCC198DCEDA0040AFF0 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
