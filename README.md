@@ -54,13 +54,14 @@ CLI.go()
 ```
 When you are creating and debugging your app, ```debugGoWithArgumentString()``` is the better choice. Xcode does make it possible to pass arguments to a command line app on launch by editing app's scheme, but this can be a pain. ```debugGoWithArgumentString()``` makes it easier to pass an argument string to your app during development.
 ```swift
-CLI.debugGoWithArgumentString("greeter greet Jack)
+CLI.debugGoWithArgumentString("greeter greet")
 ```
 
 ## Commands
-There are three ways to create a command. You should decided which way based upon how complex a command is. In order to clearly show how each method compares, the same command "greet" will be implemented each way.
+There are three ways to create a command. You should decided which way to create your command based on how complex the command will be. In order to highlight the differences between the different command creation methods, the same command "greet" will be implemented each way.
+
 ### Subclass Command
-You should create a command this way if it does some heavy lifting, i.e. there is a non trivial amount of code involved.
+This is usually the best choice for a command. Any command that involves a non-trivial amount of execution or option-handling code should be created with this method. A command subclass provides a structured way to develop a complex command, keeping it organized and easy to read.
 ```swift
 class GreetCommand: Command {
     
@@ -84,7 +85,7 @@ class GreetCommand: Command {
 }
 ```
 ### Create a ChainableCommand
-You should only create this kind of command if the command is very simple and doesn't involve a lot of execution or option-handling code. It has all the same capabilities as a subclass of Command does, but it can quickly become bloated and hard to understand if there is a large amount of code involved.
+This is the most lightweight option. You should only create this kind of command if the command is very simple and doesn't involve a lot of execution or option-handling code. It has all the same capabilities as a subclass of Command does, but it can quickly become bloated and hard to understand if there is a large amount of code involved.
 ```swift
 let greetCommand = ChainableCommand(commandName: "greet")
     .withShortDescription("Greets the given person")
@@ -101,7 +102,7 @@ CLI.registerChainableCommand(commandName: "greet")
     .with...
 ```
 ### Create a LightweightCommand
-This type of command is very similar to ChainableCommand. In fact, all ChainableCommand does is provide an alternative interface to its underlying LightweightCommand. As with ChainableCommands, this type of command should only be used when the command is relatively simple.
+This type of command is very similar to ChainableCommand. In fact, all ChainableCommand does is provide an alternative interface to its superclass, LightweightCommand. As with ChainableCommands, this type of command should only be used when the command is relatively simple.
 ```swift
 let greetCommand = LightweightCommand(commandName: "greet")
 greetCommand.lightweightCommandShortDescription = "Greets the given person"
