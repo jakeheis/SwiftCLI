@@ -8,7 +8,7 @@
 
 import Foundation
 
-enum UnhandledOptionsPrintingBehavior {
+enum UnrecgonizedOptionsPrintingBehavior {
     case PrintNone
     case PrintOnlyUnrecognizedOptions
     case PrintOnlyUsage
@@ -164,7 +164,7 @@ class Command {
     *
     *  @return the printing behavior
     */
-    func unhandledOptionsPrintingBehavior() -> UnhandledOptionsPrintingBehavior {
+    func unrecgonizedOptionsPrintingBehavior() -> UnrecgonizedOptionsPrintingBehavior {
         return .PrintAll
     }
     
@@ -173,7 +173,7 @@ class Command {
     *
     *  @return if command should fail on unrecgonized options
     */
-    func failOnUnhandledOptions() -> Bool {
+    func failOnUnrecgonizedOptions() -> Bool {
         return true
     }
     
