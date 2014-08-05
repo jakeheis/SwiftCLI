@@ -36,7 +36,7 @@ Hey there!
 * [Running your CLI](#running-your-cli)
 * [Installation](#installation)
 * [Example](#example)
-* 
+
 ## Creating a CLI
 ### Setup
 In the call to ```CLI.setup()```, a ```name``` must be passed, and a ```version``` and a ```description``` are both optional.
