@@ -291,6 +291,30 @@ Available commands:
 
 A custom default command can be specified by calling ```CLI.registerDefaultCommand(customDefault)```.
 
+## Running your CLI
+
+### Within Xcode
+There are two methods to pass in arguments to your CLI within Xcode, explained below. After arguments are set up, just Build and Run, and your app will execute and print ouput in Xcode's Console.
+
+##### CLI ```debugGoWithArgumentString()```
+As discussed before, this is the easiest way to invoke the CLI. Just replace the ```CLI.go()``` call with ```CLI.debugGoWithArgumentString("")```. This is only appropriate for development, as when this method is called, the CLI disregards any arguments passed in on launch.
+
+##### Xcode Scheme
+First click on your app's scheme, then "Edit Scheme...". Go to the "Run" section, then the "Arguments" tab. You can then add arguments where it says "Arguments Passed On Launch".
+
+Make sure to use ```CLI.go()``` with this method, **not** ```CLI.debugGoWithArgumentString("")```.
+
+### In Terminal
+To actually make your CLI accessible and executable outside of Xcode, you need to add a symbolic link somewhere in your $PATH to the exectuable product Xcode outputs. The easiest way to do this is to click on your project in Xcode, then your executable target, then Build Phases. Add a new Run Script with this command:
+```sh
+ln -s $BUILT_PRODUCTS_DIR/$PRODUCT_NAME /usr/local/bin/$PRODUCT_NAME
+```
+If you would rather have the symbolic link be placed in a different directory on your $PATH, change the ```/usr/local/bin``` to your directory of choice. Also, if you would like the app to be executed with a different name then the product name, change the **2nd** ```$PRODUCT_NAME``` to your custom name.
+
+You then need to Build and Run your app once inside of Xcode. From then on, you should be able to access your CLI in terminal.
+
+Again, be sure to use ```CLI.go()``` with this method, not ```CLI.debugGoWithArgumentString("")```.
+
 ## Installation
 
 Pending Swift file support in Cocoapods (https://github.com/CocoaPods/CocoaPods/pull/2222), the best way to install SwiftCLI is by cloning the repository and adding the SwiftCLI files to your project.
