@@ -99,9 +99,9 @@ greetCommand.lightweightExecutionBlock = {arguments, options in
 
 
 ## Parameters
-Each command must have a command signature describing its expected/permitted arguments. The command signature is used to map an array of arguments into a keyed dictionary. When a command is being executed, it is passed this dictionary of arguments, with the command signature segments used as keys and the user-passed arguments as values.
+Each command must have a command signature describing its expected/permitted arguments. The command signature is used to map the array of user-passed arguments into a keyed dictionary. When a command is being executed, it is passed this dictionary of arguments, with the command signature segments used as keys and the user-passed arguments as values.
 
-A signature of ```<person> <greeting>``` and a call of ```greeter greet Jack Hello``` would result in the arguments dictionary ```["greeting": "Hello", "person": "Jack"]```.
+Foe example, a signature of ```<person> <greeting>``` and a call of ```greeter greet Jack Hello``` would result in the arguments dictionary ```["greeting": "Hello", "person": "Jack"]```.
 
 To set a command's signature:
 - **Command subclass**: ```override func commandSignature() -> String  {}```
@@ -155,7 +155,7 @@ With multiple arguments: ```greeter greet Jack Jill Hill``` -> ```["person": ["J
 Commands have support for two types of options: flag options and keyed options.
 
 ### Flag options
-Flag options are simple options that act as boolean switches. Using "git commit" as an example, "-a" would be a flag option.
+Flag options are simple options that act as boolean switches. For example, if you were to implement "git commit", "-a" would be a flag option.
 
 To configure a command for flag options:
 - **Command subclass**: 
@@ -187,7 +187,7 @@ class GreetCommand: Command {
 ```
 
 ### Keyed options
-Keyed options are options that have an associated value. Using "git commit" as an example again, "-m" would be a keyed option - it signifies the commit should have the associated message.
+Keyed options are options that have an associated value. Using "git commit" as an example again, "-m" would be a keyed option, as it has an associated value - the commit message.
 
 To configure a command for keyed options:
 - **Command subclass**: 
@@ -241,14 +241,14 @@ Usage: greeter greet <person> [options]
 -h, --help                               Show help information for this command
 ```
 
-Also worth noting, the ```valueSignature``` argument is what is shown for keyed arguments as such: ```<valueSignature>```
+The ```valueSignature``` argument in the ```onKeys``` family of methods is displayed like a parameter following the key: "--my-key <valueSignature>".
 
 
 ## Special commands
 ```CLI``` has three special commands: ```helpCommand```, ```versionCommand```, and ```defaultCommand```.
 
 ### Help Command
-The default HelpCommand. It can be invoked with ```myapp help``` or ```myapp -h```. The HelpCommand first prints the app description (if any was given during ```CLI.setup()```). It then iterates through all available commands, printing their name and their short description.
+The ```HelpCommand``` can be invoked with ```myapp help``` or ```myapp -h```. The ```HelpCommand``` first prints the app description (if any was given during ```CLI.setup()```). It then iterates through all available commands, printing their name and their short description.
 
 ```bash
 ~ > greeter help
@@ -262,7 +262,7 @@ Available commands:
 A custom HelpCommand can be used by calling ```CLI.registerCustomHelpCommand(customHelp)```.
 
 ### Version Command
-It can be invoked with ```myapp version``` or ```myapp -v```. The VersionCommand prints the version of the app given during ```CLI.setup()```. 
+The ```VersionCommand``` can be invoked with ```myapp version``` or ```myapp -v```. The VersionCommand prints the version of the app given during ```CLI.setup()```. 
 
 ```bash
 ~ > greeter -v
@@ -282,7 +282,7 @@ Available commands:
 - help                 Prints this help information
 ```
 
-A custom default command can be specified by calling ```CLI.registerDefaultCommand(customDefault)```. Examples of when a custom default command would be used include ```cp```, ```bundle```, and many others.
+A custom default command can be specified by calling ```CLI.registerDefaultCommand(customDefault)```.
 
 ## Installation
 
