@@ -309,7 +309,7 @@ To actually make your CLI accessible and executable outside of Xcode, you need t
 ```sh
 ln -s $BUILT_PRODUCTS_DIR/$PRODUCT_NAME /usr/local/bin/$PRODUCT_NAME
 ```
-If you would rather have the symbolic link be placed in a different directory on your $PATH, change the ```/usr/local/bin``` to your directory of choice. Also, if you would like the app to be executed with a different name then the product name, change the **2nd** ```$PRODUCT_NAME``` to your custom name.
+If you would rather have the symbolic link be placed in a different directory on your $PATH, change the ```/usr/local/bin``` to your directory of choice. Also, if you would like the app to be executed with a different name then the product name, change the 2nd ```$PRODUCT_NAME``` to your custom name.
 
 You then need to Build and Run your app once inside of Xcode. From then on, you should be able to access your CLI in terminal.
 
@@ -329,9 +329,3 @@ Then drag the SwiftCLI/SwiftCLI folder into your Xcode project:
 ![alt tag](https://github.com/jakeheis/SwiftCLI/blob/master/Example/DragScreenshot.png)
 
 ![alt tag](https://github.com/jakeheis/SwiftCLI/blob/master/Example/AddFilesDialog.png)
-
-## Making your CLI executable in terminal
-Open the "Products" group and right click on the exectuable product. Choose "Show in Finder". Then in your terminal, enter in:
-```bash
-ln -s /usr/local/bin/product_name product_location
-```
