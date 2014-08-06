@@ -104,10 +104,10 @@ class SignatureParser {
             }
             
             if argument.hasPrefix("[") {
-                optionalArgs += argument
+                optionalArgs.append(argument)
             } else {
                 assert(optionalArgs.isEmpty, "All optional arguments must come after required arguments in a command signature")
-                requiredArgs += argument
+                requiredArgs.append(argument)
             }
         }
         

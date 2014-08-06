@@ -40,7 +40,7 @@ class CLI: NSObject {
     // MARK: - Registering commands
     
     class func registerCommand(command: Command) {
-        CLIStatic.commands += command;
+        CLIStatic.commands.append(command)
     }
     
     class func registerCommands(commands: [Command]) {
@@ -51,7 +51,7 @@ class CLI: NSObject {
     
     class func registerChainableCommand(#commandName: String) -> ChainableCommand {
         let chainable = ChainableCommand(commandName: commandName)
-        CLIStatic.commands += chainable
+        self.registerCommand(chainable)
         return chainable
     }
     
@@ -95,7 +95,7 @@ class CLI: NSObject {
             }
             
             let namedArguments = self.parseSignatureAndArguments(command.commandSignature(), arguments: arguments)
-            if !namedArguments {
+            if namedArguments == nil {
                 return false
             }
             command.arguments = namedArguments!
@@ -122,10 +122,10 @@ class CLI: NSObject {
         
         var allCommands = CLIStatic.commands
         if let hc = CLIStatic.helpCommand {
-            allCommands += hc
+            allCommands.append(hc)
         }
         if let vc = CLIStatic.versionComand {
-            allCommands += vc
+            allCommands.append(vc)
         }
         
         let router = Router(commands: allCommands, arguments: arguments, defaultCommand: CLIStatic.defaultCommand)
@@ -137,7 +137,7 @@ class CLI: NSObject {
         let parser = SignatureParser(signature: signature, arguments: arguments)
         let (namedArguments, errorString) = parser.parse()
         
-        if !namedArguments {
+        if namedArguments == nil {
             println(errorString!)
             return nil
         }

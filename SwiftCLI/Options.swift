@@ -50,14 +50,14 @@ class Options {
                 let nextArgument = self.combinedFlagsAndKeys[index+1]
                 
                 if nextArgument.hasPrefix("-") {
-                    self.flagOptions += argument
+                    self.flagOptions.append(argument)
                 } else {
                     self.keyedOptions[argument] = nextArgument
                     skipNext = true
                 }
                 
             } else {
-                self.flagOptions += argument
+                    self.flagOptions.append(argument)
             }
             
         }
@@ -68,7 +68,7 @@ class Options {
     func onFlags(flags: [String], block: OptionsFlagBlock?) {
         for flag in flags {
             if contains(self.flagOptions, flag) {
-                self.accountedForFlags += flag
+                self.accountedForFlags.append(flag)
                 block?(flag: flag)
             }
         }
@@ -79,7 +79,7 @@ class Options {
     func onKeys(keys: [String], block: OptionsKeyBlock?) {
         for key in keys {
             if contains(Array(self.keyedOptions.keys), key) {
-                self.accountedForKeys += key
+                self.accountedForKeys.append(key)
                 block?(key: key, value: self.keyedOptions[key]!)
             }
         }

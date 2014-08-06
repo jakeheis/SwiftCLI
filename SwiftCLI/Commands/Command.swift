@@ -77,7 +77,7 @@ class Command {
     func commandUsageStatement(commandName: String? = nil) -> String {
         var message = "Usage: \(CLI.appName())"
         
-        let name = commandName ? commandName! : self.commandName()
+        let name = commandName ?? self.commandName()
         if name.utf16Count > 0 {
             message += " \(name)"
         }
@@ -126,7 +126,7 @@ class Command {
     func onFlags(flags: [String], block: OptionsFlagBlock?, usage: String = "") { // TODO: Add final modifier once possible
         let comps = ", ".join(flags)
         let padded = self.padString(usage, toLength: 40, firstComponent: comps)
-        self.usageStatements += "\(comps)\(padded)"
+        self.usageStatements.append("\(comps)\(padded)")
         
         self.options.onFlags(flags, block: block)
     }
@@ -139,7 +139,7 @@ class Command {
         let comps = ", ".join(keys)
         let firstPart = "\(comps) <\(valueSignature)>"
         let padded = self.padString(usage, toLength: 40, firstComponent: firstPart)
-        self.usageStatements += "\(firstPart)\(padded)"
+        self.usageStatements.append("\(firstPart)\(padded)")
         
         self.options.onKeys(keys, block: block)
     }

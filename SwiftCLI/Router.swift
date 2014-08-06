@@ -34,7 +34,7 @@ class Router {
 
         let (command, commandName, remainingArgumentsIndex) = self.findCommand(commandString)
         
-        if !command {
+        if command == nil {
             return .Failure
         }
         
@@ -54,7 +54,7 @@ class Router {
             command = self.findCommandWithShortcut(commandString)
             
             // If no command with shorcut found, pass the -arg as a flag to the default command
-            if !command {
+            if command == nil {
                 command = self.defaultCommand
                 argumentsStartingIndex = 1
                 cmdName = ""

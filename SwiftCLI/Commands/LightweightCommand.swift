@@ -46,12 +46,12 @@ class LightweightCommand: Command {
     
     func handleFlags(flags: [String], block: OptionsFlagBlock?, usage: String = "") {
         let handler = LightweightCommandFlagOptionHandler(flags: flags, flagBlock: block, usage: usage)
-        self.flagHandlingBlocks += handler
+        self.flagHandlingBlocks.append(handler)
     }
     
     func handleKeys(keys: [String], block: OptionsKeyBlock?, usage: String = "", valueSignature: String = "value") {
         let handler = LightweightCommandKeyOptionHandler(keys: keys, keyBlock: block, usage: usage, valueSignature: valueSignature)
-        self.keyHandlingBlocks += handler
+        self.keyHandlingBlocks.append(handler)
     }
     
     override func handleOptions()  {

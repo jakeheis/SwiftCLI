@@ -16,7 +16,7 @@ CLI.registerChainableCommand(commandName: "init")
     .withExecutionBlock({arguments, options in
         let givenDirectory = arguments["directory"] as String?
         
-        let fileName = givenDirectory ? givenDirectory!.stringByAppendingPathComponent("Bakefile") : "./Bakefile"
+        let fileName = givenDirectory?.stringByAppendingPathComponent("Bakefile") ?? "./Bakefile"
         
         let dict = ["items": []]
         let success = NSFileManager.defaultManager().createFileAtPath(fileName, contents: NSJSONSerialization.dataWithJSONObject(dict, options: NSJSONWritingOptions.PrettyPrinted, error: nil), attributes: nil)

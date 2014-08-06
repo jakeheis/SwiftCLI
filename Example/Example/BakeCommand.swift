@@ -44,7 +44,7 @@ class BakeCommand: Command {
     
     override func execute() -> CommandResult  {
         let item = self.arguments["item"] as String?
-        if item {
+        if item != nil {
             self.bakeItem(item!)
         } else {
             let data = NSData.dataWithContentsOfFile("./Bakefile", options: nil, error: nil)
@@ -68,7 +68,7 @@ class BakeCommand: Command {
     
     func bakeItem(item: String) {
         let quicklyStr = self.quickly ? " quickly" : ""
-        let toppingStr = self.topping ? " topped with \(self.topping!)" : ""
+        let toppingStr = self.topping == nil ? "" : " topped with \(self.topping!)"
 
         println("Baking a \(item)\(quicklyStr)\(toppingStr)")
         
