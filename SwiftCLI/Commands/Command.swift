@@ -103,7 +103,7 @@ class Command {
     
     // MARK: - Options
     
-    func optionsAccountedFor() -> Bool { // TODO: Add final modifier once possible
+    final func optionsAccountedFor() -> Bool {
         self.handleOptions()
         
         if self.showHelpOnHFlag() {
@@ -119,11 +119,11 @@ class Command {
     
     // MARK: On options
     
-    func onFlag(flag: String, block: OptionsFlagBlock?, usage: String = "") { // TODO: Add final modifier once possible
+    final func onFlag(flag: String, block: OptionsFlagBlock?, usage: String = "") {
         self.onFlags([flag], block: block, usage: usage)
     }
     
-    func onFlags(flags: [String], block: OptionsFlagBlock?, usage: String = "") { // TODO: Add final modifier once possible
+    final func onFlags(flags: [String], block: OptionsFlagBlock?, usage: String = "") {
         let comps = ", ".join(flags)
         let padded = self.padString(usage, toLength: 40, firstComponent: comps)
         self.usageStatements.append("\(comps)\(padded)")
@@ -131,11 +131,11 @@ class Command {
         self.options.onFlags(flags, block: block)
     }
     
-    func onKey(key: String, block: OptionsKeyBlock?, usage: String = "", valueSignature: String = "value") { // TODO: Add final modifier once possible
+    final func onKey(key: String, block: OptionsKeyBlock?, usage: String = "", valueSignature: String = "value") {
         self.onKeys([key], block: block, usage: usage, valueSignature: valueSignature)
     }
     
-    func onKeys(keys: [String], block: OptionsKeyBlock?, usage: String = "", valueSignature: String = "value") { // TODO: Add final modifier once possible
+    final func onKeys(keys: [String], block: OptionsKeyBlock?, usage: String = "", valueSignature: String = "value") {
         let comps = ", ".join(keys)
         let firstPart = "\(comps) <\(valueSignature)>"
         let padded = self.padString(usage, toLength: 40, firstComponent: firstPart)
@@ -185,7 +185,7 @@ class Command {
     
     // MARK - Helper
     
-    func padString(string: String, toLength: Int, firstComponent: String) -> String {
+    final func padString(string: String, toLength: Int, firstComponent: String) -> String {
         var spacing = ""
         for _ in firstComponent.utf16Count...toLength {
             spacing += " "
