@@ -9,7 +9,7 @@
 import Foundation
 
 enum RouterResult {
-    case Success(Command, [String], Options, String)
+    case Success(Command, [String], String)
     case Failure
 }
 
@@ -27,7 +27,7 @@ class Router {
     
     func route() -> RouterResult {
         if self.arguments.count == 1 { // e.g. "bundle"
-            return .Success(self.defaultCommand, [], Options(), "")
+            return .Success(self.defaultCommand, [], "")
         }
         
         let commandString = self.arguments[1]
@@ -38,9 +38,8 @@ class Router {
             return .Failure
         }
         
-        let segmentedArguments = self.segmentArgumentsWithStartingIndex(remainingArgumentsIndex)
-        
-        return .Success(command!, segmentedArguments.commandArguments, Options(arguments: segmentedArguments.optionArguments), commandName)
+        let remainingArgs = Array(self.arguments[remainingArgumentsIndex..<self.arguments.count])
+        return .Success(command!, remainingArgs, commandName)
     }
     
     // MARK: - Privates
@@ -84,28 +83,6 @@ class Router {
         }
         
         return nil
-    }
-    
-    private func segmentArgumentsWithStartingIndex(argumentsStartingIndex: Int) -> (commandArguments: [String], optionArguments: [String]){
-        if self.arguments.count <= argumentsStartingIndex {
-            return ([], [])
-        }
-        
-        let remainingArguments = self.arguments[argumentsStartingIndex..<self.arguments.count]
-        
-        var splitIndex: Int = remainingArguments.count
-        for index in 0..<remainingArguments.count {
-            let arg = remainingArguments[index] as String
-            if arg.hasPrefix("-") {
-                splitIndex = index
-                break
-            }
-        }
-        
-        let commandArguments = Array(remainingArguments[0..<splitIndex])
-        let optionArguments = Array(remainingArguments[splitIndex..<remainingArguments.count])
-        
-        return (commandArguments, optionArguments)
     }
     
 }

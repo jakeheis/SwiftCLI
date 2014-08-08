@@ -103,7 +103,7 @@ class Command {
     
     // MARK: - Options
     
-    final func optionsAccountedFor() -> Bool {
+    final func fillExpectedOptions() {
         self.handleOptions()
         
         if self.showHelpOnHFlag() {
@@ -113,8 +113,6 @@ class Command {
                 println(self.commandUsageStatement())
             }, usage: "Show help information for this command")
         }
-        
-        return self.options.allAccountedFor()
     }
     
     // MARK: On options
@@ -147,16 +145,19 @@ class Command {
     // MARK: Sublcass option config
     
     /**
+    *  Method where all onFlag(s) and onKey(s) calls should be made
+    */
+    func handleOptions() {
+        
+    }
+    
+    /**
     *  Describes if this command should print its usage statement when passed the "-h" flag
     *
     *  @return if usage statement should be printed
     */
     func showHelpOnHFlag() -> Bool {
         return true
-    }
-    
-    func handleOptions() {
-        
     }
 
     /**

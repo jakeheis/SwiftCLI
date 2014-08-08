@@ -13,64 +13,89 @@ typealias OptionsKeyBlock = (key: String, value: String) -> ()
 
 class Options {
     
-    let combinedFlagsAndKeys: [String]
-    var flagOptions: [String] = []
-    var keyedOptions: [String: String] = [:]
+    var expectedFlags: [String] = []
+    var expectedFlagBlocks: [OptionsFlagBlock?] = []
+    var expectedKeys: [String] = []
+    var expectedKeyBlocks: [OptionsKeyBlock?] = []
     
-    var accountedForFlags: [String] = []
-    var accountedForKeys: [String] = []
-    
-    convenience init() {
-        self.init(arguments: [])
-    }
-    
-    init(arguments: [String]) {
-        self.combinedFlagsAndKeys = arguments
-        
-        self.splitArguments()
-    }
-    
-    func description() -> String {
-        return "Flag options: \(self.flagOptions) Keyed options: \(self.keyedOptions)"
-    }
+    var unrecognizedOptions: [String] = []
+    var keysNotGivenValue: [String] = []
     
     // MARK: - Argument splitting
     
-    private func splitArguments() {
-        var skipNext = false
-        for index in 0..<self.combinedFlagsAndKeys.count {
-            if skipNext {
-                skipNext = false
-                continue
-            }
-            
-            let argument = self.combinedFlagsAndKeys[index]
-            
-            if index < self.combinedFlagsAndKeys.count-1 {
-                let nextArgument = self.combinedFlagsAndKeys[index+1]
+    func parseArguments(arguments: [String]) -> (commandArguments: [String]) {
+        var commandArguments: [String] = []
+        
+        var keyAwaitingValue: String? = nil
+        
+        for arg in arguments {
+            if arg.hasPrefix("-") {
+                var allOptions = self.splitOption(arg)
                 
-                if nextArgument.hasPrefix("-") {
-                    self.flagOptions.append(argument)
-                } else {
-                    self.keyedOptions[argument] = nextArgument
-                    skipNext = true
+                for option in allOptions {
+                    if let key = keyAwaitingValue {
+                        self.keysNotGivenValue.append(key)
+                        keyAwaitingValue = nil
+                    }
+                    
+                    if self.tryFlag(option) {
+                        continue;
+                    }
+                    
+                    if contains(self.expectedKeys, option) {
+                        keyAwaitingValue = option
+                        continue;
+                    }
+                    
+                    self.unrecognizedOptions.append(arg)
                 }
-                
+               
             } else {
-                    self.flagOptions.append(argument)
+                if let key = keyAwaitingValue {
+                    self.foundKeyValue(key, value: arg)
+                    keyAwaitingValue = nil
+                } else {
+                    commandArguments.append(arg)
+                }
             }
-            
         }
+        
+        return commandArguments
+    }
+    
+    private func splitOption(optionString: String) -> [String] {
+        var allOptions: [String] = []
+        if optionString.hasPrefix("--") {
+            allOptions.append(optionString)
+        } else {
+            var chars: [String] = optionString.characterArray()
+            chars.removeAtIndex(0)
+            allOptions += chars.map({ "-\($0)" })
+        }
+        return allOptions
+    }
+    
+    private func tryFlag(flag: String) -> Bool {
+        if let index = find(self.expectedFlags, flag) {
+            let block = self.expectedFlagBlocks[index]
+            block?(flag: flag);
+            return true
+        }
+        return false
+    }
+    
+    private func foundKeyValue(key: String, value: String) {
+        let index = find(self.expectedKeys, key)
+        let block = self.expectedKeyBlocks[index!]
+        block?(key: key, value: value)
     }
     
     // MARK: - Flags
 
     func onFlags(flags: [String], block: OptionsFlagBlock?) {
         for flag in flags {
-            if contains(self.flagOptions, flag) {
-                self.accountedForFlags.append(flag)
-                block?(flag: flag)
-            }
+            self.expectedFlags.append(flag)
+            self.expectedFlagBlocks.append(block)
         }
     }
     
@@ -78,17 +103,15 @@ class Options {
     
     func onKeys(keys: [String], block: OptionsKeyBlock?) {
         for key in keys {
-            if contains(Array(self.keyedOptions.keys), key) {
-                self.accountedForKeys.append(key)
-                block?(key: key, value: self.keyedOptions[key]!)
-            }
+            self.expectedKeys.append(key)
+            self.expectedKeyBlocks.append(block)
         }
     }
     
     // MARK: - Other publics
     
-    func allAccountedFor() -> Bool {
-        return self.remainingFlagOptions().count == 0 && self.remainingKeyedOptions().count == 0
+    func misusedOptionsPresent() -> Bool {
+        return self.unrecognizedOptions.count > 0 || self.keysNotGivenValue.count > 0
     }
     
     func unaccountedForMessage(#command: Command, routedName: String) -> String? {
@@ -99,12 +122,18 @@ class Options {
         var message = ""
         
         if command.unrecognizedOptionsPrintingBehavior() != .PrintOnlyUsage {
-            message += "Unrecognized options:"
-            for flag in self.remainingFlagOptions() {
-                message += "\n\t\(flag)"
+            if self.unrecognizedOptions.count > 0 {
+                message += "Unrecognized options:"
+                for option in self.unrecognizedOptions {
+                    message += "\n\t\(option)"
+                }
             }
-            for option in self.remainingKeyedOptions() {
-                message += "\n\t\(option) \(self.keyedOptions[option]!)"
+
+            if self.keysNotGivenValue.count > 0 {
+                message += "Required values for options but given none:"
+                for option in self.keysNotGivenValue {
+                    message += "\n\t\(option)"
+                }
             }
             
             if command.unrecognizedOptionsPrintingBehavior() == .PrintAll {
@@ -119,16 +148,33 @@ class Options {
         return message
     }
     
-    // MARK: - Privates
-    
-    private func remainingFlagOptions() -> [String] {
-        let remainingFlags = self.flagOptions.filter({ !contains(self.accountedForFlags, $0) })
-        return remainingFlags
+}
+
+// MARK: - String extension
+
+extension String {
+    subscript (r: Range<Int>) -> String {
+        get {
+            let startIndex = advance(self.startIndex, r.startIndex)
+            let endIndex = advance(startIndex, r.endIndex - r.startIndex)
+            
+            return self[Range(start: startIndex, end: endIndex)]
+        }
     }
     
-    private func remainingKeyedOptions() -> [String] {
-        let remainingKeys = self.keyedOptions.keys.filter({ !contains(self.accountedForKeys, $0) })
-        return Array(remainingKeys)
+    subscript (i: Int) -> String {
+        get {
+            let startIndex = advance(self.startIndex, i)
+            
+            return String(self[startIndex])
+        }
     }
     
+    func characterArray() -> [String] {
+        var chars: [String] = []
+        for i in 0..<self.utf16Count {
+            chars.append(self[i])
+        }
+        return chars
+    }
 }

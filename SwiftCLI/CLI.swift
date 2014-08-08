@@ -82,11 +82,10 @@ class CLI: NSObject {
         let routingResult = self.routeCommand(arguments: arguments)
         
         switch routingResult {
-        case let .Success(command, arguments, options, routedName):
+        case let .Success(command, arguments, routedName):
             
-            command.options = options;
-            let cmdArgs = self.handleCommandOptions(command, routedName: routedName)
-            if !cmdArgs {
+            let (success, commandArguments) = self.handleCommandOptions(command, arguments: arguments, routedName: routedName)
+            if !success {
                 return false
             }
             
@@ -94,7 +93,7 @@ class CLI: NSObject {
                 return true
             }
             
-            let namedArguments = self.parseSignatureAndArguments(command.commandSignature(), arguments: arguments)
+            let namedArguments = self.parseSignatureAndArguments(command.commandSignature(), arguments: commandArguments)
             if namedArguments == nil {
                 return false
             }
@@ -145,16 +144,21 @@ class CLI: NSObject {
         return namedArguments
     }
     
-    class private func handleCommandOptions(command: Command, routedName: String) -> Bool {
-        if !command.optionsAccountedFor() {
+    class private func handleCommandOptions(command: Command, arguments: [String], routedName: String) -> (success: Bool, commandArguments: [String]) {
+        command.fillExpectedOptions()
+        
+        let commandArguments = command.options.parseArguments(arguments)
+        
+        if command.options.misusedOptionsPresent() {
             if let message = command.options.unaccountedForMessage(command: command, routedName: routedName) {
                 println(message)
             }
             if (command.failOnUnrecognizedOptions()) {
-                return false
+                return (false, [])
             }
         }
-        return true
+        
+        return (true, commandArguments)
     }
     
     class private func prepareForRouting() {
