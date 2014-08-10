@@ -170,7 +170,7 @@ With one argument: ```greeter greet Jack``` -> ```["person": ["Jack"]]```
 With multiple arguments: ```greeter greet Jack Jill Hill``` -> ```["person": ["Jack", "Jill", "Hill"]]```
 
 ## Options
-Commands have support for two types of options: flag options and keyed options.
+Commands have support for two types of options: flag options and keyed options. Both types of options can either be denoted by a dash followed by a single letter ```git commit -a``` or two dashes followed by the option name ```git commit --ammend```. Single letter options can be cascaded into a single dash followed by all the desired options: ```git commit -am``` == ```git commit -a -m```.
 
 ### Flag options
 Flag options are simple options that act as boolean switches. For example, if you were to implement "git commit", "-a" would be a flag option.
