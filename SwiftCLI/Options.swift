@@ -21,9 +21,9 @@ class Options {
     var unrecognizedOptions: [String] = []
     var keysNotGivenValue: [String] = []
     
-    // MARK: - Argument splitting
+    // MARK: - Argument parsing
     
-    func parseArguments(arguments: [String]) -> (commandArguments: [String]) {
+    func parseArguments(arguments: [String]) -> [String] {
         var commandArguments: [String] = []
         
         var keyAwaitingValue: String? = nil
@@ -68,11 +68,21 @@ class Options {
         if optionString.hasPrefix("--") {
             allOptions.append(optionString)
         } else {
-            var chars: [String] = optionString.characterArray()
+            var chars: [String] = self.characterArrayForString(optionString)
             chars.removeAtIndex(0)
             allOptions += chars.map({ "-\($0)" })
         }
         return allOptions
+    }
+    
+    private func characterArrayForString(string: String) -> [String] {
+        var chars: [String] = []
+        for i in 0..<string.utf16Count {
+            let index = advance(string.startIndex, i)
+            let str = String(string[index])
+            chars.append(str)
+        }
+        return chars
     }
     
     private func tryFlag(flag: String) -> Bool {
@@ -148,33 +158,4 @@ class Options {
         return message
     }
     
-}
-
-// MARK: - String extension
-
-extension String {
-    subscript (r: Range<Int>) -> String {
-        get {
-            let startIndex = advance(self.startIndex, r.startIndex)
-            let endIndex = advance(startIndex, r.endIndex - r.startIndex)
-            
-            return self[Range(start: startIndex, end: endIndex)]
-        }
-    }
-    
-    subscript (i: Int) -> String {
-        get {
-            let startIndex = advance(self.startIndex, i)
-            
-            return String(self[startIndex])
-        }
-    }
-    
-    func characterArray() -> [String] {
-        var chars: [String] = []
-        for i in 0..<self.utf16Count {
-            chars.append(self[i])
-        }
-        return chars
-    }
 }
