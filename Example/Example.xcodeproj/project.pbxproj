@@ -16,10 +16,13 @@
 		EF92BF86198AF19B00BAA12B /* Options.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF92BF7E198AF19B00BAA12B /* Options.swift */; };
 		EF92BF87198AF19B00BAA12B /* Router.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF92BF7F198AF19B00BAA12B /* Router.swift */; };
 		EF92BF88198AF19B00BAA12B /* SignatureParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF92BF80198AF19B00BAA12B /* SignatureParser.swift */; };
+		EFCF34741997FF23008691D1 /* Quick.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EFCF346D1997FF1E008691D1 /* Quick.framework */; };
+		EFCF34761997FF41008691D1 /* OptionsSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFCF34751997FF41008691D1 /* OptionsSpec.swift */; };
+		EFCF34861997FF75008691D1 /* Nimble.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EFCF34831997FF70008691D1 /* Nimble.framework */; };
 		EFEB0B55198C4D200040AFF0 /* BakeCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFEB0B54198C4D200040AFF0 /* BakeCommand.swift */; };
 		EFEB0B57198D17EB0040AFF0 /* VersionCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFEB0B56198D17EB0040AFF0 /* VersionCommand.swift */; };
 		EFEB0BCA198DCEDA0040AFF0 /* SwiftCLITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFEB0BC9198DCEDA0040AFF0 /* SwiftCLITests.swift */; };
-		EFEB0BD2198DD0E90040AFF0 /* SignatureParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFEB0BD1198DD0E90040AFF0 /* SignatureParserTests.swift */; };
+		EFEB0BD2198DD0E90040AFF0 /* SignatureParserSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFEB0BD1198DD0E90040AFF0 /* SignatureParserSpec.swift */; };
 		EFEB0C08198DD2570040AFF0 /* CLI.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF92BF78198AF19B00BAA12B /* CLI.swift */; };
 		EFEB0C09198DD2570040AFF0 /* ChainableCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF92BF7A198AF19B00BAA12B /* ChainableCommand.swift */; };
 		EFEB0C0A198DD2570040AFF0 /* Command.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF92BF7B198AF19B00BAA12B /* Command.swift */; };
@@ -32,6 +35,62 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		EFCF346C1997FF1E008691D1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = EFCF34641997FF1D008691D1 /* Quick.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = DAEB6B8E1943873100289F44;
+			remoteInfo = Quick;
+		};
+		EFCF346E1997FF1E008691D1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = EFCF34641997FF1D008691D1 /* Quick.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = DAEB6B991943873100289F44;
+			remoteInfo = QuickTests;
+		};
+		EFCF34701997FF1E008691D1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = EFCF34641997FF1D008691D1 /* Quick.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 5A5D117C19473F2100F6D13D;
+			remoteInfo = "Quick-iOS";
+		};
+		EFCF34721997FF1E008691D1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = EFCF34641997FF1D008691D1 /* Quick.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 5A5D118619473F2100F6D13D;
+			remoteInfo = "Quick-iOSTests";
+		};
+		EFCF347E1997FF70008691D1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = EFCF34771997FF70008691D1 /* Nimble.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 1F1A74291940169200FFFC47;
+			remoteInfo = "Nimble-iOS";
+		};
+		EFCF34801997FF70008691D1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = EFCF34771997FF70008691D1 /* Nimble.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 1F1A74341940169200FFFC47;
+			remoteInfo = "Nimble-iOSTests";
+		};
+		EFCF34821997FF70008691D1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = EFCF34771997FF70008691D1 /* Nimble.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 1F925EAD195C0D6300ED456B;
+			remoteInfo = "Nimble-OSX";
+		};
+		EFCF34841997FF70008691D1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = EFCF34771997FF70008691D1 /* Nimble.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 1F925EB7195C0D6300ED456B;
+			remoteInfo = "Nimble-OSXTests";
+		};
 		EFEB0BD3198DD1790040AFF0 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = EF92BF65198AEF7900BAA12B /* Project object */;
@@ -78,12 +137,15 @@
 		EF92BF7E198AF19B00BAA12B /* Options.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Options.swift; sourceTree = "<group>"; };
 		EF92BF7F198AF19B00BAA12B /* Router.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Router.swift; sourceTree = "<group>"; };
 		EF92BF80198AF19B00BAA12B /* SignatureParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignatureParser.swift; sourceTree = "<group>"; };
+		EFCF34641997FF1D008691D1 /* Quick.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Quick.xcodeproj; path = Quick/Quick/Quick.xcodeproj; sourceTree = "<group>"; };
+		EFCF34751997FF41008691D1 /* OptionsSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OptionsSpec.swift; sourceTree = "<group>"; };
+		EFCF34771997FF70008691D1 /* Nimble.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Nimble.xcodeproj; path = Nimble/Nimble.xcodeproj; sourceTree = "<group>"; };
 		EFEB0B54198C4D200040AFF0 /* BakeCommand.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BakeCommand.swift; sourceTree = "<group>"; };
 		EFEB0B56198D17EB0040AFF0 /* VersionCommand.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VersionCommand.swift; sourceTree = "<group>"; };
 		EFEB0BC5198DCEDA0040AFF0 /* SwiftCLITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SwiftCLITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		EFEB0BC8198DCEDA0040AFF0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		EFEB0BC9198DCEDA0040AFF0 /* SwiftCLITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftCLITests.swift; sourceTree = "<group>"; };
-		EFEB0BD1198DD0E90040AFF0 /* SignatureParserTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignatureParserTests.swift; sourceTree = "<group>"; };
+		EFEB0BD1198DD0E90040AFF0 /* SignatureParserSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignatureParserSpec.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -98,6 +160,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EFCF34861997FF75008691D1 /* Nimble.framework in Frameworks */,
+				EFCF34741997FF23008691D1 /* Quick.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -157,11 +221,36 @@
 			path = Commands;
 			sourceTree = "<group>";
 		};
+		EFCF34651997FF1D008691D1 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				EFCF346D1997FF1E008691D1 /* Quick.framework */,
+				EFCF346F1997FF1E008691D1 /* QuickTests.xctest */,
+				EFCF34711997FF1E008691D1 /* Quick.framework */,
+				EFCF34731997FF1E008691D1 /* Quick-iOSTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		EFCF34781997FF70008691D1 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				EFCF347F1997FF70008691D1 /* Nimble.framework */,
+				EFCF34811997FF70008691D1 /* NimbleTests.xctest */,
+				EFCF34831997FF70008691D1 /* Nimble.framework */,
+				EFCF34851997FF70008691D1 /* Nimble-OSXTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		EFEB0BC6198DCEDA0040AFF0 /* SwiftCLITests */ = {
 			isa = PBXGroup;
 			children = (
+				EFCF34771997FF70008691D1 /* Nimble.xcodeproj */,
+				EFCF34641997FF1D008691D1 /* Quick.xcodeproj */,
 				EFEB0BC9198DCEDA0040AFF0 /* SwiftCLITests.swift */,
-				EFEB0BD1198DD0E90040AFF0 /* SignatureParserTests.swift */,
+				EFEB0BD1198DD0E90040AFF0 /* SignatureParserSpec.swift */,
+				EFCF34751997FF41008691D1 /* OptionsSpec.swift */,
 				EFEB0BC7198DCEDA0040AFF0 /* Supporting Files */,
 			);
 			name = SwiftCLITests;
@@ -245,6 +334,16 @@
 			mainGroup = EF92BF64198AEF7900BAA12B;
 			productRefGroup = EF92BF6E198AEF7900BAA12B /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = EFCF34781997FF70008691D1 /* Products */;
+					ProjectRef = EFCF34771997FF70008691D1 /* Nimble.xcodeproj */;
+				},
+				{
+					ProductGroup = EFCF34651997FF1D008691D1 /* Products */;
+					ProjectRef = EFCF34641997FF1D008691D1 /* Quick.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				EF92BF6C198AEF7900BAA12B /* Example */,
@@ -252,6 +351,65 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		EFCF346D1997FF1E008691D1 /* Quick.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = Quick.framework;
+			remoteRef = EFCF346C1997FF1E008691D1 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		EFCF346F1997FF1E008691D1 /* QuickTests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = QuickTests.xctest;
+			remoteRef = EFCF346E1997FF1E008691D1 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		EFCF34711997FF1E008691D1 /* Quick.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = Quick.framework;
+			remoteRef = EFCF34701997FF1E008691D1 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		EFCF34731997FF1E008691D1 /* Quick-iOSTests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = "Quick-iOSTests.xctest";
+			remoteRef = EFCF34721997FF1E008691D1 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		EFCF347F1997FF70008691D1 /* Nimble.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = Nimble.framework;
+			remoteRef = EFCF347E1997FF70008691D1 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		EFCF34811997FF70008691D1 /* NimbleTests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = NimbleTests.xctest;
+			remoteRef = EFCF34801997FF70008691D1 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		EFCF34831997FF70008691D1 /* Nimble.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = Nimble.framework;
+			remoteRef = EFCF34821997FF70008691D1 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		EFCF34851997FF70008691D1 /* Nimble-OSXTests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = "Nimble-OSXTests.xctest";
+			remoteRef = EFCF34841997FF70008691D1 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		EFEB0BC3198DCEDA0040AFF0 /* Resources */ = {
@@ -306,6 +464,7 @@
 				EFEB0C08198DD2570040AFF0 /* CLI.swift in Sources */,
 				EFEB0C09198DD2570040AFF0 /* ChainableCommand.swift in Sources */,
 				EFEB0C0A198DD2570040AFF0 /* Command.swift in Sources */,
+				EFCF34761997FF41008691D1 /* OptionsSpec.swift in Sources */,
 				EFEB0C0B198DD2570040AFF0 /* HelpCommand.swift in Sources */,
 				EFEB0C0C198DD2570040AFF0 /* VersionCommand.swift in Sources */,
 				EFEB0C0D198DD2570040AFF0 /* LightweightCommand.swift in Sources */,
@@ -313,7 +472,7 @@
 				EFEB0C0F198DD2570040AFF0 /* Router.swift in Sources */,
 				EFEB0C10198DD2570040AFF0 /* SignatureParser.swift in Sources */,
 				EFEB0BCA198DCEDA0040AFF0 /* SwiftCLITests.swift in Sources */,
-				EFEB0BD2198DD0E90040AFF0 /* SignatureParserTests.swift in Sources */,
+				EFEB0BD2198DD0E90040AFF0 /* SignatureParserSpec.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
