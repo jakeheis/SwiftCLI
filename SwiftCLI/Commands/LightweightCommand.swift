@@ -19,6 +19,8 @@ class LightweightCommand: Command {
     var lightweightExecutionBlock: CommandExecutionBlock? = nil
     
     var shouldFailOnUnrecognizedOptions = true
+    var shouldShowHelpOnHFlag = true
+    var printingBehaviorOnUnrecognizedOptions: UnrecognizedOptionsPrintingBehavior = .PrintAll
     private var flagHandlingBlocks: [LightweightCommandFlagOptionHandler] = []
     private var keyHandlingBlocks: [LightweightCommandKeyOptionHandler] = []
     
@@ -44,6 +46,8 @@ class LightweightCommand: Command {
         return self.lightweightCommandShortcut
     }
     
+    // MARK: - Options
+    
     func handleFlags(flags: [String], block: OptionsFlagBlock?, usage: String = "") {
         let handler = LightweightCommandFlagOptionHandler(flags: flags, flagBlock: block, usage: usage)
         self.flagHandlingBlocks.append(handler)
@@ -64,13 +68,25 @@ class LightweightCommand: Command {
         }
     }
     
+    override func showHelpOnHFlag() -> Bool {
+        return self.shouldShowHelpOnHFlag
+    }
+    
+    override func unrecognizedOptionsPrintingBehavior() -> UnrecognizedOptionsPrintingBehavior {
+        return self.printingBehaviorOnUnrecognizedOptions
+    }
+    
     override func failOnUnrecognizedOptions() -> Bool  {
         return self.shouldFailOnUnrecognizedOptions
     }
+    
+    // MARK: - Execution
 
     override func execute() -> CommandResult {
         return self.lightweightExecutionBlock!(arguments: self.arguments, options: self.options)
     }
+    
+    // MARK: - Option block wrappers
     
     class LightweightCommandFlagOptionHandler {
         let flags: [String]

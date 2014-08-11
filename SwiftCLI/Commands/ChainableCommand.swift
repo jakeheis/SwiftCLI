@@ -29,6 +29,8 @@ class ChainableCommand: LightweightCommand {
         return self
     }
     
+    // MARK: - Options
+    
     func withFlagsHandled(flags: [String], block: OptionsFlagBlock?, usage: String) -> ChainableCommand {
         self.handleFlags(flags, block: block, usage: usage)
         return self
@@ -39,10 +41,22 @@ class ChainableCommand: LightweightCommand {
         return self
     }
     
+    func withNoHelpShownOnHFlag() -> ChainableCommand {
+        self.shouldShowHelpOnHFlag = false
+        return self
+    }
+    
+    func withPrintingBehaviorOnUnrecgonizedOptions(behavior: UnrecognizedOptionsPrintingBehavior) -> ChainableCommand {
+        self.printingBehaviorOnUnrecognizedOptions = behavior
+        return self
+    }
+    
     func withAllFlagsAndOptionsAllowed() -> ChainableCommand {
         self.shouldFailOnUnrecognizedOptions = false
         return self
     }
+    
+    // MARK: - Execution
     
     func withExecutionBlock(execution: CommandExecutionBlock) -> ChainableCommand {
         self.lightweightExecutionBlock = execution
