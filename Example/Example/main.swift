@@ -52,4 +52,7 @@ CLI.registerCommand(listCommand)
 let bakerCommand = BakeCommand()
 CLI.registerCommand(bakerCommand)
 
+let recipeCommand = RecipeCommand()
+CLI.registerCommand(recipeCommand)
+
 CLI.go()

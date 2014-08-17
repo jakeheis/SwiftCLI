@@ -44,7 +44,7 @@ class BakeCommand: Command {
     
     override func execute() -> CommandResult  {
         let item = self.arguments["item"] as String?
-        if item != nil {
+        if let i = item {
             self.bakeItem(item!)
         } else {
             let data = NSData.dataWithContentsOfFile("./Bakefile", options: nil, error: nil)
@@ -66,15 +66,28 @@ class BakeCommand: Command {
         return .Success
     }
     
-    func bakeItem(item: String) {
+    private func bakeItem(item: String) {
         let quicklyStr = self.quickly ? " quickly" : ""
         let toppingStr = self.topping == nil ? "" : " topped with \(self.topping!)"
 
         println("Baking a \(item)\(quicklyStr)\(toppingStr)")
         
-        for _ in 1...(self.quickly ? 2 : 4) {
+        var cookTime = 4;
+        var silently = self.silently
+        
+        let recipe = self.checkForRecipe(item)
+        if let r = recipe {
+            cookTime = r["cookTime"] as Int
+            silently = r["silently"] as Bool
+        }
+        
+        if self.quickly {
+            cookTime = cookTime/2
+        }
+        
+        for _ in 1...cookTime {
             NSThread.sleepForTimeInterval(1)
-            if !self.silently {
+            if !silently {
                 println("...")
             }
         }
@@ -82,4 +95,23 @@ class BakeCommand: Command {
         println("Your \(item) is now ready!")
     }
     
+    private func checkForRecipe(item: String) -> NSDictionary? {
+        let data = NSData.dataWithContentsOfFile("./Bakefile", options: nil, error: nil)
+        if data == nil {
+            return nil
+        }
+        let dict = NSJSONSerialization.JSONObjectWithData(data, options: nil, error: nil) as NSDictionary!
+        if dict == nil {
+            return nil
+        }
+        
+        let customRecipes = dict["custom_recipes"] as [NSDictionary]
+        for recipe in customRecipes {
+            if recipe["name"] as String == item {
+                return recipe
+            }
+        }
+        
+        return nil
+    }
 }

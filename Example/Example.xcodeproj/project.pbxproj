@@ -16,6 +16,8 @@
 		EF92BF86198AF19B00BAA12B /* Options.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF92BF7E198AF19B00BAA12B /* Options.swift */; };
 		EF92BF87198AF19B00BAA12B /* Router.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF92BF7F198AF19B00BAA12B /* Router.swift */; };
 		EF92BF88198AF19B00BAA12B /* SignatureParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF92BF80198AF19B00BAA12B /* SignatureParser.swift */; };
+		EFA57FDF19A151BC00340DD8 /* RecipeCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFA57FDE19A151BC00340DD8 /* RecipeCommand.swift */; };
+		EFA57FE919A152EF00340DD8 /* Input.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFA57FE819A152EF00340DD8 /* Input.swift */; };
 		EFCF34741997FF23008691D1 /* Quick.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EFCF346D1997FF1E008691D1 /* Quick.framework */; };
 		EFCF34761997FF41008691D1 /* OptionsSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFCF34751997FF41008691D1 /* OptionsSpec.swift */; };
 		EFCF34861997FF75008691D1 /* Nimble.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EFCF34831997FF70008691D1 /* Nimble.framework */; };
@@ -137,6 +139,8 @@
 		EF92BF7E198AF19B00BAA12B /* Options.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Options.swift; sourceTree = "<group>"; };
 		EF92BF7F198AF19B00BAA12B /* Router.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Router.swift; sourceTree = "<group>"; };
 		EF92BF80198AF19B00BAA12B /* SignatureParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignatureParser.swift; sourceTree = "<group>"; };
+		EFA57FDE19A151BC00340DD8 /* RecipeCommand.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RecipeCommand.swift; sourceTree = "<group>"; };
+		EFA57FE819A152EF00340DD8 /* Input.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Input.swift; sourceTree = "<group>"; };
 		EFCF34641997FF1D008691D1 /* Quick.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Quick.xcodeproj; path = Quick/Quick/Quick.xcodeproj; sourceTree = "<group>"; };
 		EFCF34751997FF41008691D1 /* OptionsSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OptionsSpec.swift; sourceTree = "<group>"; };
 		EFCF34771997FF70008691D1 /* Nimble.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Nimble.xcodeproj; path = Nimble/Nimble.xcodeproj; sourceTree = "<group>"; };
@@ -191,6 +195,7 @@
 			children = (
 				EF92BF70198AEF7900BAA12B /* main.swift */,
 				EFEB0B54198C4D200040AFF0 /* BakeCommand.swift */,
+				EFA57FDE19A151BC00340DD8 /* RecipeCommand.swift */,
 				EF92BF77198AF19B00BAA12B /* SwiftCLI */,
 			);
 			path = Example;
@@ -204,6 +209,7 @@
 				EF92BF7E198AF19B00BAA12B /* Options.swift */,
 				EF92BF7F198AF19B00BAA12B /* Router.swift */,
 				EF92BF80198AF19B00BAA12B /* SignatureParser.swift */,
+				EFA57FE819A152EF00340DD8 /* Input.swift */,
 			);
 			name = SwiftCLI;
 			path = ../../SwiftCLI;
@@ -444,6 +450,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				EFEB0B55198C4D200040AFF0 /* BakeCommand.swift in Sources */,
+				EFA57FDF19A151BC00340DD8 /* RecipeCommand.swift in Sources */,
 				EF92BF87198AF19B00BAA12B /* Router.swift in Sources */,
 				EF92BF85198AF19B00BAA12B /* LightweightCommand.swift in Sources */,
 				EF92BF82198AF19B00BAA12B /* ChainableCommand.swift in Sources */,
@@ -453,6 +460,7 @@
 				EF92BF83198AF19B00BAA12B /* Command.swift in Sources */,
 				EFEB0B57198D17EB0040AFF0 /* VersionCommand.swift in Sources */,
 				EF92BF84198AF19B00BAA12B /* HelpCommand.swift in Sources */,
+				EFA57FE919A152EF00340DD8 /* Input.swift in Sources */,
 				EF92BF86198AF19B00BAA12B /* Options.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
