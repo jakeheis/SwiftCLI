@@ -23,12 +23,12 @@ class RecipeCommand: Command {
     }
     
     override func execute() -> CommandResult {
-        let data = NSData.dataWithContentsOfFile("./Bakefile", options: nil, error: nil)
+        let data = NSData(contentsOfFile: "./Bakefile")
         if data == nil {
             return .Failure("No Bakefile could be found in the current directory. Run 'baker init' before this command.")
         }
         
-        var bakefile = NSJSONSerialization.JSONObjectWithData(data, options: nil, error: nil).mutableCopy() as NSMutableDictionary
+        var bakefile = NSJSONSerialization.JSONObjectWithData(data!, options: nil, error: nil)?.mutableCopy() as NSMutableDictionary?
         if bakefile == nil {
             return .Failure("The Bakefile could not be parsed.")
         }
@@ -39,12 +39,12 @@ class RecipeCommand: Command {
         
         let recipe = ["name": name, "cookTime": cookTime, "silently": silently];
         
-        var customRecipes: [NSDictionary] = bakefile["custom_recipes"] as? [NSDictionary] ?? []
+        var customRecipes: [NSDictionary] = bakefile!["custom_recipes"] as? [NSDictionary] ?? []
         customRecipes.append(recipe)
-        bakefile["custom_recipes"] = customRecipes
+        bakefile!["custom_recipes"] = customRecipes
         
-        let finalData = NSJSONSerialization.dataWithJSONObject(bakefile, options: NSJSONWritingOptions.PrettyPrinted, error: nil)
-        if !finalData.writeToFile("./Bakefile", atomically: true) {
+        let finalData = NSJSONSerialization.dataWithJSONObject(bakefile!, options: .PrettyPrinted, error: nil)
+        if finalData?.writeToFile("./Bakefile", atomically: true) == false {
             return .Failure("The Bakefile could not be written to.")
         }
         

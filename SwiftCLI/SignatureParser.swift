@@ -82,7 +82,7 @@ class SignatureParser {
     
     private func handleEmptySignature()-> (NSDictionary?, String?) {
         if self.arguments.count == 0 {
-            return (NSDictionary.dictionary(), nil)
+            return (NSDictionary(), nil)
         } else {
             return (nil, "Expected no arguments, got \(self.arguments.count).")
         }

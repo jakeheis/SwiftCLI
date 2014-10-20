@@ -11,20 +11,15 @@ import Foundation
 class Input {
     
     class func awaitInput(#message: String?) -> String {
-//        println("dropped here")
         if let m = message {
             println(m)
         }
         
         let fh = NSFileHandle.fileHandleWithStandardInput()
-        if let data = fh.availableData {
-            var input = NSString(data: data, encoding: NSUTF8StringEncoding) as String
-            input = input.substringToIndex(advance(input.endIndex, -1))
-            
-            return input
-        }
+        var input = NSString(data: fh.availableData, encoding: NSUTF8StringEncoding) as String
+        input = input.substringToIndex(advance(input.endIndex, -1))
         
-        return ""
+        return input
     }
     
     class func awaitInputWithValidation(#message: String?, validation: (input: String) -> Bool) -> String {

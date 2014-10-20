@@ -47,17 +47,17 @@ class BakeCommand: Command {
         if let i = item {
             self.bakeItem(item!)
         } else {
-            let data = NSData.dataWithContentsOfFile("./Bakefile", options: nil, error: nil)
-            if !data {
+            let data = NSData(contentsOfFile: "./Bakefile")
+            if data == nil {
                 return .Failure("No Bakefile could be found in the current directory")
             }
             
-            let dict = NSJSONSerialization.JSONObjectWithData(data, options: nil, error: nil) as NSDictionary!
-            if !dict {
+            let dict = NSJSONSerialization.JSONObjectWithData(data!, options: nil, error: nil) as NSDictionary!
+            if dict == nil {
                 return .Failure("The Bakefile could not be parsed")
             }
             
-            let items = dict["items"] as [String]
+            let items = dict!["items"] as [String]
             for item in items {
                 self.bakeItem(item)
             }
@@ -96,11 +96,11 @@ class BakeCommand: Command {
     }
     
     private func checkForRecipe(item: String) -> NSDictionary? {
-        let data = NSData.dataWithContentsOfFile("./Bakefile", options: nil, error: nil)
+        let data = NSData(contentsOfFile: "./Bakefile")
         if data == nil {
             return nil
         }
-        let dict = NSJSONSerialization.JSONObjectWithData(data, options: nil, error: nil) as NSDictionary!
+        let dict = NSJSONSerialization.JSONObjectWithData(data!, options: nil, error: nil) as NSDictionary!
         if dict == nil {
             return nil
         }
