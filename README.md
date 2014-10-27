@@ -59,7 +59,7 @@ CLI.debugGoWithArgumentString("greeter greet")
 ```
 
 ## Commands
-There are three ways to create a command. You should decided which way to create your command based on how complex the command will be. In order to highlight the differences between the different command creation methods, the same command "greet" will be implemented each way.
+There are three ways to create a command. You should decide which way to create your command based on how complex the command will be. In order to highlight the differences between the different command creation methods, the same command "greet" will be implemented each way.
 
 ### Subclass Command
 This is usually the best choice for a command. Any command that involves a non-trivial amount of execution or option-handling code should be created with this method. A command subclass provides a structured way to develop a complex command, keeping it organized and easy to read.
