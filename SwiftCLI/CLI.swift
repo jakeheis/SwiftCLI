@@ -105,11 +105,11 @@ class CLI: NSObject {
             case .Success:
                 return true
             case let .Failure(errorMessage):
-                println(errorMessage)
+                printlnError(errorMessage)
                 return false
             }
         case .Failure:
-            println("Command not found")
+            printlnError("Command not found")
             return false
         }
     }
@@ -137,7 +137,7 @@ class CLI: NSObject {
         let (namedArguments, errorString) = parser.parse()
         
         if namedArguments == nil {
-            println(errorString!)
+            printlnError(errorString!)
             return nil
         }
         
@@ -151,7 +151,7 @@ class CLI: NSObject {
         
         if command.options.misusedOptionsPresent() {
             if let message = command.options.unaccountedForMessage(command: command, routedName: routedName) {
-                println(message)
+                printlnError(message)
             }
             if (command.failOnUnrecognizedOptions()) {
                 return (false, [])

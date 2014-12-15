@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		EF27C0171A3E89790007AD76 /* Output.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF27C0161A3E89790007AD76 /* Output.swift */; };
 		EF92BF71198AEF7900BAA12B /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF92BF70198AEF7900BAA12B /* main.swift */; };
 		EF92BF81198AF19B00BAA12B /* CLI.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF92BF78198AF19B00BAA12B /* CLI.swift */; };
 		EF92BF82198AF19B00BAA12B /* ChainableCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF92BF7A198AF19B00BAA12B /* ChainableCommand.swift */; };
@@ -129,6 +130,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		EF27C0161A3E89790007AD76 /* Output.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Output.swift; sourceTree = "<group>"; };
 		EF92BF6D198AEF7900BAA12B /* Example */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Example; sourceTree = BUILT_PRODUCTS_DIR; };
 		EF92BF70198AEF7900BAA12B /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		EF92BF78198AF19B00BAA12B /* CLI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CLI.swift; sourceTree = "<group>"; };
@@ -210,6 +212,7 @@
 				EF92BF7F198AF19B00BAA12B /* Router.swift */,
 				EF92BF80198AF19B00BAA12B /* SignatureParser.swift */,
 				EFA57FE819A152EF00340DD8 /* Input.swift */,
+				EF27C0161A3E89790007AD76 /* Output.swift */,
 			);
 			name = SwiftCLI;
 			path = ../../SwiftCLI;
@@ -459,6 +462,7 @@
 				EF92BF71198AEF7900BAA12B /* main.swift in Sources */,
 				EF92BF83198AF19B00BAA12B /* Command.swift in Sources */,
 				EFEB0B57198D17EB0040AFF0 /* VersionCommand.swift in Sources */,
+				EF27C0171A3E89790007AD76 /* Output.swift in Sources */,
 				EF92BF84198AF19B00BAA12B /* HelpCommand.swift in Sources */,
 				EFA57FE919A152EF00340DD8 /* Input.swift in Sources */,
 				EF92BF86198AF19B00BAA12B /* Options.swift in Sources */,
