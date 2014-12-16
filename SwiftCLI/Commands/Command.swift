@@ -20,7 +20,7 @@ enum CommandResult {
     case Failure(String)
 }
 
-class Command {
+class Command: NSObject {
     
     var arguments: NSDictionary = [:]
     var options: Options = Options()
