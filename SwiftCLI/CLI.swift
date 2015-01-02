@@ -69,16 +69,16 @@ class CLI: NSObject {
     
     // MARK: - Go
     
-    class func go() -> Bool {
+    class func go() -> CLIResult {
        return self.goWithArguments(NSProcessInfo.processInfo().arguments as [String])
     }
     
-    class func debugGoWithArgumentString(argumentString: String) -> Bool {
+    class func debugGoWithArgumentString(argumentString: String) -> CLIResult {
         let arguments = argumentString.componentsSeparatedByString(" ")
         return self.goWithArguments(arguments)
     }
     
-    private class func goWithArguments(arguments: [String]) -> Bool {
+    private class func goWithArguments(arguments: [String]) -> CLIResult {
         let routingResult = self.routeCommand(arguments: arguments)
         
         switch routingResult {
@@ -86,16 +86,16 @@ class CLI: NSObject {
             
             let (success, commandArguments) = self.handleCommandOptions(command, arguments: arguments, routedName: routedName)
             if !success {
-                return false
+                return CLIResult.Error
             }
             
             if command.showingHelp { // Don't actually execute command if showing help, e.g. git clone -h
-                return true
+                return CLIResult.Success
             }
             
             let namedArguments = self.parseSignatureAndArguments(command.commandSignature(), arguments: commandArguments)
             if namedArguments == nil {
-                return false
+                return CLIResult.Error
             }
             command.arguments = namedArguments!
             
@@ -103,14 +103,14 @@ class CLI: NSObject {
             
             switch result {
             case .Success:
-                return true
+                return CLIResult.Success
             case let .Failure(errorMessage):
                 printlnError(errorMessage)
-                return false
+                return CLIResult.Error
             }
         case .Failure:
             printlnError("Command not found")
-            return false
+            return CLIResult.Error
         }
     }
     
@@ -165,6 +165,20 @@ class CLI: NSObject {
         if let hc = CLIStatic.helpCommand {
             hc.allCommands = CLIStatic.commands
         }
+    }
+    
+}
+
+typealias CLIResult = Int32
+
+extension CLIResult {
+    
+    static var Success: CLIResult {
+        return 0
+    }
+    
+    static var Error: CLIResult {
+        return 1
     }
     
 }

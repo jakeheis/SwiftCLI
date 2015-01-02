@@ -55,4 +55,5 @@ CLI.registerCommand(bakerCommand)
 let recipeCommand = RecipeCommand()
 CLI.registerCommand(recipeCommand)
 
-CLI.go()
+let result = CLI.go()
+exit(result)
