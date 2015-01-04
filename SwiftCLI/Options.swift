@@ -30,29 +30,29 @@ class Options {
         
         for arg in arguments {
             if arg.hasPrefix("-") {
-                var allOptions = self.splitOption(arg)
+                var allOptions = splitOption(arg)
                 
                 for option in allOptions {
                     if let key = keyAwaitingValue {
-                        self.keysNotGivenValue.append(key)
+                        keysNotGivenValue.append(key)
                         keyAwaitingValue = nil
                     }
                     
-                    if self.tryFlag(option) {
-                        continue;
+                    if tryFlag(option) {
+                        continue
                     }
                     
-                    if contains(self.expectedKeys, option) {
+                    if contains(expectedKeys, option) {
                         keyAwaitingValue = option
-                        continue;
+                        continue
                     }
                     
-                    self.unrecognizedOptions.append(arg)
+                    unrecognizedOptions.append(arg)
                 }
                
             } else {
                 if let key = keyAwaitingValue {
-                    self.foundKeyValue(key, value: arg)
+                    foundKeyValue(key, value: arg)
                     keyAwaitingValue = nil
                 } else {
                     commandArguments.append(arg)
@@ -68,7 +68,7 @@ class Options {
         if optionString.hasPrefix("--") {
             allOptions.append(optionString)
         } else {
-            var chars: [String] = self.characterArrayForString(optionString)
+            var chars: [String] = characterArrayForString(optionString)
             chars.removeAtIndex(0)
             allOptions += chars.map({ "-\($0)" })
         }
@@ -86,17 +86,17 @@ class Options {
     }
     
     private func tryFlag(flag: String) -> Bool {
-        if let index = find(self.expectedFlags, flag) {
-            let block = self.expectedFlagBlocks[index]
-            block?(flag: flag);
+        if let index = find(expectedFlags, flag) {
+            let block = expectedFlagBlocks[index]
+            block?(flag: flag)
             return true
         }
         return false
     }
     
     private func foundKeyValue(key: String, value: String) {
-        let index = find(self.expectedKeys, key)
-        let block = self.expectedKeyBlocks[index!]
+        let index = find(expectedKeys, key)
+        let block = expectedKeyBlocks[index!]
         block?(key: key, value: value)
     }
     
@@ -104,8 +104,8 @@ class Options {
 
     func onFlags(flags: [String], block: OptionsFlagBlock?) {
         for flag in flags {
-            self.expectedFlags.append(flag)
-            self.expectedFlagBlocks.append(block)
+            expectedFlags.append(flag)
+            expectedFlagBlocks.append(block)
         }
     }
     
@@ -113,15 +113,15 @@ class Options {
     
     func onKeys(keys: [String], block: OptionsKeyBlock?) {
         for key in keys {
-            self.expectedKeys.append(key)
-            self.expectedKeyBlocks.append(block)
+            expectedKeys.append(key)
+            expectedKeyBlocks.append(block)
         }
     }
     
     // MARK: - Other publics
     
     func misusedOptionsPresent() -> Bool {
-        return self.unrecognizedOptions.count > 0 || self.keysNotGivenValue.count > 0
+        return unrecognizedOptions.count > 0 || keysNotGivenValue.count > 0
     }
     
     func unaccountedForMessage(#command: Command, routedName: String) -> String? {
@@ -132,16 +132,16 @@ class Options {
         var message = ""
         
         if command.unrecognizedOptionsPrintingBehavior() != .PrintOnlyUsage {
-            if self.unrecognizedOptions.count > 0 {
+            if unrecognizedOptions.count > 0 {
                 message += "Unrecognized options:"
-                for option in self.unrecognizedOptions {
+                for option in unrecognizedOptions {
                     message += "\n\t\(option)"
                 }
             }
 
-            if self.keysNotGivenValue.count > 0 {
+            if keysNotGivenValue.count > 0 {
                 message += "Required values for options but given none:"
-                for option in self.keysNotGivenValue {
+                for option in keysNotGivenValue {
                     message += "\n\t\(option)"
                 }
             }

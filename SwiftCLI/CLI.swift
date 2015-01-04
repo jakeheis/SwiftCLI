@@ -45,13 +45,13 @@ class CLI: NSObject {
     
     class func registerCommands(commands: [Command]) {
         for command in commands {
-            self.registerCommand(command)
+            registerCommand(command)
         }
     }
     
     class func registerChainableCommand(#commandName: String) -> ChainableCommand {
         let chainable = ChainableCommand(commandName: commandName)
-        self.registerCommand(chainable)
+        registerCommand(chainable)
         return chainable
     }
     
@@ -70,21 +70,21 @@ class CLI: NSObject {
     // MARK: - Go
     
     class func go() -> CLIResult {
-       return self.goWithArguments(NSProcessInfo.processInfo().arguments as [String])
+       return goWithArguments(NSProcessInfo.processInfo().arguments as [String])
     }
     
     class func debugGoWithArgumentString(argumentString: String) -> CLIResult {
         let arguments = argumentString.componentsSeparatedByString(" ")
-        return self.goWithArguments(arguments)
+        return goWithArguments(arguments)
     }
     
     private class func goWithArguments(arguments: [String]) -> CLIResult {
-        let routingResult = self.routeCommand(arguments: arguments)
+        let routingResult = routeCommand(arguments: arguments)
         
         switch routingResult {
         case let .Success(command, arguments, routedName):
             
-            let (success, commandArguments) = self.handleCommandOptions(command, arguments: arguments, routedName: routedName)
+            let (success, commandArguments) = handleCommandOptions(command, arguments: arguments, routedName: routedName)
             if !success {
                 return CLIResult.Error
             }
@@ -93,7 +93,7 @@ class CLI: NSObject {
                 return CLIResult.Success
             }
             
-            let namedArguments = self.parseSignatureAndArguments(command.commandSignature(), arguments: commandArguments)
+            let namedArguments = parseSignatureAndArguments(command.commandSignature(), arguments: commandArguments)
             if namedArguments == nil {
                 return CLIResult.Error
             }
@@ -117,7 +117,7 @@ class CLI: NSObject {
     // MARK: - Privates
     
     class private func routeCommand(#arguments: [String]) -> RouterResult {
-        self.prepareForRouting();
+        prepareForRouting()
         
         var allCommands = CLIStatic.commands
         if let hc = CLIStatic.helpCommand {

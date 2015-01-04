@@ -27,39 +27,37 @@ class BakeCommand: Command {
     }
     
     override func handleOptions()  {
-        self.onFlags(["-q", "--quickly"], block: {flag in
+        onFlags(["-q", "--quickly"], block: {flag in
             self.quickly = true
         }, usage: "Bake more quickly")
         
-        self.onFlag("-s", block: {flag in
+        onFlag("-s", block: {flag in
             self.silently = true
         }, usage: "Bake silently")
         
-        self.onKeys(["-t", "--with-topping"], block: {key, value in
+        onKeys(["-t", "--with-topping"], block: {key, value in
             self.topping = value
         }, usage: "Adds a topping to the baked good", valueSignature: "topping")
-        
-        super.handleOptions()
     }
     
     override func execute() -> CommandResult  {
-        let item = self.arguments["item"] as String?
-        if let i = item {
-            self.bakeItem(item!)
+        let item = arguments["item"] as String?
+        if let item = item {
+            bakeItem(item)
         } else {
             let data = NSData(contentsOfFile: "./Bakefile")
             if data == nil {
                 return .Failure("No Bakefile could be found in the current directory")
             }
             
-            let dict = NSJSONSerialization.JSONObjectWithData(data!, options: nil, error: nil) as NSDictionary!
+            let dict = NSJSONSerialization.JSONObjectWithData(data!, options: nil, error: nil) as NSDictionary?
             if dict == nil {
                 return .Failure("The Bakefile could not be parsed")
             }
             
             let items = dict!["items"] as [String]
             for item in items {
-                self.bakeItem(item)
+                bakeItem(item)
             }
         }
         
@@ -67,21 +65,20 @@ class BakeCommand: Command {
     }
     
     private func bakeItem(item: String) {
-        let quicklyStr = self.quickly ? " quickly" : ""
-        let toppingStr = self.topping == nil ? "" : " topped with \(self.topping!)"
+        let quicklyStr = quickly ? " quickly" : ""
+        let toppingStr = topping == nil ? "" : " topped with \(topping!)"
 
         println("Baking a \(item)\(quicklyStr)\(toppingStr)")
         
-        var cookTime = 4;
-        var silently = self.silently
+        var cookTime = 4
         
-        let recipe = self.checkForRecipe(item)
-        if let r = recipe {
-            cookTime = r["cookTime"] as Int
-            silently = r["silently"] as Bool
+        let recipe = checkForRecipe(item)
+        if let recipe = recipe {
+            cookTime = recipe["cookTime"] as Int
+            silently = recipe["silently"] as Bool
         }
         
-        if self.quickly {
+        if quickly {
             cookTime = cookTime/2
         }
         
@@ -100,12 +97,12 @@ class BakeCommand: Command {
         if data == nil {
             return nil
         }
-        let dict = NSJSONSerialization.JSONObjectWithData(data!, options: nil, error: nil) as NSDictionary!
+        let dict = NSJSONSerialization.JSONObjectWithData(data!, options: nil, error: nil) as NSDictionary?
         if dict == nil {
             return nil
         }
         
-        let customRecipes = dict["custom_recipes"] as [NSDictionary]
+        let customRecipes = dict!["custom_recipes"] as [NSDictionary]
         for recipe in customRecipes {
             if recipe["name"] as String == item {
                 return recipe

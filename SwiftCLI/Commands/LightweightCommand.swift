@@ -31,59 +31,59 @@ class LightweightCommand: Command {
     }
 
     override func commandName() -> String  {
-        return self.lightweightCommandName
+        return lightweightCommandName
     }
     
     override func commandSignature() -> String  {
-        return self.lightweightCommandSignature
+        return lightweightCommandSignature
     }
     
     override func commandShortDescription() -> String  {
-        return self.lightweightCommandShortDescription
+        return lightweightCommandShortDescription
     }
     
     override func commandShortcut() -> String?  {
-        return self.lightweightCommandShortcut
+        return lightweightCommandShortcut
     }
     
     // MARK: - Options
     
     func handleFlags(flags: [String], block: OptionsFlagBlock?, usage: String = "") {
         let handler = LightweightCommandFlagOptionHandler(flags: flags, flagBlock: block, usage: usage)
-        self.flagHandlingBlocks.append(handler)
+        flagHandlingBlocks.append(handler)
     }
     
     func handleKeys(keys: [String], block: OptionsKeyBlock?, usage: String = "", valueSignature: String = "value") {
         let handler = LightweightCommandKeyOptionHandler(keys: keys, keyBlock: block, usage: usage, valueSignature: valueSignature)
-        self.keyHandlingBlocks.append(handler)
+        keyHandlingBlocks.append(handler)
     }
     
     override func handleOptions()  {
-        for handlingBlock in self.flagHandlingBlocks {
-            self.onFlags(handlingBlock.flags, block: handlingBlock.flagBlock, usage: handlingBlock.usage)
+        for handlingBlock in flagHandlingBlocks {
+            onFlags(handlingBlock.flags, block: handlingBlock.flagBlock, usage: handlingBlock.usage)
         }
         
-        for handlingBlock in self.keyHandlingBlocks {
-            self.onKeys(handlingBlock.keys, block: handlingBlock.keyBlock, usage: handlingBlock.usage, valueSignature: handlingBlock.valueSignature)
+        for handlingBlock in keyHandlingBlocks {
+            onKeys(handlingBlock.keys, block: handlingBlock.keyBlock, usage: handlingBlock.usage, valueSignature: handlingBlock.valueSignature)
         }
     }
     
     override func showHelpOnHFlag() -> Bool {
-        return self.shouldShowHelpOnHFlag
+        return shouldShowHelpOnHFlag
     }
     
     override func unrecognizedOptionsPrintingBehavior() -> UnrecognizedOptionsPrintingBehavior {
-        return self.printingBehaviorOnUnrecognizedOptions
+        return printingBehaviorOnUnrecognizedOptions
     }
     
     override func failOnUnrecognizedOptions() -> Bool  {
-        return self.shouldFailOnUnrecognizedOptions
+        return shouldFailOnUnrecognizedOptions
     }
     
     // MARK: - Execution
 
     override func execute() -> CommandResult {
-        return self.lightweightExecutionBlock!(arguments: self.arguments, options: self.options)
+        return lightweightExecutionBlock!(arguments: arguments, options: options)
     }
     
     // MARK: - Option block wrappers

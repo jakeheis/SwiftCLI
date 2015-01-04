@@ -19,42 +19,42 @@ class SignatureParser {
     }
     
     func parse() -> (keyedArguments: NSDictionary?, errorMessage: String?) {
-        if self.signature == "" {
-            return self.handleEmptySignature()
+        if signature == "" {
+            return handleEmptySignature()
         }
         
-        let (requiredArgs, optionalArgs, terminatedList) = self.parseSignature(self.signature)
+        let (requiredArgs, optionalArgs, terminatedList) = parseSignature(signature)
         
-        if self.arguments.count < requiredArgs.count {
-            return (nil, self.errorMessage(expectedCount: requiredArgs.count, givenCount: self.arguments.count))
+        if arguments.count < requiredArgs.count {
+            return (nil, errorMessage(expectedCount: requiredArgs.count, givenCount: arguments.count))
         }
         
         if optionalArgs.isEmpty && terminatedList && arguments.count != requiredArgs.count {
-            return (nil, self.errorMessage(expectedCount: requiredArgs.count, givenCount: self.arguments.count))
+            return (nil, errorMessage(expectedCount: requiredArgs.count, givenCount: arguments.count))
         }
         
-        if terminatedList && self.arguments.count > requiredArgs.count + optionalArgs.count {
-            return (nil, self.errorMessage(expectedCount: requiredArgs.count + optionalArgs.count, givenCount: self.arguments.count))
+        if terminatedList && arguments.count > requiredArgs.count + optionalArgs.count {
+            return (nil, errorMessage(expectedCount: requiredArgs.count + optionalArgs.count, givenCount: arguments.count))
         }
 
         var namedArgs: NSMutableDictionary = [:]
         
         // First handle required arguments
         for i in 0..<requiredArgs.count {
-            let name = self.sanitizeKey(requiredArgs[i])
-            let value = self.arguments[i]
+            let name = sanitizeKey(requiredArgs[i])
+            let value = arguments[i]
             namedArgs[name] = value
         }
         
         // Then handle optional arguments if there are any
-        if !optionalArgs.isEmpty && self.arguments.count > requiredArgs.count {
+        if !optionalArgs.isEmpty && arguments.count > requiredArgs.count {
             for i in 0..<optionalArgs.count {
                 let index = i + requiredArgs.count
-                if index >= self.arguments.count {
+                if index >= arguments.count {
                     break
                 }
-                let name = self.sanitizeKey(optionalArgs[i])
-                let value = self.arguments[index]
+                let name = sanitizeKey(optionalArgs[i])
+                let value = arguments[index]
                 namedArgs[name] = value
             }
         }
@@ -62,14 +62,14 @@ class SignatureParser {
         // Finally group unlimited argument list into last argument if ... is present
         if !terminatedList {
             let lastKey = optionalArgs.isEmpty ? requiredArgs[requiredArgs.count-1] : optionalArgs[optionalArgs.count-1]
-            let name = self.sanitizeKey(lastKey)
+            let name = sanitizeKey(lastKey)
             var lastArray: [String] = []
             
             lastArray.append(namedArgs[name] as String)
             
             let startingIndex = requiredArgs.count + optionalArgs.count
-            for i in startingIndex..<self.arguments.count {
-                lastArray.append(self.arguments[i])
+            for i in startingIndex..<arguments.count {
+                lastArray.append(arguments[i])
             }
             
             namedArgs[name] = lastArray
@@ -81,10 +81,10 @@ class SignatureParser {
     // MARK: - Privates
     
     private func handleEmptySignature()-> (NSDictionary?, String?) {
-        if self.arguments.count == 0 {
+        if arguments.count == 0 {
             return (NSDictionary(), nil)
         } else {
-            return (nil, "Expected no arguments, got \(self.arguments.count).")
+            return (nil, "Expected no arguments, got \(arguments.count).")
         }
     }
     

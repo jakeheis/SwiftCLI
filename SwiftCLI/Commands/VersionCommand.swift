@@ -25,7 +25,7 @@ class VersionCommand: Command {
     }
     
     override func execute() -> CommandResult  {
-        println("Version: \(self.version)")
+        println("Version: \(version)")
         
         return .Success
     }

@@ -26,19 +26,19 @@ class Router {
     }
     
     func route() -> RouterResult {
-        if self.arguments.count == 1 { // e.g. "bundle"
-            return .Success(self.defaultCommand, [], "")
+        if arguments.count == 1 { // e.g. "bundle"
+            return .Success(defaultCommand, [], "")
         }
         
-        let commandString = self.arguments[1]
+        let commandString = arguments[1]
 
-        let (command, commandName, remainingArgumentsIndex) = self.findCommand(commandString)
+        let (command, commandName, remainingArgumentsIndex) = findCommand(commandString)
         
         if command == nil {
             return .Failure
         }
         
-        let remainingArgs = Array(self.arguments[remainingArgumentsIndex..<self.arguments.count])
+        let remainingArgs = Array(arguments[remainingArgumentsIndex..<arguments.count])
         return .Success(command!, remainingArgs, commandName)
     }
     
@@ -50,23 +50,23 @@ class Router {
         var argumentsStartingIndex = 2
         
         if commandString.hasPrefix("-") {
-            command = self.findCommandWithShortcut(commandString)
+            command = findCommandWithShortcut(commandString)
             
             // If no command with shorcut found, pass the -arg as a flag to the default command
             if command == nil {
-                command = self.defaultCommand
+                command = defaultCommand
                 argumentsStartingIndex = 1
                 cmdName = ""
             }
         } else {
-            command = self.findCommandWithName(commandString)
+            command = findCommandWithName(commandString)
         }
         
         return (command, cmdName, argumentsStartingIndex)
     }
     
     private func findCommandWithShortcut(commandShortcut: String) -> Command? {
-        for command in self.commands {
+        for command in commands {
             if commandShortcut == command.commandShortcut() {
                 return command
             }
@@ -76,7 +76,7 @@ class Router {
     }
     
     private func findCommandWithName(commandName: String) -> Command? {
-        for command in self.commands {
+        for command in commands {
             if commandName == command.commandName() {
                 return command
             }

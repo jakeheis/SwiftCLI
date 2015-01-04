@@ -36,17 +36,17 @@ class HelpCommand: Command {
         println("\(CLI.appDescription())\n")
         println("Available commands: ")
 
-        for command in self.allCommands {
-            self.printCommand(command)
+        for command in allCommands {
+            printCommand(command)
         }
         
-        self.printCommand(self)
+        printCommand(self)
         
         return .Success
     }
     
     func printCommand(command: Command) {
-        let str = self.padString(command.commandShortDescription(), toLength: 20, firstComponent: command.commandName())
+        let str = padString(command.commandShortDescription(), toLength: 20, firstComponent: command.commandName())
         println("- \(command.commandName())\(str)")
     }
     

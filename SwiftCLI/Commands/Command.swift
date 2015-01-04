@@ -74,22 +74,22 @@ class Command: NSObject {
     *
     *  @return the usage statement
     */
-    func commandUsageStatement(commandName: String? = nil) -> String {
+    func commandUsageStatement(commandName givenCommandName: String? = nil) -> String {
         var message = "Usage: \(CLI.appName())"
         
-        let name = commandName ?? self.commandName()
+        let name = givenCommandName ?? commandName()
         if name.utf16Count > 0 {
             message += " \(name)"
         }
 
-        if self.commandSignature().utf16Count > 0 {
-            message += " \(self.commandSignature())"
+        if commandSignature().utf16Count > 0 {
+            message += " \(commandSignature())"
         }
         
-        if self.usageStatements.count > 0 {
+        if usageStatements.count > 0 {
             message += " [options]\n"
             
-            for usage in self.usageStatements {
+            for usage in usageStatements {
                 message += "\n\(usage)"
             }
             
@@ -104,10 +104,10 @@ class Command: NSObject {
     // MARK: - Options
     
     final func fillExpectedOptions() {
-        self.handleOptions()
+        handleOptions()
         
-        if self.showHelpOnHFlag() {
-            self.onFlags(["-h", "--help"], block: {flag in
+        if showHelpOnHFlag() {
+            onFlags(["-h", "--help"], block: {flag in
                 self.showingHelp = true
                 
                 println(self.commandUsageStatement())
@@ -118,28 +118,28 @@ class Command: NSObject {
     // MARK: On options
     
     final func onFlag(flag: String, block: OptionsFlagBlock?, usage: String = "") {
-        self.onFlags([flag], block: block, usage: usage)
+        onFlags([flag], block: block, usage: usage)
     }
     
     final func onFlags(flags: [String], block: OptionsFlagBlock?, usage: String = "") {
         let comps = ", ".join(flags)
-        let padded = self.padString(usage, toLength: 40, firstComponent: comps)
-        self.usageStatements.append("\(comps)\(padded)")
+        let padded = padString(usage, toLength: 40, firstComponent: comps)
+        usageStatements.append("\(comps)\(padded)")
         
-        self.options.onFlags(flags, block: block)
+        options.onFlags(flags, block: block)
     }
     
     final func onKey(key: String, block: OptionsKeyBlock?, usage: String = "", valueSignature: String = "value") {
-        self.onKeys([key], block: block, usage: usage, valueSignature: valueSignature)
+        onKeys([key], block: block, usage: usage, valueSignature: valueSignature)
     }
     
     final func onKeys(keys: [String], block: OptionsKeyBlock?, usage: String = "", valueSignature: String = "value") {
         let comps = ", ".join(keys)
         let firstPart = "\(comps) <\(valueSignature)>"
-        let padded = self.padString(usage, toLength: 40, firstComponent: firstPart)
-        self.usageStatements.append("\(firstPart)\(padded)")
+        let padded = padString(usage, toLength: 40, firstComponent: firstPart)
+        usageStatements.append("\(firstPart)\(padded)")
         
-        self.options.onKeys(keys, block: block)
+        options.onKeys(keys, block: block)
     }
     
     // MARK: Sublcass option config

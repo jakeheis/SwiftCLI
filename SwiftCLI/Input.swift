@@ -11,8 +11,8 @@ import Foundation
 class Input {
     
     class func awaitInput(#message: String?) -> String {
-        if let m = message {
-            println(m)
+        if let message = message {
+            println(message)
         }
         
         let fh = NSFileHandle.fileHandleWithStandardInput()
@@ -24,7 +24,7 @@ class Input {
     
     class func awaitInputWithValidation(#message: String?, validation: (input: String) -> Bool) -> String {
         while (true) {
-            let str = self.awaitInput(message: message)
+            let str = awaitInput(message: message)
             
             if validation(input: str) {
                 return str
@@ -35,7 +35,7 @@ class Input {
     }
     
     class func awaitInputWithConversion(#message: String?, conversion: (input: String) -> AnyObject?) -> AnyObject {
-        let input = self.awaitInputWithValidation(message: message) {input in
+        let input = awaitInputWithValidation(message: message) {input in
             return conversion(input: input) != nil
         }
         
@@ -43,11 +43,11 @@ class Input {
     }
     
     class func awaitInt(#message: String?) -> Int {
-        return self.awaitInputWithConversion(message: message) { $0.toInt() } as Int
+        return awaitInputWithConversion(message: message) { $0.toInt() } as Int
     }
     
     class func awaitYesNoInput(message: String = "Confirm?") -> Bool {
-        return self.awaitInputWithConversion(message: "\(message) [y/N]: ") {input in
+        return awaitInputWithConversion(message: "\(message) [y/N]: ") {input in
             if input.lowercaseString == "y" || input.lowercaseString == "yes" {
                 return true
             } else if input.lowercaseString == "n" || input.lowercaseString == "no" {

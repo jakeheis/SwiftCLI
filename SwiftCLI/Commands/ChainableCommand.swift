@@ -15,51 +15,51 @@ class ChainableCommand: LightweightCommand {
     }
  
     func withSignature(signature: String) -> ChainableCommand {
-        self.lightweightCommandSignature = signature
+        lightweightCommandSignature = signature
         return self
     }
     
     func withShortDescription(shortDescription: String) -> ChainableCommand {
-        self.lightweightCommandShortDescription = shortDescription
+        lightweightCommandShortDescription = shortDescription
         return self
     }
     
     func withShortcut(shortcut: String) -> ChainableCommand {
-        self.lightweightCommandShortcut = shortcut
+        lightweightCommandShortcut = shortcut
         return self
     }
     
     // MARK: - Options
     
     func withFlagsHandled(flags: [String], block: OptionsFlagBlock?, usage: String) -> ChainableCommand {
-        self.handleFlags(flags, block: block, usage: usage)
+        handleFlags(flags, block: block, usage: usage)
         return self
     }
     
     func withKeysHandled(keys: [String], block: OptionsKeyBlock?, usage: String = "", valueSignature: String = "value") -> ChainableCommand {
-        self.handleKeys(keys, block: block, usage: usage, valueSignature: valueSignature)
+        handleKeys(keys, block: block, usage: usage, valueSignature: valueSignature)
         return self
     }
     
     func withNoHelpShownOnHFlag() -> ChainableCommand {
-        self.shouldShowHelpOnHFlag = false
+        shouldShowHelpOnHFlag = false
         return self
     }
     
     func withPrintingBehaviorOnUnrecgonizedOptions(behavior: UnrecognizedOptionsPrintingBehavior) -> ChainableCommand {
-        self.printingBehaviorOnUnrecognizedOptions = behavior
+        printingBehaviorOnUnrecognizedOptions = behavior
         return self
     }
     
     func withAllFlagsAndOptionsAllowed() -> ChainableCommand {
-        self.shouldFailOnUnrecognizedOptions = false
+        shouldFailOnUnrecognizedOptions = false
         return self
     }
     
     // MARK: - Execution
     
     func withExecutionBlock(execution: CommandExecutionBlock) -> ChainableCommand {
-        self.lightweightExecutionBlock = execution
+        lightweightExecutionBlock = execution
         return self
     }
     
