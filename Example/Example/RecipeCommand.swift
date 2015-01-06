@@ -37,7 +37,7 @@ class RecipeCommand: Command {
         let cookTime = Input.awaitInt(message: "Cook time: ")
         let silently = Input.awaitYesNoInput(message: "Bake silently?")
         
-        let recipe = ["name": name, "cookTime": cookTime, "silently": silently];
+        let recipe = ["name": name, "cookTime": cookTime, "silently": silently]
         
         var customRecipes: [NSDictionary] = bakefile!["custom_recipes"] as? [NSDictionary] ?? []
         customRecipes.append(recipe)
