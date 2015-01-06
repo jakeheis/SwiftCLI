@@ -23,7 +23,7 @@ class Options {
     
     // MARK: - Argument parsing
     
-    func parseArguments(arguments: [String]) -> [String] {
+    func parseCommandLineArguments(arguments: [String]) -> [String] {
         var commandArguments: [String] = []
         
         var keyAwaitingValue: String? = nil

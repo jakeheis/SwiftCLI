@@ -102,13 +102,14 @@ class BakeCommand: Command {
             return nil
         }
         
-        let customRecipes = dict!["custom_recipes"] as [NSDictionary]
-        for recipe in customRecipes {
-            if recipe["name"] as String == item {
-                return recipe
+        if let customRecipes = dict!["custom_recipes"] as? [NSDictionary] {
+            for recipe in customRecipes {
+                if recipe["name"] as String == item {
+                    return recipe
+                }
             }
         }
-        
+
         return nil
     }
 }

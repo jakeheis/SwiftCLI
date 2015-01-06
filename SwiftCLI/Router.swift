@@ -8,16 +8,23 @@
 
 import Foundation
 
-enum RouterResult {
-    case Success(Command, [String], String)
-    case Failure
-}
-
 class Router {
     
     private let commands: [Command]
     private let arguments: [String]
     private var defaultCommand: Command
+    
+    struct Route {
+        let command: Command
+        let commandLineArguments: [String]
+        let routedName: String
+        
+        init(command: Command, commandLineArguments: [String], routedName: String) {
+            self.command = command
+            self.commandLineArguments = commandLineArguments
+            self.routedName = routedName
+        }
+    }
     
     init(commands: [Command], arguments: [String], defaultCommand: Command) {
         self.commands = commands
@@ -25,9 +32,10 @@ class Router {
         self.defaultCommand = defaultCommand
     }
     
-    func route() -> RouterResult {
+    func route() -> Result<Route> {
         if arguments.count == 1 { // e.g. "bundle"
-            return .Success(defaultCommand, [], "")
+            let result = Route(command: defaultCommand, commandLineArguments: [], routedName: "")
+            return .Success(result)
         }
         
         let commandString = arguments[1]
@@ -39,7 +47,8 @@ class Router {
         }
         
         let remainingArgs = Array(arguments[remainingArgumentsIndex..<arguments.count])
-        return .Success(command!, remainingArgs, commandName)
+        let result = Route(command: command!, commandLineArguments: remainingArgs, routedName: commandName)
+        return .Success(result)
     }
     
     // MARK: - Privates

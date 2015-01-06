@@ -8,6 +8,11 @@
 
 import Foundation
 
+enum Result<T> {
+    case Success(T)
+    case Failure
+}
+
 class CLI: NSObject {
     
     // MARK: - Information
@@ -79,48 +84,56 @@ class CLI: NSObject {
     }
     
     private class func goWithArguments(arguments: [String]) -> CLIResult {
-        let routingResult = routeCommand(arguments: arguments)
+        let routeResult = routeCommand(arguments: arguments)
         
-        switch routingResult {
-        case let .Success(command, arguments, routedName):
-            
-            let (success, commandArguments) = handleCommandOptions(command, arguments: arguments, routedName: routedName)
-            if !success {
-                return CLIResult.Error
-            }
-            
-            if command.showingHelp { // Don't actually execute command if showing help, e.g. git clone -h
-                return CLIResult.Success
-            }
-            
-            let namedArguments = parseSignatureAndArguments(command.commandSignature(), arguments: commandArguments)
-            if namedArguments == nil {
-                return CLIResult.Error
-            }
-            command.arguments = namedArguments!
-            
-            let result = command.execute()
-            
-            switch result {
-            case .Success:
-                return CLIResult.Success
-            case let .Failure(errorMessage):
-                printlnError(errorMessage)
-                return CLIResult.Error
-            }
+        switch routeResult {
+        case let .Success(route):
+            return goWithRoute(route)
         case .Failure:
             printlnError("Command not found")
             return CLIResult.Error
         }
     }
     
+    private class func goWithRoute(route: Router.Route) -> CLIResult {
+        let optionResult = parseCommandLineArguments(route)
+        
+        switch optionResult {
+        case let .Success(commandArguments):
+            return executeRoute(route, commandArguments: commandArguments)
+        case .Failure:
+            return CLIResult.Error
+        }
+    }
+    
+    private class func executeRoute(route: Router.Route, commandArguments: [String]) -> CLIResult {
+        if route.command.showingHelp { // Don't actually execute command if showing help, e.g. git clone -h
+            return CLIResult.Success
+        }
+        
+        let namedArguments = reconcileSignatureAndArguments(route.command.commandSignature(), arguments: commandArguments)
+        if namedArguments == nil {
+            return CLIResult.Error
+        }
+        route.command.arguments = namedArguments!
+        
+        let commandResult = route.command.execute()
+        
+        switch commandResult {
+        case .Success:
+            return CLIResult.Success
+        case let .Failure(errorMessage):
+            printlnError(errorMessage)
+            return CLIResult.Error
+        }
+    }
+    
     // MARK: - Privates
     
-    class private func routeCommand(#arguments: [String]) -> RouterResult {
-        prepareForRouting()
-        
+    class private func routeCommand(#arguments: [String]) -> Result<Router.Route> {
         var allCommands = CLIStatic.commands
         if let hc = CLIStatic.helpCommand {
+            hc.allCommands = CLIStatic.commands
             allCommands.append(hc)
         }
         if let vc = CLIStatic.versionComand {
@@ -132,38 +145,28 @@ class CLI: NSObject {
         return router.route()
     }
     
-    class private func parseSignatureAndArguments(signature: String, arguments: [String]) -> NSDictionary? {
+    class private func parseCommandLineArguments(route: Router.Route) -> Result<[String]> {
+        route.command.fillExpectedOptions()
+        
+        let commandArguments = route.command.parseCommandLineArguments(route.commandLineArguments, routedName: route.routedName)
+        
+        if let commandArguments = commandArguments {
+            return .Success(commandArguments)
+        }
+        
+        return .Failure
+    }
+    
+    class private func reconcileSignatureAndArguments(signature: String, arguments: [String]) -> NSDictionary? {
         let parser = SignatureParser(signature: signature, arguments: arguments)
-        let (namedArguments, errorString) = parser.parse()
+        let parseResult = parser.parse()
         
-        if namedArguments == nil {
-            printlnError(errorString!)
+        switch parseResult.result {
+        case let .Success(parsedArguments):
+            return parsedArguments
+        case .Failure:
+            printlnError(parseResult.errorMessage!)
             return nil
-        }
-        
-        return namedArguments
-    }
-    
-    class private func handleCommandOptions(command: Command, arguments: [String], routedName: String) -> (success: Bool, commandArguments: [String]) {
-        command.fillExpectedOptions()
-        
-        let commandArguments = command.options.parseArguments(arguments)
-        
-        if command.options.misusedOptionsPresent() {
-            if let message = command.options.unaccountedForMessage(command: command, routedName: routedName) {
-                printlnError(message)
-            }
-            if (command.failOnUnrecognizedOptions()) {
-                return (false, [])
-            }
-        }
-        
-        return (true, commandArguments)
-    }
-    
-    class private func prepareForRouting() {
-        if let hc = CLIStatic.helpCommand {
-            hc.allCommands = CLIStatic.commands
         }
     }
     

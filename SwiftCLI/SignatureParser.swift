@@ -18,7 +18,7 @@ class SignatureParser {
         self.arguments = arguments
     }
     
-    func parse() -> (keyedArguments: NSDictionary?, errorMessage: String?) {
+    func parse() -> (result: Result<NSDictionary>, errorMessage: String?) {
         if signature == "" {
             return handleEmptySignature()
         }
@@ -26,15 +26,15 @@ class SignatureParser {
         let (requiredArgs, optionalArgs, terminatedList) = parseSignature(signature)
         
         if arguments.count < requiredArgs.count {
-            return (nil, errorMessage(expectedCount: requiredArgs.count, givenCount: arguments.count))
+            return (.Failure, errorMessage(expectedCount: requiredArgs.count, givenCount: arguments.count))
         }
         
         if optionalArgs.isEmpty && terminatedList && arguments.count != requiredArgs.count {
-            return (nil, errorMessage(expectedCount: requiredArgs.count, givenCount: arguments.count))
+            return (.Failure, errorMessage(expectedCount: requiredArgs.count, givenCount: arguments.count))
         }
         
         if terminatedList && arguments.count > requiredArgs.count + optionalArgs.count {
-            return (nil, errorMessage(expectedCount: requiredArgs.count + optionalArgs.count, givenCount: arguments.count))
+            return (.Failure, errorMessage(expectedCount: requiredArgs.count + optionalArgs.count, givenCount: arguments.count))
         }
 
         var namedArgs: NSMutableDictionary = [:]
@@ -75,16 +75,16 @@ class SignatureParser {
             namedArgs[name] = lastArray
         }
         
-        return (namedArgs, nil)
+        return (.Success(namedArgs), nil)
     }
     
     // MARK: - Privates
     
-    private func handleEmptySignature()-> (NSDictionary?, String?) {
+    private func handleEmptySignature()-> (result: Result<NSDictionary>, errorMessage: String?) {
         if arguments.count == 0 {
-            return (NSDictionary(), nil)
+            return (.Success(NSDictionary()), nil)
         } else {
-            return (nil, "Expected no arguments, got \(arguments.count).")
+            return (.Failure, "Expected no arguments, got \(arguments.count).")
         }
     }
     
