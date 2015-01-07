@@ -8,13 +8,6 @@
 
 import Foundation
 
-enum UnrecognizedOptionsPrintingBehavior {
-    case PrintNone
-    case PrintOnlyUnrecognizedOptions
-    case PrintOnlyUsage
-    case PrintAll
-}
-
 enum CommandResult {
     case Success
     case Failure(String)
@@ -198,6 +191,13 @@ class Command: NSObject {
     */
     func showHelpOnHFlag() -> Bool {
         return true
+    }
+    
+    enum UnrecognizedOptionsPrintingBehavior {
+        case PrintNone
+        case PrintOnlyUnrecognizedOptions
+        case PrintOnlyUsage
+        case PrintAll
     }
 
     /**
