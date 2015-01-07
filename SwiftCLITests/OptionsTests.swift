@@ -19,6 +19,8 @@ class OptionsTests: XCTestCase {
         options = Options()
     }
     
+    // MARK: - Tests
+    
     func testOnFlags() {
         options.onFlags(["-a", "--awesome"], block: nil)
         XCTAssert(contains(options.expectedFlags, "-a"), "Options should expect flags after a call to onFlags")

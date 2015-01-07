@@ -14,6 +14,8 @@ class SignatureParserTests: XCTestCase {
     var signature: String = ""
     var arguments: [String] = []
     
+    // MARK: - Tests
+    
     func testEmptySignature() {
         signature = ""
         
@@ -98,8 +100,10 @@ class SignatureParserTests: XCTestCase {
         arguments = ["arg1", "arg2", "arg3", "arg4"]
         assertParserReturnsDictionary(["req1": "arg1", "req2": "arg2", "opt1": "arg3", "opt2": "arg4"], assertMessage: "Signature parser should succeed for combined signature and 4 passed arguments")
     }
+    
+    // MARK: - Helpers
 
-    func assertParserReturnsDictionary(returnDictionary: NSDictionary, assertMessage: String) {
+    private func assertParserReturnsDictionary(returnDictionary: NSDictionary, assertMessage: String) {
         let signatureParser = SignatureParser(signature: signature, arguments: arguments)
         let result = signatureParser.parse()
         switch result.result {
@@ -110,7 +114,7 @@ class SignatureParserTests: XCTestCase {
         }
     }
     
-    func assertParserFails(assertMessage: String) {
+    private func assertParserFails(assertMessage: String) {
         let signatureParser = SignatureParser(signature: signature, arguments: arguments)
         let result = signatureParser.parse()
         switch result.result {

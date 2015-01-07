@@ -22,6 +22,7 @@
 		EFCA8D401A5CC5610043B855 /* Arguments.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFCA8D3F1A5CC5610043B855 /* Arguments.swift */; };
 		EFCA8D411A5CC5610043B855 /* Arguments.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFCA8D3F1A5CC5610043B855 /* Arguments.swift */; };
 		EFCC4C5D1A5D80510043A606 /* Output.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF27C0161A3E89790007AD76 /* Output.swift */; };
+		EFCC4C5F1A5D8B310043A606 /* RouterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFCC4C5E1A5D8B310043A606 /* RouterTests.swift */; };
 		EFCF34761997FF41008691D1 /* OptionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFCF34751997FF41008691D1 /* OptionsTests.swift */; };
 		EFEB0B55198C4D200040AFF0 /* BakeCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFEB0B54198C4D200040AFF0 /* BakeCommand.swift */; };
 		EFEB0B57198D17EB0040AFF0 /* VersionCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFEB0B56198D17EB0040AFF0 /* VersionCommand.swift */; };
@@ -89,6 +90,7 @@
 		EFA57FDE19A151BC00340DD8 /* RecipeCommand.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RecipeCommand.swift; sourceTree = "<group>"; };
 		EFA57FE819A152EF00340DD8 /* Input.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Input.swift; sourceTree = "<group>"; };
 		EFCA8D3F1A5CC5610043B855 /* Arguments.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Arguments.swift; sourceTree = "<group>"; };
+		EFCC4C5E1A5D8B310043A606 /* RouterTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RouterTests.swift; sourceTree = "<group>"; };
 		EFCF34751997FF41008691D1 /* OptionsTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OptionsTests.swift; sourceTree = "<group>"; };
 		EFEB0B54198C4D200040AFF0 /* BakeCommand.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BakeCommand.swift; sourceTree = "<group>"; };
 		EFEB0B56198D17EB0040AFF0 /* VersionCommand.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VersionCommand.swift; sourceTree = "<group>"; };
@@ -179,6 +181,7 @@
 				EFEB0BC9198DCEDA0040AFF0 /* SwiftCLITests.swift */,
 				EFEB0BD1198DD0E90040AFF0 /* SignatureParserTests.swift */,
 				EFCF34751997FF41008691D1 /* OptionsTests.swift */,
+				EFCC4C5E1A5D8B310043A606 /* RouterTests.swift */,
 				EFEB0BC7198DCEDA0040AFF0 /* Supporting Files */,
 			);
 			name = SwiftCLITests;
@@ -334,6 +337,7 @@
 				EFEB0C0D198DD2570040AFF0 /* LightweightCommand.swift in Sources */,
 				EFEB0C0E198DD2570040AFF0 /* Options.swift in Sources */,
 				EFEB0C0F198DD2570040AFF0 /* Router.swift in Sources */,
+				EFCC4C5F1A5D8B310043A606 /* RouterTests.swift in Sources */,
 				EFCC4C5D1A5D80510043A606 /* Output.swift in Sources */,
 				EFEB0C10198DD2570040AFF0 /* SignatureParser.swift in Sources */,
 				EFEB0BCA198DCEDA0040AFF0 /* SwiftCLITests.swift in Sources */,
