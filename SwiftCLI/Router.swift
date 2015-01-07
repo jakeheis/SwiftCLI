@@ -58,11 +58,11 @@ class Router {
             if command == nil {
                 command = defaultCommand
             } else {
-                arguments.firstArgumentIsCommandName()
+                arguments.setFirstArgumentIsCommandName()
             }
         } else {
             command = commands.filter({ $0.commandName() == self.arguments.firstArgument! }).first
-            arguments.firstArgumentIsCommandName()
+            arguments.setFirstArgumentIsCommandName()
         }
         
         if let command = command {

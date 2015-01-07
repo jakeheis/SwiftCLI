@@ -95,26 +95,20 @@ class CLI: NSObject {
     }
     
     private class func goWithRoute(route: Router.Route) -> CLIResult {
-        let optionResult = parseCommandLineArguments(route)
+        let setupResult = setupOptionsAndArguments(route)
         
-        switch optionResult {
-        case let .Success(commandArguments):
-            return executeRoute(route, commandArguments: commandArguments)
+        switch setupResult {
+        case .Success:
+            return executeRoute(route)
         case .Failure:
             return CLIResult.Error
         }
     }
     
-    private class func executeRoute(route: Router.Route, commandArguments: [String]) -> CLIResult {
+    private class func executeRoute(route: Router.Route) -> CLIResult {
         if route.command.showingHelp { // Don't actually execute command if showing help, e.g. git clone -h
             return CLIResult.Success
         }
-        
-        let namedArguments = reconcileSignatureAndArguments(route.command.commandSignature(), arguments: commandArguments)
-        if namedArguments == nil {
-            return CLIResult.Error
-        }
-        route.command.arguments = namedArguments!
         
         let commandResult = route.command.execute()
         
@@ -144,13 +138,19 @@ class CLI: NSObject {
         return router.route()
     }
     
-    class private func parseCommandLineArguments(route: Router.Route) -> Result<[String]> {
+    class private func setupOptionsAndArguments(route: Router.Route) -> Result<Bool> {
         route.command.fillExpectedOptions()
         
         let commandArguments = route.command.parseCommandLineArguments(route.arguments)
         
         if let commandArguments = commandArguments {
-            return .Success(commandArguments)
+            if route.command.showingHelp {
+                return .Success(true)
+            }
+            if let namedArguments = reconcileSignatureAndArguments(route.command.commandSignature(), arguments: commandArguments) {
+                route.command.arguments = namedArguments
+                return .Success(true)
+            }
         }
         
         return .Failure

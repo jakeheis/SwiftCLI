@@ -26,7 +26,7 @@ class Arguments {
         argumentsArray = Array(args[1..<args.count])
     }
     
-    func firstArgumentIsCommandName() {
+    func setFirstArgumentIsCommandName() {
         commandName = argumentsArray.first!
         argumentsArray.removeAtIndex(0)
     }
