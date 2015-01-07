@@ -1,6 +1,1 @@
-[submodule "SwiftCLITests/Quick"]
-	path = SwiftCLITests/Quick
-	url = git@github.com:Quick/Quick.git
-[submodule "SwiftCLITests/Nimble"]
-	path = SwiftCLITests/Nimble
-	url = git@github.com:Quick/Nimble.git
+
