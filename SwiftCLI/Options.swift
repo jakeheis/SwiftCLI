@@ -118,41 +118,27 @@ class Options {
         }
     }
     
-    // MARK: - Other publics
+    // MARK: - Misused options
     
     func misusedOptionsPresent() -> Bool {
         return unrecognizedOptions.count > 0 || keysNotGivenValue.count > 0
     }
     
-    func unaccountedForMessage(#command: Command, routedName: String) -> String? {
-        if command.unrecognizedOptionsPrintingBehavior() == UnrecognizedOptionsPrintingBehavior.PrintNone {
-            return nil
-        }
-        
+    func misusedOptionsMessage() -> String {
         var message = ""
         
-        if command.unrecognizedOptionsPrintingBehavior() != .PrintOnlyUsage {
-            if unrecognizedOptions.count > 0 {
-                message += "Unrecognized options:"
-                for option in unrecognizedOptions {
-                    message += "\n\t\(option)"
-                }
-            }
-
-            if keysNotGivenValue.count > 0 {
-                message += "Required values for options but given none:"
-                for option in keysNotGivenValue {
-                    message += "\n\t\(option)"
-                }
-            }
-            
-            if command.unrecognizedOptionsPrintingBehavior() == .PrintAll {
-                message += "\n" // Padding if more will be printed
+        if unrecognizedOptions.count > 0 {
+            message += "Unrecognized options:"
+            for option in unrecognizedOptions {
+                message += "\n\t\(option)"
             }
         }
-       
-        if command.unrecognizedOptionsPrintingBehavior() != .PrintOnlyUnrecognizedOptions {
-            message += command.commandUsageStatement(commandName: routedName)
+        
+        if keysNotGivenValue.count > 0 {
+            message += "Required values for options but given none:"
+            for option in keysNotGivenValue {
+                message += "\n\t\(option)"
+            }
         }
         
         return message

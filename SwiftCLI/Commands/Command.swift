@@ -122,7 +122,7 @@ class Command: NSObject {
         let commandArguments = options.parseCommandLineArguments(arguments)
         
         if options.misusedOptionsPresent() {
-            if let message = options.unaccountedForMessage(command: self, routedName: arguments.commandName) {
+            if let message = misusedOptionsMessage(arguments: arguments) {
                 printlnError(message)
             }
             if failOnUnrecognizedOptions() {
@@ -131,6 +131,28 @@ class Command: NSObject {
         }
 
         return commandArguments
+    }
+    
+    func misusedOptionsMessage(#arguments: Arguments) -> String? {
+        if unrecognizedOptionsPrintingBehavior() == UnrecognizedOptionsPrintingBehavior.PrintNone {
+            return nil
+        }
+        
+        var message = ""
+        
+        if unrecognizedOptionsPrintingBehavior() != .PrintOnlyUsage {
+            message += options.misusedOptionsMessage()
+            
+            if unrecognizedOptionsPrintingBehavior() == .PrintAll {
+               message += "\n"
+            }
+        }
+        
+        if unrecognizedOptionsPrintingBehavior() != .PrintOnlyUnrecognizedOptions {
+            message += commandUsageStatement(commandName: arguments.commandName)
+        }
+        
+        return message
     }
     
     // MARK: On options
