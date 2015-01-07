@@ -75,15 +75,14 @@ class CLI: NSObject {
     // MARK: - Go
     
     class func go() -> CLIResult {
-       return goWithArguments(NSProcessInfo.processInfo().arguments as [String])
+       return goWithArguments(Arguments())
     }
     
     class func debugGoWithArgumentString(argumentString: String) -> CLIResult {
-        let arguments = argumentString.componentsSeparatedByString(" ")
-        return goWithArguments(arguments)
+        return goWithArguments(Arguments(argumentString: argumentString))
     }
     
-    private class func goWithArguments(arguments: [String]) -> CLIResult {
+    private class func goWithArguments(arguments: Arguments) -> CLIResult {
         let routeResult = routeCommand(arguments: arguments)
         
         switch routeResult {
@@ -130,7 +129,7 @@ class CLI: NSObject {
     
     // MARK: - Privates
     
-    class private func routeCommand(#arguments: [String]) -> Result<Router.Route> {
+    class private func routeCommand(#arguments: Arguments) -> Result<Router.Route> {
         var allCommands = CLIStatic.commands
         if let hc = CLIStatic.helpCommand {
             hc.allCommands = CLIStatic.commands
@@ -148,7 +147,7 @@ class CLI: NSObject {
     class private func parseCommandLineArguments(route: Router.Route) -> Result<[String]> {
         route.command.fillExpectedOptions()
         
-        let commandArguments = route.command.parseCommandLineArguments(route.commandLineArguments, routedName: route.routedName)
+        let commandArguments = route.command.parseCommandLineArguments(route.arguments)
         
         if let commandArguments = commandArguments {
             return .Success(commandArguments)

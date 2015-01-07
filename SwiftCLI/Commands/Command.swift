@@ -115,14 +115,14 @@ class Command: NSObject {
         }
     }
     
-    final func parseCommandLineArguments(arguments: [String], routedName: String) -> [String]? {
+    final func parseCommandLineArguments(arguments: Arguments) -> [String]? {
         // Command line arguments: both command arguments and options -- baker bake (cake -q -t frosting)
         // Command arguments: non-option command line arguments -- baker bake (cake)
         
         let commandArguments = options.parseCommandLineArguments(arguments)
         
         if options.misusedOptionsPresent() {
-            if let message = options.unaccountedForMessage(command: self, routedName: routedName) {
+            if let message = options.unaccountedForMessage(command: self, routedName: arguments.commandName) {
                 printlnError(message)
             }
             if failOnUnrecognizedOptions() {
