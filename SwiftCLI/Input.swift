@@ -34,7 +34,7 @@ class Input {
         }
     }
     
-    class func awaitInputWithConversion(#message: String?, conversion: (input: String) -> AnyObject?) -> AnyObject {
+    class func awaitInputWithConversion<T>(#message: String?, conversion: (input: String) -> T?) -> T {
         let input = awaitInputWithValidation(message: message) {input in
             return conversion(input: input) != nil
         }
@@ -43,7 +43,7 @@ class Input {
     }
     
     class func awaitInt(#message: String?) -> Int {
-        return awaitInputWithConversion(message: message) { $0.toInt() } as Int
+        return awaitInputWithConversion(message: message) { $0.toInt() }
     }
     
     class func awaitYesNoInput(message: String = "Confirm?") -> Bool {
@@ -55,7 +55,7 @@ class Input {
             }
             
             return nil
-        } as Bool
+        }
     }
     
 }
