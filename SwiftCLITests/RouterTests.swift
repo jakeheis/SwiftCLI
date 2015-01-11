@@ -10,7 +10,7 @@ import Cocoa
 import XCTest
 
 class RouterTests: XCTestCase {
-
+    
     var defaultCommand: Command!
     var alphaCommand: Command!
     var betaCommand: Command!
@@ -23,7 +23,9 @@ class RouterTests: XCTestCase {
         defaultCommand = LightweightCommand(commandName: "default")
     }
     
-    func testNoArguments() {
+    // MARK: - Tests
+    
+    func testDefaultRoute() {
         let args = Arguments(argumentString: "tester")
         let router = createRouter(arguments: args)
         switch router.route() {
@@ -34,8 +36,6 @@ class RouterTests: XCTestCase {
             XCTFail("Router should not fail when a default command exists")
         }
     }
-    
-    // MARK: - Tests
     
     func testNameRoute() {
         let args = Arguments(argumentString: "tester alpha")
