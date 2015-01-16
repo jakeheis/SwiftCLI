@@ -12,7 +12,7 @@ class Router {
     
     private let commands: [Command]
     private let arguments: Arguments
-    private var defaultCommand: Command
+    private let defaultCommand: Command
     
     struct Route {
         let command: Command
