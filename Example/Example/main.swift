@@ -14,7 +14,7 @@ CLI.registerChainableCommand(commandName: "init")
     .withShortDescription("Creates a Bakefile in the current or given directory")
     .withSignature("[<directory>]")
     .withExecutionBlock({arguments, options in
-        let givenDirectory = arguments["directory"] as String?
+        let givenDirectory = arguments["directory"] as! String?
         
         let fileName = givenDirectory?.stringByAppendingPathComponent("Bakefile") ?? "./Bakefile"
         
@@ -32,9 +32,9 @@ let listCommand = LightweightCommand(commandName: "list")
 listCommand.lightweightCommandShortDescription = "Lists some possible items the baker can bake for you."
 
 var showExoticFoods = false
-listCommand.handleFlags(["-e", "--exotics-included"], block: {flag in
+listCommand.handleFlags(["-e", "--exotics-included"], usage: "Include exotic foods in the list of items baker can bake you") {(flag) in
     showExoticFoods = true
-}, usage: "Include exotic foods in the list of items baker can bake you")
+}
 
 listCommand.lightweightExecutionBlock = {arguments, options in
     var foods = ["bread", "cookies", "cake"]
@@ -56,4 +56,4 @@ let recipeCommand = RecipeCommand()
 CLI.registerCommand(recipeCommand)
 
 let result = CLI.go()
-exit(result)
+//exit(result) Throws a warning on Swift 1.2 for some reason

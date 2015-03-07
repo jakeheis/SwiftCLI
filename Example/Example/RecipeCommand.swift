@@ -28,27 +28,28 @@ class RecipeCommand: Command {
             return .Failure("No Bakefile could be found in the current directory. Run 'baker init' before this command.")
         }
         
-        var bakefile = NSJSONSerialization.JSONObjectWithData(data!, options: nil, error: nil)?.mutableCopy() as NSMutableDictionary?
-        if bakefile == nil {
+        if let data = data,
+            var bakefile = NSJSONSerialization.JSONObjectWithData(data, options: nil, error: nil)?.mutableCopy() as? NSMutableDictionary
+        {
+            let name = Input.awaitInput(message: "Name of your recipe: ")
+            let cookTime = Input.awaitInt(message: "Cook time: ")
+            let silently = Input.awaitYesNoInput(message: "Bake silently?")
+            
+            let recipe = ["name": name, "cookTime": cookTime, "silently": silently]
+            
+            var customRecipes: [NSDictionary] = bakefile["custom_recipes"] as? [NSDictionary] ?? []
+            customRecipes.append(recipe)
+            bakefile["custom_recipes"] = customRecipes
+            
+            let finalData = NSJSONSerialization.dataWithJSONObject(bakefile, options: .PrettyPrinted, error: nil)
+            if finalData?.writeToFile("./Bakefile", atomically: true) == false {
+                return .Failure("The Bakefile could not be written to.")
+            }
+            
+            return .Success
+        } else {
             return .Failure("The Bakefile could not be parsed.")
         }
-        
-        let name = Input.awaitInput(message: "Name of your recipe: ")
-        let cookTime = Input.awaitInt(message: "Cook time: ")
-        let silently = Input.awaitYesNoInput(message: "Bake silently?")
-        
-        let recipe = ["name": name, "cookTime": cookTime, "silently": silently]
-        
-        var customRecipes: [NSDictionary] = bakefile!["custom_recipes"] as? [NSDictionary] ?? []
-        customRecipes.append(recipe)
-        bakefile!["custom_recipes"] = customRecipes
-        
-        let finalData = NSJSONSerialization.dataWithJSONObject(bakefile!, options: .PrettyPrinted, error: nil)
-        if finalData?.writeToFile("./Bakefile", atomically: true) == false {
-            return .Failure("The Bakefile could not be written to.")
-        }
-        
-        return .Success
     }
    
 }

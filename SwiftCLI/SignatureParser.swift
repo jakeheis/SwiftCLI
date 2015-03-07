@@ -65,7 +65,7 @@ class SignatureParser {
             let name = sanitizeKey(lastKey)
             var lastArray: [String] = []
             
-            lastArray.append(namedArgs[name] as String)
+            lastArray.append(namedArgs[name] as! String)
             
             let startingIndex = requiredArgs.count + optionalArgs.count
             for i in startingIndex..<arguments.count {
@@ -117,7 +117,7 @@ class SignatureParser {
     private func sanitizeKey(key: String) -> String {
         let arg = key as NSString
         let multiplier = key.hasPrefix("[") ? 2 : 1
-        return arg.substringWithRange(NSMakeRange(1 * multiplier, key.utf16Count - 2 * multiplier))
+        return arg.substringWithRange(NSMakeRange(1 * multiplier, count(key) - 2 * multiplier))
     }
     
     private func errorMessage(#expectedCount: Int, givenCount: Int) -> String {

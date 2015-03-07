@@ -71,11 +71,11 @@ class Command: NSObject {
         var message = "Usage: \(CLI.appName())"
         
         let name = givenCommandName ?? commandName()
-        if name.utf16Count > 0 {
+        if !name.isEmpty {
             message += " \(name)"
         }
 
-        if commandSignature().utf16Count > 0 {
+        if !commandSignature().isEmpty {
             message += " \(commandSignature())"
         }
         
@@ -100,11 +100,11 @@ class Command: NSObject {
         handleOptions()
         
         if showHelpOnHFlag() {
-            onFlags(["-h", "--help"], block: {flag in
+            onFlags(["-h", "--help"], usage: "Show help information for this command") {(flag) in
                 self.showingHelp = true
                 
                 println(self.commandUsageStatement())
-            }, usage: "Show help information for this command")
+            }
         }
     }
     
@@ -150,11 +150,11 @@ class Command: NSObject {
     
     // MARK: On options
     
-    final func onFlag(flag: String, block: OptionsFlagBlock?, usage: String = "") {
-        onFlags([flag], block: block, usage: usage)
+    final func onFlag(flag: String, usage: String = "", block: OptionsFlagBlock?) {
+        onFlags([flag], usage: usage, block: block)
     }
     
-    final func onFlags(flags: [String], block: OptionsFlagBlock?, usage: String = "") {
+    final func onFlags(flags: [String], usage: String = "", block: OptionsFlagBlock?) {
         let comps = ", ".join(flags)
         let padded = padString(usage, toLength: 40, firstComponent: comps)
         usageStatements.append("\(comps)\(padded)")
@@ -162,11 +162,11 @@ class Command: NSObject {
         options.onFlags(flags, block: block)
     }
     
-    final func onKey(key: String, block: OptionsKeyBlock?, usage: String = "", valueSignature: String = "value") {
-        onKeys([key], block: block, usage: usage, valueSignature: valueSignature)
+    final func onKey(key: String, usage: String = "", valueSignature: String = "value", block: OptionsKeyBlock?) {
+        onKeys([key], usage: usage, valueSignature: valueSignature, block: block)
     }
     
-    final func onKeys(keys: [String], block: OptionsKeyBlock?, usage: String = "", valueSignature: String = "value") {
+    final func onKeys(keys: [String], usage: String = "", valueSignature: String = "value", block: OptionsKeyBlock?) {
         let comps = ", ".join(keys)
         let firstPart = "\(comps) <\(valueSignature)>"
         let padded = padString(usage, toLength: 40, firstComponent: firstPart)
@@ -228,7 +228,7 @@ class Command: NSObject {
     
     final func padString(string: String, toLength: Int, firstComponent: String) -> String {
         var spacing = ""
-        for _ in firstComponent.utf16Count...toLength {
+        for _ in count(firstComponent)...toLength {
             spacing += " "
         }
         

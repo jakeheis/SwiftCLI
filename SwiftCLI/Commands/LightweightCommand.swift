@@ -48,23 +48,23 @@ class LightweightCommand: Command {
     
     // MARK: - Options
     
-    func handleFlags(flags: [String], block: OptionsFlagBlock?, usage: String = "") {
+    func handleFlags(flags: [String], usage: String = "", block: OptionsFlagBlock?) {
         let handler = LightweightCommandFlagOptionHandler(flags: flags, flagBlock: block, usage: usage)
         flagHandlingBlocks.append(handler)
     }
     
-    func handleKeys(keys: [String], block: OptionsKeyBlock?, usage: String = "", valueSignature: String = "value") {
+    func handleKeys(keys: [String], usage: String = "", valueSignature: String = "value", block: OptionsKeyBlock?) {
         let handler = LightweightCommandKeyOptionHandler(keys: keys, keyBlock: block, usage: usage, valueSignature: valueSignature)
         keyHandlingBlocks.append(handler)
     }
     
     override func handleOptions()  {
         for handlingBlock in flagHandlingBlocks {
-            onFlags(handlingBlock.flags, block: handlingBlock.flagBlock, usage: handlingBlock.usage)
+            onFlags(handlingBlock.flags, usage: handlingBlock.usage, block: handlingBlock.flagBlock)
         }
         
         for handlingBlock in keyHandlingBlocks {
-            onKeys(handlingBlock.keys, block: handlingBlock.keyBlock, usage: handlingBlock.usage, valueSignature: handlingBlock.valueSignature)
+            onKeys(handlingBlock.keys, usage: handlingBlock.usage, valueSignature: handlingBlock.valueSignature, block: handlingBlock.keyBlock)
         }
     }
     

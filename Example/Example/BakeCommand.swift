@@ -27,22 +27,21 @@ class BakeCommand: Command {
     }
     
     override func handleOptions()  {
-        onFlags(["-q", "--quickly"], block: {flag in
+        onFlags(["-q", "--quickly"], usage: "Bake more quickly") {(flag) in
             self.quickly = true
-        }, usage: "Bake more quickly")
+        }
         
-        onFlag("-s", block: {flag in
+        onFlag("-s", usage: "Bake silently") {(flag) in
             self.silently = true
-        }, usage: "Bake silently")
+        }
         
-        onKeys(["-t", "--with-topping"], block: {key, value in
+        onKeys(["-t", "--with-topping"], usage: "Adds a topping to the baked good", valueSignature: "topping") {(key, value) in
             self.topping = value
-        }, usage: "Adds a topping to the baked good", valueSignature: "topping")
+        }
     }
     
     override func execute() -> CommandResult  {
-        let item = arguments["item"] as String?
-        if let item = item {
+        if let item = arguments["item"] as? String {
             bakeItem(item)
         } else {
             let data = NSData(contentsOfFile: "./Bakefile")
@@ -50,14 +49,15 @@ class BakeCommand: Command {
                 return .Failure("No Bakefile could be found in the current directory")
             }
             
-            let dict = NSJSONSerialization.JSONObjectWithData(data!, options: nil, error: nil) as NSDictionary?
-            if dict == nil {
+            if  let data = data,
+                let dict = NSJSONSerialization.JSONObjectWithData(data, options: nil, error: nil) as? NSDictionary,
+                let items = dict["items"] as? [String] {
+                
+                for item in items {
+                    bakeItem(item)
+                }
+            } else {
                 return .Failure("The Bakefile could not be parsed")
-            }
-            
-            let items = dict!["items"] as [String]
-            for item in items {
-                bakeItem(item)
             }
         }
         
@@ -74,8 +74,8 @@ class BakeCommand: Command {
         
         let recipe = checkForRecipe(item)
         if let recipe = recipe {
-            cookTime = recipe["cookTime"] as Int
-            silently = recipe["silently"] as Bool
+            cookTime = recipe["cookTime"] as? Int ?? cookTime
+            silently = recipe["silently"] as? Bool ?? silently
         }
         
         if quickly {
@@ -93,18 +93,12 @@ class BakeCommand: Command {
     }
     
     private func checkForRecipe(item: String) -> NSDictionary? {
-        let data = NSData(contentsOfFile: "./Bakefile")
-        if data == nil {
-            return nil
-        }
-        let dict = NSJSONSerialization.JSONObjectWithData(data!, options: nil, error: nil) as NSDictionary?
-        if dict == nil {
-            return nil
-        }
-        
-        if let customRecipes = dict!["custom_recipes"] as? [NSDictionary] {
+        if let data = NSData(contentsOfFile: "./Bakefile"),
+            let dict = NSJSONSerialization.JSONObjectWithData(data, options: nil, error: nil) as? NSDictionary,
+            let customRecipes = dict["custom_recipes"] as? [NSDictionary] {
+            
             for recipe in customRecipes {
-                if recipe["name"] as String == item {
+                if recipe["name"] as? String == item {
                     return recipe
                 }
             }

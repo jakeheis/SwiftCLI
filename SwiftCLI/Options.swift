@@ -77,7 +77,7 @@ class Options {
     
     private func characterArrayForString(string: String) -> [String] {
         var chars: [String] = []
-        for i in 0..<string.utf16Count {
+        for i in 0..<count(string) {
             let index = advance(string.startIndex, i)
             let str = String(string[index])
             chars.append(str)

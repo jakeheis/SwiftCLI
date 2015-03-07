@@ -15,7 +15,7 @@ class Arguments {
     var argumentsArray: [String]
     
     init() {
-        let args = NSProcessInfo.processInfo().arguments as [String]
+        let args = NSProcessInfo.processInfo().arguments as! [String]
         appName = args[0]
         argumentsArray = Array(args[1..<args.count])
     }
