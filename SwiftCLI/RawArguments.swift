@@ -1,5 +1,5 @@
 //
-//  Arguments.swift
+//  RawArguments.swift
 //  Example
 //
 //  Created by Jake Heiser on 1/6/15.
@@ -8,7 +8,7 @@
 
 import Foundation
 
-class Arguments {
+class RawArguments {
     
     let appName: String
     var commandName: String = ""

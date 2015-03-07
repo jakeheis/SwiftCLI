@@ -11,20 +11,20 @@ import Foundation
 class Router {
     
     private let commands: [Command]
-    private let arguments: Arguments
+    private let arguments: RawArguments
     private let defaultCommand: Command
     
     struct Route {
         let command: Command
-        let arguments: Arguments
+        let arguments: RawArguments
         
-        init(command: Command, arguments: Arguments) {
+        init(command: Command, arguments: RawArguments) {
             self.command = command
             self.arguments = arguments
         }
     }
     
-    init(commands: [Command], arguments: Arguments, defaultCommand: Command) {
+    init(commands: [Command], arguments: RawArguments, defaultCommand: Command) {
         self.commands = commands
         self.arguments = arguments
         self.defaultCommand = defaultCommand

@@ -108,11 +108,11 @@ class Command: NSObject {
         }
     }
     
-    final func parseCommandLineArguments(arguments: Arguments) -> [String]? {
-        // Command line arguments: both command arguments and options -- baker bake (cake -q -t frosting)
-        // Command arguments: non-option command line arguments -- baker bake (cake)
+    final func parseRawArguments(arguments: RawArguments) -> [String]? {
+        // Raw arguments: all arguments passed on CLI launch (arguments and options) -- baker bake (cake -q -t frosting)
+        // Command arguments: all raw arguments except those parsed to be options -- baker bake (cake)
         
-        let commandArguments = options.parseCommandLineArguments(arguments)
+        let commandArguments = options.parseRawArguments(arguments)
         
         if options.misusedOptionsPresent() {
             if let message = misusedOptionsMessage(arguments: arguments) {
@@ -126,7 +126,7 @@ class Command: NSObject {
         return commandArguments
     }
     
-    func misusedOptionsMessage(#arguments: Arguments) -> String? {
+    func misusedOptionsMessage(#arguments: RawArguments) -> String? {
         if unrecognizedOptionsPrintingBehavior() == UnrecognizedOptionsPrintingBehavior.PrintNone {
             return nil
         }
