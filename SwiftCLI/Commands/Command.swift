@@ -15,7 +15,7 @@ enum CommandResult {
 
 class Command: NSObject {
     
-    var arguments: NSDictionary = [:]
+    var arguments: CommandArguments = CommandArguments(keyedArguments: [:])
     var options: Options = Options()
     
     var usageStatements: [String] = []
@@ -96,7 +96,7 @@ class Command: NSObject {
     
     // MARK: - Options
     
-    final func fillExpectedOptions() {
+    final func setupExpectedOptions() {
         handleOptions()
         
         if showHelpOnHFlag() {
@@ -108,11 +108,8 @@ class Command: NSObject {
         }
     }
     
-    final func parseRawArguments(arguments: RawArguments) -> [String]? {
-        // Raw arguments: all arguments passed on CLI launch (arguments and options) -- baker bake (cake -q -t frosting)
-        // Command arguments: all raw arguments except those parsed to be options -- baker bake (cake)
-        
-        let commandArguments = options.parseRawArguments(arguments)
+    final func separateCommandArgumentsAndOptions(arguments: RawArguments) -> [String]? {
+        let commandArguments = options.separateCommandArgumentsAndOptions(rawArguments: arguments)
         
         if options.misusedOptionsPresent() {
             if let message = misusedOptionsMessage(arguments: arguments) {

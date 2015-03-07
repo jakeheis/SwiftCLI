@@ -26,7 +26,7 @@ class RouterTests: XCTestCase {
     // MARK: - Tests
     
     func testDefaultRoute() {
-        let args = Arguments(argumentString: "tester")
+        let args = RawArguments(argumentString: "tester")
         let router = createRouter(arguments: args)
         switch router.route() {
         case let .Success(route):
@@ -38,7 +38,7 @@ class RouterTests: XCTestCase {
     }
     
     func testNameRoute() {
-        let args = Arguments(argumentString: "tester alpha")
+        let args = RawArguments(argumentString: "tester alpha")
         let router = createRouter(arguments: args)
         switch router.route() {
         case let .Success(route):
@@ -50,7 +50,7 @@ class RouterTests: XCTestCase {
     }
     
     func testShortcutRoute() {
-        let args = Arguments(argumentString: "tester -b")
+        let args = RawArguments(argumentString: "tester -b")
         let router = createRouter(arguments: args)
         switch router.route() {
         case let .Success(route):
@@ -62,7 +62,7 @@ class RouterTests: XCTestCase {
     }
     
     func testDefaultCommandFlag() {
-        let args = Arguments(argumentString: "tester -a")
+        let args = RawArguments(argumentString: "tester -a")
         let router = createRouter(arguments: args)
         switch router.route() {
         case let .Success(route):
@@ -74,7 +74,7 @@ class RouterTests: XCTestCase {
     }
     
     func testFailedRoute() {
-        let args = Arguments(argumentString: "tester charlie")
+        let args = RawArguments(argumentString: "tester charlie")
         let router = createRouter(arguments: args)
         switch router.route() {
         case let .Success(route):
@@ -86,7 +86,7 @@ class RouterTests: XCTestCase {
     
     // MARK: - Helper
     
-    private func createRouter(#arguments: Arguments) -> Router {
+    private func createRouter(#arguments: RawArguments) -> Router {
         let commands = [alphaCommand, betaCommand, defaultCommand] as [Command]
         return Router(commands: commands, arguments: arguments, defaultCommand: defaultCommand)
     }

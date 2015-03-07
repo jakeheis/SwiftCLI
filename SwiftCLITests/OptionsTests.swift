@@ -40,9 +40,9 @@ class OptionsTests: XCTestCase {
         options.onFlags(["-a"]) {flag in aBlockCalled = true }
         options.onFlags(["-b"]) {flag in bBlockCalled = true }
         
-        let arguments = Arguments(argumentString: "tester -a -b")
+        let arguments = RawArguments(argumentString: "tester -a -b")
 
-        let commandArguments = options.parseCommandLineArguments(arguments)
+        let commandArguments = options.separateCommandArgumentsAndOptions(rawArguments: arguments)
         XCTAssert(commandArguments.count == 0, "Options should not return command arguments if all passed arguments are options")
         
         XCTAssertFalse(options.misusedOptionsPresent(), "Options should recognize all flags added with onFlags")
@@ -57,9 +57,9 @@ class OptionsTests: XCTestCase {
         options.onKeys(["-a"]) {key, value in aValue = value }
         options.onKeys(["-b"]) {key, value in bValue = value }
         
-        let arguments = Arguments(argumentString: "tester -a apple -b banana")
+        let arguments = RawArguments(argumentString: "tester -a apple -b banana")
         
-        let commandArguments = options.parseCommandLineArguments(arguments)
+        let commandArguments = options.separateCommandArgumentsAndOptions(rawArguments: arguments)
         XCTAssert(commandArguments.count == 0, "Options should not return command arguments if all passed arguments are options")
         
         XCTAssertFalse(options.misusedOptionsPresent(), "Options should recognize all flags added with onFlags")
@@ -75,9 +75,9 @@ class OptionsTests: XCTestCase {
         options.onFlags(["-a"]) {flag in aBlockCalled = true }
         options.onKeys(["-b"]) {key, value in bValue = value }
         
-        let arguments = Arguments(argumentString: "tester -a -b banana")
+        let arguments = RawArguments(argumentString: "tester -a -b banana")
         
-        let commandArguments = options.parseCommandLineArguments(arguments)
+        let commandArguments = options.separateCommandArgumentsAndOptions(rawArguments: arguments)
         XCTAssert(commandArguments.count == 0, "Options should not return command arguments if all passed arguments are options")
         
         XCTAssertFalse(options.misusedOptionsPresent(), "Options should recognize all flags added with onFlags")
@@ -94,9 +94,9 @@ class OptionsTests: XCTestCase {
         options.onFlags(["-a"]) {flag in aBlockCalled = true }
         options.onKeys(["-b"]) {key, value in bValue = value }
         
-        let arguments = Arguments(argumentString: "tester -a argument -b banana")
+        let arguments = RawArguments(argumentString: "tester -a argument -b banana")
         
-        let commandArguments = options.parseCommandLineArguments(arguments)
+        let commandArguments = options.separateCommandArgumentsAndOptions(rawArguments: arguments)
         XCTAssertEqual(commandArguments.first ?? "", "argument", "Options should return command arguments if one is passed")
         
         XCTAssertFalse(options.misusedOptionsPresent(), "Options should recognize all flags added with onFlags")
@@ -108,9 +108,9 @@ class OptionsTests: XCTestCase {
     func testUnrecognizedOptions() {
         options.onFlags(["-a"], block: nil)
         
-        let arguments = Arguments(argumentString: "tester -a -b")
+        let arguments = RawArguments(argumentString: "tester -a -b")
         
-        let commandArguments = options.parseCommandLineArguments(arguments)
+        let commandArguments = options.separateCommandArgumentsAndOptions(rawArguments: arguments)
         XCTAssert(commandArguments.count == 0, "Options should not return command arguments if all passed arguments are options")
         
         XCTAssert(options.misusedOptionsPresent(), "Options should identify when unrecognized options are used")
@@ -121,9 +121,9 @@ class OptionsTests: XCTestCase {
         options.onKeys(["-a"], block: nil)
         options.onFlags(["-b"], block: nil)
         
-        let arguments = Arguments(argumentString: "tester -a -b")
+        let arguments = RawArguments(argumentString: "tester -a -b")
         
-        let commandArguments = options.parseCommandLineArguments(arguments)
+        let commandArguments = options.separateCommandArgumentsAndOptions(rawArguments: arguments)
         XCTAssert(commandArguments.count == 0, "Options should not return command arguments if all passed arguments are options")
         
         XCTAssert(options.misusedOptionsPresent(), "Options should identify when unrecognized options are used")
@@ -137,9 +137,9 @@ class OptionsTests: XCTestCase {
         options.onFlags(["-a"]) {flag in aBlockCalled = true }
         options.onFlags(["-b"]) {flag in bBlockCalled = true }
         
-        let arguments = Arguments(argumentString: "tester -ab")
+        let arguments = RawArguments(argumentString: "tester -ab")
         
-        let commandArguments = options.parseCommandLineArguments(arguments)
+        let commandArguments = options.separateCommandArgumentsAndOptions(rawArguments: arguments)
         XCTAssert(commandArguments.count == 0, "Options should not return command arguments if all passed arguments are options")
         
         XCTAssertFalse(options.misusedOptionsPresent(), "Options should recognize all flags added with onFlags")

@@ -8,7 +8,7 @@
 
 import Foundation
 
-typealias CommandExecutionBlock = ((arguments: NSDictionary, options: Options) -> CommandResult)
+typealias CommandExecutionBlock = ((arguments: CommandArguments, options: Options) -> CommandResult)
 
 class LightweightCommand: Command {
     

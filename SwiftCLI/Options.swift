@@ -23,12 +23,12 @@ class Options {
     
     // MARK: - Argument parsing
     
-    func parseRawArguments(arguments: RawArguments) -> [String] {
+    func separateCommandArgumentsAndOptions(#rawArguments: RawArguments) -> [String] {
         var commandArguments: [String] = []
         
         var keyAwaitingValue: String? = nil
         
-        for arg in arguments.argumentsArray {
+        for arg in rawArguments.argumentsArray {
             if arg.hasPrefix("-") {
                 var allOptions = splitOption(arg)
                 

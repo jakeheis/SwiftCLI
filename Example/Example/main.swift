@@ -14,7 +14,7 @@ CLI.registerChainableCommand(commandName: "init")
     .withShortDescription("Creates a Bakefile in the current or given directory")
     .withSignature("[<directory>]")
     .withExecutionBlock({arguments, options in
-        let givenDirectory = arguments["directory"] as! String?
+        let givenDirectory = arguments.string("directory")
         
         let fileName = givenDirectory?.stringByAppendingPathComponent("Bakefile") ?? "./Bakefile"
         

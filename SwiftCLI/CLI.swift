@@ -139,16 +139,14 @@ class CLI: NSObject {
     }
     
     class private func setupOptionsAndArguments(route: Router.Route) -> Result<Bool> {
-        route.command.fillExpectedOptions()
+        route.command.setupExpectedOptions()
         
-        let commandArguments = route.command.parseRawArguments(route.arguments)
-        
-        if let commandArguments = commandArguments {
+        if let commandArguments = route.command.separateCommandArgumentsAndOptions(route.arguments) {
             if route.command.showingHelp {
                 return .Success(true)
             }
-            if let namedArguments = reconcileSignatureAndArguments(route.command.commandSignature(), arguments: commandArguments) {
-                route.command.arguments = namedArguments
+            if let namedArguments = keyArgumentsForSignature(commandArguments, signature: route.command.commandSignature()) {
+                route.command.arguments = CommandArguments(keyedArguments: namedArguments)
                 return .Success(true)
             }
         }
@@ -156,7 +154,7 @@ class CLI: NSObject {
         return .Failure
     }
     
-    class private func reconcileSignatureAndArguments(signature: String, arguments: [String]) -> NSDictionary? {
+    class private func keyArgumentsForSignature(arguments: [String], signature: String) -> NSDictionary? {
         let parser = SignatureParser(signature: signature, arguments: arguments)
         let parseResult = parser.parse()
         

@@ -41,7 +41,7 @@ class BakeCommand: Command {
     }
     
     override func execute() -> CommandResult  {
-        if let item = arguments["item"] as? String {
+        if let item = arguments.string("item") {
             bakeItem(item)
         } else {
             let data = NSData(contentsOfFile: "./Bakefile")
