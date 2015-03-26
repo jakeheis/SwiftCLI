@@ -7,13 +7,9 @@
 //
 
 import Foundation
+//import LlamaKit
 
-enum Result<T> {
-    case Success(T)
-    case Failure
-}
-
-class CLI: NSObject {
+public class CLI: NSObject {
     
     // MARK: - Information
     
@@ -28,102 +24,90 @@ class CLI: NSObject {
         static var defaultCommand: Command = CLIStatic.helpCommand!
     }
     
-    class func setup(#name: String, version: String = "1.0", description: String = "") {
+    public class func setup(#name: String, version: String = "1.0", description: String = "") {
         CLIStatic.appName = name
         CLIStatic.appVersion = version
         CLIStatic.appDescription = description
     }
     
-    class func appName() -> String {
+    public class func appName() -> String {
         return CLIStatic.appName
     }
     
-    class func appDescription() -> String {
+    public class func appDescription() -> String {
         return CLIStatic.appDescription
     }
     
     // MARK: - Registering commands
     
-    class func registerCommand(command: Command) {
+    public class func registerCommand(command: Command) {
         CLIStatic.commands.append(command)
     }
     
-    class func registerCommands(commands: [Command]) {
+    public class func registerCommands(commands: [Command]) {
         for command in commands {
             registerCommand(command)
         }
     }
     
-    class func registerChainableCommand(#commandName: String) -> ChainableCommand {
+    public class func registerChainableCommand(#commandName: String) -> ChainableCommand {
         let chainable = ChainableCommand(commandName: commandName)
         registerCommand(chainable)
         return chainable
     }
     
-    class func registerCustomHelpCommand(helpCommand: HelpCommand?) {
+    public class func registerCustomHelpCommand(helpCommand: HelpCommand?) {
         CLIStatic.helpCommand = helpCommand
     }
     
-    class func registerCustomVersionCommand(versionCommand: VersionCommand?) {
+    public class func registerCustomVersionCommand(versionCommand: VersionCommand?) {
         CLIStatic.versionComand = versionCommand
     }
     
-    class func registerDefaultCommand(command: Command) {
+    public class func registerDefaultCommand(command: Command) {
         CLIStatic.defaultCommand = command
     }
     
     // MARK: - Go
     
-    class func go() -> CLIResult {
+    public class func go() -> CLIResult {
        return goWithArguments(RawArguments())
     }
     
-    class func debugGoWithArgumentString(argumentString: String) -> CLIResult {
+    public class func debugGoWithArgumentString(argumentString: String) -> CLIResult {
         return goWithArguments(RawArguments(argumentString: argumentString))
     }
     
     private class func goWithArguments(arguments: RawArguments) -> CLIResult {
-        let routeResult = routeCommand(arguments: arguments)
+        let result = routeCommand(arguments: arguments)
+        .flatMap( {(route) -> Result<Router.Route, String> in
+            if self.setupOptionsAndArguments(route) {
+                return success(route)
+            } else {
+                return failure("")
+            }
+        })
+        .flatMap( {(route) -> Result<(), String> in
+            if route.command.showingHelp { // Don't actually execute command if showing help, e.g. git clone -h
+                return success(())
+            }
+            
+            return route.command.execute()
+        })
         
-        switch routeResult {
-        case let .Success(route):
-            return goWithRoute(route)
-        case .Failure:
-            printlnError("Command not found")
-            return CLIResult.Error
-        }
-    }
-    
-    private class func goWithRoute(route: Router.Route) -> CLIResult {
-        let setupResult = setupOptionsAndArguments(route)
-        
-        switch setupResult {
-        case .Success:
-            return executeRoute(route)
-        case .Failure:
-            return CLIResult.Error
-        }
-    }
-    
-    private class func executeRoute(route: Router.Route) -> CLIResult {
-        if route.command.showingHelp { // Don't actually execute command if showing help, e.g. git clone -h
+        if result.isSuccess {
             return CLIResult.Success
-        }
-        
-        let commandResult = route.command.execute()
-        
-        switch commandResult {
-        case .Success:
-            return CLIResult.Success
-        case let .Failure(errorMessage):
-            printlnError(errorMessage)
+        } else {
+            if let error = result.error where !error.isEmpty {
+                printlnError(error)
+            }
             return CLIResult.Error
         }
     }
     
     // MARK: - Privates
     
-    class private func routeCommand(#arguments: RawArguments) -> Result<Router.Route> {
+    class private func routeCommand(#arguments: RawArguments) -> Result<Router.Route, String> {
         var allCommands = CLIStatic.commands
         if let hc = CLIStatic.helpCommand {
             hc.allCommands = CLIStatic.commands
@@ -138,38 +122,44 @@ class CLI: NSObject {
         return router.route()
     }
     
-    class private func setupOptionsAndArguments(route: Router.Route) -> Result<Bool> {
+    class private func setupOptionsAndArguments(route: Router.Route) -> Bool {
         route.command.setupExpectedOptions()
         
-        if let commandArguments = route.command.separateCommandArgumentsAndOptions(route.arguments) {
+        if route.command.separateCommandArgumentsAndOptions(route.arguments) {
             if route.command.showingHelp {
-                return .Success(true)
+                return true
             }
-            if let namedArguments = keyArgumentsForSignature(commandArguments, signature: route.command.commandSignature()) {
-                route.command.arguments = CommandArguments(keyedArguments: namedArguments)
-                return .Success(true)
+            
+            let parser = SignatureParser(signature: route.command.commandSignature(), rawArguments: route.arguments)
+            let parseResult = parser.parse()
+            
+            if let commandArguments = parseResult.value {
+                route.command.arguments = commandArguments
+                return true
+            }
+            
+            if let errorMessage = parseResult.error {
+                printlnError(errorMessage)
             }
         }
         
-        return .Failure
+        return false
     }
     
-    class private func keyArgumentsForSignature(arguments: [String], signature: String) -> NSDictionary? {
-        let parser = SignatureParser(signature: signature, arguments: arguments)
+    class private func keyArgumentsForSignature(rawArguments: RawArguments, signature: CommandSignature) -> Result<CommandArguments, String> {
+        let parser = SignatureParser(signature: signature, rawArguments: rawArguments)
         let parseResult = parser.parse()
         
-        switch parseResult.result {
-        case let .Success(parsedArguments):
-            return parsedArguments
-        case .Failure:
-            printlnError(parseResult.errorMessage!)
-            return nil
+        if let errorMessage = parseResult.error {
+            printlnError(errorMessage)
         }
+        
+        return parseResult
     }
     
 }
 
-typealias CLIResult = Int32
+public typealias CLIResult = Int32
 
 extension CLIResult {
     

@@ -1,0 +1,14 @@
+platform :osx, '10.10'
+
+use_frameworks!
+
+plugin 'cocoapods-rome'
+
+target 'Example' do
+	pod "SwiftCLI", :path => "../"
+end
+
+target 'SwiftCLITests' do
+
+end
+

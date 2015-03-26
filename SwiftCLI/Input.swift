@@ -8,9 +8,9 @@
 
 import Foundation
 
-class Input {
+public class Input {
     
-    class func awaitInput(#message: String?) -> String {
+    public class func awaitInput(#message: String?) -> String {
         if let message = message {
             println(message)
         }
@@ -22,7 +22,7 @@ class Input {
         return input
     }
     
-    class func awaitInputWithValidation(#message: String?, validation: (input: String) -> Bool) -> String {
+    public class func awaitInputWithValidation(#message: String?, validation: (input: String) -> Bool) -> String {
         while (true) {
             let str = awaitInput(message: message)
             
@@ -34,7 +34,7 @@ class Input {
         }
     }
     
-    class func awaitInputWithConversion<T>(#message: String?, conversion: (input: String) -> T?) -> T {
+    public class func awaitInputWithConversion<T>(#message: String?, conversion: (input: String) -> T?) -> T {
         let input = awaitInputWithValidation(message: message) {input in
             return conversion(input: input) != nil
         }
@@ -42,11 +42,11 @@ class Input {
         return conversion(input: input)!
     }
     
-    class func awaitInt(#message: String?) -> Int {
+    public class func awaitInt(#message: String?) -> Int {
         return awaitInputWithConversion(message: message) { $0.toInt() }
     }
     
-    class func awaitYesNoInput(message: String = "Confirm?") -> Bool {
+    public class func awaitYesNoInput(message: String = "Confirm?") -> Bool {
         return awaitInputWithConversion(message: "\(message) [y/N]: ") {input in
             if input.lowercaseString == "y" || input.lowercaseString == "yes" {
                 return true

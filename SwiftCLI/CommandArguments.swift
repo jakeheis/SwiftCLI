@@ -8,28 +8,39 @@
 
 import Foundation
 
-class CommandArguments {
+public class CommandArguments {
     
-    var keyedArguments: NSDictionary
+    var keyedArguments: [String: AnyObject]
     
-    init(keyedArguments: NSDictionary) {
+    init() {
+        self.keyedArguments = [:]
+    }
+    
+    init(keyedArguments: [String: AnyObject]) {
         self.keyedArguments = keyedArguments
     }
     
-    subscript(key: String) -> AnyObject? {
-        return keyedArguments[key]
+    // MARK: - Subscripting
+    
+    public subscript(key: String) -> AnyObject? {
+        get {
+            return keyedArguments[key]
+        }
+        set(newArgument) {
+            keyedArguments[key] = newArgument
+        }
     }
     
     // MARK: - Typesafe shortcuts
     
-    func string(key: String) -> String? {
+    public func string(key: String) -> String? {
         if let arg = keyedArguments[key] as? String {
             return arg
         }
         return nil
     }
     
-    func array(key: String) -> [String]? {
+    public func array(key: String) -> [String]? {
         if let arg = keyedArguments[key] as? [String] {
             return arg
         }

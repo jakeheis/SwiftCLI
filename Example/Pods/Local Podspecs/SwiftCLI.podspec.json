@@ -1,0 +1,24 @@
+{
+  "name": "SwiftCLI",
+  "version": "0.2",
+  "summary": "A powerful framework than can be used to develop a CLI in Swift.",
+  "homepage": "https://github.com/jakeheis/SwiftCLI",
+  "license": "MIT",
+  "authors": {
+    "jakeheis": "jakeheiser1@gmail.com"
+  },
+  "source": {
+    "git": "https://github.com/jakeheis/SwiftCLI.git",
+    "tag": "0.2"
+  },
+  "platforms": {
+    "osx": "10.10"
+  },
+  "requires_arc": true,
+  "source_files": "SwiftCLI/**/*",
+  "dependencies": {
+    "LlamaKit": [
+      "~> 0.6"
+    ]
+  }
+}

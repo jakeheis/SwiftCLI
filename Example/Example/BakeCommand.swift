@@ -7,6 +7,7 @@
 //
 
 import Foundation
+//import SwiftCLI
 
 class BakeCommand: Command {
     
@@ -27,6 +28,8 @@ class BakeCommand: Command {
     }
     
     override func handleOptions()  {
+        
+        
         onFlags(["-q", "--quickly"], usage: "Bake more quickly") {(flag) in
             self.quickly = true
         }

@@ -8,114 +8,145 @@
 
 import Foundation
 
-typealias OptionsFlagBlock = (flag: String) -> ()
-typealias OptionsKeyBlock = (key: String, value: String) -> ()
-
-class Options {
+public class FlagOption {
     
-    var expectedFlags: [String] = []
-    var expectedFlagBlocks: [OptionsFlagBlock?] = []
-    var expectedKeys: [String] = []
-    var expectedKeyBlocks: [OptionsKeyBlock?] = []
+    public typealias FlagBlock = (flag: String) -> ()
+    
+    let flags: [String]
+    let usage: String
+    let block: FlagBlock?
+    
+    convenience init(flag: String, usage: String, block: FlagBlock?) {
+        self.init(flags: [flag], usage: usage, block: block)
+    }
+    
+    init(flags: [String], usage: String, block: FlagBlock?) {
+        self.flags = flags
+        self.block = block
+        
+        let flagsString = ", ".join(flags)
+        let paddedUsage = usage.padFront(totalLength: 40 - count(flagsString))
+        self.usage = "\(flagsString)\(paddedUsage)"
+    }
+    
+}
+
+public class KeyOption {
+    
+    public typealias KeyBlock = (key: String, value: String) -> ()
+    
+    let keys: [String]
+    let usage: String
+    let valueSignature: String
+    let block: KeyBlock?
+    
+    convenience init(key: String, usage: String, valueSignature: String, block: KeyBlock?) {
+        self.init(keys: [key], usage: usage, valueSignature: valueSignature, block: block)
+    }
+    
+    init(keys: [String], usage: String, valueSignature: String, block: KeyBlock?) {
+        self.keys = keys
+        self.valueSignature = valueSignature
+        self.block = block
+        
+        let keysString = ", ".join(keys)
+        let firstPart = "\(keysString) <\(valueSignature)>"
+        let paddedUsage = usage.padFront(totalLength: 40 - count(firstPart))
+        self.usage = "\(firstPart)\(paddedUsage)"
+    }
+    
+}
+
+extension String {
+    func padFront(#totalLength: Int) -> String {
+        var spacing = ""
+        for _ in 0...totalLength {
+            spacing += " "
+        }
+        
+        return "\(spacing)\(self)"
+    }
+}
+
+extension Array {
+    func each(block: (object: T) -> ()) {
+        for object in self {
+            block(object: object)
+        }
+    }
+    func eachWithIndex(block: (object: T, index: Int) -> ()) {
+        for (index, object) in enumerate(self) {
+            block(object: object, index: index)
+        }
+    }
+}
+
+public class Options {
+    
+    var flagOptions: [String: FlagOption] = [:]
+    var keyOptions: [String: KeyOption] = [:]
     
     var unrecognizedOptions: [String] = []
     var keysNotGivenValue: [String] = []
     
+    // MARK: - Adding options
+    
+    func onFlags(flags: [String], usage: String = "", block: FlagOption.FlagBlock?) {
+        addFlagOption(FlagOption(flags: flags, usage: usage, block: block))
+    }
+    
+    func addFlagOption(flagOption: FlagOption) {
+        flagOption.flags.each { self.flagOptions[$0] = flagOption }
+    }
+    
+    func onKeys(keys: [String], usage: String = "", valueSignature: String = "value", block: KeyOption.KeyBlock?) {
+        addKeyOption(KeyOption(keys: keys, usage: usage, valueSignature: valueSignature, block: block))
+    }
+    
+    func addKeyOption(keyOption: KeyOption) {
+        keyOption.keys.each { self.keyOptions[$0] = keyOption }
+    }
+    
     // MARK: - Argument parsing
     
-    func separateCommandArgumentsAndOptions(#rawArguments: RawArguments) -> [String] {
-        var commandArguments: [String] = []
+    func recognizeOptionsInArguments(rawArguments: RawArguments) {
+        let rawOptions = rawArguments.argumentsArray.filter { $0.hasPrefix("-") }
+        var passedOptions: [String] = []
+        rawOptions.each {(object) in
+            passedOptions += self.optionsForRawOption(object)
+            rawArguments.markArgumentIndexAsOption(find(rawArguments.argumentsArray, object)!)
+        }
         
-        var keyAwaitingValue: String? = nil
-        
-        for arg in rawArguments.argumentsArray {
-            if arg.hasPrefix("-") {
-                var allOptions = splitOption(arg)
-                
-                for option in allOptions {
-                    if let key = keyAwaitingValue {
-                        keysNotGivenValue.append(key)
-                        keyAwaitingValue = nil
-                    }
-                    
-                    if tryFlag(option) {
+        for option in passedOptions {
+            if let flagOption = flagOptions[option] {
+                flagOption.block?(flag: option)
+            } else if let keyOption = keyOptions[option] {
+                if option != rawArguments.argumentsArray.last {
+                    let keyArgIndex = find(rawArguments.argumentsArray, option)!
+                    let argFollowingKey = rawArguments.argumentsArray[keyArgIndex + 1]
+                    if !argFollowingKey.hasPrefix("-") {
+                        keyOption.block?(key: option, value: argFollowingKey)
+                        
+                        rawArguments.markArgumentIndexAsOption(keyArgIndex + 1)
+                        
                         continue
                     }
-                    
-                    if contains(expectedKeys, option) {
-                        keyAwaitingValue = option
-                        continue
-                    }
-                    
-                    unrecognizedOptions.append(arg)
                 }
-               
+                keysNotGivenValue.append(option)
             } else {
-                if let key = keyAwaitingValue {
-                    foundKeyValue(key, value: arg)
-                    keyAwaitingValue = nil
-                } else {
-                    commandArguments.append(arg)
-                }
+                unrecognizedOptions.append(option)
             }
         }
+    }
+    
+    private func optionsForRawOption(rawOption: String) -> [String] {
+        if rawOption.hasPrefix("--") {
+            return [rawOption]
+        }
         
-        return commandArguments
-    }
-    
-    private func splitOption(optionString: String) -> [String] {
-        var allOptions: [String] = []
-        if optionString.hasPrefix("--") {
-            allOptions.append(optionString)
-        } else {
-            var chars: [String] = characterArrayForString(optionString)
-            chars.removeAtIndex(0)
-            allOptions += chars.map({ "-\($0)" })
-        }
-        return allOptions
-    }
-    
-    private func characterArrayForString(string: String) -> [String] {
-        var chars: [String] = []
-        for i in 0..<count(string) {
-            let index = advance(string.startIndex, i)
-            let str = String(string[index])
-            chars.append(str)
-        }
-        return chars
-    }
-    
-    private func tryFlag(flag: String) -> Bool {
-        if let index = find(expectedFlags, flag) {
-            let block = expectedFlagBlocks[index]
-            block?(flag: flag)
-            return true
-        }
-        return false
-    }
-    
-    private func foundKeyValue(key: String, value: String) {
-        let index = find(expectedKeys, key)
-        let block = expectedKeyBlocks[index!]
-        block?(key: key, value: value)
-    }
-    
-    // MARK: - Flags
-
-    func onFlags(flags: [String], block: OptionsFlagBlock?) {
-        for flag in flags {
-            expectedFlags.append(flag)
-            expectedFlagBlocks.append(block)
-        }
-    }
-    
-    // MAKR: - Keys
-    
-    func onKeys(keys: [String], block: OptionsKeyBlock?) {
-        for key in keys {
-            expectedKeys.append(key)
-            expectedKeyBlocks.append(block)
-        }
+        var chars: [String] = Array(arrayLiteral: rawOption)
+        chars.removeAtIndex(0)
+        return chars.map { "-\($0)" }
     }
     
     // MARK: - Misused options

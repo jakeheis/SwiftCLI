@@ -7,32 +7,33 @@
 //
 
 import Foundation
+//import LlamaKit
 
-class HelpCommand: Command {
+public class HelpCommand: Command {
     
     var allCommands: [Command] = []
     
-    override func commandName() -> String  {
+    override public func commandName() -> String  {
         return "help"
     }
     
-    override func commandShortDescription() -> String  {
+    override public func commandShortDescription() -> String  {
         return "Prints this help information"
     }
     
-    override func commandShortcut() -> String?  {
+    override public func commandShortcut() -> String?  {
         return "-h"
     }
     
-    override func showHelpOnHFlag() -> Bool  {
+    override public func showHelpOnHFlag() -> Bool  {
         return false
     }
     
-    override func failOnUnrecognizedOptions() -> Bool  {
+    override public func failOnUnrecognizedOptions() -> Bool  {
         return false
     }
     
-    override func execute() -> CommandResult  {
+    override public func execute() -> Result<(), String>  {
         println("\(CLI.appDescription())\n")
         println("Available commands: ")
 
@@ -42,12 +43,12 @@ class HelpCommand: Command {
         
         printCommand(self)
         
-        return .Success
+        return success(())
     }
     
     func printCommand(command: Command) {
-        let str = padString(command.commandShortDescription(), toLength: 20, firstComponent: command.commandName())
-        println("- \(command.commandName())\(str)")
+        let description = command.commandShortDescription().padFront(totalLength: 20 - count(command.commandName()))
+        println("- \(command.commandName())\(description)")
     }
     
 }

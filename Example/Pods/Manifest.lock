@@ -1,0 +1,17 @@
+PODS:
+  - LlamaKit (0.6.0)
+  - SwiftCLI (0.2):
+    - LlamaKit (~> 0.6)
+
+DEPENDENCIES:
+  - SwiftCLI (from `../`)
+
+EXTERNAL SOURCES:
+  SwiftCLI:
+    :path: ../
+
+SPEC CHECKSUMS:
+  LlamaKit: 86cea401172a666a16c6b5f033a256c803b3b116
+  SwiftCLI: afd3a59090705003c42641b8afee37ff52668f65
+
+COCOAPODS: 0.36.0

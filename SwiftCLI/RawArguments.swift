@@ -14,6 +14,8 @@ class RawArguments {
     var commandName: String = ""
     var argumentsArray: [String]
     
+    private var optionIndexes: [Int] = []
+    
     init() {
         let args = NSProcessInfo.processInfo().arguments as! [String]
         appName = args[0]
@@ -29,6 +31,20 @@ class RawArguments {
     func setFirstArgumentIsCommandName() {
         commandName = argumentsArray.first!
         argumentsArray.removeAtIndex(0)
+    }
+    
+    func markArgumentIndexAsOption(index: Int) {
+        optionIndexes.append(index)
+    }
+    
+    func nonoptionsArguments() -> [String] {
+        var nonoptionArguments: [String] = []
+        argumentsArray.eachWithIndex {(object, index) in
+            if !contains(self.optionIndexes, index) {
+                nonoptionArguments.append(object)
+            }
+        }
+        return nonoptionArguments
     }
     
     var hasNoArguments: Bool {

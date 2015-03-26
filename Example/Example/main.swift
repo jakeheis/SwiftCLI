@@ -7,6 +7,7 @@
 //
 
 import Foundation
+//import SwiftCLI
 
 CLI.setup(name: "baker", description: "Baker - your own personal baker, here to bake you whatever you desire.")
 
@@ -55,5 +56,5 @@ CLI.registerCommand(bakerCommand)
 let recipeCommand = RecipeCommand()
 CLI.registerCommand(recipeCommand)
 
-let result = CLI.go()
+//let result = CLI.go()
 //exit(result) Throws a warning on Swift 1.2 for some reason

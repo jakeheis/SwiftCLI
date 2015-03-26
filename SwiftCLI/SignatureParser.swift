@@ -7,117 +7,83 @@
 //
 
 import Foundation
+//import LlamaKit
 
 class SignatureParser {
     
-    let signature: String
-    let arguments: [String]
+    private let signature: CommandSignature
+    private let arguments: [String]
     
-    init(signature: String, arguments: [String]) {
+    init(signature: CommandSignature, rawArguments: RawArguments) {
         self.signature = signature
-        self.arguments = arguments
+        self.arguments = rawArguments.nonoptionsArguments()
     }
     
-    func parse() -> (result: Result<NSDictionary>, errorMessage: String?) {
-        if signature == "" {
+    func parse() -> Result<CommandArguments, String> {
+        if signature.isEmpty {
             return handleEmptySignature()
         }
         
-        let (requiredArgs, optionalArgs, terminatedList) = parseSignature(signature)
-        
-        if arguments.count < requiredArgs.count {
-            return (.Failure, errorMessage(expectedCount: requiredArgs.count, givenCount: arguments.count))
+        if arguments.count < signature.requiredParameters.count {
+            return failure(errorMessage(expectedCount: signature.requiredParameters.count, givenCount: arguments.count))
         }
         
-        if optionalArgs.isEmpty && terminatedList && arguments.count != requiredArgs.count {
-            return (.Failure, errorMessage(expectedCount: requiredArgs.count, givenCount: arguments.count))
+        if signature.terminatedList && signature.optionalParameters.isEmpty && arguments.count != signature.requiredParameters.count {
+            return failure(errorMessage(expectedCount: signature.requiredParameters.count, givenCount: arguments.count))
         }
         
-        if terminatedList && arguments.count > requiredArgs.count + optionalArgs.count {
-            return (.Failure, errorMessage(expectedCount: requiredArgs.count + optionalArgs.count, givenCount: arguments.count))
+        if signature.terminatedList && arguments.count > signature.requiredParameters.count + signature.optionalParameters.count {
+            return failure(errorMessage(expectedCount: signature.requiredParameters.count + signature.optionalParameters.count, givenCount: arguments.count))
         }
-
-        var namedArgs: NSMutableDictionary = [:]
+        
+        var commandArguments = CommandArguments()
         
         // First handle required arguments
-        for i in 0..<requiredArgs.count {
-            let name = sanitizeKey(requiredArgs[i])
+        for i in 0..<signature.requiredParameters.count {
+            let parameter = signature.requiredParameters[i]
             let value = arguments[i]
-            namedArgs[name] = value
+            commandArguments[parameter] = value
         }
         
         // Then handle optional arguments if there are any
-        if !optionalArgs.isEmpty && arguments.count > requiredArgs.count {
-            for i in 0..<optionalArgs.count {
-                let index = i + requiredArgs.count
+        if !signature.optionalParameters.isEmpty && arguments.count > signature.requiredParameters.count {
+            for i in 0..<signature.optionalParameters.count {
+                let index = i + signature.requiredParameters.count
                 if index >= arguments.count {
                     break
                 }
-                let name = sanitizeKey(optionalArgs[i])
+                let parameter = signature.optionalParameters[i]
                 let value = arguments[index]
-                namedArgs[name] = value
+                commandArguments[parameter] = value
             }
         }
         
         // Finally group unlimited argument list into last argument if ... is present
-        if !terminatedList {
-            let lastKey = optionalArgs.isEmpty ? requiredArgs[requiredArgs.count-1] : optionalArgs[optionalArgs.count-1]
-            let name = sanitizeKey(lastKey)
+        if !signature.terminatedList {
+            let parameter = signature.optionalParameters.isEmpty ? signature.requiredParameters[signature.requiredParameters.count-1] : signature.optionalParameters[signature.optionalParameters.count-1]
             var lastArray: [String] = []
             
-            lastArray.append(namedArgs[name] as! String)
+            lastArray.append(commandArguments.string(parameter)!)
             
-            let startingIndex = requiredArgs.count + optionalArgs.count
+            let startingIndex = signature.requiredParameters.count + signature.optionalParameters.count
             for i in startingIndex..<arguments.count {
                 lastArray.append(arguments[i])
             }
             
-            namedArgs[name] = lastArray
+            commandArguments[parameter] = lastArray
         }
         
-        return (.Success(namedArgs), nil)
+        return success(commandArguments)
     }
     
     // MARK: - Privates
     
-    private func handleEmptySignature()-> (result: Result<NSDictionary>, errorMessage: String?) {
+    private func handleEmptySignature()-> Result<CommandArguments, String> {
         if arguments.count == 0 {
-            return (.Success(NSDictionary()), nil)
+            return success(CommandArguments())
         } else {
-            return (.Failure, "Expected no arguments, got \(arguments.count).")
+            return failure("Expected no arguments, got \(arguments.count).")
         }
-    }
-    
-    private func parseSignature(signature: String) -> (requiredArgs: [String], optionalArgs: [String], terminatedList: Bool) {
-        var expectedArguments = signature.componentsSeparatedByString(" ")
-
-        var requiredArgs: [String] = []
-        var optionalArgs: [String] = []
-        var terminatedList = true
-        
-        for argument in expectedArguments {
-            if argument == "..." {
-                let lastObject = expectedArguments[expectedArguments.count-1]
-                assert(argument == lastObject, "The non-terminal parameter must be at the end of a command signature.")
-                terminatedList = false
-                continue
-            }
-            
-            if argument.hasPrefix("[") {
-                optionalArgs.append(argument)
-            } else {
-                assert(optionalArgs.isEmpty, "All optional arguments must come after required arguments in a command signature")
-                requiredArgs.append(argument)
-            }
-        }
-        
-        return (requiredArgs, optionalArgs, terminatedList)
-    }
-    
-    private func sanitizeKey(key: String) -> String {
-        let arg = key as NSString
-        let multiplier = key.hasPrefix("[") ? 2 : 1
-        return arg.substringWithRange(NSMakeRange(1 * multiplier, count(key) - 2 * multiplier))
     }
     
     private func errorMessage(#expectedCount: Int, givenCount: Int) -> String {

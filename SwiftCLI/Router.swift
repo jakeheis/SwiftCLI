@@ -7,6 +7,7 @@
 //
 
 import Foundation
+//import LlamaKit
 
 class Router {
     
@@ -30,26 +31,18 @@ class Router {
         self.defaultCommand = defaultCommand
     }
     
-    func route() -> Result<Route> {
+    func route() -> Result<Route, String> {
         if arguments.hasNoArguments {
             let result = Route(command: defaultCommand, arguments: arguments)
-            return .Success(result)
+            return success(result)
         }
         
-        let commandResult = findCommand()
-        
-        switch commandResult {
-        case let .Success(command):
-            let route = Route(command: command, arguments: arguments)
-            return .Success(route)
-        case .Failure:
-            return .Failure
-        }
+        return findCommand().map { Route(command: $0, arguments: self.arguments) }
     }
     
     // MARK: - Privates
     
-    private func findCommand() -> Result<Command> {
+    private func findCommand() -> Result<Command, String> {
         var command: Command?
         
         if arguments.firstArgumentIsFlag {
@@ -66,10 +59,10 @@ class Router {
         }
         
         if let command = command {
-            return .Success(command)
+            return success(command)
         }
         
-        return .Failure
+        return failure("Command not found")
     }
     
 }

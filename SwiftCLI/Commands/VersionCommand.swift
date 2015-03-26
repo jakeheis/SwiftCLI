@@ -7,27 +7,28 @@
 //
 
 import Foundation
+//import LlamaKit
 
-class VersionCommand: Command {
+public class VersionCommand: Command {
     
     var version = "1.0"
     
-    override func commandName() -> String  {
+    override public func commandName() -> String  {
         return "version"
     }
     
-    override func commandShortDescription() -> String  {
+    override public func commandShortDescription() -> String  {
         return "Prints the current version of this app"
     }
     
-    override func commandShortcut() -> String?  {
+    override public func commandShortcut() -> String?  {
         return "-v"
     }
     
-    override func execute() -> CommandResult  {
+    override public func execute() -> Result<(), String>  {
         println("Version: \(version)")
         
-        return .Success
+        return success(())
     }
     
 }

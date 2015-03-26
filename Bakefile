@@ -1,0 +1,12 @@
+{
+  "items" : [
+
+  ],
+  "custom_recipes" : [
+    {
+      "name" : "cupcake",
+      "cookTime" : 10,
+      "silently" : false
+    }
+  ]
+}

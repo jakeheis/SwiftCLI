@@ -7,18 +7,14 @@
 //
 
 import Foundation
+//import LlamaKit
 
-enum CommandResult {
-    case Success
-    case Failure(String)
-}
-
-class Command: NSObject {
+public class Command: NSObject {
     
-    var arguments: CommandArguments = CommandArguments(keyedArguments: [:])
+    public var arguments: CommandArguments = CommandArguments(keyedArguments: [:])
+    
     var options: Options = Options()
     
-    var usageStatements: [String] = []
     var showingHelp = false
     
     // MARK: - Command info
@@ -28,7 +24,7 @@ class Command: NSObject {
     *
     *  @return the command name
     */
-    func commandName() -> String {
+    public func commandName() -> String {
         assert(false, "Subclasses of Command must override this method")
         return ""
     }
@@ -38,8 +34,8 @@ class Command: NSObject {
     *
     *  @return the command signature
     */
-    func commandSignature() -> String {
-        return ""
+    public func commandSignature() -> CommandSignature {
+        return CommandSignature()
     }
     
     /**
@@ -47,7 +43,7 @@ class Command: NSObject {
     *
     *  @return the short description
     */
-    func commandShortDescription() -> String {
+    public func commandShortDescription() -> String {
         return ""
     }
     
@@ -56,7 +52,7 @@ class Command: NSObject {
     *
     *  @return the shortcut
     */
-    func commandShortcut() -> String? {
+    public func commandShortcut() -> String? {
         return nil
     }
     
@@ -67,7 +63,7 @@ class Command: NSObject {
     *
     *  @return the usage statement
     */
-    func commandUsageStatement(commandName givenCommandName: String? = nil) -> String {
+    public func commandUsageStatement(commandName givenCommandName: String? = nil) -> String {
         var message = "Usage: \(CLI.appName())"
         
         let name = givenCommandName ?? commandName()
@@ -79,10 +75,13 @@ class Command: NSObject {
             message += " \(commandSignature())"
         }
         
-        if usageStatements.count > 0 {
+        if !options.flagOptions.isEmpty || !options.keyOptions.isEmpty {
             message += " [options]\n"
             
-            for usage in usageStatements {
+            let allKeys = options.flagOptions.keys.array + options.keyOptions.keys.array
+            let sortedKeys = sorted(allKeys)
+            for key in allKeys {
+                let usage = options.flagOptions[key]?.usage ?? options.keyOptions[key]?.usage ?? ""
                 message += "\n\(usage)"
             }
             
@@ -108,19 +107,19 @@ class Command: NSObject {
         }
     }
     
-    final func separateCommandArgumentsAndOptions(arguments: RawArguments) -> [String]? {
-        let commandArguments = options.separateCommandArgumentsAndOptions(rawArguments: arguments)
+    final func separateCommandArgumentsAndOptions(arguments: RawArguments) -> Bool {
+        options.recognizeOptionsInArguments(arguments)
         
         if options.misusedOptionsPresent() {
             if let message = misusedOptionsMessage(arguments: arguments) {
                 printlnError(message)
             }
             if failOnUnrecognizedOptions() {
-                return nil
+                return false
             }
         }
-
-        return commandArguments
+        
+        return true
     }
     
     func misusedOptionsMessage(#arguments: RawArguments) -> String? {
@@ -147,29 +146,20 @@ class Command: NSObject {
     
     // MARK: On options
     
-    final func onFlag(flag: String, usage: String = "", block: OptionsFlagBlock?) {
+    public final func onFlag(flag: String, usage: String = "", block: FlagOption.FlagBlock?) {
         onFlags([flag], usage: usage, block: block)
     }
     
-    final func onFlags(flags: [String], usage: String = "", block: OptionsFlagBlock?) {
-        let comps = ", ".join(flags)
-        let padded = padString(usage, toLength: 40, firstComponent: comps)
-        usageStatements.append("\(comps)\(padded)")
-        
-        options.onFlags(flags, block: block)
+    public final func onFlags(flags: [String], usage: String = "", block: FlagOption.FlagBlock?) {
+        options.onFlags(flags, usage: usage, block: block)
     }
     
-    final func onKey(key: String, usage: String = "", valueSignature: String = "value", block: OptionsKeyBlock?) {
+    public final func onKey(key: String, usage: String = "", valueSignature: String = "value", block: KeyOption.KeyBlock?) {
         onKeys([key], usage: usage, valueSignature: valueSignature, block: block)
     }
     
-    final func onKeys(keys: [String], usage: String = "", valueSignature: String = "value", block: OptionsKeyBlock?) {
-        let comps = ", ".join(keys)
-        let firstPart = "\(comps) <\(valueSignature)>"
-        let padded = padString(usage, toLength: 40, firstComponent: firstPart)
-        usageStatements.append("\(firstPart)\(padded)")
-        
-        options.onKeys(keys, block: block)
+    public final func onKeys(keys: [String], usage: String = "", valueSignature: String = "value", block: KeyOption.KeyBlock?) {
+        options.onKeys(keys, usage: usage, valueSignature: valueSignature, block: block)
     }
     
     // MARK: Sublcass option config
@@ -177,7 +167,7 @@ class Command: NSObject {
     /**
     *  Method where all onFlag(s) and onKey(s) calls should be made
     */
-    func handleOptions() {
+    public func handleOptions() {
         
     }
     
@@ -186,11 +176,11 @@ class Command: NSObject {
     *
     *  @return if usage statement should be printed
     */
-    func showHelpOnHFlag() -> Bool {
+    public func showHelpOnHFlag() -> Bool {
         return true
     }
     
-    enum UnrecognizedOptionsPrintingBehavior {
+    public enum UnrecognizedOptionsPrintingBehavior {
         case PrintNone
         case PrintOnlyUnrecognizedOptions
         case PrintOnlyUsage
@@ -202,7 +192,7 @@ class Command: NSObject {
     *
     *  @return the printing behavior
     */
-    func unrecognizedOptionsPrintingBehavior() -> UnrecognizedOptionsPrintingBehavior {
+    public func unrecognizedOptionsPrintingBehavior() -> UnrecognizedOptionsPrintingBehavior {
         return .PrintAll
     }
     
@@ -211,25 +201,14 @@ class Command: NSObject {
     *
     *  @return if command should fail on unrecognized options
     */
-    func failOnUnrecognizedOptions() -> Bool {
+    public func failOnUnrecognizedOptions() -> Bool {
         return true
     }
     
     // MARK: - Execution
     
-    func execute() -> CommandResult {
-        return .Success
-    }
-    
-    // MARK - Helper
-    
-    final func padString(string: String, toLength: Int, firstComponent: String) -> String {
-        var spacing = ""
-        for _ in count(firstComponent)...toLength {
-            spacing += " "
-        }
-        
-        return "\(spacing)\(string)"
+    public func execute() -> Result<(), String> {
+        return success(())
     }
     
 }
