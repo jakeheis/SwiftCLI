@@ -34,8 +34,8 @@ public class Command: NSObject {
     *
     *  @return the command signature
     */
-    public func commandSignature() -> CommandSignature {
-        return CommandSignature()
+    public func commandSignature() -> String {
+        return ""
     }
     
     /**

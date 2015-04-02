@@ -23,8 +23,8 @@ class BakeCommand: Command {
         return "Bakes the items in the Bakefile"
     }
     
-    override func commandSignature() -> CommandSignature  {
-        return CommandSignature("[<item>]")
+    override func commandSignature() -> String  {
+        return "[<item>]"
     }
     
     override func handleOptions()  {

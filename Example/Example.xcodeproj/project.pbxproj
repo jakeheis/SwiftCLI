@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		EF4BE6821AC4C78C00566B51 /* Result.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF4BE6811AC4C78C00566B51 /* Result.swift */; };
 		EF4BE6831AC4C7C100566B51 /* Result.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF4BE6811AC4C78C00566B51 /* Result.swift */; };
+		EF8C1C6E1ACCF74B008AB225 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF8C1C6D1ACCF74B008AB225 /* Extensions.swift */; };
+		EF8C1C6F1ACCF805008AB225 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF8C1C6D1ACCF74B008AB225 /* Extensions.swift */; };
 		EF92BF71198AEF7900BAA12B /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF92BF70198AEF7900BAA12B /* main.swift */; };
 		EFA57FDF19A151BC00340DD8 /* RecipeCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFA57FDE19A151BC00340DD8 /* RecipeCommand.swift */; };
 		EFCC4C5F1A5D8B310043A606 /* RouterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFCC4C5E1A5D8B310043A606 /* RouterTests.swift */; };
@@ -81,6 +83,7 @@
 
 /* Begin PBXFileReference section */
 		EF4BE6811AC4C78C00566B51 /* Result.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Result.swift; sourceTree = "<group>"; };
+		EF8C1C6D1ACCF74B008AB225 /* Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		EF92BF6D198AEF7900BAA12B /* Example */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Example; sourceTree = BUILT_PRODUCTS_DIR; };
 		EF92BF70198AEF7900BAA12B /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		EFA57FDE19A151BC00340DD8 /* RecipeCommand.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RecipeCommand.swift; sourceTree = "<group>"; };
@@ -104,7 +107,6 @@
 		EFFF88E61AC0F4E4003A2F2A /* Output.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Output.swift; sourceTree = "<group>"; };
 		EFFF88E71AC0F4E4003A2F2A /* RawArguments.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RawArguments.swift; sourceTree = "<group>"; };
 		EFFF88E81AC0F4E4003A2F2A /* Router.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Router.swift; sourceTree = "<group>"; };
-		EFFF88E91AC0F4E4003A2F2A /* SignatureParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignatureParser.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -197,7 +199,7 @@
 				EFFF88E61AC0F4E4003A2F2A /* Output.swift */,
 				EFFF88E71AC0F4E4003A2F2A /* RawArguments.swift */,
 				EFFF88E81AC0F4E4003A2F2A /* Router.swift */,
-				EFFF88E91AC0F4E4003A2F2A /* SignatureParser.swift */,
+				EF8C1C6D1ACCF74B008AB225 /* Extensions.swift */,
 			);
 			name = SwiftCLI;
 			path = ../../SwiftCLI;
@@ -325,6 +327,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				EF4BE6831AC4C7C100566B51 /* Result.swift in Sources */,
+				EF8C1C6E1ACCF74B008AB225 /* Extensions.swift in Sources */,
 				EFFF88F61AC0F4E4003A2F2A /* VersionCommand.swift in Sources */,
 				EFFF88EA1AC0F4E4003A2F2A /* CLI.swift in Sources */,
 				EFFF88FC1AC0F4E4003A2F2A /* Options.swift in Sources */,
@@ -349,6 +352,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				EFCF34761997FF41008691D1 /* OptionsTests.swift in Sources */,
+				EF8C1C6F1ACCF805008AB225 /* Extensions.swift in Sources */,
 				EFCC4C5F1A5D8B310043A606 /* RouterTests.swift in Sources */,
 				EF4BE6821AC4C78C00566B51 /* Result.swift in Sources */,
 				EFFF88EB1AC0F4E4003A2F2A /* CLI.swift in Sources */,

@@ -14,7 +14,7 @@ public typealias CommandExecutionBlock = ((arguments: CommandArguments, options:
 public class LightweightCommand: Command {
     
     public var lightweightCommandName: String = ""
-    public var lightweightCommandSignature: CommandSignature = CommandSignature()
+    public var lightweightCommandSignature: String = ""
     public var lightweightCommandShortDescription: String = ""
     public var lightweightCommandShortcut: String? = nil
     public var lightweightExecutionBlock: CommandExecutionBlock? = nil
@@ -33,7 +33,7 @@ public class LightweightCommand: Command {
         return lightweightCommandName
     }
     
-    override public func commandSignature() -> CommandSignature  {
+    override public func commandSignature() -> String  {
         return lightweightCommandSignature
     }
     

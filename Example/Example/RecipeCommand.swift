@@ -19,8 +19,8 @@ class RecipeCommand: Command {
         return "Creates a recipe interactively"
     }
     
-    override func commandSignature() -> CommandSignature {
-        return CommandSignature()
+    override func commandSignature() -> String {
+        return ""
     }
     
     override func execute() -> Result<(), String> {

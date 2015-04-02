@@ -20,7 +20,7 @@ class SwiftCLITests: XCTestCase {
         
         CLI.setup(name: "tester")
         CLI.registerChainableCommand(commandName: "test")
-            .withSignature(CommandSignature("<testName> [<testerName>]"))
+            .withSignature("<testName> [<testerName>]")
             .withFlagsHandled(["-s"], usage: "Silent flag", block: {(flag) in
                 self.silentFlag = true
             })

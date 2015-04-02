@@ -57,30 +57,6 @@ public class KeyOption {
     
 }
 
-extension String {
-    func padFront(#totalLength: Int) -> String {
-        var spacing = ""
-        for _ in 0...totalLength {
-            spacing += " "
-        }
-        
-        return "\(spacing)\(self)"
-    }
-}
-
-extension Array {
-    func each(block: (object: T) -> ()) {
-        for object in self {
-            block(object: object)
-        }
-    }
-    func eachWithIndex(block: (object: T, index: Int) -> ()) {
-        for (index, object) in enumerate(self) {
-            block(object: object, index: index)
-        }
-    }
-}
-
 public class Options {
     
     var flagOptions: [String: FlagOption] = [:]

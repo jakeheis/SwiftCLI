@@ -35,7 +35,7 @@ public class Input {
     }
     
     public class func awaitInputWithConversion<T>(#message: String?, conversion: (input: String) -> T?) -> T {
-        let input = awaitInputWithValidation(message: message) {input in
+        let input = awaitInputWithValidation(message: message) {(input) in
             return conversion(input: input) != nil
         }
         

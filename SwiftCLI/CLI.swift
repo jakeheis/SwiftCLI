@@ -89,7 +89,7 @@ public class CLI: NSObject {
         })
         .flatMap( {(route) -> Result<(), String> in
             if route.command.showingHelp { // Don't actually execute command if showing help, e.g. git clone -h
-                return success(())
+                return success()
             }
             
             return route.command.execute()
@@ -130,7 +130,8 @@ public class CLI: NSObject {
                 return true
             }
             
-            let commandArgumentsResult = CommandArguments.fromRawArguments(route.arguments, signature: route.command.commandSignature())
+            let commandSignature = CommandSignature(route.command.commandSignature())
+            let commandArgumentsResult = CommandArguments.fromRawArguments(route.arguments, signature: commandSignature)
             
             if let commandArguments = commandArgumentsResult.value {
                 route.command.arguments = commandArguments
