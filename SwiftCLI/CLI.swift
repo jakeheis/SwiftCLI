@@ -80,19 +80,15 @@ public class CLI: NSObject {
     
     private class func goWithArguments(arguments: RawArguments) -> CLIResult {
         let result = routeCommand(arguments: arguments)
-        .flatMap( {(route) -> Result<Router.Route, String> in
-            if self.setupOptionsAndArguments(route) {
-                return success(route)
-            } else {
-                return failure("")
-            }
+        .flatMap( {(route) in
+            return self.setupOptionsAndArguments(route)
         })
-        .flatMap( {(route) -> Result<(), String> in
-            if route.command.showingHelp { // Don't actually execute command if showing help, e.g. git clone -h
+        .flatMap( {(command) -> Result<(), String> in
+            if command.showingHelp { // Don't actually execute command if showing help, e.g. git clone -h
                 return success()
             }
             
-            return route.command.execute()
+            return command.execute()
         })
         
         if result.isSuccess {
@@ -122,12 +118,14 @@ public class CLI: NSObject {
         return router.route()
     }
     
-    class private func setupOptionsAndArguments(route: Router.Route) -> Bool {
+    class private func setupOptionsAndArguments(route: Router.Route) -> Result<Command, String> {
         route.command.setupExpectedOptions()
+        
+        var errorMessage = ""
         
         if route.command.recognizeOptions(route.arguments) {
             if route.command.showingHelp {
-                return true
+                return success(route.command)
             }
             
             let commandSignature = CommandSignature(route.command.commandSignature())
@@ -135,15 +133,13 @@ public class CLI: NSObject {
             
             if let commandArguments = commandArgumentsResult.value {
                 route.command.arguments = commandArguments
-                return true
+                return success(route.command)
             }
             
-            if let errorMessage = commandArgumentsResult.error {
-                printlnError(errorMessage)
-            }
+            errorMessage = commandArgumentsResult.error ?? ""
         }
         
-        return false
+        return failure(errorMessage)
     }
     
 }
