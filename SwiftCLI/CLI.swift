@@ -125,36 +125,24 @@ public class CLI: NSObject {
     class private func setupOptionsAndArguments(route: Router.Route) -> Bool {
         route.command.setupExpectedOptions()
         
-        if route.command.separateCommandArgumentsAndOptions(route.arguments) {
+        if route.command.recognizeOptions(route.arguments) {
             if route.command.showingHelp {
                 return true
             }
             
-            let parser = SignatureParser(signature: route.command.commandSignature(), rawArguments: route.arguments)
-            let parseResult = parser.parse()
+            let commandArgumentsResult = CommandArguments.fromRawArguments(route.arguments, signature: route.command.commandSignature())
             
-            if let commandArguments = parseResult.value {
+            if let commandArguments = commandArgumentsResult.value {
                 route.command.arguments = commandArguments
                 return true
             }
             
-            if let errorMessage = parseResult.error {
+            if let errorMessage = commandArgumentsResult.error {
                 printlnError(errorMessage)
             }
         }
         
         return false
-    }
-    
-    class private func keyArgumentsForSignature(rawArguments: RawArguments, signature: CommandSignature) -> Result<CommandArguments, String> {
-        let parser = SignatureParser(signature: signature, rawArguments: rawArguments)
-        let parseResult = parser.parse()
-        
-        if let errorMessage = parseResult.error {
-            printlnError(errorMessage)
-        }
-        
-        return parseResult
     }
     
 }

@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		53382F2F788C259DE3AF32F8 /* Pods_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F5924A95B6306B97CA02D92D /* Pods_Example.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		EF4BE6821AC4C78C00566B51 /* Result.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF4BE6811AC4C78C00566B51 /* Result.swift */; };
 		EF4BE6831AC4C7C100566B51 /* Result.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF4BE6811AC4C78C00566B51 /* Result.swift */; };
 		EF92BF71198AEF7900BAA12B /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF92BF70198AEF7900BAA12B /* main.swift */; };
@@ -16,7 +15,6 @@
 		EFCF34761997FF41008691D1 /* OptionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFCF34751997FF41008691D1 /* OptionsTests.swift */; };
 		EFEB0B55198C4D200040AFF0 /* BakeCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFEB0B54198C4D200040AFF0 /* BakeCommand.swift */; };
 		EFEB0BCA198DCEDA0040AFF0 /* SwiftCLITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFEB0BC9198DCEDA0040AFF0 /* SwiftCLITests.swift */; };
-		EFEB0BD2198DD0E90040AFF0 /* SignatureParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFEB0BD1198DD0E90040AFF0 /* SignatureParserTests.swift */; };
 		EFFF88EA1AC0F4E4003A2F2A /* CLI.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFFF88DB1AC0F4E4003A2F2A /* CLI.swift */; };
 		EFFF88EB1AC0F4E4003A2F2A /* CLI.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFFF88DB1AC0F4E4003A2F2A /* CLI.swift */; };
 		EFFF88EC1AC0F4E4003A2F2A /* CommandArguments.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFFF88DC1AC0F4E4003A2F2A /* CommandArguments.swift */; };
@@ -43,8 +41,6 @@
 		EFFF89011AC0F4E4003A2F2A /* RawArguments.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFFF88E71AC0F4E4003A2F2A /* RawArguments.swift */; };
 		EFFF89021AC0F4E4003A2F2A /* Router.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFFF88E81AC0F4E4003A2F2A /* Router.swift */; };
 		EFFF89031AC0F4E4003A2F2A /* Router.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFFF88E81AC0F4E4003A2F2A /* Router.swift */; };
-		EFFF89041AC0F4E4003A2F2A /* SignatureParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFFF88E91AC0F4E4003A2F2A /* SignatureParser.swift */; };
-		EFFF89051AC0F4E4003A2F2A /* SignatureParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFFF88E91AC0F4E4003A2F2A /* SignatureParser.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -84,7 +80,6 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		764E46EB302142F77A8AB52A /* Pods-Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Example.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Example/Pods-Example.debug.xcconfig"; sourceTree = "<group>"; };
 		EF4BE6811AC4C78C00566B51 /* Result.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Result.swift; sourceTree = "<group>"; };
 		EF92BF6D198AEF7900BAA12B /* Example */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Example; sourceTree = BUILT_PRODUCTS_DIR; };
 		EF92BF70198AEF7900BAA12B /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
@@ -110,8 +105,6 @@
 		EFFF88E71AC0F4E4003A2F2A /* RawArguments.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RawArguments.swift; sourceTree = "<group>"; };
 		EFFF88E81AC0F4E4003A2F2A /* Router.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Router.swift; sourceTree = "<group>"; };
 		EFFF88E91AC0F4E4003A2F2A /* SignatureParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignatureParser.swift; sourceTree = "<group>"; };
-		F5924A95B6306B97CA02D92D /* Pods_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		FA95F650C853E3BDDE4E1565 /* Pods-Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Example.release.xcconfig"; path = "Pods/Target Support Files/Pods-Example/Pods-Example.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -119,7 +112,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				53382F2F788C259DE3AF32F8 /* Pods_Example.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -133,23 +125,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		13DFE42011E4C34A70C754C1 /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				F5924A95B6306B97CA02D92D /* Pods_Example.framework */,
-			);
-			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		DCFB1D38EEB818C2AB7BDD7A /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-				764E46EB302142F77A8AB52A /* Pods-Example.debug.xcconfig */,
-				FA95F650C853E3BDDE4E1565 /* Pods-Example.release.xcconfig */,
-			);
-			name = Pods;
-			sourceTree = "<group>";
-		};
 		EF4BE6801AC4C78C00566B51 /* LlamaKit */ = {
 			isa = PBXGroup;
 			children = (
@@ -165,8 +140,6 @@
 				EF92BF6F198AEF7900BAA12B /* Example */,
 				EFEB0BC6198DCEDA0040AFF0 /* SwiftCLITests */,
 				EF92BF6E198AEF7900BAA12B /* Products */,
-				DCFB1D38EEB818C2AB7BDD7A /* Pods */,
-				13DFE42011E4C34A70C754C1 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -249,13 +222,10 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = EF92BF74198AEF7900BAA12B /* Build configuration list for PBXNativeTarget "Example" */;
 			buildPhases = (
-				1E7E8D58A8D6B1DA0159F075 /* Check Pods Manifest.lock */,
 				EF92BF69198AEF7900BAA12B /* Sources */,
 				EF92BF6A198AEF7900BAA12B /* Frameworks */,
 				EF92BF6B198AEF7900BAA12B /* CopyFiles */,
 				EFC9E18D19910A4500BC9B48 /* ShellScript */,
-				5E56A818817F950878E36E0F /* Embed Pods Frameworks */,
-				A8E1CE55651F77CC91C71781 /* Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -333,51 +303,6 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		1E7E8D58A8D6B1DA0159F075 /* Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "Check Pods Manifest.lock";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
-			showEnvVarsInLog = 0;
-		};
-		5E56A818817F950878E36E0F /* Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "Embed Pods Frameworks";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Example/Pods-Example-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		A8E1CE55651F77CC91C71781 /* Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Example/Pods-Example-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 		EFC9E18D19910A4500BC9B48 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -415,7 +340,6 @@
 				EFFF88FE1AC0F4E4003A2F2A /* Output.swift in Sources */,
 				EFFF88F01AC0F4E4003A2F2A /* Command.swift in Sources */,
 				EFA57FDF19A151BC00340DD8 /* RecipeCommand.swift in Sources */,
-				EFFF89041AC0F4E4003A2F2A /* SignatureParser.swift in Sources */,
 				EF92BF71198AEF7900BAA12B /* main.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -438,8 +362,6 @@
 				EFFF89031AC0F4E4003A2F2A /* Router.swift in Sources */,
 				EFFF88FF1AC0F4E4003A2F2A /* Output.swift in Sources */,
 				EFFF88F71AC0F4E4003A2F2A /* VersionCommand.swift in Sources */,
-				EFFF89051AC0F4E4003A2F2A /* SignatureParser.swift in Sources */,
-				EFEB0BD2198DD0E90040AFF0 /* SignatureParserTests.swift in Sources */,
 				EFFF89011AC0F4E4003A2F2A /* RawArguments.swift in Sources */,
 				EFFF88FB1AC0F4E4003A2F2A /* Input.swift in Sources */,
 				EFFF88F11AC0F4E4003A2F2A /* Command.swift in Sources */,
@@ -544,7 +466,6 @@
 		};
 		EF92BF75198AEF7900BAA12B /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 764E46EB302142F77A8AB52A /* Pods-Example.debug.xcconfig */;
 			buildSettings = {
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) '@executable_path/../Frameworks' '@loader_path/Frameworks'";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -553,7 +474,6 @@
 		};
 		EF92BF76198AEF7900BAA12B /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = FA95F650C853E3BDDE4E1565 /* Pods-Example.release.xcconfig */;
 			buildSettings = {
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) '@executable_path/../Frameworks' '@loader_path/Frameworks'";
 				PRODUCT_NAME = "$(TARGET_NAME)";

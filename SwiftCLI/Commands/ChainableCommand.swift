@@ -13,7 +13,7 @@ public class ChainableCommand: LightweightCommand {
     override init(commandName: String) {
         super.init(commandName: commandName)
     }
- 
+    
     public func withSignature(signature: CommandSignature) -> ChainableCommand {
         lightweightCommandSignature = signature
         return self

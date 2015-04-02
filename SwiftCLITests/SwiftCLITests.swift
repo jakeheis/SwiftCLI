@@ -20,7 +20,7 @@ class SwiftCLITests: XCTestCase {
         
         CLI.setup(name: "tester")
         CLI.registerChainableCommand(commandName: "test")
-            .withSignature("<testName> [<testerName>]")
+            .withSignature(CommandSignature("<testName> [<testerName>]"))
             .withFlagsHandled(["-s"], usage: "Silent flag", block: {(flag) in
                 self.silentFlag = true
             })
@@ -28,13 +28,13 @@ class SwiftCLITests: XCTestCase {
                 self.times = value.toInt()!
             })
             .withExecutionBlock {(arguments, options) in
-                let testerName = arguments["testerName"] as! String? ?? "Tester"
-                let testName = arguments["testName"] as! String
+                let testName = arguments.requiredString("testName")
+                let testerName = arguments.optionalString("testerName") ?? "Tester"
                 self.executionString = "\(testerName) will test \(testName), \(self.times) times"
                 if self.silentFlag {
                     self.executionString += ", silently"
                 }
-                return .Success
+                return success()
             }
     }
     

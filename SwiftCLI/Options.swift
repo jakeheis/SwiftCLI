@@ -116,6 +116,10 @@ public class Options {
             passedOptions += self.optionsForRawOption(object)
             rawArguments.markArgumentIndexAsOption(find(rawArguments.argumentsArray, object)!)
         }
+
+        println("args \(rawArguments.argumentsArray)")
+        println("raw options \(rawOptions)")
+        println("passed options \(passedOptions)")
         
         for option in passedOptions {
             if let flagOption = flagOptions[option] {
@@ -144,9 +148,15 @@ public class Options {
             return [rawOption]
         }
         
-        var chars: [String] = Array(arrayLiteral: rawOption)
-        chars.removeAtIndex(0)
-        return chars.map { "-\($0)" }
+        var chars: [String] = []
+        
+        for (index, character) in enumerate(rawOption) {
+            if index > 0 {
+                chars.append("-\(character)")
+            }
+        }
+        
+        return chars
     }
     
     // MARK: - Misused options

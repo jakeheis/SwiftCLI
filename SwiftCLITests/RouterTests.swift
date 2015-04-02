@@ -28,11 +28,11 @@ class RouterTests: XCTestCase {
     func testDefaultRoute() {
         let args = RawArguments(argumentString: "tester")
         let router = createRouter(arguments: args)
-        switch router.route() {
-        case let .Success(route):
+        
+        if let route = router.route().value {
             XCTAssertEqual(route.command, defaultCommand, "Router should route to the default command if no arguments are given")
             XCTAssert(route.arguments.hasNoArguments, "Router should leave no arguments for the command")
-        case let .Failure:
+        } else {
             XCTFail("Router should not fail when a default command exists")
         }
     }
@@ -40,11 +40,10 @@ class RouterTests: XCTestCase {
     func testNameRoute() {
         let args = RawArguments(argumentString: "tester alpha")
         let router = createRouter(arguments: args)
-        switch router.route() {
-        case let .Success(route):
+        if let route = router.route().value {
             XCTAssertEqual(route.command, alphaCommand, "Router should route to the command with the given name")
             XCTAssert(route.arguments.hasNoArguments, "Router should leave no arguments for the command")
-        case let .Failure:
+        } else {
             XCTFail("Router should not fail when the command exists")
         }
     }
@@ -52,11 +51,10 @@ class RouterTests: XCTestCase {
     func testShortcutRoute() {
         let args = RawArguments(argumentString: "tester -b")
         let router = createRouter(arguments: args)
-        switch router.route() {
-        case let .Success(route):
+        if let route = router.route().value {
             XCTAssertEqual(route.command, betaCommand, "Router should route to the command with the given shortcut")
             XCTAssert(route.arguments.hasNoArguments, "Router should leave no arguments for the command")
-        case let .Failure:
+        } else {
             XCTFail("Router should not fail when the command exists")
         }
     }
@@ -64,11 +62,10 @@ class RouterTests: XCTestCase {
     func testDefaultCommandFlag() {
         let args = RawArguments(argumentString: "tester -a")
         let router = createRouter(arguments: args)
-        switch router.route() {
-        case let .Success(route):
+        if let route = router.route().value {
             XCTAssertEqual(route.command, defaultCommand, "Router should route to the default command when the flag does not match any command shortcut")
             XCTAssertEqual(route.arguments.argumentsArray, ["-a"], "Router should pass the flag on to the default command")
-        case let .Failure:
+        } else {
             XCTFail("Router should not fail when the command exists")
         }
     }
@@ -76,11 +73,8 @@ class RouterTests: XCTestCase {
     func testFailedRoute() {
         let args = RawArguments(argumentString: "tester charlie")
         let router = createRouter(arguments: args)
-        switch router.route() {
-        case let .Success(route):
+        if router.route().isSuccess {
             XCTFail("Router should fail when the command does not exist")
-        case let .Failure:
-            break;
         }
     }
     

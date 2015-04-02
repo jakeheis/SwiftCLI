@@ -18,7 +18,7 @@ public class CommandSignature {
         
     }
     
-    init(string: String) {
+    init(_ string: String) {
         var parameters = string.componentsSeparatedByString(" ")
         
         let requiredRegex = NSRegularExpression(pattern: "^<.*>$", options: nil, error: nil)

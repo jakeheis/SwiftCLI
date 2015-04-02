@@ -59,4 +59,8 @@ class RawArguments {
         return firstArgument?.hasPrefix("-") ?? false
     }
     
+    var count: Int {
+        return argumentsArray.count
+    }
+    
 }

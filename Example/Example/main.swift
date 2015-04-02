@@ -13,20 +13,19 @@ CLI.setup(name: "baker", description: "Baker - your own personal baker, here to 
 
 CLI.registerChainableCommand(commandName: "init")
     .withShortDescription("Creates a Bakefile in the current or given directory")
-    .withSignature("[<directory>]")
-    .withExecutionBlock({arguments, options in
-        let givenDirectory = arguments.string("directory")
+    .withSignature(CommandSignature("[<directory>]"))
+    .withExecutionBlock {(arguments, options) in
+        let givenDirectory = arguments.optionalString("directory")
         
         let fileName = givenDirectory?.stringByAppendingPathComponent("Bakefile") ?? "./Bakefile"
         
         let dict = ["items": []]
-        let success = NSFileManager.defaultManager().createFileAtPath(fileName, contents: NSJSONSerialization.dataWithJSONObject(dict, options: NSJSONWritingOptions.PrettyPrinted, error: nil), attributes: nil)
-        if success {
-            return .Success
+        if NSFileManager.defaultManager().createFileAtPath(fileName, contents: NSJSONSerialization.dataWithJSONObject(dict, options: NSJSONWritingOptions.PrettyPrinted, error: nil), attributes: nil) {
+            return success()
         } else {
-            return .Failure("The Bakefile was not able to be created")
+            return failure("The Bakefile was not able to be created")
         }
-    })
+    }
 
 
 let listCommand = LightweightCommand(commandName: "list")
@@ -37,7 +36,7 @@ listCommand.handleFlags(["-e", "--exotics-included"], usage: "Include exotic foo
     showExoticFoods = true
 }
 
-listCommand.lightweightExecutionBlock = {arguments, options in
+listCommand.lightweightExecutionBlock = {(arguments, options) in
     var foods = ["bread", "cookies", "cake"]
     if showExoticFoods {
         foods += ["exotic baker item 1", "exotic baker item 2"]
@@ -46,7 +45,7 @@ listCommand.lightweightExecutionBlock = {arguments, options in
     for i in 0..<foods.count {
         println("\(i+1). \(foods[i])")
     }
-    return .Success
+    return success()
 }
 CLI.registerCommand(listCommand)
 

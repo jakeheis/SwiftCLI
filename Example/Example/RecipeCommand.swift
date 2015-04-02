@@ -19,14 +19,14 @@ class RecipeCommand: Command {
         return "Creates a recipe interactively"
     }
     
-    override func commandSignature() -> String {
-        return ""
+    override func commandSignature() -> CommandSignature {
+        return CommandSignature()
     }
     
-    override func execute() -> CommandResult {
+    override func execute() -> Result<(), String> {
         let data = NSData(contentsOfFile: "./Bakefile")
         if data == nil {
-            return .Failure("No Bakefile could be found in the current directory. Run 'baker init' before this command.")
+            return failure("No Bakefile could be found in the current directory. Run 'baker init' before this command.")
         }
         
         if let data = data,
@@ -44,12 +44,12 @@ class RecipeCommand: Command {
             
             let finalData = NSJSONSerialization.dataWithJSONObject(bakefile, options: .PrettyPrinted, error: nil)
             if finalData?.writeToFile("./Bakefile", atomically: true) == false {
-                return .Failure("The Bakefile could not be written to.")
+                return failure("The Bakefile could not be written to.")
             }
             
-            return .Success
+            return success()
         } else {
-            return .Failure("The Bakefile could not be parsed.")
+            return failure("The Bakefile could not be parsed.")
         }
     }
    

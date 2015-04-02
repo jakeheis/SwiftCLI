@@ -63,7 +63,7 @@ class SignatureParser {
             let parameter = signature.optionalParameters.isEmpty ? signature.requiredParameters[signature.requiredParameters.count-1] : signature.optionalParameters[signature.optionalParameters.count-1]
             var lastArray: [String] = []
             
-            lastArray.append(commandArguments.string(parameter)!)
+            lastArray.append(commandArguments.requiredString(parameter))
             
             let startingIndex = signature.requiredParameters.count + signature.optionalParameters.count
             for i in startingIndex..<arguments.count {

@@ -23,13 +23,11 @@ class BakeCommand: Command {
         return "Bakes the items in the Bakefile"
     }
     
-    override func commandSignature() -> String  {
-        return "[<item>]"
+    override func commandSignature() -> CommandSignature  {
+        return CommandSignature("[<item>]")
     }
     
     override func handleOptions()  {
-        
-        
         onFlags(["-q", "--quickly"], usage: "Bake more quickly") {(flag) in
             self.quickly = true
         }
@@ -43,13 +41,13 @@ class BakeCommand: Command {
         }
     }
     
-    override func execute() -> CommandResult  {
-        if let item = arguments.string("item") {
+    override func execute() -> Result<(), String>  {
+        if let item = arguments.optionalString("item") {
             bakeItem(item)
         } else {
             let data = NSData(contentsOfFile: "./Bakefile")
             if data == nil {
-                return .Failure("No Bakefile could be found in the current directory")
+                return failure("No Bakefile could be found in the current directory")
             }
             
             if  let data = data,
@@ -60,11 +58,11 @@ class BakeCommand: Command {
                     bakeItem(item)
                 }
             } else {
-                return .Failure("The Bakefile could not be parsed")
+                return failure("The Bakefile could not be parsed")
             }
         }
         
-        return .Success
+        return success()
     }
     
     private func bakeItem(item: String) {
