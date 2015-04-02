@@ -45,9 +45,7 @@ public class CLI: NSObject {
     }
     
     public class func registerCommands(commands: [Command]) {
-        for command in commands {
-            registerCommand(command)
-        }
+        commands.each { self.registerCommand($0) }
     }
     
     public class func registerChainableCommand(#commandName: String) -> ChainableCommand {
