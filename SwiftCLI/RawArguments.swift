@@ -23,7 +23,7 @@ class RawArguments {
     }
     
     init(argumentString: String) {
-        let args = argumentString.componentsSeparatedByString(" ")
+        let args = argumentString.componentsSeparatedByString(" ").filter { !$0.isEmpty }
         appName = args[0]
         argumentsArray = Array(args[1..<args.count])
     }

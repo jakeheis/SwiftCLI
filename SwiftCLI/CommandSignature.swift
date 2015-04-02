@@ -15,7 +15,7 @@ public class CommandSignature {
     var terminatedList = true
     
     init(_ string: String) {
-        var parameters = string.componentsSeparatedByString(" ")
+        var parameters = string.componentsSeparatedByString(" ").filter { !$0.isEmpty }
         
         let requiredRegex = NSRegularExpression(pattern: "^<.*>$", options: nil, error: nil)
         let optionalRegex = NSRegularExpression(pattern: "^\\[<.*>\\]$", options: nil, error: nil)

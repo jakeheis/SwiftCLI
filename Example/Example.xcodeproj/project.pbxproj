@@ -11,6 +11,7 @@
 		EF4BE6831AC4C7C100566B51 /* Result.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF4BE6811AC4C78C00566B51 /* Result.swift */; };
 		EF8C1C6E1ACCF74B008AB225 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF8C1C6D1ACCF74B008AB225 /* Extensions.swift */; };
 		EF8C1C6F1ACCF805008AB225 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF8C1C6D1ACCF74B008AB225 /* Extensions.swift */; };
+		EF8C1C701ACCFB79008AB225 /* CommandArgumentsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFEB0BD1198DD0E90040AFF0 /* CommandArgumentsTests.swift */; };
 		EF92BF71198AEF7900BAA12B /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF92BF70198AEF7900BAA12B /* main.swift */; };
 		EFA57FDF19A151BC00340DD8 /* RecipeCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFA57FDE19A151BC00340DD8 /* RecipeCommand.swift */; };
 		EFCC4C5F1A5D8B310043A606 /* RouterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFCC4C5E1A5D8B310043A606 /* RouterTests.swift */; };
@@ -93,7 +94,7 @@
 		EFEB0BC5198DCEDA0040AFF0 /* SwiftCLITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SwiftCLITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		EFEB0BC8198DCEDA0040AFF0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		EFEB0BC9198DCEDA0040AFF0 /* SwiftCLITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftCLITests.swift; sourceTree = "<group>"; };
-		EFEB0BD1198DD0E90040AFF0 /* SignatureParserTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignatureParserTests.swift; sourceTree = "<group>"; };
+		EFEB0BD1198DD0E90040AFF0 /* CommandArgumentsTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommandArgumentsTests.swift; sourceTree = "<group>"; };
 		EFFF88DB1AC0F4E4003A2F2A /* CLI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CLI.swift; sourceTree = "<group>"; };
 		EFFF88DC1AC0F4E4003A2F2A /* CommandArguments.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommandArguments.swift; sourceTree = "<group>"; };
 		EFFF88DE1AC0F4E4003A2F2A /* ChainableCommand.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChainableCommand.swift; sourceTree = "<group>"; };
@@ -170,7 +171,7 @@
 			isa = PBXGroup;
 			children = (
 				EFEB0BC9198DCEDA0040AFF0 /* SwiftCLITests.swift */,
-				EFEB0BD1198DD0E90040AFF0 /* SignatureParserTests.swift */,
+				EFEB0BD1198DD0E90040AFF0 /* CommandArgumentsTests.swift */,
 				EFCF34751997FF41008691D1 /* OptionsTests.swift */,
 				EFCC4C5E1A5D8B310043A606 /* RouterTests.swift */,
 				EFEB0BC7198DCEDA0040AFF0 /* Supporting Files */,
@@ -365,6 +366,7 @@
 				EFFF88EF1AC0F4E4003A2F2A /* ChainableCommand.swift in Sources */,
 				EFFF89031AC0F4E4003A2F2A /* Router.swift in Sources */,
 				EFFF88FF1AC0F4E4003A2F2A /* Output.swift in Sources */,
+				EF8C1C701ACCFB79008AB225 /* CommandArgumentsTests.swift in Sources */,
 				EFFF88F71AC0F4E4003A2F2A /* VersionCommand.swift in Sources */,
 				EFFF89011AC0F4E4003A2F2A /* RawArguments.swift in Sources */,
 				EFFF88FB1AC0F4E4003A2F2A /* Input.swift in Sources */,
