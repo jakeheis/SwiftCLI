@@ -43,7 +43,7 @@ public class HelpCommand: Command {
         
         printCommand(self)
         
-        return success(())
+        return success()
     }
     
     func printCommand(command: Command) {

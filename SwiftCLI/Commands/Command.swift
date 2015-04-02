@@ -208,7 +208,7 @@ public class Command: NSObject {
     // MARK: - Execution
     
     public func execute() -> Result<(), String> {
-        return success(())
+        return success()
     }
     
 }
