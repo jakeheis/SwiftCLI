@@ -53,11 +53,11 @@ class Router {
                 if command == nil {
                     command = defaultCommand
                 } else {
-                    arguments.classifyArgument(index: 1, type: .CommandName)
+                    arguments.classifyArgument(argument: commandSearchName, type: .CommandName)
                 }
             } else {
                 command = commands.filter({ $0.commandName() == commandSearchName }).first
-                arguments.classifyArgument(index: 1, type: .CommandName)
+                arguments.classifyArgument(argument: commandSearchName, type: .CommandName)
             }
             
             if let command = command {

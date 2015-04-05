@@ -40,14 +40,14 @@ class RawArguments {
         classifyArgument(index: 0, type: .AppName)
     }
     
-    func classifyArgument(#index: Int, type: RawArgumentType) {
-        argumentClassifications[index] = type
-    }
-    
     func classifyArgument(#argument: String, type: RawArgumentType) {
         if let index = find(arguments, argument) {
             classifyArgument(index: index, type: type)
         }
+    }
+    
+    private func classifyArgument(#index: Int, type: RawArgumentType) {
+        argumentClassifications[index] = type
     }
     
     func unclassifiedArguments() -> [String] {
