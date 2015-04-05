@@ -86,33 +86,26 @@ public class Options {
     // MARK: - Argument parsing
     
     func recognizeOptionsInArguments(rawArguments: RawArguments) {
-        let rawOptions = rawArguments.argumentsArray.filter { $0.hasPrefix("-") }
         var passedOptions: [String] = []
-        rawOptions.each {(object) in
-            passedOptions += self.optionsForRawOption(object)
-            rawArguments.markArgumentIndexAsOption(find(rawArguments.argumentsArray, object)!)
+        rawArguments.unclassifiedArguments().each {(argument) in
+            if argument.hasPrefix("-") {
+                passedOptions += self.optionsForRawOption(argument)
+                rawArguments.classifyArgument(argument: argument, type: .Option)
+            }
         }
-
-        println("args \(rawArguments.argumentsArray)")
-        println("raw options \(rawOptions)")
-        println("passed options \(passedOptions)")
         
         for option in passedOptions {
             if let flagOption = flagOptions[option] {
                 flagOption.block?(flag: option)
             } else if let keyOption = keyOptions[option] {
-                if option != rawArguments.argumentsArray.last {
-                    let keyArgIndex = find(rawArguments.argumentsArray, option)!
-                    let argFollowingKey = rawArguments.argumentsArray[keyArgIndex + 1]
-                    if !argFollowingKey.hasPrefix("-") {
-                        keyOption.block?(key: option, value: argFollowingKey)
+                if let keyValue = rawArguments.argumentFollowingArgument(option)
+                    where !keyValue.hasPrefix("-") {
+                        rawArguments.classifyArgument(argument: keyValue, type: .Option)
                         
-                        rawArguments.markArgumentIndexAsOption(keyArgIndex + 1)
-                        
-                        continue
-                    }
+                        keyOption.block?(key: option, value: keyValue)
+                } else {
+                    keysNotGivenValue.append(option)
                 }
-                keysNotGivenValue.append(option)
             } else {
                 unrecognizedOptions.append(option)
             }

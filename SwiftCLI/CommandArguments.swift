@@ -31,7 +31,7 @@ public class CommandArguments {
             return handleEmptySignature(rawArguments: rawArguments)
         }
         
-        let arguments = rawArguments.nonoptionsArguments()
+        let arguments = rawArguments.unclassifiedArguments()
         
         if arguments.count < signature.requiredParameters.count {
             return failure(errorMessage(expectedCount: signature.requiredParameters.count, givenCount: arguments.count))
@@ -86,10 +86,10 @@ public class CommandArguments {
     }
     
     private class func handleEmptySignature(#rawArguments: RawArguments)-> Result<CommandArguments, String> {
-        if rawArguments.count == 0 {
+        if rawArguments.unclassifiedArguments().count == 0 {
             return success(CommandArguments())
         } else {
-            return failure("Expected no arguments, got \(rawArguments.count).")
+            return failure("Expected no arguments, got \(rawArguments.unclassifiedArguments().count).")
         }
     }
     

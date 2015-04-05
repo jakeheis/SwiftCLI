@@ -32,7 +32,7 @@ class Router {
     }
     
     func route() -> Result<Route, String> {
-        if arguments.hasNoArguments {
+        if arguments.unclassifiedArguments().count == 0 {
             let result = Route(command: defaultCommand, arguments: arguments)
             return success(result)
         }
@@ -45,21 +45,25 @@ class Router {
     private func findCommand() -> Result<Command, String> {
         var command: Command?
         
-        if arguments.firstArgumentIsFlag {
-            command = commands.filter({ $0.commandShortcut() == self.arguments.firstArgument! }).first
+        if let commandSearchName = arguments.firstArgumentOfType(.Unclassified) {
             
-            if command == nil {
-                command = defaultCommand
+            if commandSearchName.hasPrefix("-") {
+                command = commands.filter({ $0.commandShortcut() == commandSearchName }).first
+                
+                if command == nil {
+                    command = defaultCommand
+                } else {
+                    arguments.classifyArgument(index: 1, type: .CommandName)
+                }
             } else {
-                arguments.setFirstArgumentIsCommandName()
+                command = commands.filter({ $0.commandName() == commandSearchName }).first
+                arguments.classifyArgument(index: 1, type: .CommandName)
             }
-        } else {
-            command = commands.filter({ $0.commandName() == self.arguments.firstArgument! }).first
-            arguments.setFirstArgumentIsCommandName()
-        }
-        
-        if let command = command {
-            return success(command)
+            
+            if let command = command {
+                return success(command)
+            }
+            
         }
         
         return failure("Command not found")

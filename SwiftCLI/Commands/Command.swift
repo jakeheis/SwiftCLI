@@ -138,7 +138,7 @@ public class Command: NSObject {
         }
         
         if unrecognizedOptionsPrintingBehavior() != .PrintOnlyUnrecognizedOptions {
-            message += commandUsageStatement(commandName: arguments.commandName)
+            message += commandUsageStatement(commandName: arguments.firstArgumentOfType(.CommandName))
         }
         
         return message

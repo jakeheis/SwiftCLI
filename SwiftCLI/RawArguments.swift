@@ -10,57 +10,69 @@ import Foundation
 
 class RawArguments {
     
-    let appName: String
-    var commandName: String = ""
-    var argumentsArray: [String]
-    
-    private var optionIndexes: [Int] = []
-    
-    init() {
-        let args = NSProcessInfo.processInfo().arguments as! [String]
-        appName = args[0]
-        argumentsArray = Array(args[1..<args.count])
+    enum RawArgumentType {
+        case AppName
+        case CommandName
+        case Option
+        case Unclassified
     }
     
-    init(argumentString: String) {
-        let args = argumentString.componentsSeparatedByString(" ").filter { !$0.isEmpty }
-        appName = args[0]
-        argumentsArray = Array(args[1..<args.count])
+    private var arguments: [String]
+    
+    private var argumentClassifications: [RawArgumentType] = []
+    
+    convenience init() {
+        let arguments = NSProcessInfo.processInfo().arguments as! [String]
+        
+        self.init(arguments: arguments)
     }
     
-    func setFirstArgumentIsCommandName() {
-        commandName = argumentsArray.first!
-        argumentsArray.removeAtIndex(0)
+    convenience init(argumentString: String) {
+        let arguments = argumentString.componentsSeparatedByString(" ").filter { !$0.isEmpty }
+
+        self.init(arguments: arguments)
     }
     
-    func markArgumentIndexAsOption(index: Int) {
-        optionIndexes.append(index)
+    init(arguments: [String]) {
+        self.arguments = arguments
+        self.argumentClassifications = [RawArgumentType](count: arguments.count, repeatedValue: .Unclassified)
+        
+        classifyArgument(index: 0, type: .AppName)
     }
     
-    func nonoptionsArguments() -> [String] {
-        var nonoptionArguments: [String] = []
-        argumentsArray.eachWithIndex {(object, index) in
-            if !contains(self.optionIndexes, index) {
-                nonoptionArguments.append(object)
+    func classifyArgument(#index: Int, type: RawArgumentType) {
+        argumentClassifications[index] = type
+    }
+    
+    func classifyArgument(#argument: String, type: RawArgumentType) {
+        if let index = find(arguments, argument) {
+            classifyArgument(index: index, type: type)
+        }
+    }
+    
+    func unclassifiedArguments() -> [String] {
+        var unclassifiedArguments: [String] = []
+        arguments.eachWithIndex {(argument, index) in
+            if self.argumentClassifications[index] == .Unclassified {
+                unclassifiedArguments.append(argument)
             }
         }
-        return nonoptionArguments
+        return unclassifiedArguments
     }
     
-    var hasNoArguments: Bool {
-        return argumentsArray.isEmpty
+    func firstArgumentOfType(type: RawArgumentType) -> String? {
+        if let index = find(argumentClassifications, type) {
+            return arguments[index]
+        }
+
+        return nil
     }
     
-    var firstArgument: String? {
-        return argumentsArray.first
-    }
-    
-    var firstArgumentIsFlag: Bool {
-        return firstArgument?.hasPrefix("-") ?? false
-    }
-    
-    var count: Int {
-        return argumentsArray.count
+    func argumentFollowingArgument(argument: String) -> String? {
+        if let index = find(arguments, argument) where index + 1 < arguments.count {
+            return arguments[index + 1]
+        }
+        return nil
     }
     
 }

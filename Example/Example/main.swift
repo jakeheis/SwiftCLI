@@ -50,6 +50,7 @@ listCommand.lightweightExecutionBlock = {(arguments, options) in
 CLI.registerCommand(listCommand)
 
 let bakerCommand = BakeCommand()
+
 CLI.registerCommand(bakerCommand)
 
 let recipeCommand = RecipeCommand()

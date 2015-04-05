@@ -44,7 +44,7 @@ class OptionsTests: XCTestCase {
         
         options.recognizeOptionsInArguments(arguments)
 
-        XCTAssert(arguments.nonoptionsArguments().count == 0, "Options should mark all option arguments as options")
+        XCTAssert(arguments.unclassifiedArguments().count == 0, "Options should classify all option arguments as options")
         
         XCTAssertFalse(options.misusedOptionsPresent(), "Options should recognize all flags added with onFlags")
         
@@ -62,7 +62,7 @@ class OptionsTests: XCTestCase {
         
         options.recognizeOptionsInArguments(arguments)
         
-        XCTAssert(arguments.nonoptionsArguments().count == 0, "Options should mark all option arguments as options")
+        XCTAssert(arguments.unclassifiedArguments().count == 0, "Options should classify all option arguments as options")
         
         XCTAssertFalse(options.misusedOptionsPresent(), "Options should recognize all flags added with onFlags")
         
@@ -81,7 +81,7 @@ class OptionsTests: XCTestCase {
         
         options.recognizeOptionsInArguments(arguments)
         
-        XCTAssert(arguments.nonoptionsArguments().count == 0, "Options should mark all option arguments as options")
+        XCTAssert(arguments.unclassifiedArguments().count == 0, "Options should classify all option arguments as options")
 
         XCTAssertFalse(options.misusedOptionsPresent(), "Options should recognize all flags added with onFlags")
         
@@ -100,7 +100,7 @@ class OptionsTests: XCTestCase {
         
         options.recognizeOptionsInArguments(arguments)
         
-        XCTAssertEqual(arguments.nonoptionsArguments(), ["argument"], "Options should mark all option arguments as options and not mark command arguments")
+        XCTAssertEqual(arguments.unclassifiedArguments(), ["argument"], "Options should classify all option arguments as options")
         
         XCTAssertFalse(options.misusedOptionsPresent(), "Options should recognize all flags added with onFlags")
         
@@ -115,7 +115,7 @@ class OptionsTests: XCTestCase {
         
         options.recognizeOptionsInArguments(arguments)
         
-        XCTAssert(arguments.nonoptionsArguments().count == 0, "Options should mark all option arguments as options")
+        XCTAssert(arguments.unclassifiedArguments().count == 0, "Options should classify all option arguments as options")
         
         XCTAssert(options.misusedOptionsPresent(), "Options should identify when unrecognized options are used")
         XCTAssertEqual(options.unrecognizedOptions.first ?? "", "-b", "Options should identify when unrecognized options are used")
@@ -129,7 +129,7 @@ class OptionsTests: XCTestCase {
         
         options.recognizeOptionsInArguments(arguments)
         
-        XCTAssert(arguments.nonoptionsArguments().count == 0, "Options should mark all option arguments as options")
+        XCTAssert(arguments.unclassifiedArguments().count == 0, "Options should classify all option arguments as options")
         
         XCTAssert(options.misusedOptionsPresent(), "Options should identify when unrecognized options are used")
         XCTAssertEqual(options.keysNotGivenValue.first ?? "", "-a", "Options should identify when keys are not given values")
@@ -146,7 +146,7 @@ class OptionsTests: XCTestCase {
         
         options.recognizeOptionsInArguments(arguments)
         
-        XCTAssert(arguments.nonoptionsArguments().count == 0, "Options should mark all option arguments as options")
+        XCTAssert(arguments.unclassifiedArguments().count == 0, "Options should classify all option arguments as options")
         
         XCTAssertFalse(options.misusedOptionsPresent(), "Options should recognize all flags added with onFlags")
         
