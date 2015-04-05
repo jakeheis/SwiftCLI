@@ -121,7 +121,7 @@ public class CLI: NSObject {
         
         var errorMessage = ""
         
-        if route.command.recognizeOptions(route.arguments) {
+        if route.command.recognizeOptionsInArguments(route.arguments) {
             if route.command.showingHelp {
                 return success(route.command)
             }

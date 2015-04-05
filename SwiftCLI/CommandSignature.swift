@@ -8,7 +8,7 @@
 
 import Cocoa
 
-public class CommandSignature {
+class CommandSignature {
     
     var requiredParameters: [String] = []
     var optionalParameters: [String] = []

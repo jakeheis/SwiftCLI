@@ -107,7 +107,7 @@ public class Command: NSObject {
         }
     }
     
-    final func recognizeOptions(arguments: RawArguments) -> Bool {
+    final func recognizeOptionsInArguments(arguments: RawArguments) -> Bool {
         options.recognizeOptionsInArguments(arguments)
         
         if options.misusedOptionsPresent() {
