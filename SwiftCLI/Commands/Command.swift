@@ -207,7 +207,9 @@ public class Command: NSObject {
     
     // MARK: - Execution
     
-    public func execute() -> Result<(), String> {
+    public typealias ExecutionResult = Result<(), String>
+    
+    public func execute() -> ExecutionResult {
         return success()
     }
     

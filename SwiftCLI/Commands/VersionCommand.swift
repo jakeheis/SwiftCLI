@@ -25,7 +25,7 @@ public class VersionCommand: Command {
         return "-v"
     }
     
-    override public func execute() -> Result<(), String>  {
+    override public func execute() -> ExecutionResult  {
         println("Version: \(version)")
         
         return success()

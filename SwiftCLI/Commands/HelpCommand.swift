@@ -33,7 +33,7 @@ public class HelpCommand: Command {
         return false
     }
     
-    override public func execute() -> Result<(), String>  {
+    override public func execute() -> ExecutionResult  {
         println("\(CLI.appDescription())\n")
         println("Available commands: ")
 

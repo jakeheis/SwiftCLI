@@ -23,7 +23,7 @@ class RecipeCommand: Command {
         return ""
     }
     
-    override func execute() -> Result<(), String> {
+    override func execute() -> ExecutionResult {
         let data = NSData(contentsOfFile: "./Bakefile")
         if data == nil {
             return failure("No Bakefile could be found in the current directory. Run 'baker init' before this command.")

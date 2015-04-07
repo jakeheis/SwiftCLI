@@ -58,7 +58,7 @@ public class ChainableCommand: LightweightCommand {
     
     // MARK: - Execution
     
-    public func withExecutionBlock(execution: CommandExecutionBlock) -> ChainableCommand {
+    public func withExecutionBlock(execution: ExecutionBlock) -> ChainableCommand {
         lightweightExecutionBlock = execution
         return self
     }

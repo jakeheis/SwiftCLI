@@ -81,7 +81,7 @@ public class CLI: NSObject {
         .flatMap( {(route) in
             return self.setupOptionsAndArguments(route)
         })
-        .flatMap( {(command) -> Result<(), String> in
+        .flatMap( {(command) -> Command.ExecutionResult in
             if command.showingHelp { // Don't actually execute command if showing help, e.g. git clone -h
                 return success()
             }

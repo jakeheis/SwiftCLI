@@ -41,7 +41,7 @@ class BakeCommand: Command {
         }
     }
     
-    override func execute() -> Result<(), String>  {
+    override func execute() -> ExecutionResult  {
         if let item = arguments.optionalString("item") {
             bakeItem(item)
         } else {

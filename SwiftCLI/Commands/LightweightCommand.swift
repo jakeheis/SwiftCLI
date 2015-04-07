@@ -9,15 +9,13 @@
 import Foundation
 //import LlamaKit
 
-public typealias CommandExecutionBlock = ((arguments: CommandArguments, options: Options) -> Result<(), String>)
-
 public class LightweightCommand: Command {
     
     public var lightweightCommandName: String = ""
     public var lightweightCommandSignature: String = ""
     public var lightweightCommandShortDescription: String = ""
     public var lightweightCommandShortcut: String? = nil
-    public var lightweightExecutionBlock: CommandExecutionBlock? = nil
+    public var lightweightExecutionBlock: ExecutionBlock? = nil
     
     public var shouldFailOnUnrecognizedOptions = true
     public var shouldShowHelpOnHFlag = true
@@ -68,8 +66,10 @@ public class LightweightCommand: Command {
     }
     
     // MARK: - Execution
+    
+    public typealias ExecutionBlock = (arguments: CommandArguments, options: Options) -> ExecutionResult
 
-    override public func execute() -> Result<(), String> {
+    override public func execute() -> ExecutionResult {
         return lightweightExecutionBlock!(arguments: arguments, options: options)
     }
     
