@@ -16,10 +16,10 @@ import Foundation
 
 CLI.setup(name: "greeter")
 CLI.registerChainableCommand(commandName: "greet")
-    .withExecutionBlock({arguments, options in
+    .withExecutionBlock {(arguments, options) in
         println("Hey there!")
-        return .Success
-    })
+        return success()
+    }
 CLI.go()
 ```
 ```bash
@@ -78,11 +78,12 @@ class GreetCommand: Command {
         return "<person>"
     }
     
-    override func execute() -> (success: Bool, error: String?)  {
-        let person = self.arguments["person"] as String
+    override func execute() -> ExecutionResult  {
+        let person = arguments.requiredString("person")
         println("Hey there, \(person)!")
-        return .Success
+        return success()
     }
+    
 }
 ```
 ### Create a ChainableCommand
@@ -91,11 +92,11 @@ This is the most lightweight option. You should only create this kind of command
 let greetCommand = ChainableCommand(commandName: "greet")
     .withShortDescription("Greets the given person")
     .withSignature("<person>")
-    .withExecutionBlock({arguments, options in
-        let person = arguments["person"] as String
+    .withExecutionBlock {(arguments, options) in
+        let person = arguments.requiredString("person")
         println("Hey there, \(person)!")
-        return .Success
-    })
+        return success()
+    }
 ```
 ```CLI``` also offers a shortcut method to register a ChainableCommand:
 ```swift
