@@ -16,10 +16,10 @@ import Foundation
 
 CLI.setup(name: "greeter")
 CLI.registerChainableCommand(commandName: "greet")
-    .withExecutionBlock({arguments, options in
+    .withExecutionBlock {(arguments, options) in
         println("Hey there!")
-        return .Success
-    })
+        return success()
+    }
 CLI.go()
 ```
 ```bash
@@ -34,7 +34,7 @@ Hey there!
 * [Options](#options)
 * [Special Commands](#special-commands)
 * [Running your CLI](#running-your-cli)
-* [Installation](#installation)
+* [Installation](#swiftcli-installation)
 * [Example](#example)
 
 ## Creating a CLI
@@ -78,11 +78,12 @@ class GreetCommand: Command {
         return "<person>"
     }
     
-    override func execute() -> (success: Bool, error: String?)  {
-        let person = self.arguments["person"] as String
+    override func execute() -> ExecutionResult  {
+        let person = arguments.requiredString("person")
         println("Hey there, \(person)!")
-        return .Success
+        return success()
     }
+    
 }
 ```
 ### Create a ChainableCommand
@@ -91,11 +92,11 @@ This is the most lightweight option. You should only create this kind of command
 let greetCommand = ChainableCommand(commandName: "greet")
     .withShortDescription("Greets the given person")
     .withSignature("<person>")
-    .withExecutionBlock({arguments, options in
-        let person = arguments["person"] as String
+    .withExecutionBlock {(arguments, options) in
+        let person = arguments.requiredString("person")
         println("Hey there, \(person)!")
-        return .Success
-    })
+        return success()
+    }
 ```
 ```CLI``` also offers a shortcut method to register a ChainableCommand:
 ```swift
@@ -108,10 +109,10 @@ This type of command is very similar to ChainableCommand. In fact, all Chainable
 let greetCommand = LightweightCommand(commandName: "greet")
 greetCommand.lightweightCommandShortDescription = "Greets the given person"
 greetCommand.lightweightCommandSignature = "<person>"
-greetCommand.lightweightExecutionBlock = {arguments, options in
-    let person = arguments["person"] as String
+greetCommand.lightweightExecutionBlock = {(arguments, options) in
+    let person = arguments.requiredArgument("person")
     println("Hey there, \(person)!")
-    return .Success
+    return success()
 }
 ```
 
@@ -149,9 +150,9 @@ Hey there, Jack!
 Hello, Jack!
 ``` 
 
-### Non-terminal parameter
+### Collection operator
 
-The non-terminal paremter is an elipses placed at the end of a command signature to signify that the last parameter can take an indefinite number of arguments. It must come at the very end of a command signature, after all required parameters and optional parameters.
+The collection operator is an ellipses placed at the end of a command signature to signify that the last parameter can take an indefinite number of arguments. It must come at the very end of a command signature, after all required parameters and optional parameters.
 
 ```bash
 ~ > # Greet command with a signature of "<person> ..."
@@ -163,11 +164,30 @@ Hey there, Jack and Jill!
 Hey there, Jack, Jill, and Hill!
 ``` 
 
-In the arguments dictionary, the non-terminal parameter results in all the last arguments being grouped into an array and passed to the parameter immediately before it (required or optional).
+The collection operator results in all the last arguments being grouped into an array and passed to the parameter immediately before it (required or optional).
 
 With one argument: ```greeter greet Jack``` -> ```["person": ["Jack"]]```
 
 With multiple arguments: ```greeter greet Jack Jill Hill``` -> ```["person": ["Jack", "Jill", "Hill"]]```
+
+### Accessing arguments
+
+During execution, a command has access to an instance of ```CommandArguments``` that contains the passed arguments which have been keyed using the command signature. Arguments can be accessed with subscripts or the typesafe shortcuts ```CommandArguments``` includes:
+```
+override func execute() -> ExecutionResult  {
+    // Given command signature --- <name>
+    let name = arguments.requiredArgument("name") // of type String
+    
+    // Given command signature --- [<name>]
+    let name = arguments.optionalArgument("name") // of type String?
+    
+    // Given command signature --- <names> ...
+    let names = arguments.requiredCollectedArgument("names") // of type [String]
+    
+    // Given command signature --- [<names>] ...
+    let names = arguments.optionalCollectedArgument("names") // of type [String]?
+}
+```
 
 ## Options
 Commands have support for two types of options: flag options and keyed options. Both types of options can either be denoted by a dash followed by a single letter ```git commit -a``` or two dashes followed by the option name ```git commit --ammend```. Single letter options can be cascaded into a single dash followed by all the desired options: ```git commit -am``` == ```git commit -a -m```.
@@ -179,12 +199,16 @@ To configure a command for flag options:
 - **Command subclass**: 
 ```
 override func handleOptions() -> String  {
-    self.onFlag("", block: {}, usage: "")
-    self.onFlags([], block: {}, usage: "")
+    onFlag("", usage: "") {(flag) in
+        
+    }
+    onFlags([], usage: "") {(flag) in
+        
+    }
 }
 ```
-- **ChainableCommand**: ```.withFlagsHandled([], block: {}, usage: "")```
-- **LightweightCommand**: ```cmd.handleFlags([], block: {}, usage: "")```
+- **ChainableCommand**: ```.withFlagsHandled([], usage: "") {}```
+- **LightweightCommand**: ```cmd.handleFlags([], usage: "") {}```
 
 The ```GreetCommand``` could be modified to take a "loudly" flag:
 ```swift
@@ -195,9 +219,9 @@ class GreetCommand: Command {
     ...
     
     override func handleOptions()  {
-        self.onFlags(["-l", "--loudly"], block: {flag in
+        onFlags(["-l", "--loudly"], usage: "Makes the the greeting be said loudly") {(flag) in
             self.loudly = true
-        }, usage: "Makes the the greeting be said loudly")
+        }
     }
     
     ...
@@ -211,12 +235,16 @@ To configure a command for keyed options:
 - **Command subclass**: 
 ```
 override func handleOptions() -> String  {
-    self.onKey("", block: {}, usage: "", valueSignature: "")
-    self.onKeys([], block: {}, usage: "", valueSignature: "")
+    onKey("", usage: "", valueSignature: "") {(key, value) in
+    
+    }
+    onKeys([], usage: "", valueSignature: "") {(key, value) in
+    
+    }
 }
 ```
-- **ChainableCommand**: ```.withKeysHandled([], block: {}, usage: "", valueSignature: "")```
-- **LightweightCommand**: ```cmd.handleKeys([], block: {}, usage: "", valueSignature: "")```
+- **ChainableCommand**: ```.withKeysHandled([], usage: "", valueSignature: "") {}```
+- **LightweightCommand**: ```cmd.handleKeys([], usage: "", valueSignature: "") {}```
 
 The ```GreetCommand``` could be modified to take a "number of times" option:
 ```swift
@@ -227,11 +255,11 @@ class GreetCommand: Command {
     ...
     
     override func handleOptions()  {
-        self.onKeys(["-n", "--number-of-times"], block: {key, value in
+        onKeys(["-n", "--number-of-times"], usage: "Makes the greeter greet a certain number of times", valueSignature: "times") {(key, value) in
             if let times = value.toInt() {
                 self.numberOfTimes = times
             }
-        }, usage: "Makes the greeter greet a certain number of times", valueSignature: "times")
+        }
     }
     
     ...
