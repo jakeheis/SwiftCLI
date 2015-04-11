@@ -15,7 +15,7 @@ CLI.registerChainableCommand(commandName: "init")
     .withShortDescription("Creates a Bakefile in the current or given directory")
     .withSignature("[<directory>]")
     .withExecutionBlock {(arguments, options) in
-        let givenDirectory = arguments.optionalString("directory")
+        let givenDirectory = arguments.optionalArgument("directory")
         
         let fileName = givenDirectory?.stringByAppendingPathComponent("Bakefile") ?? "./Bakefile"
         
@@ -27,34 +27,39 @@ CLI.registerChainableCommand(commandName: "init")
         }
     }
 
+CLI.registerCommand(BakeCommand())
 
-let listCommand = LightweightCommand(commandName: "list")
-listCommand.lightweightCommandShortDescription = "Lists some possible items the baker can bake for you."
+CLI.registerCommand(RecipeCommand())
 
-var showExoticFoods = false
-listCommand.handleFlags(["-e", "--exotics-included"], usage: "Include exotic foods in the list of items baker can bake you") {(flag) in
-    showExoticFoods = true
+func createListCommand() -> Command {
+    let listCommand = LightweightCommand(commandName: "list")
+    listCommand.lightweightCommandShortDescription = "Lists some possible items the baker can bake for you."
+    
+    var showExoticFoods = false
+    listCommand.handleFlags(["-e", "--exotics-included"], usage: "Include exotic foods in the list of items baker can bake you") {(flag) in
+        showExoticFoods = true
+    }
+    
+    listCommand.lightweightExecutionBlock = {(arguments, options) in
+        var foods = ["bread", "cookies", "cake"]
+        if showExoticFoods {
+            foods += ["exotic baker item 1", "exotic baker item 2"]
+        }
+        println("Items that baker can bake for you:")
+        for i in 0..<foods.count {
+            println("\(i+1). \(foods[i])")
+        }
+        return success()
+    }
+    return listCommand
 }
 
-listCommand.lightweightExecutionBlock = {(arguments, options) in
-    var foods = ["bread", "cookies", "cake"]
-    if showExoticFoods {
-        foods += ["exotic baker item 1", "exotic baker item 2"]
-    }
-    println("Items that baker can bake for you:")
-    for i in 0..<foods.count {
-        println("\(i+1). \(foods[i])")
-    }
-    return success()
+CLI.registerCommand(createListCommand())
+
+let result = CLI.go()
+
+func cliExit(result: CLIResult) {
+    exit(result)
 }
-CLI.registerCommand(listCommand)
 
-let bakerCommand = BakeCommand()
-
-CLI.registerCommand(bakerCommand)
-
-let recipeCommand = RecipeCommand()
-CLI.registerCommand(recipeCommand)
-
-//let result = CLI.go()
-//exit(result) Throws a warning on Swift 1.2 for some reason
+cliExit(result) // Get around Swift warning

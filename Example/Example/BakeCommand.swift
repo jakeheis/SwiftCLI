@@ -42,7 +42,7 @@ class BakeCommand: Command {
     }
     
     override func execute() -> ExecutionResult  {
-        if let item = arguments.optionalString("item") {
+        if let item = arguments.optionalArgument("item") {
             bakeItem(item)
         } else {
             let data = NSData(contentsOfFile: "./Bakefile")

@@ -12,7 +12,7 @@ class CommandSignature {
     
     var requiredParameters: [String] = []
     var optionalParameters: [String] = []
-    var terminatedList = true
+    var collectRemainingArguments = false
     
     init(_ string: String) {
         var parameters = string.componentsSeparatedByString(" ").filter { !$0.isEmpty }
@@ -22,8 +22,8 @@ class CommandSignature {
         
         for parameter in parameters {
             if parameter == "..." {
-                assert(parameter == parameters.last, "The non-terminal parameter must be at the end of a command signature.")
-                terminatedList = false
+                assert(parameter == parameters.last, "The collection operator (...) must come at the end of a command signature.")
+                collectRemainingArguments = true
                 continue
             }
             

@@ -37,11 +37,11 @@ public class CommandArguments {
             return failure(errorMessage(expectedCount: signature.requiredParameters.count, givenCount: arguments.count))
         }
         
-        if signature.terminatedList && signature.optionalParameters.isEmpty && arguments.count != signature.requiredParameters.count {
+        if !signature.collectRemainingArguments && signature.optionalParameters.isEmpty && arguments.count != signature.requiredParameters.count {
             return failure(errorMessage(expectedCount: signature.requiredParameters.count, givenCount: arguments.count))
         }
         
-        if signature.terminatedList && arguments.count > signature.requiredParameters.count + signature.optionalParameters.count {
+        if !signature.collectRemainingArguments && arguments.count > signature.requiredParameters.count + signature.optionalParameters.count {
             return failure(errorMessage(expectedCount: signature.requiredParameters.count + signature.optionalParameters.count, givenCount: arguments.count))
         }
         
@@ -67,19 +67,18 @@ public class CommandArguments {
             }
         }
         
-        // Finally group unlimited argument list into last argument if ... is present
-        if !signature.terminatedList {
+        // Finally collect the remaining arguments into an array if ... is present
+        if signature.collectRemainingArguments {
             let parameter = signature.optionalParameters.isEmpty ? signature.requiredParameters[signature.requiredParameters.count-1] : signature.optionalParameters[signature.optionalParameters.count-1]
-            var lastArray: [String] = []
-            
-            lastArray.append(commandArguments.requiredString(parameter))
+
+            var collectedArgument = [commandArguments.requiredArgument(parameter)]
             
             let startingIndex = signature.requiredParameters.count + signature.optionalParameters.count
             for i in startingIndex..<arguments.count {
-                lastArray.append(arguments[i])
+                collectedArgument.append(arguments[i])
             }
             
-            commandArguments[parameter] = lastArray
+            commandArguments[parameter] = collectedArgument
         }
         
         return success(commandArguments)
@@ -111,22 +110,22 @@ public class CommandArguments {
     
     // MARK: - Typesafe shortcuts
     
-    public func requiredString(key: String) -> String {
-        return optionalString(key)!
+    public func requiredArgument(key: String) -> String {
+        return optionalArgument(key)!
     }
     
-    public func optionalString(key: String) -> String? {
+    public func optionalArgument(key: String) -> String? {
         if let arg = keyedArguments[key] as? String {
             return arg
         }
         return nil
     }
     
-    public func requiredArray(key: String) -> [String] {
-        return optionalArray(key)!
+    public func requiredCollectedArgument(key: String) -> [String] {
+        return optionalCollectedArgument(key)!
     }
     
-    public func optionalArray(key: String) -> [String]? {
+    public func optionalCollectedArgument(key: String) -> [String]? {
         if let arg = keyedArguments[key] as? [String] {
             return arg
         }
