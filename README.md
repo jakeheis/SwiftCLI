@@ -34,7 +34,7 @@ Hey there!
 * [Options](#options)
 * [Special Commands](#special-commands)
 * [Running your CLI](#running-your-cli)
-* [Installation](#installation)
+* [Installation](#swiftcli-installation)
 * [Example](#example)
 
 ## Creating a CLI
