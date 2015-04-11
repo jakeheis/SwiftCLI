@@ -150,9 +150,9 @@ Hey there, Jack!
 Hello, Jack!
 ``` 
 
-### Non-terminal parameter
+### Collection operator
 
-The non-terminal paremter is an elipses placed at the end of a command signature to signify that the last parameter can take an indefinite number of arguments. It must come at the very end of a command signature, after all required parameters and optional parameters.
+The collection operator is an ellipses placed at the end of a command signature to signify that the last parameter can take an indefinite number of arguments. It must come at the very end of a command signature, after all required parameters and optional parameters.
 
 ```bash
 ~ > # Greet command with a signature of "<person> ..."
@@ -164,11 +164,30 @@ Hey there, Jack and Jill!
 Hey there, Jack, Jill, and Hill!
 ``` 
 
-In the arguments dictionary, the non-terminal parameter results in all the last arguments being grouped into an array and passed to the parameter immediately before it (required or optional).
+The collection operator results in all the last arguments being grouped into an array and passed to the parameter immediately before it (required or optional).
 
 With one argument: ```greeter greet Jack``` -> ```["person": ["Jack"]]```
 
 With multiple arguments: ```greeter greet Jack Jill Hill``` -> ```["person": ["Jack", "Jill", "Hill"]]```
+
+### Accessing arguments
+
+During execution, a command has access to an instance of ```CommandArguments``` that contains the passed arguments which have been keyed using the command signature. Arguments can be accessed with subscripts or the typesafe shortcuts ```CommandArguments``` includes:
+```
+override func execute() -> ExecutionResult  {
+    // Given command signature --- <name>
+    let name = arguments.requiredArgument("name") // of type String
+    
+    // Given command signature --- [<name>]
+    let name = arguments.optionalArgument("name") // of type String?
+    
+    // Given command signature --- <names> ...
+    let names = arguments.requiredCollectedArgument("names") // of type [String]
+    
+    // Given command signature --- [<names>] ...
+    let names = arguments.optionalCollectedArgument("names") // of type [String]?
+}
+```
 
 ## Options
 Commands have support for two types of options: flag options and keyed options. Both types of options can either be denoted by a dash followed by a single letter ```git commit -a``` or two dashes followed by the option name ```git commit --ammend```. Single letter options can be cascaded into a single dash followed by all the desired options: ```git commit -am``` == ```git commit -a -m```.
