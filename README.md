@@ -109,10 +109,10 @@ This type of command is very similar to ChainableCommand. In fact, all Chainable
 let greetCommand = LightweightCommand(commandName: "greet")
 greetCommand.lightweightCommandShortDescription = "Greets the given person"
 greetCommand.lightweightCommandSignature = "<person>"
-greetCommand.lightweightExecutionBlock = {arguments, options in
-    let person = arguments["person"] as String
+greetCommand.lightweightExecutionBlock = {(arguments, options) in
+    let person = arguments.requiredArgument("person")
     println("Hey there, \(person)!")
-    return .Success
+    return success()
 }
 ```
 
@@ -180,12 +180,16 @@ To configure a command for flag options:
 - **Command subclass**: 
 ```
 override func handleOptions() -> String  {
-    self.onFlag("", block: {}, usage: "")
-    self.onFlags([], block: {}, usage: "")
+    onFlag("", usage: "") {(flag) in
+        
+    }
+    onFlags([], usage: "") {(flag) in
+        
+    }
 }
 ```
-- **ChainableCommand**: ```.withFlagsHandled([], block: {}, usage: "")```
-- **LightweightCommand**: ```cmd.handleFlags([], block: {}, usage: "")```
+- **ChainableCommand**: ```.withFlagsHandled([], usage: "") {}```
+- **LightweightCommand**: ```cmd.handleFlags([], usage: "") {}```
 
 The ```GreetCommand``` could be modified to take a "loudly" flag:
 ```swift
@@ -196,9 +200,9 @@ class GreetCommand: Command {
     ...
     
     override func handleOptions()  {
-        self.onFlags(["-l", "--loudly"], block: {flag in
+        onFlags(["-l", "--loudly"], usage: "Makes the the greeting be said loudly") {(flag) in
             self.loudly = true
-        }, usage: "Makes the the greeting be said loudly")
+        }
     }
     
     ...
@@ -212,12 +216,16 @@ To configure a command for keyed options:
 - **Command subclass**: 
 ```
 override func handleOptions() -> String  {
-    self.onKey("", block: {}, usage: "", valueSignature: "")
-    self.onKeys([], block: {}, usage: "", valueSignature: "")
+    onKey("", usage: "", valueSignature: "") {(key, value) in
+    
+    }
+    onKeys([], usage: "", valueSignature: "") {(key, value) in
+    
+    }
 }
 ```
-- **ChainableCommand**: ```.withKeysHandled([], block: {}, usage: "", valueSignature: "")```
-- **LightweightCommand**: ```cmd.handleKeys([], block: {}, usage: "", valueSignature: "")```
+- **ChainableCommand**: ```.withKeysHandled([], usage: "", valueSignature: "") {}```
+- **LightweightCommand**: ```cmd.handleKeys([], usage: "", valueSignature: "") {}```
 
 The ```GreetCommand``` could be modified to take a "number of times" option:
 ```swift
@@ -228,11 +236,11 @@ class GreetCommand: Command {
     ...
     
     override func handleOptions()  {
-        self.onKeys(["-n", "--number-of-times"], block: {key, value in
+        onKeys(["-n", "--number-of-times"], usage: "Makes the greeter greet a certain number of times", valueSignature: "times") {(key, value) in
             if let times = value.toInt() {
                 self.numberOfTimes = times
             }
-        }, usage: "Makes the greeter greet a certain number of times", valueSignature: "times")
+        }
     }
     
     ...
