@@ -28,8 +28,8 @@ class SwiftCLITests: XCTestCase {
                 self.times = value.toInt()!
             })
             .withExecutionBlock {(arguments, options) in
-                let testName = arguments.requiredString("testName")
-                let testerName = arguments.optionalString("testerName") ?? "Tester"
+                let testName = arguments.requiredArgument("testName")
+                let testerName = arguments.optionalArgument("testerName") ?? "Tester"
                 self.executionString = "\(testerName) will test \(testName), \(self.times) times"
                 if self.silentFlag {
                     self.executionString += ", silently"
