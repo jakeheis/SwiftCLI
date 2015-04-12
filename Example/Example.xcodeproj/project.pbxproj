@@ -7,8 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		EF4BE6821AC4C78C00566B51 /* Result.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF4BE6811AC4C78C00566B51 /* Result.swift */; };
-		EF73193A1AD04CEE00B94242 /* Result.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF4BE6811AC4C78C00566B51 /* Result.swift */; };
 		EF8C1C701ACCFB79008AB225 /* CommandArgumentsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFEB0BD1198DD0E90040AFF0 /* CommandArgumentsTests.swift */; };
 		EF92BF71198AEF7900BAA12B /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF92BF70198AEF7900BAA12B /* main.swift */; };
 		EFA57FDF19A151BC00340DD8 /* RecipeCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFA57FDE19A151BC00340DD8 /* RecipeCommand.swift */; };
@@ -41,6 +39,8 @@
 		EFCE40DD1ADB0FDA00A69BC9 /* RawArguments.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFCE40B31ADB0F4D00A69BC9 /* RawArguments.swift */; };
 		EFCE40DE1ADB0FDA00A69BC9 /* Input.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFCE40C21ADB0F4D00A69BC9 /* Input.swift */; };
 		EFCE40DF1ADB0FDA00A69BC9 /* Output.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFCE40C31ADB0F4D00A69BC9 /* Output.swift */; };
+		EFCE40E31ADB127A00A69BC9 /* Result.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFCE40E21ADB127A00A69BC9 /* Result.swift */; };
+		EFCE40E41ADB127A00A69BC9 /* Result.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFCE40E21ADB127A00A69BC9 /* Result.swift */; };
 		EFCF34761997FF41008691D1 /* OptionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFCF34751997FF41008691D1 /* OptionsTests.swift */; };
 		EFEB0B55198C4D200040AFF0 /* BakeCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFEB0B54198C4D200040AFF0 /* BakeCommand.swift */; };
 		EFEB0BCA198DCEDA0040AFF0 /* SwiftCLITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFEB0BC9198DCEDA0040AFF0 /* SwiftCLITests.swift */; };
@@ -84,7 +84,6 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		EF4BE6811AC4C78C00566B51 /* Result.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Result.swift; sourceTree = "<group>"; };
 		EF92BF6D198AEF7900BAA12B /* Example */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Example; sourceTree = BUILT_PRODUCTS_DIR; };
 		EF92BF70198AEF7900BAA12B /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		EFA57FDE19A151BC00340DD8 /* RecipeCommand.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RecipeCommand.swift; sourceTree = "<group>"; };
@@ -103,6 +102,7 @@
 		EFCE40C01ADB0F4D00A69BC9 /* VersionCommand.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VersionCommand.swift; sourceTree = "<group>"; };
 		EFCE40C21ADB0F4D00A69BC9 /* Input.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Input.swift; sourceTree = "<group>"; };
 		EFCE40C31ADB0F4D00A69BC9 /* Output.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Output.swift; sourceTree = "<group>"; };
+		EFCE40E21ADB127A00A69BC9 /* Result.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Result.swift; path = ../Vendor/LlamaKit/LlamaKit/Result.swift; sourceTree = "<group>"; };
 		EFCF34751997FF41008691D1 /* OptionsTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OptionsTests.swift; sourceTree = "<group>"; };
 		EFEB0B54198C4D200040AFF0 /* BakeCommand.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BakeCommand.swift; sourceTree = "<group>"; };
 		EFEB0BC5198DCEDA0040AFF0 /* SwiftCLITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SwiftCLITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -129,15 +129,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		EF4BE6801AC4C78C00566B51 /* LlamaKit */ = {
-			isa = PBXGroup;
-			children = (
-				EF4BE6811AC4C78C00566B51 /* Result.swift */,
-			);
-			name = LlamaKit;
-			path = Pods/LlamaKit/LlamaKit;
-			sourceTree = SOURCE_ROOT;
-		};
 		EF92BF64198AEF7900BAA12B = {
 			isa = PBXGroup;
 			children = (
@@ -163,7 +154,6 @@
 				EFEB0B54198C4D200040AFF0 /* BakeCommand.swift */,
 				EFA57FDE19A151BC00340DD8 /* RecipeCommand.swift */,
 				EFCE40AF1ADB0F4D00A69BC9 /* SwiftCLI */,
-				EF4BE6801AC4C78C00566B51 /* LlamaKit */,
 			);
 			path = Example;
 			sourceTree = "<group>";
@@ -175,6 +165,7 @@
 				EFCE40B91ADB0F4D00A69BC9 /* Commands */,
 				EFCE40B01ADB0F4D00A69BC9 /* Arguments */,
 				EFCE40C11ADB0F4D00A69BC9 /* IO */,
+				EFCE40E11ADB126900A69BC9 /* Vendor */,
 			);
 			name = SwiftCLI;
 			path = ../../SwiftCLI;
@@ -236,6 +227,23 @@
 				EFCE40C31ADB0F4D00A69BC9 /* Output.swift */,
 			);
 			path = IO;
+			sourceTree = "<group>";
+		};
+		EFCE40E01ADB126000A69BC9 /* LlamaKit */ = {
+			isa = PBXGroup;
+			children = (
+				EFCE40E21ADB127A00A69BC9 /* Result.swift */,
+			);
+			name = LlamaKit;
+			path = IO;
+			sourceTree = "<group>";
+		};
+		EFCE40E11ADB126900A69BC9 /* Vendor */ = {
+			isa = PBXGroup;
+			children = (
+				EFCE40E01ADB126000A69BC9 /* LlamaKit */,
+			);
+			name = Vendor;
 			sourceTree = "<group>";
 		};
 		EFEB0BC6198DCEDA0040AFF0 /* SwiftCLITests */ = {
@@ -368,6 +376,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EFCE40E31ADB127A00A69BC9 /* Result.swift in Sources */,
 				EFCE40D21ADB0FDA00A69BC9 /* CLI.swift in Sources */,
 				EFCE40D31ADB0FDA00A69BC9 /* CommandSignature.swift in Sources */,
 				EFCE40D41ADB0FDA00A69BC9 /* Extensions.swift in Sources */,
@@ -382,7 +391,6 @@
 				EFCE40DD1ADB0FDA00A69BC9 /* RawArguments.swift in Sources */,
 				EFCE40DE1ADB0FDA00A69BC9 /* Input.swift in Sources */,
 				EFCE40DF1ADB0FDA00A69BC9 /* Output.swift in Sources */,
-				EF73193A1AD04CEE00B94242 /* Result.swift in Sources */,
 				EFEB0B55198C4D200040AFF0 /* BakeCommand.swift in Sources */,
 				EFA57FDF19A151BC00340DD8 /* RecipeCommand.swift in Sources */,
 				EF92BF71198AEF7900BAA12B /* main.swift in Sources */,
@@ -395,9 +403,9 @@
 			files = (
 				EFCE40C81ADB0F4D00A69BC9 /* CommandSignature.swift in Sources */,
 				EFCF34761997FF41008691D1 /* OptionsTests.swift in Sources */,
+				EFCE40E41ADB127A00A69BC9 /* Result.swift in Sources */,
 				EFCE40D11ADB0F4D00A69BC9 /* Output.swift in Sources */,
 				EFCC4C5F1A5D8B310043A606 /* RouterTests.swift in Sources */,
-				EF4BE6821AC4C78C00566B51 /* Result.swift in Sources */,
 				EFCE40CE1ADB0F4D00A69BC9 /* HelpCommand.swift in Sources */,
 				EFCE40CA1ADB0F4D00A69BC9 /* Router.swift in Sources */,
 				EFCE40D01ADB0F4D00A69BC9 /* Input.swift in Sources */,

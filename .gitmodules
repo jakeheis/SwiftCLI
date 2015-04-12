@@ -1,1 +1,4 @@
 
+[submodule "SwiftCLI/Vendor/LlamaKit"]
+	path = SwiftCLI/Vendor/LlamaKit
+	url = https://github.com/LlamaKit/LlamaKit.git

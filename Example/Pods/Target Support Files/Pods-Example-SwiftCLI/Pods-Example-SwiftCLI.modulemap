@@ -1,6 +1,0 @@
-framework module SwiftCLI {
-  umbrella header "Pods-Example-SwiftCLI-umbrella.h"
-
-  export *
-  module * { export * }
-}

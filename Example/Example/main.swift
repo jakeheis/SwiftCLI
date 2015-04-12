@@ -7,7 +7,6 @@
 //
 
 import Foundation
-//import SwiftCLI
 
 CLI.setup(name: "baker", description: "Baker - your own personal baker, here to bake you whatever you desire.")
 
