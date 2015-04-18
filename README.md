@@ -359,12 +359,12 @@ Again, be sure to use ```CLI.go()``` with this method, not ```CLI.debugGoWithArg
 
 ## SwiftCLI Installation
 
-Pending Swift file support in Cocoapods (https://github.com/CocoaPods/CocoaPods/pull/2222), the best way to install SwiftCLI is by cloning the repository and adding the SwiftCLI files to your project.
+Right now, Swift frameworks cannot be embedded into command line tools, meaning CocoaPods and Carthage can't easily be used. There is a [way to get around this](http://colemancda.github.io/programming/2015/02/12/embedded-swift-frameworks-osx-command-line-tools/), but it's so difficult that using Git submodules is easier.
 
-### Clone
-First clone the project:
+In your project directory, run:
 ```bash
-git clone https://github.com/jakeheis/SwiftCLI.git
+git submodule add https://github.com/jakeheis/SwiftCLI.git
+git submodule update --init --recursive
 ```
 Then drag the SwiftCLI/SwiftCLI folder into your Xcode project:
 
