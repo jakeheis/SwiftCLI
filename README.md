@@ -370,7 +370,7 @@ Then drag the SwiftCLI/SwiftCLI folder into your Xcode project:
 
 ![alt tag](https://github.com/jakeheis/SwiftCLI/blob/master/Example/DragScreenshot.png)
 
-![alt tag](https://github.com/jakeheis/SwiftCLI/blob/master/Example/AddFilesDialog.png)
+![alt tag](https://github.com/jakeheis/SwiftCLI/blob/master/Example/AddFiles.png)
 
 ## Example
 An example of a CLI developed with SwfitCLI can be found in the Example directory in this repo.
