@@ -79,7 +79,7 @@ class GreetCommand: Command {
     }
     
     override func execute() -> ExecutionResult  {
-        let person = arguments.requiredString("person")
+        let person = arguments.requiredArgument("person")
         println("Hey there, \(person)!")
         return success()
     }
@@ -93,7 +93,7 @@ let greetCommand = ChainableCommand(commandName: "greet")
     .withShortDescription("Greets the given person")
     .withSignature("<person>")
     .withExecutionBlock {(arguments, options) in
-        let person = arguments.requiredString("person")
+        let person = arguments.requiredArgument("person")
         println("Hey there, \(person)!")
         return success()
     }
@@ -173,7 +173,7 @@ With multiple arguments: ```greeter greet Jack Jill Hill``` -> ```["person": ["J
 ### Accessing arguments
 
 During execution, a command has access to an instance of ```CommandArguments``` that contains the passed arguments which have been keyed using the command signature. Arguments can be accessed with subscripts or the typesafe shortcuts ```CommandArguments``` includes:
-```
+```swift
 override func execute() -> ExecutionResult  {
     // Given command signature --- <name>
     let name = arguments.requiredArgument("name") // of type String
