@@ -10,21 +10,21 @@ import Foundation
 
 class Router {
     
-    private let commands: [Command]
+    private let commands: [CommandType]
     private let arguments: RawArguments
-    private let defaultCommand: Command
+    private let defaultCommand: CommandType
     
     struct Route {
-        let command: Command
+        let command: CommandType
         let arguments: RawArguments
         
-        init(command: Command, arguments: RawArguments) {
+        init(command: CommandType, arguments: RawArguments) {
             self.command = command
             self.arguments = arguments
         }
     }
     
-    init(commands: [Command], arguments: RawArguments, defaultCommand: Command) {
+    init(commands: [CommandType], arguments: RawArguments, defaultCommand: CommandType) {
         self.commands = commands
         self.arguments = arguments
         self.defaultCommand = defaultCommand
@@ -41,13 +41,13 @@ class Router {
     
     // MARK: - Privates
     
-    private func findCommand() -> Result<Command, String> {
-        var command: Command?
+    private func findCommand() -> Result<CommandType, String> {
+        var command: CommandType?
         
         if let commandSearchName = arguments.firstArgumentOfType(.Unclassified) {
             
             if commandSearchName.hasPrefix("-") {
-                command = commands.filter({ $0.commandShortcut() == commandSearchName }).first
+                command = commands.filter({ $0.commandShortcut == commandSearchName }).first
                 
                 if command == nil {
                     command = defaultCommand
@@ -55,7 +55,7 @@ class Router {
                     arguments.classifyArgument(argument: commandSearchName, type: .CommandName)
                 }
             } else {
-                command = commands.filter({ $0.commandName() == commandSearchName }).first
+                command = commands.filter { $0.commandName == commandSearchName }.first
                 arguments.classifyArgument(argument: commandSearchName, type: .CommandName)
             }
             

@@ -10,29 +10,29 @@ import Foundation
 
 public class HelpCommand: Command {
     
-    var allCommands: [Command] = []
+    var allCommands: [CommandType] = []
     
-    override public func commandName() -> String  {
+    override public var commandName: String  {
         return "help"
     }
     
-    override public func commandShortDescription() -> String  {
+    override public var commandShortDescription: String  {
         return "Prints this help information"
     }
     
-    override public func commandShortcut() -> String?  {
+    override public var commandShortcut: String?  {
         return "-h"
     }
     
-    override public func showHelpOnHFlag() -> Bool  {
+    override public var showHelpOnHFlag: Bool  {
         return false
     }
     
-    override public func failOnUnrecognizedOptions() -> Bool  {
+    override public var failOnUnrecognizedOptions: Bool  {
         return false
     }
     
-    override public func execute() -> ExecutionResult  {
+    override public func execute(#arguments: CommandArguments) -> ExecutionResult  {
         println("\(CLI.appDescription())\n")
         println("Available commands: ")
 
@@ -45,9 +45,9 @@ public class HelpCommand: Command {
         return success()
     }
     
-    func printCommand(command: Command) {
-        let description = command.commandShortDescription().padFront(totalLength: 20 - count(command.commandName()))
-        println("- \(command.commandName())\(description)")
+    func printCommand(command: CommandType) {
+        let description = command.commandShortDescription.padFront(totalLength: 20 - count(command.commandName))
+        println("- \(command.commandName)\(description)")
     }
     
 }

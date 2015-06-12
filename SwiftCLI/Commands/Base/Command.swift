@@ -8,11 +8,48 @@
 
 import Foundation
 
-public class Command: NSObject {
+public typealias ExecutionResult = Result<(), String>
+
+public protocol CommandType {
     
-    public var arguments: CommandArguments = CommandArguments(keyedArguments: [:])
+    var commandName: String { get }
+    var commandSignature: String { get }
+    var commandShortDescription: String { get }
+    var commandShortcut: String? { get }
     
-    var options: Options = Options()
+    func execute(#arguments: CommandArguments) -> ExecutionResult
+    
+}
+
+public enum UnrecognizedOptionsPrintingBehavior {
+    case PrintNone
+    case PrintOnlyUnrecognizedOptions
+    case PrintOnlyUsage
+    case PrintAll
+}
+
+public protocol OptionCommandType: CommandType {
+    
+//    var failOnUnrecognizedOptions: Bool { get }
+//    var unrecognizedOptionsPrintingBehavior: UnrecognizedOptionsPrintingBehavior { get }
+    
+//    var options: Options { get set }
+    
+//    func recognizeOptionsInArguments(arguments: RawArguments) -> Bool
+    
+    func setupOptions(options: Options)
+
+}
+
+public protocol CommandMessageGeneratorType {
+    
+    func commandUsageStatement(commandName givenCommandName: String?) -> String
+    
+}
+
+public class Command: NSObject, OptionCommandType {
+        
+//    var options: Options = Options()
     
     var showingHelp = false
     
@@ -23,7 +60,7 @@ public class Command: NSObject {
     *
     *  @return the command name
     */
-    public func commandName() -> String {
+    public var commandName: String {
         assert(false, "Subclasses of Command must override this method")
         return ""
     }
@@ -33,7 +70,7 @@ public class Command: NSObject {
     *
     *  @return the command signature
     */
-    public func commandSignature() -> String {
+    public var commandSignature: String {
         return ""
     }
     
@@ -42,16 +79,17 @@ public class Command: NSObject {
     *
     *  @return the short description
     */
-    public func commandShortDescription() -> String {
+    public var commandShortDescription: String {
         return ""
     }
     
     /**
-    *  A shortcut for this command prefixed with "-"; e.g. "-h" for help, "-v" for version
+    *  A shortcut for this comma
+    nd prefixed with "-"; e.g. "-h" for help, "-v" for version
     *
     *  @return the shortcut
     */
-    public func commandShortcut() -> String? {
+    public var commandShortcut: String? {
         return nil
     }
     
@@ -65,13 +103,13 @@ public class Command: NSObject {
     public func commandUsageStatement(commandName givenCommandName: String? = nil) -> String {
         var message = "Usage: \(CLI.appName())"
         
-        let name = givenCommandName ?? commandName()
+        let name = givenCommandName ?? commandName
         if !name.isEmpty {
             message += " \(name)"
         }
 
-        if !commandSignature().isEmpty {
-            message += " \(commandSignature())"
+        if !commandSignature.isEmpty {
+            message += " \(commandSignature)"
         }
         
         if !options.flagOptions.isEmpty || !options.keyOptions.isEmpty {
@@ -92,12 +130,11 @@ public class Command: NSObject {
         return message
     }
     
+    
     // MARK: - Options
     
-    final func setupExpectedOptions() {
-        handleOptions()
-        
-        if showHelpOnHFlag() {
+    public func setupOptions() {
+        if showHelpOnHFlag {
             onFlags(["-h", "--help"], usage: "Show help information for this command") {(flag) in
                 self.showingHelp = true
                 
@@ -106,37 +143,39 @@ public class Command: NSObject {
         }
     }
     
-    final func recognizeOptionsInArguments(arguments: RawArguments) -> Bool {
-        options.recognizeOptionsInArguments(arguments)
-        
-        if options.misusedOptionsPresent() {
-            if let message = misusedOptionsMessage(arguments: arguments) {
-                printlnError(message)
-            }
-            if failOnUnrecognizedOptions() {
-                return false
-            }
-        }
-        
-        return true
-    }
+//    func recognizeOptionsInArguments(arguments: RawArguments) -> Bool {
+//        setupExpectedOptions()
+//        
+//        options.recognizeOptionsInArguments(arguments)
+//        
+//        if options.misusedOptionsPresent() {
+//            if let message = misusedOptionsMessage(arguments: arguments) {
+//                printlnError(message)
+//            }
+//            if failOnUnrecognizedOptions {
+//                return false
+//            }
+//        }
+//        
+//        return true
+//    }
     
     func misusedOptionsMessage(#arguments: RawArguments) -> String? {
-        if unrecognizedOptionsPrintingBehavior() == UnrecognizedOptionsPrintingBehavior.PrintNone {
+        if unrecognizedOptionsPrintingBehavior == UnrecognizedOptionsPrintingBehavior.PrintNone {
             return nil
         }
         
         var message = ""
         
-        if unrecognizedOptionsPrintingBehavior() != .PrintOnlyUsage {
+        if unrecognizedOptionsPrintingBehavior != .PrintOnlyUsage {
             message += options.misusedOptionsMessage()
             
-            if unrecognizedOptionsPrintingBehavior() == .PrintAll {
+            if unrecognizedOptionsPrintingBehavior == .PrintAll {
                message += "\n"
             }
         }
         
-        if unrecognizedOptionsPrintingBehavior() != .PrintOnlyUnrecognizedOptions {
+        if unrecognizedOptionsPrintingBehavior != .PrintOnlyUnrecognizedOptions {
             message += commandUsageStatement(commandName: arguments.firstArgumentOfType(.CommandName))
         }
         
@@ -166,16 +205,13 @@ public class Command: NSObject {
     /**
     *  Method where all onFlag(s) and onKey(s) calls should be made
     */
-    public func handleOptions() {
-        
-    }
     
     /**
     *  Describes if this command should print its usage statement when passed the "-h" flag
     *
     *  @return if usage statement should be printed
     */
-    public func showHelpOnHFlag() -> Bool {
+    public var showHelpOnHFlag: Bool {
         return true
     }
     
@@ -191,7 +227,7 @@ public class Command: NSObject {
     *
     *  @return the printing behavior
     */
-    public func unrecognizedOptionsPrintingBehavior() -> UnrecognizedOptionsPrintingBehavior {
+    public var unrecognizedOptionsPrintingBehavior: UnrecognizedOptionsPrintingBehavior {
         return .PrintAll
     }
     
@@ -200,15 +236,14 @@ public class Command: NSObject {
     *
     *  @return if command should fail on unrecognized options
     */
-    public func failOnUnrecognizedOptions() -> Bool {
+    public var failOnUnrecognizedOptions: Bool {
         return true
     }
     
     // MARK: - Execution
     
-    public typealias ExecutionResult = Result<(), String>
     
-    public func execute() -> ExecutionResult {
+    public func execute(#arguments: CommandArguments) -> ExecutionResult {
         return success()
     }
     

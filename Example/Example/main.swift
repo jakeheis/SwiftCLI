@@ -13,7 +13,7 @@ CLI.setup(name: "baker", description: "Baker - your own personal baker, here to 
 CLI.registerChainableCommand(commandName: "init")
     .withShortDescription("Creates a Bakefile in the current or given directory")
     .withSignature("[<directory>]")
-    .withExecutionBlock {(arguments, options) in
+    .withExecutionBlock {(arguments) in
         let givenDirectory = arguments.optionalArgument("directory")
         
         let fileName = givenDirectory?.stringByAppendingPathComponent("Bakefile") ?? "./Bakefile"
@@ -30,32 +30,32 @@ CLI.registerCommand(BakeCommand())
 
 CLI.registerCommand(RecipeCommand())
 
-func createListCommand() -> Command {
+func createListCommand() -> CommandType {
     let listCommand = LightweightCommand(commandName: "list")
-    listCommand.lightweightCommandShortDescription = "Lists some possible items the baker can bake for you."
-    
-    var showExoticFoods = false
-    listCommand.handleFlags(["-e", "--exotics-included"], usage: "Include exotic foods in the list of items baker can bake you") {(flag) in
-        showExoticFoods = true
-    }
-    
-    listCommand.lightweightExecutionBlock = {(arguments, options) in
-        var foods = ["bread", "cookies", "cake"]
-        if showExoticFoods {
-            foods += ["exotic baker item 1", "exotic baker item 2"]
-        }
-        println("Items that baker can bake for you:")
-        for i in 0..<foods.count {
-            println("\(i+1). \(foods[i])")
-        }
-        return success()
-    }
+//    listCommand.commandShortDescription = "Lists some possible items the baker can bake for you."
+//    
+//    var showExoticFoods = false
+//    listCommand.handleFlags(["-e", "--exotics-included"], usage: "Include exotic foods in the list of items baker can bake you") {(flag) in
+//        showExoticFoods = true
+//    }
+//    
+//    listCommand.lightweightExecutionBlock = {(arguments, options) in
+//        var foods = ["bread", "cookies", "cake"]
+//        if showExoticFoods {
+//            foods += ["exotic baker item 1", "exotic baker item 2"]
+//        }
+//        println("Items that baker can bake for you:")
+//        for i in 0..<foods.count {
+//            println("\(i+1). \(foods[i])")
+//        }
+//        return success()
+//    }
     return listCommand
 }
 
 CLI.registerCommand(createListCommand())
 
-let result = CLI.go()
+let result = CLI.debugGoWithArgumentString("baker bake cake")
 
 func cliExit(result: CLIResult) {
     exit(result)

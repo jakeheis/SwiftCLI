@@ -8,7 +8,7 @@
 
 import Foundation
 
-class RawArguments {
+public class RawArguments {
     
     enum RawArgumentType {
         case AppName

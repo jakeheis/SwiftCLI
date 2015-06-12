@@ -12,19 +12,19 @@ public class VersionCommand: Command {
     
     var version = "1.0"
     
-    override public func commandName() -> String  {
+    override public var commandName: String  {
         return "version"
     }
     
-    override public func commandShortDescription() -> String  {
+    override public var commandShortDescription: String  {
         return "Prints the current version of this app"
     }
     
-    override public func commandShortcut() -> String?  {
+    override public var commandShortcut: String?  {
         return "-v"
     }
     
-    override public func execute() -> ExecutionResult  {
+    override public func execute(#arguments: CommandArguments) -> ExecutionResult  {
         println("Version: \(version)")
         
         return success()

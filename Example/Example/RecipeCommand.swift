@@ -8,21 +8,25 @@
 
 import Foundation
 
-class RecipeCommand: Command {
+class RecipeCommand: CommandType {
     
-    override func commandName() -> String {
+    var commandName: String {
         return "recipe"
     }
     
-    override func commandShortDescription() -> String {
+    var commandShortDescription: String {
         return "Creates a recipe interactively"
     }
     
-    override func commandSignature() -> String {
+    var commandSignature: String {
         return ""
     }
     
-    override func execute() -> ExecutionResult {
+    var commandShortcut: String? {
+        return nil
+    }
+    
+    func execute(#arguments: CommandArguments) -> ExecutionResult {
         let data = NSData(contentsOfFile: "./Bakefile")
         if data == nil {
             return failure("No Bakefile could be found in the current directory. Run 'baker init' before this command.")

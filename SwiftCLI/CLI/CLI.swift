@@ -17,10 +17,10 @@ public class CLI: NSObject {
         static var appVersion = "1.0"
         static var appDescription = ""
         
-        static var commands: [Command] = []
+        static var commands: [CommandType] = []
         static var helpCommand: HelpCommand? = HelpCommand()
         static var versionComand: VersionCommand? = VersionCommand()
-        static var defaultCommand: Command = CLIStatic.helpCommand!
+        static var defaultCommand: CommandType = CLIStatic.helpCommand!
     }
     
     public class func setup(#name: String, version: String = "1.0", description: String = "") {
@@ -39,11 +39,11 @@ public class CLI: NSObject {
     
     // MARK: - Registering commands
     
-    public class func registerCommand(command: Command) {
+    public class func registerCommand(command: CommandType) {
         CLIStatic.commands.append(command)
     }
     
-    public class func registerCommands(commands: [Command]) {
+    public class func registerCommands(commands: [CommandType]) {
         commands.each { self.registerCommand($0) }
     }
     
@@ -61,7 +61,7 @@ public class CLI: NSObject {
         CLIStatic.versionComand = versionCommand
     }
     
-    public class func registerDefaultCommand(command: Command) {
+    public class func registerDefaultCommand(command: CommandType) {
         CLIStatic.defaultCommand = command
     }
     
@@ -77,16 +77,16 @@ public class CLI: NSObject {
     
     private class func goWithArguments(arguments: RawArguments) -> CLIResult {
         let result = routeCommand(arguments: arguments)
-        .flatMap( {(route) in
+        .flatMap {(route) in
             return self.setupOptionsAndArguments(route)
-        })
-        .flatMap( {(command) -> Command.ExecutionResult in
-            if command.showingHelp { // Don't actually execute command if showing help, e.g. git clone -h
-                return success()
-            }
+        }
+        .flatMap {(command, arguments) -> ExecutionResult in
+//            if command.showingHelp { // Don't actually execute command if showing help, e.g. git clone -h
+//                return success()
+//            }
             
-            return command.execute()
-        })
+            return command.execute(arguments: arguments)
+        }
         
         if result.isSuccess {
             return CLIResult.Success
@@ -115,28 +115,39 @@ public class CLI: NSObject {
         return router.route()
     }
     
-    class private func setupOptionsAndArguments(route: Router.Route) -> Result<Command, String> {
-        route.command.setupExpectedOptions()
+    class private func setupOptionsAndArguments(route: Router.Route) -> Result<(CommandType, CommandArguments), String> {
+//        route.command.setupExpectedOptions()
+//        
+//        var errorMessage = ""
         
-        var errorMessage = ""
-        
-        if route.command.recognizeOptionsInArguments(route.arguments) {
-            if route.command.showingHelp {
-                return success(route.command)
-            }
-            
-            let commandSignature = CommandSignature(route.command.commandSignature())
-            let commandArgumentsResult = CommandArguments.fromRawArguments(route.arguments, signature: commandSignature)
-            
-            if let commandArguments = commandArgumentsResult.value {
-                route.command.arguments = commandArguments
-                return success(route.command)
-            }
-            
-            errorMessage = commandArgumentsResult.error ?? ""
+        if let optionCommand = route.command as? OptionCommandType {
+            optionCommand.recognizeOptionsInArguments(route.arguments)
         }
         
-        return failure(errorMessage)
+        let commandSignature = CommandSignature(route.command.commandSignature)
+        let commandArgumentsResult = CommandArguments.fromRawArguments(route.arguments, signature: commandSignature)
+        
+        if let commandArguments = commandArgumentsResult.value {
+            return success((route.command, commandArguments))
+        }
+        
+//        if route.command.recognizeOptionsInArguments(route.arguments) {
+//            if route.command.showingHelp {
+//                return success(route.command)
+//            }
+//            
+//            let commandSignature = CommandSignature(route.command.commandSignature())
+//            let commandArgumentsResult = CommandArguments.fromRawArguments(route.arguments, signature: commandSignature)
+//            
+//            if let commandArguments = commandArgumentsResult.value {
+//                route.command.arguments = commandArguments
+//                return success(route.command)
+//            }
+//            
+//            errorMessage = commandArgumentsResult.error ?? ""
+//        }
+        
+        return failure(commandArgumentsResult.error ?? "")
     }
     
 }

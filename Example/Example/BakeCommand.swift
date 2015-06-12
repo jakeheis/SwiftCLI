@@ -8,39 +8,43 @@
 
 import Foundation
 
-class BakeCommand: Command {
-    
+class BakeCommand: OptionCommandType {
+        
     private var quickly = false
     private var silently = false
     private var topping: String? = nil
     
-    override func commandName() -> String  {
+    var commandName: String  {
         return "bake"
     }
     
-    override func commandShortDescription() -> String  {
-        return "Bakes the items in the Bakefile"
-    }
-    
-    override func commandSignature() -> String  {
+    var commandSignature: String  {
         return "[<item>]"
     }
     
-    override func handleOptions()  {
-        onFlags(["-q", "--quickly"], usage: "Bake more quickly") {(flag) in
+    var commandShortDescription: String  {
+        return "Bakes the items in the Bakefile"
+    }
+    
+    var commandShortcut: String? {
+        return nil
+    }
+    
+    func setupOptions(options: Options) {
+        options.onFlags(["-q", "--quickly"], usage: "Bake more quickly") {(flag) in
             self.quickly = true
         }
         
-        onFlag("-s", usage: "Bake silently") {(flag) in
+        options.onFlags(["-s", "--silently"], usage: "Bake silently") {(flag) in
             self.silently = true
         }
         
-        onKeys(["-t", "--with-topping"], usage: "Adds a topping to the baked good", valueSignature: "topping") {(key, value) in
+        options.onKeys(["-t", "--with-topping"], usage: "Adds a topping to the baked good", valueSignature: "topping") {(key, value) in
             self.topping = value
         }
     }
     
-    override func execute() -> ExecutionResult  {
+    func execute(#arguments: CommandArguments) -> ExecutionResult  {
         if let item = arguments.optionalArgument("item") {
             bakeItem(item)
         } else {
