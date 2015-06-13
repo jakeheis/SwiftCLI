@@ -32,15 +32,17 @@ public protocol OptionCommandType: CommandType {
 
 // MARK: Default implementations
 
+extension CommandType {
+    
+    public var commandShortcut: String? { return nil }
+    
+}
+
 extension OptionCommandType {
     
-    public var failOnUnrecognizedOptions: Bool {
-        return true
-    }
+    public var failOnUnrecognizedOptions: Bool { return true }
     
-    public var unrecognizedOptionsPrintingBehavior: UnrecognizedOptionsPrintingBehavior {
-        return .PrintAll
-    }
+    public var unrecognizedOptionsPrintingBehavior: UnrecognizedOptionsPrintingBehavior { return .PrintAll }
     
 }
 

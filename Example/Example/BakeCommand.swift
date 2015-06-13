@@ -29,10 +29,6 @@ class BakeCommand: OptionCommandType {
         return "Bakes the items in the Bakefile"
     }
     
-    var commandShortcut: String? {
-        return nil
-    }
-    
     func setupOptions(options: Options) {
         options.onFlags(["-q", "--quickly"], usage: "Bake more quickly") {(flag) in
             self.quickly = true

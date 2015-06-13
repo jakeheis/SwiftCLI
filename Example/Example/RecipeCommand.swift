@@ -22,10 +22,6 @@ class RecipeCommand: CommandType {
         return ""
     }
     
-    var commandShortcut: String? {
-        return nil
-    }
-    
     func execute(arguments arguments: CommandArguments) throws {
         guard let data = NSData(contentsOfFile: "./Bakefile") else {
             throw CommandError.Error("No Bakefile could be found in the current directory. Run 'baker init' before this command.")
