@@ -29,37 +29,23 @@ public class ChainableCommand: LightweightCommand {
         return self
     }
     
-    // MARK: - Options
+    public func withOptionsSetup(optionsSetup: OptionsSetupBlock) -> ChainableCommand {
+        optionsSetupBlock = optionsSetup
+        return self
+    }
     
-//    public func withFlagsHandled(flags: [String], usage: String, block: FlagOption.FlagBlock?) -> ChainableCommand {
-//        handleFlags(flags, usage: usage, block: block)
-//        return self
-//    }
-//    
-//    public func withKeysHandled(keys: [String], usage: String = "", valueSignature: String = "value", block: KeyOption.KeyBlock?) -> ChainableCommand {
-//        handleKeys(keys, usage: usage, valueSignature: valueSignature, block: block)
-//        return self
-//    }
-//    
-//    public func withNoHelpShownOnHFlag() -> ChainableCommand {
-//        shouldShowHelpOnHFlag = false
-//        return self
-//    }
-//    
-//    public func withPrintingBehaviorOnUnrecgonizedOptions(behavior: UnrecognizedOptionsPrintingBehavior) -> ChainableCommand {
-//        printingBehaviorOnUnrecognizedOptions = behavior
-//        return self
-//    }
-//    
-//    public func withAllFlagsAndOptionsAllowed() -> ChainableCommand {
-//        shouldFailOnUnrecognizedOptions = false
-//        return self
-//    }
+    public func withUnrecognizedOptionsPrintingBehavior(behavior: UnrecognizedOptionsPrintingBehavior) -> ChainableCommand {
+        unrecognizedOptionsPrintingBehavior = behavior
+        return self
+    }
     
-    // MARK: - Execution
+    public func withFailOnUnrecognizedOptions(shouldFail: Bool) -> ChainableCommand {
+        failOnUnrecognizedOptions = shouldFail
+        return self
+    }
     
     public func withExecutionBlock(execution: ExecutionBlock) -> ChainableCommand {
-        lightweightExecutionBlock = execution
+        executionBlock = execution
         return self
     }
     

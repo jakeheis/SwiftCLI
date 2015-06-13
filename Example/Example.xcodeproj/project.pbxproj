@@ -24,7 +24,36 @@
 		EF28EE311B2C4E8C0030ED5C /* Output.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF28EE231B2C4E8C0030ED5C /* Output.swift */; };
 		EF28EE341B2C4E9E0030ED5C /* BakeCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF28EE321B2C4E9E0030ED5C /* BakeCommand.swift */; };
 		EF28EE351B2C4E9E0030ED5C /* RecipeCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF28EE331B2C4E9E0030ED5C /* RecipeCommand.swift */; };
+		EF28EE491B2C5A150030ED5C /* CommandArgumentsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF28EE441B2C5A150030ED5C /* CommandArgumentsTests.swift */; };
+		EF28EE4A1B2C5A150030ED5C /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = EF28EE451B2C5A150030ED5C /* Info.plist */; };
+		EF28EE4B1B2C5A150030ED5C /* OptionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF28EE461B2C5A150030ED5C /* OptionsTests.swift */; };
+		EF28EE4C1B2C5A150030ED5C /* RouterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF28EE471B2C5A150030ED5C /* RouterTests.swift */; };
+		EF28EE4D1B2C5A150030ED5C /* SwiftCLITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF28EE481B2C5A150030ED5C /* SwiftCLITests.swift */; };
+		EF28EE501B2C5AC20030ED5C /* CommandArguments.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF28EE111B2C4E8C0030ED5C /* CommandArguments.swift */; };
+		EF28EE511B2C5AC20030ED5C /* Options.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF28EE121B2C4E8C0030ED5C /* Options.swift */; };
+		EF28EE521B2C5AC20030ED5C /* RawArguments.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF28EE131B2C4E8C0030ED5C /* RawArguments.swift */; };
+		EF28EE531B2C5AC20030ED5C /* CLI.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF28EE151B2C4E8C0030ED5C /* CLI.swift */; };
+		EF28EE541B2C5AC20030ED5C /* CommandSignature.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF28EE161B2C4E8C0030ED5C /* CommandSignature.swift */; };
+		EF28EE551B2C5AC20030ED5C /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF28EE171B2C4E8C0030ED5C /* Extensions.swift */; };
+		EF28EE561B2C5AC20030ED5C /* Router.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF28EE181B2C4E8C0030ED5C /* Router.swift */; };
+		EF28EE571B2C5AC20030ED5C /* ChainableCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF28EE1B1B2C4E8C0030ED5C /* ChainableCommand.swift */; };
+		EF28EE581B2C5AC20030ED5C /* Command.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF28EE1C1B2C4E8C0030ED5C /* Command.swift */; };
+		EF28EE591B2C5AC20030ED5C /* LightweightCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF28EE1D1B2C4E8C0030ED5C /* LightweightCommand.swift */; };
+		EF28EE5A1B2C5AC20030ED5C /* HelpCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF28EE1F1B2C4E8C0030ED5C /* HelpCommand.swift */; };
+		EF28EE5B1B2C5AC20030ED5C /* VersionCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF28EE201B2C4E8C0030ED5C /* VersionCommand.swift */; };
+		EF28EE5C1B2C5AC20030ED5C /* Input.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF28EE221B2C4E8C0030ED5C /* Input.swift */; };
+		EF28EE5D1B2C5AC20030ED5C /* Output.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF28EE231B2C4E8C0030ED5C /* Output.swift */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		EF28EE4E1B2C5AB00030ED5C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = EF28EDFD1B2C4E7A0030ED5C /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = EF28EE041B2C4E7A0030ED5C;
+			remoteInfo = Example;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
 		EF28EE031B2C4E7A0030ED5C /* CopyFiles */ = {
@@ -57,10 +86,23 @@
 		EF28EE231B2C4E8C0030ED5C /* Output.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Output.swift; sourceTree = "<group>"; };
 		EF28EE321B2C4E9E0030ED5C /* BakeCommand.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BakeCommand.swift; sourceTree = "<group>"; };
 		EF28EE331B2C4E9E0030ED5C /* RecipeCommand.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RecipeCommand.swift; sourceTree = "<group>"; };
+		EF28EE3A1B2C59CB0030ED5C /* SwiftCLITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SwiftCLITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		EF28EE441B2C5A150030ED5C /* CommandArgumentsTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommandArgumentsTests.swift; sourceTree = "<group>"; };
+		EF28EE451B2C5A150030ED5C /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		EF28EE461B2C5A150030ED5C /* OptionsTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OptionsTests.swift; sourceTree = "<group>"; };
+		EF28EE471B2C5A150030ED5C /* RouterTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RouterTests.swift; sourceTree = "<group>"; };
+		EF28EE481B2C5A150030ED5C /* SwiftCLITests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftCLITests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		EF28EE021B2C4E7A0030ED5C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		EF28EE371B2C59CB0030ED5C /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -74,6 +116,7 @@
 			isa = PBXGroup;
 			children = (
 				EF28EE071B2C4E7A0030ED5C /* Example */,
+				EF28EE431B2C5A150030ED5C /* SwiftCLITests */,
 				EF28EE061B2C4E7A0030ED5C /* Products */,
 			);
 			sourceTree = "<group>";
@@ -82,6 +125,7 @@
 			isa = PBXGroup;
 			children = (
 				EF28EE051B2C4E7A0030ED5C /* Example */,
+				EF28EE3A1B2C59CB0030ED5C /* SwiftCLITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -167,6 +211,19 @@
 			path = IO;
 			sourceTree = "<group>";
 		};
+		EF28EE431B2C5A150030ED5C /* SwiftCLITests */ = {
+			isa = PBXGroup;
+			children = (
+				EF28EE441B2C5A150030ED5C /* CommandArgumentsTests.swift */,
+				EF28EE451B2C5A150030ED5C /* Info.plist */,
+				EF28EE461B2C5A150030ED5C /* OptionsTests.swift */,
+				EF28EE471B2C5A150030ED5C /* RouterTests.swift */,
+				EF28EE481B2C5A150030ED5C /* SwiftCLITests.swift */,
+			);
+			name = SwiftCLITests;
+			path = ../SwiftCLITests;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -187,6 +244,24 @@
 			productReference = EF28EE051B2C4E7A0030ED5C /* Example */;
 			productType = "com.apple.product-type.tool";
 		};
+		EF28EE391B2C59CB0030ED5C /* SwiftCLITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = EF28EE3F1B2C59CB0030ED5C /* Build configuration list for PBXNativeTarget "SwiftCLITests" */;
+			buildPhases = (
+				EF28EE361B2C59CB0030ED5C /* Sources */,
+				EF28EE371B2C59CB0030ED5C /* Frameworks */,
+				EF28EE381B2C59CB0030ED5C /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				EF28EE4F1B2C5AB00030ED5C /* PBXTargetDependency */,
+			);
+			name = SwiftCLITests;
+			productName = SwiftCLITests;
+			productReference = EF28EE3A1B2C59CB0030ED5C /* SwiftCLITests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -197,6 +272,9 @@
 				ORGANIZATIONNAME = jakeheis;
 				TargetAttributes = {
 					EF28EE041B2C4E7A0030ED5C = {
+						CreatedOnToolsVersion = 7.0;
+					};
+					EF28EE391B2C59CB0030ED5C = {
 						CreatedOnToolsVersion = 7.0;
 					};
 				};
@@ -214,9 +292,21 @@
 			projectRoot = "";
 			targets = (
 				EF28EE041B2C4E7A0030ED5C /* Example */,
+				EF28EE391B2C59CB0030ED5C /* SwiftCLITests */,
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		EF28EE381B2C59CB0030ED5C /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EF28EE4A1B2C5A150030ED5C /* Info.plist in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		EF28EE011B2C4E7A0030ED5C /* Sources */ = {
@@ -243,7 +333,40 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		EF28EE361B2C59CB0030ED5C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EF28EE501B2C5AC20030ED5C /* CommandArguments.swift in Sources */,
+				EF28EE511B2C5AC20030ED5C /* Options.swift in Sources */,
+				EF28EE521B2C5AC20030ED5C /* RawArguments.swift in Sources */,
+				EF28EE531B2C5AC20030ED5C /* CLI.swift in Sources */,
+				EF28EE541B2C5AC20030ED5C /* CommandSignature.swift in Sources */,
+				EF28EE551B2C5AC20030ED5C /* Extensions.swift in Sources */,
+				EF28EE561B2C5AC20030ED5C /* Router.swift in Sources */,
+				EF28EE571B2C5AC20030ED5C /* ChainableCommand.swift in Sources */,
+				EF28EE581B2C5AC20030ED5C /* Command.swift in Sources */,
+				EF28EE591B2C5AC20030ED5C /* LightweightCommand.swift in Sources */,
+				EF28EE5A1B2C5AC20030ED5C /* HelpCommand.swift in Sources */,
+				EF28EE5B1B2C5AC20030ED5C /* VersionCommand.swift in Sources */,
+				EF28EE5C1B2C5AC20030ED5C /* Input.swift in Sources */,
+				EF28EE5D1B2C5AC20030ED5C /* Output.swift in Sources */,
+				EF28EE4B1B2C5A150030ED5C /* OptionsTests.swift in Sources */,
+				EF28EE4C1B2C5A150030ED5C /* RouterTests.swift in Sources */,
+				EF28EE4D1B2C5A150030ED5C /* SwiftCLITests.swift in Sources */,
+				EF28EE491B2C5A150030ED5C /* CommandArgumentsTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		EF28EE4F1B2C5AB00030ED5C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = EF28EE041B2C4E7A0030ED5C /* Example */;
+			targetProxy = EF28EE4E1B2C5AB00030ED5C /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		EF28EE0A1B2C4E7A0030ED5C /* Debug */ = {
@@ -338,6 +461,28 @@
 			};
 			name = Release;
 		};
+		EF28EE401B2C59CB0030ED5C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = ../SwiftCLITests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = jakeheis.SwiftCLITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		EF28EE411B2C59CB0030ED5C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = ../SwiftCLITests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = jakeheis.SwiftCLITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -355,6 +500,14 @@
 			buildConfigurations = (
 				EF28EE0D1B2C4E7A0030ED5C /* Debug */,
 				EF28EE0E1B2C4E7A0030ED5C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+		EF28EE3F1B2C59CB0030ED5C /* Build configuration list for PBXNativeTarget "SwiftCLITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EF28EE401B2C59CB0030ED5C /* Debug */,
+				EF28EE411B2C59CB0030ED5C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 		};

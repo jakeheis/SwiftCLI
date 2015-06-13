@@ -21,20 +21,21 @@ class SwiftCLITests: XCTestCase {
         CLI.setup(name: "tester")
         CLI.registerChainableCommand(commandName: "test")
             .withSignature("<testName> [<testerName>]")
-            .withFlagsHandled(["-s"], usage: "Silent flag", block: {(flag) in
-                self.silentFlag = true
-            })
-            .withKeysHandled(["-t"], usage: "Times to test", valueSignature: "times", block: {(key, value) in
-                self.times = value.toInt()!
-            })
-            .withExecutionBlock {(arguments, options) in
+            .withOptionsSetup {(options) in
+                options.onFlags(["-s"]) {(flag) in
+                    self.silentFlag = true
+                }
+                options.onKeys(["-t"]) {(key, value) in
+                    self.times = Int(value)!
+                }
+            }
+            .withExecutionBlock {(arguments) in
                 let testName = arguments.requiredArgument("testName")
                 let testerName = arguments.optionalArgument("testerName") ?? "Tester"
                 self.executionString = "\(testerName) will test \(testName), \(self.times) times"
                 if self.silentFlag {
                     self.executionString += ", silently"
                 }
-                return success()
             }
     }
     

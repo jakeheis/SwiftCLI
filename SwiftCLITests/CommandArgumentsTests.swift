@@ -103,28 +103,29 @@ class CommandArgumentsTests: XCTestCase {
     
     // MARK: - Helpers
     
-    private func createCommandArguments() -> Result<CommandArguments, String> {
+    private func createCommandArguments() throws -> CommandArguments {
         let stringArguments = " ".join(arguments)
         let rawArguments = RawArguments(argumentString: "tester \(stringArguments)")
         let commandSignature = CommandSignature(signature)
 
-        return CommandArguments.fromRawArguments(rawArguments, signature: commandSignature)
+        return try CommandArguments.fromRawArguments(rawArguments, signature: commandSignature)
     }
 
     private func assertParseResultEquals(expectedKeyedArguments: NSDictionary, assertMessage: String) {
-        let commandArguments = createCommandArguments()
-        if let keyedArguments = commandArguments.value?.keyedArguments {
+        do {
+            let commandArguments = try createCommandArguments()
+            let keyedArguments = commandArguments.keyedArguments
             XCTAssertEqual(keyedArguments, expectedKeyedArguments, assertMessage)
-        } else {
+        } catch {
             XCTFail(assertMessage)
         }
     }
     
     private func assertParseFails(assertMessage: String) {
-        let commandArguments = createCommandArguments()
-        if commandArguments.isSuccess {
+        do {
+            try createCommandArguments()
             XCTFail("\(assertMessage); mistakenly passed and returned \(arguments)")
-        }
+        } catch {}
     }
     
 }
