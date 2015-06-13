@@ -162,6 +162,8 @@ public class Options {
             for option in unrecognizedOptions {
                 message += "\n\t\(option)"
             }
+            
+            message += "\n"
         }
         
         if keysNotGivenValue.count > 0 {
@@ -169,6 +171,8 @@ public class Options {
             for option in keysNotGivenValue {
                 message += "\n\t\(option)"
             }
+            
+            message += "\n"
         }
         
         return message

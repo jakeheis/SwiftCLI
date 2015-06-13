@@ -35,5 +35,33 @@ class CommandMessageGeneratorTests: XCTestCase {
         
         XCTAssertEqual(message, expectedMessage, "Should generate the correct usage statement")
     }
+    
+    func testMisusedOptionsStatementGeneration() {
+        let options = Options()
+        command.setupOptions(options)
+        
+        let arguments = RawArguments(argumentString: "tester test -s -a --times")
+        arguments.classifyArgument(argument: "tester", type: .AppName)
+        arguments.classifyArgument(argument: "test", type: .CommandName)
+        options.recognizeOptionsInArguments(arguments)
+        
+        let message = CommandMessageGenerator.generateMisusedOptionsStatement(command: command, options: options)!
+        
+        let expectedMessage = "\n".join([
+            "Usage:  test <testName> [<testerName>] [options]",
+            "",
+            "-h, --help                               Show help information for this command",
+            "-s, --silent                             Silence all test output",
+            "-t, --times <times>                      Number of times to run the test",
+            "",
+            "Unrecognized options:",
+            "\t-a",
+            "Required values for options but given none:",
+            "\t--times",
+            ""
+        ])
+        
+        XCTAssertEqual(message, expectedMessage, "Should generate the correct misused options statement")
+    }
 
 }
