@@ -25,7 +25,7 @@ public class FlagOption {
         self.block = block
         
         let flagsString = ", ".join(flags)
-        let paddedUsage = usage.padFront(totalLength: 40 - count(flagsString))
+        let paddedUsage = usage.padFront(totalLength: 40 - flagsString.characters.count)
         self.usage = "\(flagsString)\(paddedUsage)"
     }
     
@@ -51,7 +51,7 @@ public class KeyOption {
         
         let keysString = ", ".join(keys)
         let firstPart = "\(keysString) <\(valueSignature)>"
-        let paddedUsage = usage.padFront(totalLength: 40 - count(firstPart))
+        let paddedUsage = usage.padFront(totalLength: 40 - firstPart.characters.count)
         self.usage = "\(firstPart)\(paddedUsage)"
     }
     
@@ -64,6 +64,9 @@ public class Options {
     
     var unrecognizedOptions: [String] = []
     var keysNotGivenValue: [String] = []
+    
+    var exitEarlyOptions: [String] = []
+    var exitEarly = false
     
     // MARK: - Adding options
     
@@ -109,6 +112,10 @@ public class Options {
             } else {
                 unrecognizedOptions.append(option)
             }
+            
+            if exitEarlyOptions.contains(option) {
+                exitEarly = true
+            }
         }
     }
     
@@ -119,7 +126,7 @@ public class Options {
         
         var chars: [String] = []
         
-        for (index, character) in enumerate(rawOption) {
+        for (index, character) in rawOption.characters.enumerate() {
             if index > 0 {
                 chars.append("-\(character)")
             }

@@ -14,6 +14,6 @@ func printlnError(error: String) {
     if let errorData = fullString.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: false) {
         handle.writeData(errorData)
     } else {
-        println(error)
+        print(error)
     }
 }

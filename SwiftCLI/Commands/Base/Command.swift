@@ -8,8 +8,6 @@
 
 import Foundation
 
-public typealias ExecutionResult = Result<(), String>
-
 public protocol CommandType {
     
     var commandName: String { get }
@@ -17,8 +15,12 @@ public protocol CommandType {
     var commandShortDescription: String { get }
     var commandShortcut: String? { get }
     
-    func execute(#arguments: CommandArguments) -> ExecutionResult
+    func execute(arguments arguments: CommandArguments) throws
     
+}
+
+public enum CommandError: ErrorType {
+    case Error(String)
 }
 
 public enum UnrecognizedOptionsPrintingBehavior {
@@ -30,94 +32,61 @@ public enum UnrecognizedOptionsPrintingBehavior {
 
 public protocol OptionCommandType: CommandType {
     
-//    var failOnUnrecognizedOptions: Bool { get }
-//    var unrecognizedOptionsPrintingBehavior: UnrecognizedOptionsPrintingBehavior { get }
-    
-//    var options: Options { get set }
-    
-//    func recognizeOptionsInArguments(arguments: RawArguments) -> Bool
+    var failOnUnrecognizedOptions: Bool { get }
+    var unrecognizedOptionsPrintingBehavior: UnrecognizedOptionsPrintingBehavior { get }
     
     func setupOptions(options: Options)
 
 }
 
-public protocol CommandMessageGeneratorType {
+// Default implementations
+extension OptionCommandType {
     
-    func commandUsageStatement(commandName givenCommandName: String?) -> String
+    public var failOnUnrecognizedOptions: Bool {
+        return true
+    }
+    
+    public var unrecognizedOptionsPrintingBehavior: UnrecognizedOptionsPrintingBehavior {
+        return .PrintAll
+    }
     
 }
 
-public class Command: NSObject, OptionCommandType {
+// Additional functionality
+extension OptionCommandType {
+    
+    public func addDefaultHelpFlag(options: Options) {
+        let helpFlags = ["-h", "--help"]
         
-//    var options: Options = Options()
-    
-    var showingHelp = false
-    
-    // MARK: - Command info
-    
-    /**
-    *  The name this command can be invoked with
-    *
-    *  @return the command name
-    */
-    public var commandName: String {
-        assert(false, "Subclasses of Command must override this method")
-        return ""
+        options.onFlags(helpFlags, usage: "Show help information for this command") {(flag) in
+            print(CommandMessageGenerator.generateUsageStatement(command: self, routedName: nil, options: options))
+        }
+        
+        options.exitEarlyOptions += helpFlags
     }
     
-    /**
-    *  The signature for this command
-    *
-    *  @return the command signature
-    */
-    public var commandSignature: String {
-        return ""
-    }
+}
+
+public class CommandMessageGenerator {
     
-    /**
-    *  A short description for this command printed by the HelpCommand
-    *
-    *  @return the short description
-    */
-    public var commandShortDescription: String {
-        return ""
-    }
-    
-    /**
-    *  A shortcut for this comma
-    nd prefixed with "-"; e.g. "-h" for help, "-v" for version
-    *
-    *  @return the shortcut
-    */
-    public var commandShortcut: String? {
-        return nil
-    }
-    
-    /**
-    *  The usage statement for this command, including the signature and available options
-    *
-    *  @param commandName the name used to invoke this command
-    *
-    *  @return the usage statement
-    */
-    public func commandUsageStatement(commandName givenCommandName: String? = nil) -> String {
+    class func generateUsageStatement(command command: CommandType, routedName: String?, options: Options?) -> String {
         var message = "Usage: \(CLI.appName())"
         
-        let name = givenCommandName ?? commandName
+        let name = routedName ?? command.commandName
         if !name.isEmpty {
             message += " \(name)"
         }
-
-        if !commandSignature.isEmpty {
-            message += " \(commandSignature)"
+        
+        if !command.commandSignature.isEmpty {
+            message += " \(command.commandSignature)"
         }
         
-        if !options.flagOptions.isEmpty || !options.keyOptions.isEmpty {
+        if let options = options where !options.flagOptions.isEmpty || !options.keyOptions.isEmpty {
             message += " [options]\n"
             
             let allKeys = options.flagOptions.keys.array + options.keyOptions.keys.array
-            let sortedKeys = sorted(allKeys)
-            for key in allKeys {
+            let sortedKeys = allKeys.sort()
+            for key in sortedKeys {
                 let usage = options.flagOptions[key]?.usage ?? options.keyOptions[key]?.usage ?? ""
                 message += "\n\(usage)"
             }
@@ -130,18 +99,66 @@ public class Command: NSObject, OptionCommandType {
         return message
     }
     
-    
-    // MARK: - Options
-    
-    public func setupOptions() {
-        if showHelpOnHFlag {
-            onFlags(["-h", "--help"], usage: "Show help information for this command") {(flag) in
-                self.showingHelp = true
-                
-                println(self.commandUsageStatement())
-            }
+    class func generateMisusedOptionsStatement(command command: CommandType, options: Options) -> String? {
+        guard let optionsCommand = command as? OptionCommandType else {
+            return nil
+        }
+        
+        switch optionsCommand.unrecognizedOptionsPrintingBehavior {
+        case .PrintNone:
+            return nil
+        case .PrintOnlyUsage:
+            return generateUsageStatement(command: command, routedName: nil, options: options)
+        case .PrintOnlyUnrecognizedOptions:
+            return options.misusedOptionsMessage()
+        case .PrintAll:
+            return generateUsageStatement(command: command, routedName: nil, options: options) + "\n" + options.misusedOptionsMessage()
         }
     }
+    
+}
+
+//public class Command: NSObject {
+
+//    var options: Options = Options()
+    
+    // MARK: - Command info
+    
+    /**
+    *  The name this command can be invoked with
+    *
+    *  @return the command name
+    */
+    
+    /**
+    *  The signature for this command
+    *
+    *  @return the command signature
+    */
+    
+    /**
+    *  A short description for this command printed by the HelpCommand
+    *
+    *  @return the short description
+    */
+    
+    /**
+    *  A shortcut for this comma
+    nd prefixed with "-"; e.g. "-h" for help, "-v" for version
+    *
+    *  @return the shortcut
+    */
+    
+    /**
+    *  The usage statement for this command, including the signature and available options
+    *
+    *  @param commandName the name used to invoke this command
+    *
+    *  @return the usage statement
+    */
+    
+    
+    // MARK: - Options
     
 //    func recognizeOptionsInArguments(arguments: RawArguments) -> Bool {
 //        setupExpectedOptions()
@@ -160,46 +177,6 @@ public class Command: NSObject, OptionCommandType {
 //        return true
 //    }
     
-    func misusedOptionsMessage(#arguments: RawArguments) -> String? {
-        if unrecognizedOptionsPrintingBehavior == UnrecognizedOptionsPrintingBehavior.PrintNone {
-            return nil
-        }
-        
-        var message = ""
-        
-        if unrecognizedOptionsPrintingBehavior != .PrintOnlyUsage {
-            message += options.misusedOptionsMessage()
-            
-            if unrecognizedOptionsPrintingBehavior == .PrintAll {
-               message += "\n"
-            }
-        }
-        
-        if unrecognizedOptionsPrintingBehavior != .PrintOnlyUnrecognizedOptions {
-            message += commandUsageStatement(commandName: arguments.firstArgumentOfType(.CommandName))
-        }
-        
-        return message
-    }
-    
-    // MARK: On options
-    
-    public final func onFlag(flag: String, usage: String = "", block: FlagOption.FlagBlock?) {
-        onFlags([flag], usage: usage, block: block)
-    }
-    
-    public final func onFlags(flags: [String], usage: String = "", block: FlagOption.FlagBlock?) {
-        options.onFlags(flags, usage: usage, block: block)
-    }
-    
-    public final func onKey(key: String, usage: String = "", valueSignature: String = "value", block: KeyOption.KeyBlock?) {
-        onKeys([key], usage: usage, valueSignature: valueSignature, block: block)
-    }
-    
-    public final func onKeys(keys: [String], usage: String = "", valueSignature: String = "value", block: KeyOption.KeyBlock?) {
-        options.onKeys(keys, usage: usage, valueSignature: valueSignature, block: block)
-    }
-    
     // MARK: Sublcass option config
     
     /**
@@ -211,40 +188,19 @@ public class Command: NSObject, OptionCommandType {
     *
     *  @return if usage statement should be printed
     */
-    public var showHelpOnHFlag: Bool {
-        return true
-    }
-    
-    public enum UnrecognizedOptionsPrintingBehavior {
-        case PrintNone
-        case PrintOnlyUnrecognizedOptions
-        case PrintOnlyUsage
-        case PrintAll
-    }
 
     /**
     *  The printing behavior of this command when it is passed an unrecognized option
     *
     *  @return the printing behavior
     */
-    public var unrecognizedOptionsPrintingBehavior: UnrecognizedOptionsPrintingBehavior {
-        return .PrintAll
-    }
     
     /**
     *  Describes if this command should fail on unrecognized options
     *
     *  @return if command should fail on unrecognized options
     */
-    public var failOnUnrecognizedOptions: Bool {
-        return true
-    }
     
     // MARK: - Execution
     
-    
-    public func execute(#arguments: CommandArguments) -> ExecutionResult {
-        return success()
-    }
-    
-}
+//}

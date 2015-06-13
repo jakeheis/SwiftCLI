@@ -10,7 +10,7 @@ import Foundation
 
 extension String {
     
-    func padFront(#totalLength: Int) -> String {
+    func padFront(totalLength totalLength: Int) -> String {
         var spacing = ""
         for _ in 0...totalLength {
             spacing += " "
@@ -36,7 +36,7 @@ extension Array {
     }
     
     func eachWithIndex(block: (object: T, index: Int) -> ()) {
-        for (index, object) in enumerate(self) {
+        for (index, object) in self.enumerate() {
             block(object: object, index: index)
         }
     }

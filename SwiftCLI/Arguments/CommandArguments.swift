@@ -12,6 +12,10 @@ public class CommandArguments {
     
     var keyedArguments: [String: AnyObject]
     
+    enum Error: ErrorType {
+        case ParsingError(String)
+    }
+    
     init() {
         self.keyedArguments = [:]
     }
@@ -26,26 +30,26 @@ public class CommandArguments {
     
     // Keying arguments
     
-    class func fromRawArguments(rawArguments: RawArguments, signature: CommandSignature) -> Result<CommandArguments, String> {
+    class func fromRawArguments(rawArguments: RawArguments, signature: CommandSignature) throws -> CommandArguments {
         if signature.isEmpty {
-            return handleEmptySignature(rawArguments: rawArguments)
+            return try handleEmptySignature(rawArguments: rawArguments)
         }
         
         let arguments = rawArguments.unclassifiedArguments()
         
         if arguments.count < signature.requiredParameters.count {
-            return failure(errorMessage(expectedCount: signature.requiredParameters.count, givenCount: arguments.count))
+            throw Error.ParsingError(errorMessage(expectedCount: signature.requiredParameters.count, givenCount: arguments.count))
         }
         
         if !signature.collectRemainingArguments && signature.optionalParameters.isEmpty && arguments.count != signature.requiredParameters.count {
-            return failure(errorMessage(expectedCount: signature.requiredParameters.count, givenCount: arguments.count))
+            throw Error.ParsingError(errorMessage(expectedCount: signature.requiredParameters.count, givenCount: arguments.count))
         }
         
         if !signature.collectRemainingArguments && arguments.count > signature.requiredParameters.count + signature.optionalParameters.count {
-            return failure(errorMessage(expectedCount: signature.requiredParameters.count + signature.optionalParameters.count, givenCount: arguments.count))
+            throw Error.ParsingError(errorMessage(expectedCount: signature.requiredParameters.count + signature.optionalParameters.count, givenCount: arguments.count))
         }
         
-        var commandArguments = CommandArguments()
+        let commandArguments = CommandArguments()
         
         // First handle required arguments
         for i in 0..<signature.requiredParameters.count {
@@ -81,18 +85,18 @@ public class CommandArguments {
             commandArguments[parameter] = collectedArgument
         }
         
-        return success(commandArguments)
+        return commandArguments
     }
     
-    private class func handleEmptySignature(#rawArguments: RawArguments)-> Result<CommandArguments, String> {
-        if rawArguments.unclassifiedArguments().count == 0 {
-            return success(CommandArguments())
-        } else {
-            return failure("Expected no arguments, got \(rawArguments.unclassifiedArguments().count).")
+    private class func handleEmptySignature(rawArguments rawArguments: RawArguments) throws -> CommandArguments {
+        guard rawArguments.unclassifiedArguments().count == 0  else {
+            throw Error.ParsingError("Expected no arguments, got \(rawArguments.unclassifiedArguments().count).")
         }
+    
+        return CommandArguments()
     }
     
-    private class func errorMessage(#expectedCount: Int, givenCount: Int) -> String {
+    private class func errorMessage(expectedCount expectedCount: Int, givenCount: Int) -> String {
         let argString = expectedCount == 1 ? "argument" : "arguments"
         return "Expected \(expectedCount) \(argString), but got \(givenCount)."
     }

@@ -19,7 +19,7 @@ public class LightweightCommand: CommandType {
     public var commandShortDescription: String = ""
     public var commandShortcut: String? = nil
     
-    public typealias ExecutionBlock = (arguments: CommandArguments) -> ExecutionResult
+    public typealias ExecutionBlock = (arguments: CommandArguments) throws -> ()
     
     public var lightweightExecutionBlock: ExecutionBlock? = nil
     
@@ -51,8 +51,8 @@ public class LightweightCommand: CommandType {
     
     // MARK: - Execution
     
-    public func execute(#arguments: CommandArguments) -> ExecutionResult {
-        return lightweightExecutionBlock!(arguments: arguments)
+    public func execute(arguments arguments: CommandArguments) throws {
+        try lightweightExecutionBlock?(arguments: arguments)
     }
     
 }

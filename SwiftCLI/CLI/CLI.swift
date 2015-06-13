@@ -23,7 +23,7 @@ public class CLI: NSObject {
         static var defaultCommand: CommandType = CLIStatic.helpCommand!
     }
     
-    public class func setup(#name: String, version: String = "1.0", description: String = "") {
+    public class func setup(name name: String, version: String = "1.0", description: String = "") {
         CLIStatic.appName = name
         CLIStatic.appVersion = version
         CLIStatic.appDescription = description
@@ -47,7 +47,7 @@ public class CLI: NSObject {
         commands.each { self.registerCommand($0) }
     }
     
-    public class func registerChainableCommand(#commandName: String) -> ChainableCommand {
+    public class func registerChainableCommand(commandName commandName: String) -> ChainableCommand {
         let chainable = ChainableCommand(commandName: commandName)
         registerCommand(chainable)
         return chainable
@@ -76,31 +76,38 @@ public class CLI: NSObject {
     }
     
     private class func goWithArguments(arguments: RawArguments) -> CLIResult {
-        let result = routeCommand(arguments: arguments)
-        .flatMap {(route) in
-            return self.setupOptionsAndArguments(route)
-        }
-        .flatMap {(command, arguments) -> ExecutionResult in
-//            if command.showingHelp { // Don't actually execute command if showing help, e.g. git clone -h
-//                return success()
-//            }
+        do {
+            let command = try routeCommand(arguments: arguments)
+            let arguments = try setupOptionsAndArguments(command, arguments: arguments)
+            try command.execute(arguments: arguments)
             
-            return command.execute(arguments: arguments)
-        }
-        
-        if result.isSuccess {
             return CLIResult.Success
-        } else {
-            if let error = result.error where !error.isEmpty {
+        } catch Router.RouterError.CommandNotFound {
+            printlnError("Command not found")
+        } catch Router.RouterError.ArgumentError {
+            printlnError("Router failed")
+        } catch CommandSetupError.ExitEarly {
+            return CLIResult.Success
+        } catch CommandSetupError.UnrecognizedOptions {
+            // Do nothing
+        } catch CommandArguments.Error.ParsingError(let error) {
+            if !error.isEmpty {
                 printlnError(error)
             }
-            return CLIResult.Error
+        } catch CommandError.Error(let error) {
+            if !error.isEmpty {
+                printlnError(error)
+            }
+        } catch {
+            printlnError("An error occurred")
         }
+        
+        return CLIResult.Error
     }
     
     // MARK: - Privates
     
-    class private func routeCommand(#arguments: RawArguments) -> Result<Router.Route, String> {
+    class private func routeCommand(arguments arguments: RawArguments) throws -> CommandType {
         var allCommands = CLIStatic.commands
         if let hc = CLIStatic.helpCommand {
             hc.allCommands = CLIStatic.commands
@@ -112,42 +119,38 @@ public class CLI: NSObject {
         
         let router = Router(commands: allCommands, arguments: arguments, defaultCommand: CLIStatic.defaultCommand)
         
-        return router.route()
+        return try router.route()
     }
     
-    class private func setupOptionsAndArguments(route: Router.Route) -> Result<(CommandType, CommandArguments), String> {
-//        route.command.setupExpectedOptions()
-//        
-//        var errorMessage = ""
-        
-        if let optionCommand = route.command as? OptionCommandType {
-            optionCommand.recognizeOptionsInArguments(route.arguments)
+    enum CommandSetupError: ErrorType {
+        case ExitEarly
+        case UnrecognizedOptions
+    }
+    
+    class private func setupOptionsAndArguments(command: CommandType, arguments: RawArguments) throws -> CommandArguments {
+        if let optionCommand = command as? OptionCommandType {
+            let options = Options()
+          
+            optionCommand.setupOptions(options)
+            options.recognizeOptionsInArguments(arguments)
+            
+            if options.exitEarly {
+                throw CommandSetupError.ExitEarly
+            }
+            
+            if options.misusedOptionsPresent() {
+                if let message = CommandMessageGenerator.generateMisusedOptionsStatement(command: optionCommand, options: options) {
+                    printlnError(message)
+                }
+                if optionCommand.failOnUnrecognizedOptions {
+                    throw CommandSetupError.UnrecognizedOptions
+                }
+            }
         }
         
-        let commandSignature = CommandSignature(route.command.commandSignature)
-        let commandArgumentsResult = CommandArguments.fromRawArguments(route.arguments, signature: commandSignature)
+        let commandSignature = CommandSignature(command.commandSignature)
         
-        if let commandArguments = commandArgumentsResult.value {
-            return success((route.command, commandArguments))
-        }
-        
-//        if route.command.recognizeOptionsInArguments(route.arguments) {
-//            if route.command.showingHelp {
-//                return success(route.command)
-//            }
-//            
-//            let commandSignature = CommandSignature(route.command.commandSignature())
-//            let commandArgumentsResult = CommandArguments.fromRawArguments(route.arguments, signature: commandSignature)
-//            
-//            if let commandArguments = commandArgumentsResult.value {
-//                route.command.arguments = commandArguments
-//                return success(route.command)
-//            }
-//            
-//            errorMessage = commandArgumentsResult.error ?? ""
-//        }
-        
-        return failure(commandArgumentsResult.error ?? "")
+        return try CommandArguments.fromRawArguments(arguments, signature: commandSignature)
     }
     
 }

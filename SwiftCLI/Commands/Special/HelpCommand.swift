@@ -8,46 +8,44 @@
 
 import Foundation
 
-public class HelpCommand: Command {
+public class HelpCommand: CommandType {
     
     var allCommands: [CommandType] = []
     
-    override public var commandName: String  {
+    public var commandName: String  {
         return "help"
     }
     
-    override public var commandShortDescription: String  {
+    public var commandSignature: String {
+        return ""
+    }
+    
+    public var commandShortDescription: String  {
         return "Prints this help information"
     }
     
-    override public var commandShortcut: String?  {
+    public var commandShortcut: String?  {
         return "-h"
     }
     
-    override public var showHelpOnHFlag: Bool  {
+    public var failOnUnrecognizedOptions: Bool  {
         return false
     }
     
-    override public var failOnUnrecognizedOptions: Bool  {
-        return false
-    }
-    
-    override public func execute(#arguments: CommandArguments) -> ExecutionResult  {
-        println("\(CLI.appDescription())\n")
-        println("Available commands: ")
+    public func execute(arguments arguments: CommandArguments) throws {
+        print("\(CLI.appDescription())\n")
+        print("Available commands: ")
 
         for command in allCommands {
             printCommand(command)
         }
         
         printCommand(self)
-        
-        return success()
     }
     
     func printCommand(command: CommandType) {
-        let description = command.commandShortDescription.padFront(totalLength: 20 - count(command.commandName))
-        println("- \(command.commandName)\(description)")
+        let description = command.commandShortDescription.padFront(totalLength: 20 - command.commandName.characters.count)
+        print("- \(command.commandName)\(description)")
     }
     
 }

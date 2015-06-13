@@ -19,11 +19,13 @@ CLI.registerChainableCommand(commandName: "init")
         let fileName = givenDirectory?.stringByAppendingPathComponent("Bakefile") ?? "./Bakefile"
         
         let dict = ["items": []]
-        if NSFileManager.defaultManager().createFileAtPath(fileName, contents: NSJSONSerialization.dataWithJSONObject(dict, options: NSJSONWritingOptions.PrettyPrinted, error: nil), attributes: nil) {
-            return success()
-        } else {
-            return failure("The Bakefile was not able to be created")
-        }
+        let json = try NSJSONSerialization.dataWithJSONObject(dict, options: NSJSONWritingOptions.PrettyPrinted)
+//        json.
+//        if NSFileManager.defaultManager().createFileAtPath(fileName, contents: , attributes: nil) {
+//            return success()
+//        } else {
+//            return failure("The Bakefile was not able to be created")
+//        }
     }
 
 CLI.registerCommand(BakeCommand())

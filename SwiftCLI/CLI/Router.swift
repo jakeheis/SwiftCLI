@@ -14,14 +14,9 @@ class Router {
     private let arguments: RawArguments
     private let defaultCommand: CommandType
     
-    struct Route {
-        let command: CommandType
-        let arguments: RawArguments
-        
-        init(command: CommandType, arguments: RawArguments) {
-            self.command = command
-            self.arguments = arguments
-        }
+    enum RouterError: ErrorType {
+        case CommandNotFound
+        case ArgumentError
     }
     
     init(commands: [CommandType], arguments: RawArguments, defaultCommand: CommandType) {
@@ -30,42 +25,41 @@ class Router {
         self.defaultCommand = defaultCommand
     }
     
-    func route() -> Result<Route, String> {
-        if arguments.unclassifiedArguments().count == 0 {
-            let result = Route(command: defaultCommand, arguments: arguments)
-            return success(result)
+    func route() throws -> CommandType {
+        guard arguments.unclassifiedArguments().count > 0 else {
+            return defaultCommand
         }
         
-        return findCommand().map { Route(command: $0, arguments: self.arguments) }
+        return try findCommand()
     }
     
     // MARK: - Privates
     
-    private func findCommand() -> Result<CommandType, String> {
+    private func findCommand() throws -> CommandType {
         var command: CommandType?
         
-        if let commandSearchName = arguments.firstArgumentOfType(.Unclassified) {
-            
-            if commandSearchName.hasPrefix("-") {
-                command = commands.filter({ $0.commandShortcut == commandSearchName }).first
-                
-                if command == nil {
-                    command = defaultCommand
-                } else {
-                    arguments.classifyArgument(argument: commandSearchName, type: .CommandName)
-                }
-            } else {
-                command = commands.filter { $0.commandName == commandSearchName }.first
-                arguments.classifyArgument(argument: commandSearchName, type: .CommandName)
-            }
-            
-            if let command = command {
-                return success(command)
-            }
-            
+        guard let commandSearchName = arguments.firstArgumentOfType(.Unclassified) else {
+            throw RouterError.ArgumentError
         }
         
-        return failure("Command not found")
+        if commandSearchName.hasPrefix("-") {
+            command = commands.filter({ $0.commandShortcut == commandSearchName }).first
+            
+            if command == nil {
+                command = defaultCommand
+            } else {
+                arguments.classifyArgument(argument: commandSearchName, type: .CommandName)
+            }
+        } else {
+            command = commands.filter { $0.commandName == commandSearchName }.first
+            arguments.classifyArgument(argument: commandSearchName, type: .CommandName)
+        }
+        
+        guard let foundCommand = command else {
+            throw RouterError.CommandNotFound
+        }
+        
+        return foundCommand
     }
     
 }
