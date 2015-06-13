@@ -46,7 +46,7 @@ public class Input {
         return awaitInputWithConversion(message: message) { Int($0) }
     }
     
-    public class func awaitYesNoInput(message: String = "Confirm?") -> Bool {
+    public class func awaitYesNoInput(message message: String = "Confirm?") -> Bool {
         return awaitInputWithConversion(message: "\(message) [y/N]: ") {input in
             if input.lowercaseString == "y" || input.lowercaseString == "yes" {
                 return true

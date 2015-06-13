@@ -26,33 +26,41 @@ class RecipeCommand: CommandType {
         return nil
     }
     
-    func execute(#arguments: CommandArguments) -> ExecutionResult {
-        let data = NSData(contentsOfFile: "./Bakefile")
-        if data == nil {
-            return failure("No Bakefile could be found in the current directory. Run 'baker init' before this command.")
+    func execute(arguments arguments: CommandArguments) throws {
+        guard let data = NSData(contentsOfFile: "./Bakefile") else {
+            throw CommandError.Error("No Bakefile could be found in the current directory. Run 'baker init' before this command.")
         }
         
-        if let data = data,
-            var bakefile = NSJSONSerialization.JSONObjectWithData(data, options: nil, error: nil)?.mutableCopy() as? NSMutableDictionary
-        {
-            let name = Input.awaitInput(message: "Name of your recipe: ")
-            let cookTime = Input.awaitInt(message: "Cook time: ")
-            let silently = Input.awaitYesNoInput(message: "Bake silently?")
-            
-            let recipe = ["name": name, "cookTime": cookTime, "silently": silently]
-            
-            var customRecipes: [NSDictionary] = bakefile["custom_recipes"] as? [NSDictionary] ?? []
-            customRecipes.append(recipe)
-            bakefile["custom_recipes"] = customRecipes
-            
-            let finalData = NSJSONSerialization.dataWithJSONObject(bakefile, options: .PrettyPrinted, error: nil)
-            if finalData?.writeToFile("./Bakefile", atomically: true) == false {
-                return failure("The Bakefile could not be written to.")
+        var bakefile: NSMutableDictionary
+        
+        do {
+            let JSONBakefile = try NSJSONSerialization.JSONObjectWithData(data, options: [])
+            if let mutBakefile = JSONBakefile.mutableCopy() as? NSMutableDictionary {
+                bakefile = mutBakefile
+            } else {
+                throw CommandError.Error("")
             }
-            
-            return success()
-        } else {
-            return failure("The Bakefile could not be parsed.")
+        } catch {
+            throw CommandError.Error("The Bakefile could not be parsed")
+        }
+        
+        let name = Input.awaitInput(message: "Name of your recipe: ")
+        let cookTime = Input.awaitInt(message: "Cook time: ")
+        let silently = Input.awaitYesNoInput(message: "Bake silently?")
+        
+        let recipe = ["name": name, "cookTime": cookTime, "silently": silently]
+        
+        var customRecipes: [NSDictionary] = bakefile["custom_recipes"] as? [NSDictionary] ?? []
+        customRecipes.append(recipe)
+        bakefile["custom_recipes"] = customRecipes
+        
+        do {
+            let finalData = try NSJSONSerialization.dataWithJSONObject(bakefile, options: .PrettyPrinted)
+            guard finalData.writeToFile("./Bakefile", atomically: true) else {
+                throw CommandError.Error("")
+            }
+        } catch {
+            throw CommandError.Error("The Bakefile could not be written to.")
         }
     }
    
