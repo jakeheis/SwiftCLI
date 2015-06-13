@@ -43,6 +43,9 @@
 		EF28EE5B1B2C5AC20030ED5C /* VersionCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF28EE201B2C4E8C0030ED5C /* VersionCommand.swift */; };
 		EF28EE5C1B2C5AC20030ED5C /* Input.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF28EE221B2C4E8C0030ED5C /* Input.swift */; };
 		EF28EE5D1B2C5AC20030ED5C /* Output.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF28EE231B2C4E8C0030ED5C /* Output.swift */; };
+		EF28EE5F1B2C626F0030ED5C /* CommandMessageGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF28EE5E1B2C626F0030ED5C /* CommandMessageGenerator.swift */; };
+		EF28EE601B2C62E70030ED5C /* CommandMessageGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF28EE5E1B2C626F0030ED5C /* CommandMessageGenerator.swift */; };
+		EF28EE641B2C665B0030ED5C /* CommandMessageGeneratorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF28EE631B2C665B0030ED5C /* CommandMessageGeneratorTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -92,6 +95,8 @@
 		EF28EE461B2C5A150030ED5C /* OptionsTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OptionsTests.swift; sourceTree = "<group>"; };
 		EF28EE471B2C5A150030ED5C /* RouterTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RouterTests.swift; sourceTree = "<group>"; };
 		EF28EE481B2C5A150030ED5C /* SwiftCLITests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftCLITests.swift; sourceTree = "<group>"; };
+		EF28EE5E1B2C626F0030ED5C /* CommandMessageGenerator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommandMessageGenerator.swift; sourceTree = "<group>"; };
+		EF28EE631B2C665B0030ED5C /* CommandMessageGeneratorTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommandMessageGeneratorTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -188,6 +193,7 @@
 			children = (
 				EF28EE1B1B2C4E8C0030ED5C /* ChainableCommand.swift */,
 				EF28EE1C1B2C4E8C0030ED5C /* Command.swift */,
+				EF28EE5E1B2C626F0030ED5C /* CommandMessageGenerator.swift */,
 				EF28EE1D1B2C4E8C0030ED5C /* LightweightCommand.swift */,
 			);
 			path = Base;
@@ -219,6 +225,7 @@
 				EF28EE461B2C5A150030ED5C /* OptionsTests.swift */,
 				EF28EE471B2C5A150030ED5C /* RouterTests.swift */,
 				EF28EE481B2C5A150030ED5C /* SwiftCLITests.swift */,
+				EF28EE631B2C665B0030ED5C /* CommandMessageGeneratorTests.swift */,
 			);
 			name = SwiftCLITests;
 			path = ../SwiftCLITests;
@@ -234,6 +241,7 @@
 				EF28EE011B2C4E7A0030ED5C /* Sources */,
 				EF28EE021B2C4E7A0030ED5C /* Frameworks */,
 				EF28EE031B2C4E7A0030ED5C /* CopyFiles */,
+				EF28EE621B2C64880030ED5C /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -308,6 +316,22 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		EF28EE621B2C64880030ED5C /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "lowercase_name=baker\nnew_path=/usr/local/bin/$lowercase_name\n\nif [ ! -f $new_path ]; then ln -s \"$BUILT_PRODUCTS_DIR/$PRODUCT_NAME\" \"$new_path\";fi";
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		EF28EE011B2C4E7A0030ED5C /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -326,6 +350,7 @@
 				EF28EE271B2C4E8C0030ED5C /* CLI.swift in Sources */,
 				EF28EE311B2C4E8C0030ED5C /* Output.swift in Sources */,
 				EF28EE251B2C4E8C0030ED5C /* Options.swift in Sources */,
+				EF28EE5F1B2C626F0030ED5C /* CommandMessageGenerator.swift in Sources */,
 				EF28EE2B1B2C4E8C0030ED5C /* ChainableCommand.swift in Sources */,
 				EF28EE091B2C4E7A0030ED5C /* main.swift in Sources */,
 				EF28EE341B2C4E9E0030ED5C /* BakeCommand.swift in Sources */,
@@ -342,6 +367,7 @@
 				EF28EE521B2C5AC20030ED5C /* RawArguments.swift in Sources */,
 				EF28EE531B2C5AC20030ED5C /* CLI.swift in Sources */,
 				EF28EE541B2C5AC20030ED5C /* CommandSignature.swift in Sources */,
+				EF28EE601B2C62E70030ED5C /* CommandMessageGenerator.swift in Sources */,
 				EF28EE551B2C5AC20030ED5C /* Extensions.swift in Sources */,
 				EF28EE561B2C5AC20030ED5C /* Router.swift in Sources */,
 				EF28EE571B2C5AC20030ED5C /* ChainableCommand.swift in Sources */,
@@ -355,6 +381,7 @@
 				EF28EE4C1B2C5A150030ED5C /* RouterTests.swift in Sources */,
 				EF28EE4D1B2C5A150030ED5C /* SwiftCLITests.swift in Sources */,
 				EF28EE491B2C5A150030ED5C /* CommandArgumentsTests.swift in Sources */,
+				EF28EE641B2C665B0030ED5C /* CommandMessageGeneratorTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

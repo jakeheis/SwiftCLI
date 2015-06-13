@@ -31,7 +31,7 @@ public class FlagOption {
     
 }
 
-public class KeyOption {
+public class KeyOption: Equatable {
     
     public typealias KeyBlock = (key: String, value: String) -> ()
     
@@ -57,10 +57,19 @@ public class KeyOption {
     
 }
 
+public func == (lhs: KeyOption, rhs: KeyOption) -> Bool {
+    return lhs.keys == rhs.keys
+}
+
 public class Options {
     
+    // Keyed by first given flag/key
     var flagOptions: [String: FlagOption] = [:]
     var keyOptions: [String: KeyOption] = [:]
+    
+    // Keyed by each given flag/key
+    var allFlagOptions: [String: FlagOption] = [:]
+    var allKeyOptions: [String: KeyOption] = [:]
     
     var unrecognizedOptions: [String] = []
     var keysNotGivenValue: [String] = []
@@ -75,7 +84,9 @@ public class Options {
     }
     
     func addFlagOption(flagOption: FlagOption) {
-        flagOption.flags.each { self.flagOptions[$0] = flagOption }
+        flagOptions[flagOption.flags.first!] = flagOption
+        
+        flagOption.flags.each { self.allFlagOptions[$0] = flagOption }
     }
     
     func onKeys(keys: [String], usage: String = "", valueSignature: String = "value", block: KeyOption.KeyBlock?) {
@@ -83,7 +94,9 @@ public class Options {
     }
     
     func addKeyOption(keyOption: KeyOption) {
-        keyOption.keys.each { self.keyOptions[$0] = keyOption }
+        keyOptions[keyOption.keys.first!] = keyOption
+        
+        keyOption.keys.each { self.allKeyOptions[$0] = keyOption }
     }
     
     // MARK: - Argument parsing
@@ -98,9 +111,9 @@ public class Options {
         }
         
         for option in passedOptions {
-            if let flagOption = flagOptions[option] {
+            if let flagOption = allFlagOptions[option] {
                 flagOption.block?(flag: option)
-            } else if let keyOption = keyOptions[option] {
+            } else if let keyOption = allKeyOptions[option] {
                 if let keyValue = rawArguments.argumentFollowingArgument(option)
                     where !keyValue.hasPrefix("-") {
                         rawArguments.classifyArgument(argument: keyValue, type: .Option)

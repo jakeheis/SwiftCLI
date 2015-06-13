@@ -23,14 +23,14 @@ class OptionsTests: XCTestCase {
     
     func testOnFlags() {
         options.onFlags(["-a", "--awesome"], block: nil)
-        XCTAssert(options.flagOptions.keys.contains("-a"), "Options should expect flags after a call to onFlags")
-        XCTAssert(options.flagOptions.keys.contains("--awesome"), "Options should expect flags after a call to onFlags")
+        XCTAssert(options.allFlagOptions.keys.contains("-a"), "Options should expect flags after a call to onFlags")
+        XCTAssert(options.allFlagOptions.keys.contains("--awesome"), "Options should expect flags after a call to onFlags")
     }
     
     func testOnKeys() {
         options.onKeys(["-a", "--awesome"], block: nil)
-        XCTAssert(options.keyOptions.keys.contains("-a"), "Options should expect keys after a call to onKeys")
-        XCTAssert(options.keyOptions.keys.contains("--awesome"), "Options should expect keys after a call to onKeys")
+        XCTAssert(options.allKeyOptions.keys.contains("-a"), "Options should expect keys after a call to onKeys")
+        XCTAssert(options.allKeyOptions.keys.contains("--awesome"), "Options should expect keys after a call to onKeys")
     }
     
     func testSimpleFlagParsing() {
