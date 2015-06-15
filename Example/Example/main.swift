@@ -10,6 +10,8 @@ import Foundation
 
 CLI.setup(name: "baker", version: "1.1", description: "Baker - your own personal baker, here to bake you whatever you want")
 
+// MARK: - ChainableCommand example
+
 CLI.registerChainableCommand(commandName: "init")
     .withShortDescription("Creates a Bakefile in the current or given directory")
     .withSignature("[<directory>]")
@@ -28,9 +30,13 @@ CLI.registerChainableCommand(commandName: "init")
         }
     }
 
+// MARK: - CommandType examples
+
 CLI.registerCommand(BakeCommand())
 
 CLI.registerCommand(RecipeCommand())
+
+// MARK: - LightweightCommand example
 
 func createListCommand() -> CommandType {
     let listCommand = LightweightCommand(commandName: "list")
@@ -62,6 +68,8 @@ func createListCommand() -> CommandType {
 }
 
 CLI.registerCommand(createListCommand())
+
+// MARK: - Go
 
 let result = CLI.go()
 exit(result)
