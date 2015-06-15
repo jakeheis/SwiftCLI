@@ -26,22 +26,8 @@ class RecipeCommand: CommandType {
     }
     
     func execute(arguments arguments: CommandArguments) throws {
-        guard let data = NSData(contentsOfFile: "./Bakefile") else {
-            throw RecipeCommand.BakefileNotFoundError
-        }
-        
-        var bakefile: NSMutableDictionary
-        
-        do {
-            let JSONBakefile = try NSJSONSerialization.JSONObjectWithData(data, options: [])
-            if let mutBakefile = JSONBakefile.mutableCopy() as? NSMutableDictionary {
-                bakefile = mutBakefile
-            } else {
-                throw CLIError.EmptyError
-            }
-        } catch {
-            throw RecipeCommand.ParsingError
-        }
+        let bakefile = try Bakefile(path: "./Bakefile")
+
         
         let name = Input.awaitInput(message: "Name of your recipe: ")
         let cookTime = Input.awaitInt(message: "Cook time: ")
@@ -49,18 +35,7 @@ class RecipeCommand: CommandType {
         
         let recipe = ["name": name, "cookTime": cookTime, "silently": silently]
         
-        var customRecipes: [NSDictionary] = bakefile["custom_recipes"] as? [NSDictionary] ?? []
-        customRecipes.append(recipe)
-        bakefile["custom_recipes"] = customRecipes
-        
-        do {
-            let finalData = try NSJSONSerialization.dataWithJSONObject(bakefile, options: .PrettyPrinted)
-            guard finalData.writeToFile("./Bakefile", atomically: true) else {
-                throw CLIError.EmptyError
-            }
-        } catch {
-            throw CLIError.Error("The Bakefile could not be written to.")
-        }
+        try bakefile.addRecipe(recipe)
     }
    
 }

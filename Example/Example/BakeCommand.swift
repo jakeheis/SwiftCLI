@@ -14,9 +14,6 @@ class BakeCommand: OptionCommandType {
     private var silently = false
     private var topping: String? = nil
     
-    static let ParsingError = CLIError.Error("The Bakefile could not be parsed")
-    static let BakefileNotFoundError = CLIError.Error("The Bakefile could not be found")
-    
     var commandName: String  {
         return "bake"
     }
@@ -57,35 +54,7 @@ class BakeCommand: OptionCommandType {
         }
     }
     
-    private func loadBakefileItems() throws -> [String] {
-        let bakefile = try loadBakefile()
-        
-        guard let items = bakefile["items"] as? [String] else {
-            throw BakeCommand.ParsingError
-        }
-        
-        return items
-    }
-    
-    private func loadBakefile() throws -> NSDictionary {
-        guard let data = NSData(contentsOfFile: "./Bakefile") else {
-            throw BakeCommand.BakefileNotFoundError
-        }
-        
-        let parsedJSON: AnyObject
-        
-        do {
-            parsedJSON = try NSJSONSerialization.JSONObjectWithData(data, options: [])
-        } catch {
-            throw BakeCommand.ParsingError
-        }
-        
-        guard let bakefile = parsedJSON as? NSDictionary else {
-            throw BakeCommand.ParsingError
-        }
-        
-        return bakefile
-    }
+    // MARK: - Baking
     
     private func bakeItem(item: String) {
         let quicklyStr = quickly ? " quickly" : ""
@@ -116,23 +85,35 @@ class BakeCommand: OptionCommandType {
     }
     
     private func checkForRecipe(item: String) -> NSDictionary? {
-        let bakefile: NSDictionary
         do {
-            bakefile = try loadBakefile()
+            let recipes = try loadBakefileRecipes()
+            
+            for recipe in recipes {
+                if recipe["name"] as? String == item {
+                    return recipe
+                }
+            }
         } catch {
             return nil
         }
         
-        guard let customRecipes = bakefile["custom_recipes"] as? [NSDictionary] else {
-            return nil
-        }
-        
-        for recipe in customRecipes {
-            if recipe["name"] as? String == item {
-                return recipe
-            }
-        }
-        
         return nil
     }
+    
+    // MARK: - Loading
+    
+    private func loadBakefileItems() throws -> [String] {
+        let bakefile = try Bakefile(path: "./Bakefile")
+        let items = try bakefile.items()
+        
+        return items
+    }
+    
+    private func loadBakefileRecipes() throws -> [NSDictionary] {
+        let bakefile = try Bakefile(path: "./Bakefile")
+        let recipes = try bakefile.customRecipes()
+        
+        return recipes
+    }
+    
 }

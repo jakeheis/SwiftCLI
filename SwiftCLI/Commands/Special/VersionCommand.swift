@@ -10,8 +10,6 @@ import Foundation
 
 public class VersionCommand: CommandType {
     
-    var version = "1.0"
-    
     public var commandName: String  {
         return "version"
     }
@@ -29,7 +27,7 @@ public class VersionCommand: CommandType {
     }
     
     public func execute(arguments arguments: CommandArguments) throws  {
-        print("Version: \(version)")
+        print("Version: \(CLI.appVersion)")
     }
     
 }

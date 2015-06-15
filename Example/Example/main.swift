@@ -8,7 +8,7 @@
 
 import Foundation
 
-CLI.setup(name: "baker", description: "Baker - your own personal baker, here to bake you whatever you desire.")
+CLI.setup(name: "baker", version: "1.1", description: "Baker - your own personal baker, here to bake you whatever you want")
 
 CLI.registerChainableCommand(commandName: "init")
     .withShortDescription("Creates a Bakefile in the current or given directory")
@@ -19,14 +19,10 @@ CLI.registerChainableCommand(commandName: "init")
     .withExecutionBlock {(arguments) in
         let givenDirectory = arguments.optionalArgument("directory")
         
-        let fileName = givenDirectory?.stringByAppendingPathComponent("Bakefile") ?? "./Bakefile"
+        let path = givenDirectory?.stringByAppendingPathComponent("Bakefile") ?? "./Bakefile"
         
-        let dict = ["items": []]
         do {
-            let json = try NSJSONSerialization.dataWithJSONObject(dict, options: NSJSONWritingOptions.PrettyPrinted)
-            guard json.writeToFile(fileName, atomically: true) else {
-                throw CLIError.EmptyError
-            }
+           try Bakefile.create(path: path)
         } catch {
             throw CLIError.Error("The Bakefile was not able to be created")
         }

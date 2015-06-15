@@ -67,6 +67,8 @@ public class CLI: NSObject {
             return CLIResult.Success
         } catch CLIError.Error(let error) {
             printlnError(error)
+        } catch CLIError.EmptyError {
+            // Do nothing
         } catch CommandSetupError.ExitEarly {
             return CLIResult.Success
         } catch CommandSetupError.UnrecognizedOptions {
