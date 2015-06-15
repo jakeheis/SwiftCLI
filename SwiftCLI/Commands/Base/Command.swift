@@ -64,10 +64,6 @@ extension OptionCommandType {
 
 // MARK: Enums
 
-public enum CommandError: ErrorType {
-    case Error(String)
-}
-
 public enum UnrecognizedOptionsPrintingBehavior {
     case PrintNone
     case PrintOnlyUnrecognizedOptions

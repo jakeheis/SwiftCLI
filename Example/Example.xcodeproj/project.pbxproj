@@ -46,6 +46,7 @@
 		EF28EE5F1B2C626F0030ED5C /* CommandMessageGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF28EE5E1B2C626F0030ED5C /* CommandMessageGenerator.swift */; };
 		EF28EE601B2C62E70030ED5C /* CommandMessageGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF28EE5E1B2C626F0030ED5C /* CommandMessageGenerator.swift */; };
 		EF28EE641B2C665B0030ED5C /* CommandMessageGeneratorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF28EE631B2C665B0030ED5C /* CommandMessageGeneratorTests.swift */; };
+		EF96F95E1B2CD96B00454C13 /* Bakefile.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF96F95D1B2CD96B00454C13 /* Bakefile.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -97,6 +98,7 @@
 		EF28EE481B2C5A150030ED5C /* SwiftCLITests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftCLITests.swift; sourceTree = "<group>"; };
 		EF28EE5E1B2C626F0030ED5C /* CommandMessageGenerator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommandMessageGenerator.swift; sourceTree = "<group>"; };
 		EF28EE631B2C665B0030ED5C /* CommandMessageGeneratorTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommandMessageGeneratorTests.swift; sourceTree = "<group>"; };
+		EF96F95D1B2CD96B00454C13 /* Bakefile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Bakefile.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -141,6 +143,7 @@
 				EF28EE081B2C4E7A0030ED5C /* main.swift */,
 				EF28EE321B2C4E9E0030ED5C /* BakeCommand.swift */,
 				EF28EE331B2C4E9E0030ED5C /* RecipeCommand.swift */,
+				EF96F95D1B2CD96B00454C13 /* Bakefile.swift */,
 				EF28EE0F1B2C4E8C0030ED5C /* SwiftCLI */,
 			);
 			path = Example;
@@ -191,10 +194,10 @@
 		EF28EE1A1B2C4E8C0030ED5C /* Base */ = {
 			isa = PBXGroup;
 			children = (
-				EF28EE1B1B2C4E8C0030ED5C /* ChainableCommand.swift */,
 				EF28EE1C1B2C4E8C0030ED5C /* Command.swift */,
-				EF28EE5E1B2C626F0030ED5C /* CommandMessageGenerator.swift */,
 				EF28EE1D1B2C4E8C0030ED5C /* LightweightCommand.swift */,
+				EF28EE1B1B2C4E8C0030ED5C /* ChainableCommand.swift */,
+				EF28EE5E1B2C626F0030ED5C /* CommandMessageGenerator.swift */,
 			);
 			path = Base;
 			sourceTree = "<group>";
@@ -221,11 +224,11 @@
 			isa = PBXGroup;
 			children = (
 				EF28EE441B2C5A150030ED5C /* CommandArgumentsTests.swift */,
-				EF28EE451B2C5A150030ED5C /* Info.plist */,
 				EF28EE461B2C5A150030ED5C /* OptionsTests.swift */,
 				EF28EE471B2C5A150030ED5C /* RouterTests.swift */,
 				EF28EE481B2C5A150030ED5C /* SwiftCLITests.swift */,
 				EF28EE631B2C665B0030ED5C /* CommandMessageGeneratorTests.swift */,
+				EF28EE451B2C5A150030ED5C /* Info.plist */,
 			);
 			name = SwiftCLITests;
 			path = ../SwiftCLITests;
@@ -352,6 +355,7 @@
 				EF28EE251B2C4E8C0030ED5C /* Options.swift in Sources */,
 				EF28EE5F1B2C626F0030ED5C /* CommandMessageGenerator.swift in Sources */,
 				EF28EE2B1B2C4E8C0030ED5C /* ChainableCommand.swift in Sources */,
+				EF96F95E1B2CD96B00454C13 /* Bakefile.swift in Sources */,
 				EF28EE091B2C4E7A0030ED5C /* main.swift in Sources */,
 				EF28EE341B2C4E9E0030ED5C /* BakeCommand.swift in Sources */,
 				EF28EE291B2C4E8C0030ED5C /* Extensions.swift in Sources */,
@@ -529,6 +533,7 @@
 				EF28EE0E1B2C4E7A0030ED5C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		EF28EE3F1B2C59CB0030ED5C /* Build configuration list for PBXNativeTarget "SwiftCLITests" */ = {
 			isa = XCConfigurationList;
@@ -537,6 +542,7 @@
 				EF28EE411B2C59CB0030ED5C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

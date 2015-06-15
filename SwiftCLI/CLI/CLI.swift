@@ -12,35 +12,30 @@ public class CLI: NSObject {
     
     // MARK: - Information
     
-    private struct CLIStatic {
-        static var appName = ""
-        static var appVersion = "1.0"
-        static var appDescription = ""
-        
-        static var commands: [CommandType] = []
-        static var helpCommand: HelpCommand? = HelpCommand()
-        static var versionComand: VersionCommand? = VersionCommand()
-        static var defaultCommand: CommandType = CLIStatic.helpCommand!
-    }
+    static var appName = ""
+    static var appVersion = "1.0"
+    static var appDescription = ""
+    
+    private static var commands: [CommandType] = []
+    
+    static var helpCommand: HelpCommand? = HelpCommand()
+    static var versionComand: VersionCommand? = VersionCommand()
+    static var defaultCommand: CommandType = helpCommand!
+    
+    static var routerConfig: Router.Config?
+    
+    // MARK: -
     
     public class func setup(name name: String, version: String = "1.0", description: String = "") {
-        CLIStatic.appName = name
-        CLIStatic.appVersion = version
-        CLIStatic.appDescription = description
-    }
-    
-    public class func appName() -> String {
-        return CLIStatic.appName
-    }
-    
-    public class func appDescription() -> String {
-        return CLIStatic.appDescription
+        appName = name
+        appVersion = version
+        appDescription = description
     }
     
     // MARK: - Registering commands
     
     public class func registerCommand(command: CommandType) {
-        CLIStatic.commands.append(command)
+        commands.append(command)
     }
     
     public class func registerCommands(commands: [CommandType]) {
@@ -51,18 +46,6 @@ public class CLI: NSObject {
         let chainable = ChainableCommand(commandName: commandName)
         registerCommand(chainable)
         return chainable
-    }
-    
-    public class func registerCustomHelpCommand(helpCommand: HelpCommand?) {
-        CLIStatic.helpCommand = helpCommand
-    }
-    
-    public class func registerCustomVersionCommand(versionCommand: VersionCommand?) {
-        CLIStatic.versionComand = versionCommand
-    }
-    
-    public class func registerDefaultCommand(command: CommandType) {
-        CLIStatic.defaultCommand = command
     }
     
     // MARK: - Go
@@ -82,23 +65,13 @@ public class CLI: NSObject {
             try command.execute(arguments: arguments)
             
             return CLIResult.Success
-        } catch Router.RouterError.CommandNotFound {
-            printlnError("Command not found")
-        } catch Router.RouterError.ArgumentError {
-            printlnError("Router failed")
+        } catch CLIError.Error(let error) {
+            printlnError(error)
         } catch CommandSetupError.ExitEarly {
             return CLIResult.Success
         } catch CommandSetupError.UnrecognizedOptions {
             // Do nothing
-        } catch CommandArguments.Error.ParsingError(let error) {
-            if !error.isEmpty {
-                printlnError(error)
-            }
-        } catch CommandError.Error(let error) {
-            if !error.isEmpty {
-                printlnError(error)
-            }
-        } catch {
+        } catch _ {
             printlnError("An error occurred")
         }
         
@@ -108,17 +81,16 @@ public class CLI: NSObject {
     // MARK: - Privates
     
     class private func routeCommand(arguments arguments: RawArguments) throws -> CommandType {
-        var allCommands = CLIStatic.commands
-        if let hc = CLIStatic.helpCommand {
-            hc.allCommands = CLIStatic.commands
+        var allCommands = commands
+        if let hc = helpCommand {
+            hc.allCommands = commands
             allCommands.append(hc)
         }
-        if let vc = CLIStatic.versionComand {
+        if let vc = versionComand {
             allCommands.append(vc)
         }
         
-        let router = Router(commands: allCommands, arguments: arguments, defaultCommand: CLIStatic.defaultCommand)
-        
+        let router = Router(commands: allCommands, arguments: arguments, defaultCommand: defaultCommand, config: routerConfig)        
         return try router.route()
     }
     
@@ -134,7 +106,7 @@ public class CLI: NSObject {
             optionCommand.setupOptions(options)
             options.recognizeOptionsInArguments(arguments)
             
-            if options.exitEarly {
+            if options.exitEarly { // True if -h flag given (show help but exit early before executing command)
                 throw CommandSetupError.ExitEarly
             }
             
@@ -153,6 +125,13 @@ public class CLI: NSObject {
         return try CommandArguments.fromRawArguments(arguments, signature: commandSignature)
     }
     
+}
+
+// MARK: -
+
+public enum CLIError: ErrorType {
+    case Error(String)
+    case EmptyError
 }
 
 public typealias CLIResult = Int32

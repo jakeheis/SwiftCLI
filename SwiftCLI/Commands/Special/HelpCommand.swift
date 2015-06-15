@@ -33,7 +33,7 @@ public class HelpCommand: CommandType {
     }
     
     public func execute(arguments arguments: CommandArguments) throws {
-        print("\(CLI.appDescription())\n")
+        print("\(CLI.appDescription)\n")
         print("Available commands: ")
 
         for command in allCommands {

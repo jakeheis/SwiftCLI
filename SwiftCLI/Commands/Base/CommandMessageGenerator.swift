@@ -11,7 +11,7 @@ import Foundation
 public class CommandMessageGenerator {
     
     class func generateUsageStatement(command command: CommandType, routedName: String?, options: Options?) -> String {
-        var message = "Usage: \(CLI.appName())"
+        var message = "Usage: \(CLI.appName)"
         
         let name = routedName ?? command.commandName
         if !name.isEmpty {

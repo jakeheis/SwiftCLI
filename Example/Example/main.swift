@@ -25,10 +25,10 @@ CLI.registerChainableCommand(commandName: "init")
         do {
             let json = try NSJSONSerialization.dataWithJSONObject(dict, options: NSJSONWritingOptions.PrettyPrinted)
             guard json.writeToFile(fileName, atomically: true) else {
-                throw CommandError.Error("")
+                throw CLIError.EmptyError
             }
         } catch {
-            throw CommandError.Error("The Bakefile was not able to be created")
+            throw CLIError.Error("The Bakefile was not able to be created")
         }
     }
 
@@ -68,9 +68,4 @@ func createListCommand() -> CommandType {
 CLI.registerCommand(createListCommand())
 
 let result = CLI.go()
-
-func cliExit(result: CLIResult) {
-    exit(result)
-}
-
-cliExit(result) // Get around Swift warning
+exit(result)

@@ -8,21 +8,35 @@
 
 import Foundation
 
-class Router {
+public class Router {
+    
+    public struct Config {
+        public var enableShortcutRouting: Bool
+        
+        init() {
+            enableShortcutRouting = true
+        }
+        
+        init(enableShortcutRouting: Bool) {
+            self.enableShortcutRouting = enableShortcutRouting
+        }
+    }
     
     private let commands: [CommandType]
     private let arguments: RawArguments
     private let defaultCommand: CommandType
     
-    enum RouterError: ErrorType {
-        case CommandNotFound
-        case ArgumentError
-    }
+    private var config: Config
     
-    init(commands: [CommandType], arguments: RawArguments, defaultCommand: CommandType) {
+    static let CommandNotFoundError = CLIError.Error("Command not found")
+    static let ArgumentError = CLIError.Error("Router failed")
+    
+    init(commands: [CommandType], arguments: RawArguments, defaultCommand: CommandType, config: Config?) {
         self.commands = commands
         self.arguments = arguments
         self.defaultCommand = defaultCommand
+        
+        self.config = config ?? Config()
     }
     
     func route() throws -> CommandType {
@@ -39,16 +53,16 @@ class Router {
         var command: CommandType?
         
         guard let commandSearchName = arguments.firstArgumentOfType(.Unclassified) else {
-            throw RouterError.ArgumentError
+            throw Router.ArgumentError
         }
         
         if commandSearchName.hasPrefix("-") {
-            command = commands.filter({ $0.commandShortcut == commandSearchName }).first
-            
-            if command == nil {
-                command = defaultCommand
-            } else {
+            if let shortcutCommand = commands.filter({ $0.commandShortcut == commandSearchName }).first
+                where config.enableShortcutRouting {
+                command = shortcutCommand
                 arguments.classifyArgument(argument: commandSearchName, type: .CommandName)
+            } else {
+                command = defaultCommand
             }
         } else {
             command = commands.filter { $0.commandName == commandSearchName }.first
@@ -56,7 +70,7 @@ class Router {
         }
         
         guard let foundCommand = command else {
-            throw RouterError.CommandNotFound
+            throw Router.CommandNotFoundError
         }
         
         return foundCommand

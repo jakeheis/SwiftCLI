@@ -10,6 +10,9 @@ import Foundation
 
 class RecipeCommand: CommandType {
     
+    static let BakefileNotFoundError = CLIError.Error("The Bakefile could not be found")
+    static let ParsingError = CLIError.Error("The Bakefile could not be parsed")
+    
     var commandName: String {
         return "recipe"
     }
@@ -24,7 +27,7 @@ class RecipeCommand: CommandType {
     
     func execute(arguments arguments: CommandArguments) throws {
         guard let data = NSData(contentsOfFile: "./Bakefile") else {
-            throw CommandError.Error("No Bakefile could be found in the current directory. Run 'baker init' before this command.")
+            throw RecipeCommand.BakefileNotFoundError
         }
         
         var bakefile: NSMutableDictionary
@@ -34,10 +37,10 @@ class RecipeCommand: CommandType {
             if let mutBakefile = JSONBakefile.mutableCopy() as? NSMutableDictionary {
                 bakefile = mutBakefile
             } else {
-                throw CommandError.Error("")
+                throw CLIError.EmptyError
             }
         } catch {
-            throw CommandError.Error("The Bakefile could not be parsed")
+            throw RecipeCommand.ParsingError
         }
         
         let name = Input.awaitInput(message: "Name of your recipe: ")
@@ -53,10 +56,10 @@ class RecipeCommand: CommandType {
         do {
             let finalData = try NSJSONSerialization.dataWithJSONObject(bakefile, options: .PrettyPrinted)
             guard finalData.writeToFile("./Bakefile", atomically: true) else {
-                throw CommandError.Error("")
+                throw CLIError.EmptyError
             }
         } catch {
-            throw CommandError.Error("The Bakefile could not be written to.")
+            throw CLIError.Error("The Bakefile could not be written to.")
         }
     }
    

@@ -14,8 +14,8 @@ class BakeCommand: OptionCommandType {
     private var silently = false
     private var topping: String? = nil
     
-    static let ParsingError = CommandError.Error("The Bakefile could not be parsed")
-    static let BakefileNotFoundError = CommandError.Error("The Bakefile could not be parsed")
+    static let ParsingError = CLIError.Error("The Bakefile could not be parsed")
+    static let BakefileNotFoundError = CLIError.Error("The Bakefile could not be found")
     
     var commandName: String  {
         return "bake"

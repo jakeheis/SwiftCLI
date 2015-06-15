@@ -87,11 +87,35 @@ class RouterTests: XCTestCase {
         } catch {}
     }
     
+    func testEnableShortcutRouting() {
+        let enabledArgs = RawArguments(argumentString: "tester -b")
+        let disabledArgs = RawArguments(argumentString: "tester -b")
+        
+        let enabledConfig = Router.Config(enableShortcutRouting: true)
+        let disabledConfig = Router.Config(enableShortcutRouting: false)
+        
+        let enabledRouter = createRouter(arguments: enabledArgs, config: enabledConfig)
+        let disabledRouter = createRouter(arguments: disabledArgs, config: disabledConfig)
+        
+        do {
+            let enabledCommand = try enabledRouter.route()
+            let disabledCommand = try disabledRouter.route()
+            
+            XCTAssertEqual(enabledCommand.commandName, betaCommand.commandName, "Router with enabled shortcut routing should route to the command with the given shortcut")
+            XCTAssertEqual(disabledCommand.commandName, defaultCommand.commandName, "Router with disabled shortcut routing should route to the default command")
+            
+            XCTAssertEqual(enabledArgs.unclassifiedArguments(), [], "Enabled router should pass on no arguments to the matched command")
+            XCTAssertEqual(disabledArgs.unclassifiedArguments(), ["-b"], "Disabled router should pass the flag on to the default command")
+        } catch {
+            XCTFail("Router should not fail when the command exists")
+        }
+    }
+    
     // MARK: - Helper
     
-    private func createRouter(arguments arguments: RawArguments) -> Router {
+    private func createRouter(arguments arguments: RawArguments, config: Router.Config? = nil) -> Router {
         let commands = [alphaCommand, betaCommand, defaultCommand] as [CommandType]
-        return Router(commands: commands, arguments: arguments, defaultCommand: defaultCommand)
+        return Router(commands: commands, arguments: arguments, defaultCommand: defaultCommand, config: config)
     }
     
 }
