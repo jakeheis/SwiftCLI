@@ -10,7 +10,7 @@ import Foundation
 
 public class ChainableCommand: LightweightCommand {
     
-    override init(commandName: String) {
+    public override init(commandName: String) {
         super.init(commandName: commandName)
     }
     
