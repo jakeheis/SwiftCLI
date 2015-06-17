@@ -10,9 +10,6 @@ import Foundation
 
 class RecipeCommand: CommandType {
     
-    static let BakefileNotFoundError = CLIError.Error("The Bakefile could not be found")
-    static let ParsingError = CLIError.Error("The Bakefile could not be parsed")
-    
     var commandName: String {
         return "recipe"
     }
@@ -27,7 +24,6 @@ class RecipeCommand: CommandType {
     
     func execute(arguments arguments: CommandArguments) throws {
         let bakefile = try Bakefile(path: "./Bakefile")
-
         
         let name = Input.awaitInput(message: "Name of your recipe: ")
         let cookTime = Input.awaitInt(message: "Cook time: ")
