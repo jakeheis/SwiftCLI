@@ -10,12 +10,13 @@ import Foundation
 
 public class Router {
     
+    /// Optional configuration for the Router
     public struct Config {
-        public var enableShortcutRouting: Bool
         
-        init() {
-            enableShortcutRouting = true
-        }
+        /// Allow shortcut flags to be routed to commands; e.g. route -h to the HelpCommand
+        public var enableShortcutRouting: Bool = true
+        
+        init() {}
         
         init(enableShortcutRouting: Bool) {
             self.enableShortcutRouting = enableShortcutRouting

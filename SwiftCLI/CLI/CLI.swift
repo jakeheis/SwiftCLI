@@ -24,24 +24,47 @@ public class CLI: NSObject {
     
     static var routerConfig: Router.Config?
     
-    // MARK: -
+    // MARK: - Setup
     
+    /**
+        Sets the CLI up with basic information
+    
+        - Parameter name: name of the app, printed in the help message and command usage statements
+        - Parameter version: version of the app, printed by the VersionCommand
+        - Parameter description: description of the app, printed in the help message
+    */
     public class func setup(name name: String, version: String = "1.0", description: String = "") {
         appName = name
         appVersion = version
         appDescription = description
     }
     
-    // MARK: - Registering commands
+    /**
+        Registers a command with the CLI for routing and execution. All commands must be registered 
+        with this method or its siblings before calling `CLI.go()`
     
+        - Parameter command: the command to be registered
+    */
     public class func registerCommand(command: CommandType) {
         commands.append(command)
     }
     
+    /**
+        Registers a group of commands with the CLI for routing and execution. All commands must be registered
+        with this method or its siblings before calling `CLI.go()`
+    
+        - Parameter commands: the commands to be registered
+    */
     public class func registerCommands(commands: [CommandType]) {
         commands.each { self.registerCommand($0) }
     }
     
+    /**
+        Registers a chainable command with the CLI for routing and execution.
+    
+        - Parameter commandName: the name of the new chainable command
+        - Returns: a new chainable command for immediate chaining
+    */
     public class func registerChainableCommand(commandName commandName: String) -> ChainableCommand {
         let chainable = ChainableCommand(commandName: commandName)
         registerCommand(chainable)
@@ -50,10 +73,27 @@ public class CLI: NSObject {
     
     // MARK: - Go
     
+    /**
+        Kicks off the entire CLI process, routing to and executing the command specified by the passed arguments. 
+        Uses the arguments passed in the command line.
+    
+        - SeeAlso: `debugGoWithArgumentString()` when debugging
+        - Returns: a CLIResult (Int) representing the success of the CLI in routing to and executing the correct
+                    command. Usually should be passed to `exit(result)`
+    */
     public class func go() -> CLIResult {
        return goWithArguments(RawArguments())
     }
     
+    /**
+        Kicks off the entire CLI process, routing to and executing the command specified by the passed arguments.
+        Uses the arguments passed in as an argument.
+    
+        - Parameter argumentString: the arguments to use when running the CLI
+        - SeeAlso: `go()` when running from the command line
+        - Returns: a CLIResult (Int) representing the success of the CLI in routing to and executing the correct
+                    command. Usually should be passed to `exit(result)`
+    */
     public class func debugGoWithArgumentString(argumentString: String) -> CLIResult {
         return goWithArguments(RawArguments(argumentString: argumentString))
     }
