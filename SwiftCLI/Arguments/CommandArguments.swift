@@ -99,6 +99,11 @@ public class CommandArguments {
     
     // MARK: - Subscripting
     
+    /**
+        Generic subscripting of arguments
+    
+        - SeeAlso: Typesafe shortcuts such as `args.requiredArguments("arg")`
+    */
     public subscript(key: String) -> AnyObject? {
         get {
             return keyedArguments[key]
@@ -110,10 +115,22 @@ public class CommandArguments {
     
     // MARK: - Typesafe shortcuts
     
+    /**
+        Subscripting shortcut for arguments guaranteed to be present. Only use for arguments
+        in the command signature of the form `<requiredArgument>`
+    
+        - Parameter key: the name of the argument as seen in the command signature
+    */
     public func requiredArgument(key: String) -> String {
         return optionalArgument(key)!
     }
     
+    /**
+        Subscripting shortcut for arguments sometimes present. Only use for arguments
+        in the command signature of the form `[<optionalArgument>]`
+    
+        - Parameter key: the name of the argument as seen in the command signature
+    */
     public func optionalArgument(key: String) -> String? {
         if let arg = keyedArguments[key] as? String {
             return arg
@@ -121,10 +138,22 @@ public class CommandArguments {
         return nil
     }
     
+    /**
+        Subscripting shortcut for a collected argument guaranteed to be present. Only use
+        for arguments in the command signature of the form `<requiredArgument> ...`
+    
+        - Parameter key: the name of the argument as seen in the command signature
+    */
     public func requiredCollectedArgument(key: String) -> [String] {
         return optionalCollectedArgument(key)!
     }
     
+    /**
+        Subscripting shortcut for a collected argument sometimes present. Only use
+        for arguments in the command signature of the form `[<optionalArgument>] ...`
+    
+        - Parameter key: the name of the argument as seen in the command signature
+    */
     public func optionalCollectedArgument(key: String) -> [String]? {
         if let arg = keyedArguments[key] as? [String] {
             return arg

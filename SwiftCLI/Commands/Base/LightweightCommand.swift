@@ -8,6 +8,8 @@
 
 import Foundation
 
+/// Can be instantiated and configured as a fully functional command rather
+/// than manually implementing CommandType. Should only be used for simple commands
 public class LightweightCommand: OptionCommandType {
     
     public var commandName: String = ""

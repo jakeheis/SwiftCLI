@@ -79,21 +79,40 @@ public class Options {
     
     // MARK: - Adding options
     
-    func onFlags(flags: [String], usage: String = "", block: FlagOption.FlagBlock?) {
+    /**
+        Registers a block to be called on the recognition of certain flags. Usually best
+        to pair a single letter flag with a more descriptive flag, e.g. [-a, --all]
+    
+        - Parameter flags: the flags to be recognized
+        - Parameter usage: the usage of these flags, printed in the command usage statement
+        - Parameter block: the block to be called upon recognition of the flags
+    */
+    public func onFlags(flags: [String], usage: String = "", block: FlagOption.FlagBlock?) {
         addFlagOption(FlagOption(flags: flags, usage: usage, block: block))
     }
     
-    func addFlagOption(flagOption: FlagOption) {
+    /**
+        Registers a block to be called on the recognition of certain keys. Keys have an associated value
+        recognized as the argument following the key. Usually best to pair a single letter key with a more 
+        descriptive key, e.g. [-m, --message]
+    
+        - Parameter keys: the keys to be recognized
+        - Parameter usage: the usage of these keys, printed in the command usage statement
+        - Parameter valueSignature: a name for the associated value, only used in the command usage statement where it
+                                    takes the form "-m, --myKey [valueSignature]"
+        - Parameter block: the block to be called upon recognition of the keys
+    */
+    public func onKeys(keys: [String], usage: String = "", valueSignature: String = "value", block: KeyOption.KeyBlock?) {
+        addKeyOption(KeyOption(keys: keys, usage: usage, valueSignature: valueSignature, block: block))
+    }
+    
+    private func addFlagOption(flagOption: FlagOption) {
         flagOptions[flagOption.flags.first!] = flagOption
         
         flagOption.flags.each { self.allFlagOptions[$0] = flagOption }
     }
     
-    func onKeys(keys: [String], usage: String = "", valueSignature: String = "value", block: KeyOption.KeyBlock?) {
-        addKeyOption(KeyOption(keys: keys, usage: usage, valueSignature: valueSignature, block: block))
-    }
-    
-    func addKeyOption(keyOption: KeyOption) {
+    private func addKeyOption(keyOption: KeyOption) {
         keyOptions[keyOption.keys.first!] = keyOption
         
         keyOption.keys.each { self.allKeyOptions[$0] = keyOption }

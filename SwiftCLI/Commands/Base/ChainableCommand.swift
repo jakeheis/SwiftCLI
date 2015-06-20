@@ -8,6 +8,8 @@
 
 import Foundation
 
+/// A chainable interface to a CommandType; all functions return the object itself for easy chaining.
+/// Should only be used for simple commands.
 public class ChainableCommand: LightweightCommand {
     
     public override init(commandName: String) {
