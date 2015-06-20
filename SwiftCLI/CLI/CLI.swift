@@ -106,7 +106,7 @@ public class CLI: NSObject {
             
             return CLIResult.Success
         } catch CLIError.Error(let error) {
-            printlnError(error)
+            printError(error)
         } catch CLIError.EmptyError {
             // Do nothing
         } catch CommandSetupError.ExitEarly {
@@ -114,7 +114,7 @@ public class CLI: NSObject {
         } catch CommandSetupError.UnrecognizedOptions {
             // Do nothing
         } catch _ {
-            printlnError("An error occurred")
+            printError("An error occurred")
         }
         
         return CLIResult.Error
@@ -154,7 +154,7 @@ public class CLI: NSObject {
             
             if options.misusedOptionsPresent() {
                 if let message = CommandMessageGenerator.generateMisusedOptionsStatement(command: optionCommand, options: options) {
-                    printlnError(message)
+                    printError(message)
                 }
                 if optionCommand.failOnUnrecognizedOptions {
                     throw CommandSetupError.UnrecognizedOptions
