@@ -95,6 +95,7 @@ public class CLI: NSObject {
                     command. Usually should be passed to `exit(result)`
     */
     public class func debugGoWithArgumentString(argumentString: String) -> CLIResult {
+        print("[Debug Mode]")
         return goWithArguments(RawArguments(argumentString: argumentString))
     }
     

@@ -8,7 +8,7 @@
 
 import Foundation
 
-class RawArguments {
+class RawArguments: CustomStringConvertible {
     
     enum RawArgumentType {
         case AppName
@@ -71,6 +71,10 @@ class RawArguments {
             return arguments[index + 1]
         }
         return nil
+    }
+    
+    var description: String {
+        return arguments.description
     }
     
 }
