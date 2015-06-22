@@ -20,22 +20,24 @@ public class LightweightCommand: OptionCommandType {
     public var failOnUnrecognizedOptions = true
     public var unrecognizedOptionsPrintingBehavior: UnrecognizedOptionsPrintingBehavior = .PrintAll
     
-    public typealias ExecutionBlock = (arguments: CommandArguments) throws -> ()
-    public typealias OptionsSetupBlock = (command: OptionCommandType, options: Options) -> ()
+    public typealias ExecutionBlock = (arguments: CommandArguments, configuration: NSDictionary) throws -> ()
+    public typealias OptionsSetupBlock = (command: OptionCommandType, options: Options, configuration: NSMutableDictionary) -> ()
     
     public var executionBlock: ExecutionBlock? = nil
     public var optionsSetupBlock: OptionsSetupBlock? = nil
+    
+    var configuration: NSMutableDictionary = [:]
     
     public init(commandName: String) {
         self.commandName = commandName
     }
     
     public func setupOptions(options: Options) {
-        optionsSetupBlock?(command: self, options: options)
+        optionsSetupBlock?(command: self, options: options, configuration: configuration)
     }
     
     public func execute(arguments arguments: CommandArguments) throws {
-        try executionBlock?(arguments: arguments)
+        try executionBlock?(arguments: arguments, configuration: configuration)
     }
     
 }
