@@ -146,7 +146,7 @@ public class CLI: NSObject {
         if let optionCommand = command as? OptionCommandType {
             let options = Options()
           
-            optionCommand.setupOptions(options)
+            optionCommand.internalSetupOptions(options)
             options.recognizeOptionsInArguments(arguments)
             
             if options.exitEarly { // True if -h flag given (show help but exit early before executing command)

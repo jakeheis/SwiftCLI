@@ -44,6 +44,9 @@ public protocol OptionCommandType: CommandType {
     /// The output behavior of the command when passed unrecognized options. Default is .PrintAll
     var unrecognizedOptionsPrintingBehavior: UnrecognizedOptionsPrintingBehavior { get }
     
+    /// Whether help for the command should be shown when -h is passed. Default is true.
+    var helpOnHFlag: Bool { get }
+    
     /**
         Where the command should configure all possible Options for the command
     
@@ -67,21 +70,26 @@ extension OptionCommandType {
     
     public var unrecognizedOptionsPrintingBehavior: UnrecognizedOptionsPrintingBehavior { return .PrintAll }
     
+    public var helpOnHFlag: Bool { return true }
+    
 }
 
 // MARK: Additional functionality
 
 extension OptionCommandType {
     
-    /// Adds the default help flag and functionality to the given options instance
-    public func addDefaultHelpFlag(options: Options) {
-        let helpFlags = ["-h", "--help"]
+    func internalSetupOptions(options: Options) {
+        setupOptions(options)
         
-        options.onFlags(helpFlags, usage: "Show help information for this command") {(flag) in
-            print(CommandMessageGenerator.generateUsageStatement(command: self, routedName: nil, options: options))
+        if helpOnHFlag {
+            let helpFlags = ["-h", "--help"]
+            
+            options.onFlags(helpFlags, usage: "Show help information for this command") {(flag) in
+                print(CommandMessageGenerator.generateUsageStatement(command: self, routedName: nil, options: options))
+            }
+
+            options.exitEarlyOptions += helpFlags
         }
-        
-        options.exitEarlyOptions += helpFlags
     }
     
 }
