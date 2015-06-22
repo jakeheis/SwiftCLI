@@ -20,7 +20,7 @@ class CommandMessageGeneratorTests: XCTestCase {
 
     func testUsageStatementGeneration() {
         let options = Options()
-        command.setupOptions(options)
+        command.internalSetupOptions(options)
         
         let message = CommandMessageGenerator.generateUsageStatement(command: command, routedName: nil, options: options)
         
@@ -38,7 +38,7 @@ class CommandMessageGeneratorTests: XCTestCase {
     
     func testMisusedOptionsStatementGeneration() {
         let options = Options()
-        command.setupOptions(options)
+        command.internalSetupOptions(options)
         
         let arguments = RawArguments(argumentString: "tester test -s -a --times")
         arguments.classifyArgument(argument: "tester", type: .AppName)

@@ -38,8 +38,6 @@ class BakeCommand: OptionCommandType {
         options.onKeys(["-t", "--with-topping"], usage: "Adds a topping to the baked good", valueSignature: "topping") {(key, value) in
             self.topping = value
         }
-
-        addDefaultHelpFlag(options)
     }
     
     func execute(arguments arguments: CommandArguments) throws  {

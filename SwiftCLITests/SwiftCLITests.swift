@@ -16,16 +16,15 @@ func createTestCommand(completion: ((executionString: String) -> ())? = nil) -> 
     
     return ChainableCommand(commandName: "test")
         .withSignature("<testName> [<testerName>]")
-        .withOptionsSetup {(command, options) in
+        .withOptionsSetup {(options, configuration) in
             options.onFlags(["-s", "--silent"], usage: "Silence all test output") {(flag) in
                 silentFlag = true
             }
             options.onKeys(["-t", "--times"], usage: "Number of times to run the test", valueSignature: "times") {(key, value) in
                 times = Int(value)!
             }
-            command.addDefaultHelpFlag(options)
         }
-        .withExecutionBlock {(arguments) in
+        .withExecutionBlock {(arguments, configuration) in
             let testName = arguments.requiredArgument("testName")
             let testerName = arguments.optionalArgument("testerName") ?? "Tester"
             executionString = "\(testerName) will test \(testName), \(times) times"

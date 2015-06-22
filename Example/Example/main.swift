@@ -15,10 +15,7 @@ CLI.setup(name: "baker", version: "1.1", description: "Baker - your own personal
 CLI.registerChainableCommand(commandName: "init")
     .withShortDescription("Creates a Bakefile in the current or given directory")
     .withSignature("[<directory>]")
-    .withOptionsSetup {(command, options) in
-        command.addDefaultHelpFlag(options)
-    }
-    .withExecutionBlock {(arguments) in
+    .withExecutionBlock {(arguments, configuration) in
         let givenDirectory = arguments.optionalArgument("directory")
         
         let path = givenDirectory?.stringByAppendingPathComponent("Bakefile") ?? "./Bakefile"
@@ -42,19 +39,18 @@ func createListCommand() -> CommandType {
     let listCommand = LightweightCommand(commandName: "list")
     listCommand.commandShortDescription = "Lists some possible items the baker can bake for you."
     
-    var showExoticFoods = false
-    
-    listCommand.optionsSetupBlock = {(command, options) in
+    listCommand.optionsSetupBlock = {(options, configuration) in
         options.onFlags(["-e", "--exotics-included"]) {(flag) in
-            showExoticFoods = true
+            configuration["showExoticFoods"] = true
         }
-        command.addDefaultHelpFlag(options)
     }
     
-    listCommand.executionBlock = {(arguments) in
+    listCommand.executionBlock = {(arguments, configuration) in
         var foods = ["bread", "cookies", "cake"]
         
-        if showExoticFoods {
+        let showExotics = configuration["showExoticFoods"] as? Bool ?? false
+        
+        if showExotics {
             foods += ["exotic baker item 1", "exotic baker item 2"]
         }
         
