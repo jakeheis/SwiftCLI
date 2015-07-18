@@ -10,8 +10,6 @@ import Foundation
 
 public class VersionCommand: Command {
     
-    var version = "1.0"
-    
     override public func commandName() -> String  {
         return "version"
     }
@@ -25,7 +23,7 @@ public class VersionCommand: Command {
     }
     
     override public func execute() -> ExecutionResult  {
-        println("Version: \(version)")
+        println("Version: \(CLI.appVersion())")
         
         return success()
     }

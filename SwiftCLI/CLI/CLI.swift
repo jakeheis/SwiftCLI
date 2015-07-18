@@ -23,10 +23,10 @@ public class CLI: NSObject {
         static var defaultCommand: Command = CLIStatic.helpCommand!
     }
     
-    public class func setup(#name: String, version: String = "1.0", description: String = "") {
+    public class func setup(#name: String, version: String? = nil, description: String? = nil) {
         CLIStatic.appName = name
-        CLIStatic.appVersion = version
-        CLIStatic.appDescription = description
+        if let v = version     { CLIStatic.appVersion = v }
+        if let d = description { CLIStatic.appDescription = d }
     }
     
     public class func appName() -> String {
@@ -35,6 +35,10 @@ public class CLI: NSObject {
     
     public class func appDescription() -> String {
         return CLIStatic.appDescription
+    }
+
+    public class func appVersion() -> String {
+        return CLIStatic.appVersion
     }
     
     // MARK: - Registering commands
