@@ -19,7 +19,7 @@ public class CLI: NSObject {
         
         static var commands: [Command] = []
         static var helpCommand: HelpCommand? = HelpCommand()
-        static var versionComand: VersionCommand? = VersionCommand()
+        static var versionCommand: VersionCommand? = VersionCommand()
         static var defaultCommand: Command = CLIStatic.helpCommand!
     }
     
@@ -62,7 +62,7 @@ public class CLI: NSObject {
     }
     
     public class func registerCustomVersionCommand(versionCommand: VersionCommand?) {
-        CLIStatic.versionComand = versionCommand
+        CLIStatic.versionCommand = versionCommand
     }
     
     public class func registerDefaultCommand(command: Command) {
@@ -110,7 +110,7 @@ public class CLI: NSObject {
             hc.allCommands = CLIStatic.commands
             allCommands.append(hc)
         }
-        if let vc = CLIStatic.versionComand {
+        if let vc = CLIStatic.versionCommand {
             allCommands.append(vc)
         }
         
