@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		EF8C1C701ACCFB79008AB225 /* CommandArgumentsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFEB0BD1198DD0E90040AFF0 /* CommandArgumentsTests.swift */; };
+		EF8D198F1B5D8C9E00C38AB4 /* Result.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF8D198E1B5D8C9E00C38AB4 /* Result.swift */; };
+		EF8D19901B5D8C9E00C38AB4 /* Result.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF8D198E1B5D8C9E00C38AB4 /* Result.swift */; };
 		EF92BF71198AEF7900BAA12B /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF92BF70198AEF7900BAA12B /* main.swift */; };
 		EFA57FDF19A151BC00340DD8 /* RecipeCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFA57FDE19A151BC00340DD8 /* RecipeCommand.swift */; };
 		EFCC4C5F1A5D8B310043A606 /* RouterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFCC4C5E1A5D8B310043A606 /* RouterTests.swift */; };
@@ -39,8 +41,6 @@
 		EFCE40DD1ADB0FDA00A69BC9 /* RawArguments.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFCE40B31ADB0F4D00A69BC9 /* RawArguments.swift */; };
 		EFCE40DE1ADB0FDA00A69BC9 /* Input.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFCE40C21ADB0F4D00A69BC9 /* Input.swift */; };
 		EFCE40DF1ADB0FDA00A69BC9 /* Output.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFCE40C31ADB0F4D00A69BC9 /* Output.swift */; };
-		EFCE40E31ADB127A00A69BC9 /* Result.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFCE40E21ADB127A00A69BC9 /* Result.swift */; };
-		EFCE40E41ADB127A00A69BC9 /* Result.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFCE40E21ADB127A00A69BC9 /* Result.swift */; };
 		EFCF34761997FF41008691D1 /* OptionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFCF34751997FF41008691D1 /* OptionsTests.swift */; };
 		EFEB0B55198C4D200040AFF0 /* BakeCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFEB0B54198C4D200040AFF0 /* BakeCommand.swift */; };
 		EFEB0BCA198DCEDA0040AFF0 /* SwiftCLITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFEB0BC9198DCEDA0040AFF0 /* SwiftCLITests.swift */; };
@@ -84,6 +84,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		EF8D198E1B5D8C9E00C38AB4 /* Result.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Result.swift; sourceTree = "<group>"; };
 		EF92BF6D198AEF7900BAA12B /* Example */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Example; sourceTree = BUILT_PRODUCTS_DIR; };
 		EF92BF70198AEF7900BAA12B /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		EFA57FDE19A151BC00340DD8 /* RecipeCommand.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RecipeCommand.swift; sourceTree = "<group>"; };
@@ -102,7 +103,6 @@
 		EFCE40C01ADB0F4D00A69BC9 /* VersionCommand.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VersionCommand.swift; sourceTree = "<group>"; };
 		EFCE40C21ADB0F4D00A69BC9 /* Input.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Input.swift; sourceTree = "<group>"; };
 		EFCE40C31ADB0F4D00A69BC9 /* Output.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Output.swift; sourceTree = "<group>"; };
-		EFCE40E21ADB127A00A69BC9 /* Result.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Result.swift; path = ../Vendor/LlamaKit/LlamaKit/Result.swift; sourceTree = "<group>"; };
 		EFCF34751997FF41008691D1 /* OptionsTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OptionsTests.swift; sourceTree = "<group>"; };
 		EFEB0B54198C4D200040AFF0 /* BakeCommand.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BakeCommand.swift; sourceTree = "<group>"; };
 		EFEB0BC5198DCEDA0040AFF0 /* SwiftCLITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SwiftCLITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -129,6 +129,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		EF8D198D1B5D8C9E00C38AB4 /* Result */ = {
+			isa = PBXGroup;
+			children = (
+				EF8D198E1B5D8C9E00C38AB4 /* Result.swift */,
+			);
+			path = Result;
+			sourceTree = "<group>";
+		};
 		EF92BF64198AEF7900BAA12B = {
 			isa = PBXGroup;
 			children = (
@@ -165,7 +173,7 @@
 				EFCE40B91ADB0F4D00A69BC9 /* Commands */,
 				EFCE40B01ADB0F4D00A69BC9 /* Arguments */,
 				EFCE40C11ADB0F4D00A69BC9 /* IO */,
-				EFCE40E11ADB126900A69BC9 /* Vendor */,
+				EF8D198D1B5D8C9E00C38AB4 /* Result */,
 			);
 			name = SwiftCLI;
 			path = ../../SwiftCLI;
@@ -227,23 +235,6 @@
 				EFCE40C31ADB0F4D00A69BC9 /* Output.swift */,
 			);
 			path = IO;
-			sourceTree = "<group>";
-		};
-		EFCE40E01ADB126000A69BC9 /* LlamaKit */ = {
-			isa = PBXGroup;
-			children = (
-				EFCE40E21ADB127A00A69BC9 /* Result.swift */,
-			);
-			name = LlamaKit;
-			path = IO;
-			sourceTree = "<group>";
-		};
-		EFCE40E11ADB126900A69BC9 /* Vendor */ = {
-			isa = PBXGroup;
-			children = (
-				EFCE40E01ADB126000A69BC9 /* LlamaKit */,
-			);
-			name = Vendor;
 			sourceTree = "<group>";
 		};
 		EFEB0BC6198DCEDA0040AFF0 /* SwiftCLITests */ = {
@@ -376,7 +367,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EFCE40E31ADB127A00A69BC9 /* Result.swift in Sources */,
+				EF8D198F1B5D8C9E00C38AB4 /* Result.swift in Sources */,
 				EFCE40D21ADB0FDA00A69BC9 /* CLI.swift in Sources */,
 				EFCE40D31ADB0FDA00A69BC9 /* CommandSignature.swift in Sources */,
 				EFCE40D41ADB0FDA00A69BC9 /* Extensions.swift in Sources */,
@@ -403,7 +394,7 @@
 			files = (
 				EFCE40C81ADB0F4D00A69BC9 /* CommandSignature.swift in Sources */,
 				EFCF34761997FF41008691D1 /* OptionsTests.swift in Sources */,
-				EFCE40E41ADB127A00A69BC9 /* Result.swift in Sources */,
+				EF8D19901B5D8C9E00C38AB4 /* Result.swift in Sources */,
 				EFCE40D11ADB0F4D00A69BC9 /* Output.swift in Sources */,
 				EFCC4C5F1A5D8B310043A606 /* RouterTests.swift in Sources */,
 				EFCE40CE1ADB0F4D00A69BC9 /* HelpCommand.swift in Sources */,
