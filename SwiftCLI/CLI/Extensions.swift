@@ -29,13 +29,13 @@ extension String {
 
 extension Array {
     
-    func each(block: (object: T) -> ()) {
+    func each(block: (object: Element) -> ()) {
         for object in self {
             block(object: object)
         }
     }
     
-    func eachWithIndex(block: (object: T, index: Int) -> ()) {
+    func eachWithIndex(block: (object: Element, index: Int) -> ()) {
         for (index, object) in self.enumerate() {
             block(object: object, index: index)
         }
