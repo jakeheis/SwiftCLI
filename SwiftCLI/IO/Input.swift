@@ -17,7 +17,7 @@ public class Input {
         
         let fh = NSFileHandle.fileHandleWithStandardInput()
         var input = NSString(data: fh.availableData, encoding: NSUTF8StringEncoding) as! String
-        input = input.substringToIndex(advance(input.endIndex, -1))
+        input = input.substringToIndex(input.endIndex.advancedBy(-1))
         
         return input
     }

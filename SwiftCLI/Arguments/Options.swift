@@ -24,7 +24,7 @@ public class FlagOption {
         self.flags = flags
         self.block = block
         
-        let flagsString = ", ".join(flags)
+        let flagsString = flags.joinWithSeparator(", ")
         let paddedUsage = usage.padFront(totalLength: 40 - flagsString.characters.count)
         self.usage = "\(flagsString)\(paddedUsage)"
     }
@@ -49,7 +49,7 @@ public class KeyOption: Equatable {
         self.valueSignature = valueSignature
         self.block = block
         
-        let keysString = ", ".join(keys)
+        let keysString = keys.joinWithSeparator(", ")
         let firstPart = "\(keysString) <\(valueSignature)>"
         let paddedUsage = usage.padFront(totalLength: 40 - firstPart.characters.count)
         self.usage = "\(firstPart)\(paddedUsage)"

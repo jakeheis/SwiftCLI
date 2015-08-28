@@ -25,7 +25,7 @@ class CommandMessageGenerator {
         if let options = options where !options.flagOptions.isEmpty || !options.keyOptions.isEmpty {
             message += " [options]\n"
             
-            let allKeys = options.flagOptions.keys.array + options.keyOptions.keys.array
+            let allKeys = Array(options.flagOptions.keys) + Array(options.keyOptions.keys)
             let sortedKeys = allKeys.sort()
             for key in sortedKeys {
                 let usage = options.flagOptions[key]?.usage ?? options.keyOptions[key]?.usage ?? ""
