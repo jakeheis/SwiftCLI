@@ -16,12 +16,11 @@ CLI.registerChainableCommand(commandName: "init")
     .withShortDescription("Creates a Bakefile in the current or given directory")
     .withSignature("[<directory>]")
     .withExecutionBlock {(arguments, configuration) in
-        let givenDirectory = arguments.optionalArgument("directory")
-        
-        let path = givenDirectory?.stringByAppendingPathComponent("Bakefile") ?? "./Bakefile"
+        let baseDirectory = arguments.optionalArgument("directory") ?? "."
+        let url = NSURL(fileURLWithPath: baseDirectory).URLByAppendingPathComponent("Bakefile")
         
         do {
-           try Bakefile.create(path: path)
+           try Bakefile.create(url: url)
         } catch {
             throw CLIError.Error("The Bakefile was not able to be created")
         }

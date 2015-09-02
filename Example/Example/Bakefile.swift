@@ -12,38 +12,32 @@ class Bakefile {
     
     private var contents: NSMutableDictionary = [:]
     
-    var path: String = "./Bakefile"
+    var url: NSURL
     
     static let NotFoundError = CLIError.Error("The Bakefile could not be found")
     static let ParsingError = CLIError.Error("The Bakefile could not be parsed")
     static let WritingError = CLIError.Error("The Bakefile could not be written to")
     
-    class func create(path path: String) throws {
+    class func create(url url: NSURL) throws {
         let startingContents = ["items": []]
-        
-        let json: NSData
-        
-        do {
-            json = try NSJSONSerialization.dataWithJSONObject(startingContents, options: NSJSONWritingOptions.PrettyPrinted)
-        } catch _ {
+         
+        guard let json = try? NSJSONSerialization.dataWithJSONObject(startingContents, options: .PrettyPrinted) else {
             throw Bakefile.WritingError
         }
         
-        guard json.writeToFile(path, atomically: true) else {
+        guard json.writeToURL(url, atomically: true) else {
             throw Bakefile.WritingError
         }
     }
     
-    init(path: String) throws {
-        guard let data = NSData(contentsOfFile: path) else {
+    init() throws {
+        url = NSURL(fileURLWithPath: "./Bakefile")
+        
+        guard let data = NSData(contentsOfURL: url) else {
             throw Bakefile.NotFoundError
         }
         
-        let parsedJSON: AnyObject
-        
-        do {
-            parsedJSON = try NSJSONSerialization.JSONObjectWithData(data, options: [])
-        } catch _ {
+        guard let parsedJSON = try? NSJSONSerialization.JSONObjectWithData(data, options: []) else {
             throw Bakefile.ParsingError
         }
         
@@ -52,8 +46,6 @@ class Bakefile {
         }
         
         contents = bakefileContents
-
-        self.path = path
     }
     
     func items() throws -> [String] {
@@ -81,18 +73,13 @@ class Bakefile {
     }
     
     func save() throws {
-        let finalData: NSData
-        
-        do {
-            finalData = try NSJSONSerialization.dataWithJSONObject(contents, options: .PrettyPrinted)
-        } catch _ {
+        guard let finalData: NSData = try? NSJSONSerialization.dataWithJSONObject(contents, options: .PrettyPrinted) else {
             throw Bakefile.WritingError
         }
         
-        guard finalData.writeToFile(path, atomically: true) else {
+        guard finalData.writeToURL(url, atomically: true) else {
             throw Bakefile.WritingError
         }
-        
     }
     
 }

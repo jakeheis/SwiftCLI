@@ -23,7 +23,7 @@ class RecipeCommand: CommandType {
     }
     
     func execute(arguments arguments: CommandArguments) throws {
-        let bakefile = try Bakefile(path: "./Bakefile")
+        let bakefile = try Bakefile()
         
         let name = Input.awaitInput(message: "Name of your recipe: ")
         let cookTime = Input.awaitInt(message: "Cook time: ")

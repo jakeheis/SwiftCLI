@@ -101,14 +101,14 @@ class BakeCommand: OptionCommandType {
     // MARK: - Loading
     
     private func loadBakefileItems() throws -> [String] {
-        let bakefile = try Bakefile(path: "./Bakefile")
+        let bakefile = try Bakefile()
         let items = try bakefile.items()
         
         return items
     }
     
     private func loadBakefileRecipes() throws -> [NSDictionary] {
-        let bakefile = try Bakefile(path: "./Bakefile")
+        let bakefile = try Bakefile()
         let recipes = try bakefile.customRecipes()
         
         return recipes
