@@ -24,14 +24,14 @@ class CommandMessageGeneratorTests: XCTestCase {
         
         let message = CommandMessageGenerator.generateUsageStatement(command: command, routedName: nil, options: options)
         
-        let expectedMessage = "\n".join([
+        let expectedMessage = ([
             "Usage:  test <testName> [<testerName>] [options]",
             "",
             "-h, --help                               Show help information for this command",
             "-s, --silent                             Silence all test output",
             "-t, --times <times>                      Number of times to run the test",
             ""
-        ])
+        ]).joinWithSeparator("\n")
         
         XCTAssertEqual(message, expectedMessage, "Should generate the correct usage statement")
     }
@@ -47,7 +47,7 @@ class CommandMessageGeneratorTests: XCTestCase {
         
         let message = CommandMessageGenerator.generateMisusedOptionsStatement(command: command, options: options)!
         
-        let expectedMessage = "\n".join([
+        let expectedMessage = ([
             "Usage:  test <testName> [<testerName>] [options]",
             "",
             "-h, --help                               Show help information for this command",
@@ -59,7 +59,7 @@ class CommandMessageGeneratorTests: XCTestCase {
             "Required values for options but given none:",
             "\t--times",
             ""
-        ])
+        ]).joinWithSeparator("\n")
         
         XCTAssertEqual(message, expectedMessage, "Should generate the correct misused options statement")
     }
