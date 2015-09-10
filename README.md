@@ -161,8 +161,8 @@ With multiple arguments: ```greeter greet Jack Jill Hill``` -> ```["person": ["J
 ### Accessing arguments
 
 During execution, a command has access to an instance of ```CommandArguments``` that contains the passed arguments which have been keyed using the command signature. Arguments can be accessed with subscripts or the typesafe shortcuts ```CommandArguments``` includes:
-```
-override func execute() -> ExecutionResult  {
+```swift
+func execute(arguments: CommandArguments) throws  {
     // Given command signature --- <name>
     let name = arguments.requiredArgument("name") // of type String
     
@@ -185,7 +185,7 @@ Flag options are simple options that act as boolean switches. For example, if yo
 
 To configure a command for flag options:
 - **Command subclass**: 
-```
+```swift
 override func handleOptions() -> String  {
     onFlag("", usage: "") {(flag) in
         
