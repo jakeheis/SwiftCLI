@@ -82,10 +82,9 @@ This is the most lightweight option. You should only create this kind of command
 let greetCommand = ChainableCommand(commandName: "greet")
     .withShortDescription("Greets the given person")
     .withSignature("<person>")
-    .withExecutionBlock {(arguments, options) in
-        let person = arguments.requiredString("person")
-        println("Hey there, \(person)!")
-        return success()
+    .withExecutionBlock {(arguments, configuration) in
+        let person = arguments.requiredArgument("person")
+        print("Hey there, \(person)!")
     }
 ```
 ```CLI``` also offers a shortcut method to register a ChainableCommand:
@@ -97,12 +96,11 @@ CLI.registerChainableCommand(commandName: "greet")
 This type of command is very similar to ChainableCommand. In fact, all ChainableCommand does is provide an alternative interface to its superclass, LightweightCommand. As with ChainableCommands, this type of command should only be used when the command is relatively simple.
 ```swift
 let greetCommand = LightweightCommand(commandName: "greet")
-greetCommand.lightweightCommandShortDescription = "Greets the given person"
-greetCommand.lightweightCommandSignature = "<person>"
-greetCommand.lightweightExecutionBlock = {(arguments, options) in
+greetCommand.commandShortDescription = "Greets the given person"
+greetCommand.commandSignature = "<person>"
+greetCommand.executionBlock = {(arguments, configuration) in
     let person = arguments.requiredArgument("person")
-    println("Hey there, \(person)!")
-    return success()
+    print("Hey there, \(person)!")
 }
 ```
 
