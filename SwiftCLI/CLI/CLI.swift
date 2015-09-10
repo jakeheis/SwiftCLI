@@ -102,17 +102,15 @@ public class CLI: NSObject {
     private class func goWithArguments(arguments: RawArguments) -> CLIResult {
         do {
             let command = try routeCommand(arguments: arguments)
-            let arguments = try setupOptionsAndArguments(command, arguments: arguments)
-            try command.execute(arguments: arguments)
+            let result = try setupOptionsAndArguments(command, arguments: arguments)
+            if let arguments = result.arguments where result.execute {
+                try command.execute(arguments: arguments)
+            }
             
             return CLIResult.Success
         } catch CLIError.Error(let error) {
             printError(error)
         } catch CLIError.EmptyError {
-            // Do nothing
-        } catch CommandSetupError.ExitEarly {
-            return CLIResult.Success
-        } catch CommandSetupError.UnrecognizedOptions {
             // Do nothing
         } catch _ {
             printError("An error occurred")
@@ -136,13 +134,8 @@ public class CLI: NSObject {
         let router = Router(commands: allCommands, arguments: arguments, defaultCommand: defaultCommand, config: routerConfig)        
         return try router.route()
     }
-    
-    enum CommandSetupError: ErrorType {
-        case ExitEarly
-        case UnrecognizedOptions
-    }
-    
-    class private func setupOptionsAndArguments(command: CommandType, arguments: RawArguments) throws -> CommandArguments {
+        
+    class private func setupOptionsAndArguments(command: CommandType, arguments: RawArguments) throws -> (execute: Bool, arguments: CommandArguments?) {
         if let optionCommand = command as? OptionCommandType {
             let options = Options()
           
@@ -150,7 +143,7 @@ public class CLI: NSObject {
             options.recognizeOptionsInArguments(arguments)
             
             if options.exitEarly { // True if -h flag given (show help but exit early before executing command)
-                throw CommandSetupError.ExitEarly
+                return (false, nil)
             }
             
             if options.misusedOptionsPresent() {
@@ -158,14 +151,14 @@ public class CLI: NSObject {
                     printError(message)
                 }
                 if optionCommand.failOnUnrecognizedOptions {
-                    throw CommandSetupError.UnrecognizedOptions
+                    throw CLIError.EmptyError
                 }
             }
         }
         
         let commandSignature = CommandSignature(command.commandSignature)
         
-        return try CommandArguments.fromRawArguments(arguments, signature: commandSignature)
+        return (true, try CommandArguments.fromRawArguments(arguments, signature: commandSignature))
     }
     
 }
