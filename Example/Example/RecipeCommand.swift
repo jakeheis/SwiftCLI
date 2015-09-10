@@ -22,7 +22,7 @@ class RecipeCommand: CommandType {
         return ""
     }
     
-    func execute(arguments arguments: CommandArguments) throws {
+    func execute(arguments: CommandArguments) throws {
         let bakefile = try Bakefile()
         
         let name = Input.awaitInput(message: "Name of your recipe: ")

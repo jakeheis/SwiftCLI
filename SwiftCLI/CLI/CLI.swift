@@ -104,7 +104,7 @@ public class CLI: NSObject {
             let command = try routeCommand(arguments: arguments)
             let result = try setupOptionsAndArguments(command, arguments: arguments)
             if let arguments = result.arguments where result.execute {
-                try command.execute(arguments: arguments)
+                try command.execute(arguments)
             }
             
             return CLIResult.Success

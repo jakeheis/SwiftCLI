@@ -26,7 +26,7 @@ public class VersionCommand: CommandType {
         return "-v"
     }
     
-    public func execute(arguments arguments: CommandArguments) throws  {
+    public func execute(arguments: CommandArguments) throws  {
         print("Version: \(CLI.appVersion)")
     }
     

@@ -31,7 +31,7 @@ public protocol CommandType {
     
         - Parameter arguments: the parsed arguments
     */
-    func execute(arguments arguments: CommandArguments) throws
+    func execute(arguments: CommandArguments) throws
     
 }
 

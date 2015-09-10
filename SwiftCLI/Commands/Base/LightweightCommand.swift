@@ -36,7 +36,7 @@ public class LightweightCommand: OptionCommandType {
         optionsSetupBlock?(options: options, configuration: configuration)
     }
     
-    public func execute(arguments arguments: CommandArguments) throws {
+    public func execute(arguments: CommandArguments) throws {
         try executionBlock?(arguments: arguments, configuration: configuration)
     }
     

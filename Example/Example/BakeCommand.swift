@@ -40,7 +40,7 @@ class BakeCommand: OptionCommandType {
         }
     }
     
-    func execute(arguments arguments: CommandArguments) throws  {
+    func execute(arguments: CommandArguments) throws  {
         if let item = arguments.optionalArgument("item") {
             bakeItem(item)
         } else {

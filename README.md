@@ -16,10 +16,9 @@ import Foundation
 
 CLI.setup(name: "greeter")
 CLI.registerChainableCommand(commandName: "greet")
-    .withExecutionBlock {(arguments, options) in
-        println("Hey there!")
-        return success()
-    }
+    .withExecutionBlock {(arguments, configuration) in
+        print("Hey there!")
+}
 CLI.go()
 ```
 ```bash
@@ -61,27 +60,18 @@ CLI.debugGoWithArgumentString("greeter greet")
 ## Commands
 There are three ways to create a command. You should decide which way to create your command based on how complex the command will be. In order to highlight the differences between the different command creation methods, the same command "greet" will be implemented each way.
 
-### Subclass Command
+### Implement CommandType
 This is usually the best choice for a command. Any command that involves a non-trivial amount of execution or option-handling code should be created with this method. A command subclass provides a structured way to develop a complex command, keeping it organized and easy to read.
 ```swift
-class GreetCommand: Command {
+class GreetCommand: CommandType {
     
-    override func commandName() -> String  {
-        return "greet"
-    }
+    let commandName = "greet"
+    let commandShortDescription = "Greets the given person"
+    let commandSignature = "<person>"
     
-    override func commandShortDescription() -> String  {
-        return "Greets the given person"
-    }
-    
-    override func commandSignature() -> String  {
-        return "<person>"
-    }
-    
-    override func execute() -> ExecutionResult  {
-        let person = arguments.requiredString("person")
-        println("Hey there, \(person)!")
-        return success()
+    func execute(arguments: CommandArguments) throws  {
+        let person = arguments.requiredArgument("person")
+        print("Hey there, \(person)!")
     }
     
 }

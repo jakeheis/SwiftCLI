@@ -32,7 +32,7 @@ public class HelpCommand: CommandType {
         return false
     }
     
-    public func execute(arguments arguments: CommandArguments) throws {
+    public func execute(arguments: CommandArguments) throws {
         print("\(CLI.appDescription)\n")
         print("Available commands: ")
 
