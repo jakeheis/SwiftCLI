@@ -18,7 +18,7 @@ CLI.setup(name: "greeter")
 CLI.registerChainableCommand(commandName: "greet")
     .withExecutionBlock {(arguments, configuration) in
         print("Hey there!")
-}
+    }
 CLI.go()
 ```
 ```bash
@@ -111,9 +111,9 @@ Each command must have a command signature describing its expected/permitted arg
 For example, a signature of ```<person> <greeting>``` and a call of ```greeter greet Jack Hello``` would result in the arguments dictionary ```["greeting": "Hello", "person": "Jack"]```.
 
 To set a command's signature:
-- **Command subclass**: ```override func commandSignature() -> String  {}```
+- **Implement CommandType**: ```var commandSignature: String { get }```
 - **ChainableCommand**: ```.withSignature("")```
-- **LightweightCommand**: ```cmd.lightweightCommandSignature = ""```
+- **LightweightCommand**: ```cmd.commandSignature = ""```
 
 ### Required parameters
 
@@ -180,34 +180,47 @@ func execute(arguments: CommandArguments) throws  {
 ## Options
 Commands have support for two types of options: flag options and keyed options. Both types of options can either be denoted by a dash followed by a single letter ```git commit -a``` or two dashes followed by the option name ```git commit --ammend```. Single letter options can be cascaded into a single dash followed by all the desired options: ```git commit -am``` == ```git commit -a -m```.
 
+`ChainableCommand` and ``LightweightCommand` have built in support for option handling, but if you want your custom command class to have this capability, you must implement `OptionCommandType` instead of `CommandType`.
+
 ### Flag options
 Flag options are simple options that act as boolean switches. For example, if you were to implement "git commit", "-a" would be a flag option.
 
 To configure a command for flag options:
-- **Command subclass**: 
+- **Implement OptionCommandType**: 
 ```swift
-override func handleOptions() -> String  {
-    onFlag("", usage: "") {(flag) in
-        
-    }
-    onFlags([], usage: "") {(flag) in
+func setupOptions(options: Options) {
+    options.onFlags([], usage: "") {(flag) in
         
     }
 }
 ```
-- **ChainableCommand**: ```.withFlagsHandled([], usage: "") {}```
-- **LightweightCommand**: ```cmd.handleFlags([], usage: "") {}```
+- **ChainableCommand**: 
+```swift
+.withOptionsSetup ({(options, configuration) -> () in
+    options.onFlags([], usage: "") {(flag) in
+    
+    }
+})
+```
+- **LightweightCommand**: 
+```swift
+cmd.optionsSetupBlock = {(options, configuration) in
+    options.onFlags([], usage: "") {(flag) in
+        
+    }
+}
+```
 
 The ```GreetCommand``` could be modified to take a "loudly" flag:
 ```swift
-class GreetCommand: Command {
+class GreetCommand: OptionCommandType {
     
     private var loudly = false
     
     ...
-    
-    override func handleOptions()  {
-        onFlags(["-l", "--loudly"], usage: "Makes the the greeting be said loudly") {(flag) in
+
+    func setupOptions(options: Options) {
+        options.onFlags(["-l", "--loudly"], usage: "Makes the the greeting be said loudly") {(flag) in
             self.loudly = true
         }
     }
@@ -220,31 +233,42 @@ class GreetCommand: Command {
 Keyed options are options that have an associated value. Using "git commit" as an example again, "-m" would be a keyed option, as it has an associated value - the commit message.
 
 To configure a command for keyed options:
-- **Command subclass**: 
+- **Implement OptionCommandType**: 
 ```
-override func handleOptions() -> String  {
-    onKey("", usage: "", valueSignature: "") {(key, value) in
-    
-    }
-    onKeys([], usage: "", valueSignature: "") {(key, value) in
+func setupOptions(options: Options) {
+    options.onKeys([], usage: "", valueSignature: "") {(key, value) in
     
     }
 }
 ```
-- **ChainableCommand**: ```.withKeysHandled([], usage: "", valueSignature: "") {}```
-- **LightweightCommand**: ```cmd.handleKeys([], usage: "", valueSignature: "") {}```
+- **ChainableCommand**:
+```swift
+.withOptionsSetup ({(options, configuration) -> () in
+    options.onKeys([], usage: "", valueSignature: "") {(key, value) in
+    
+    }
+})
+```
+- **LightweightCommand**: 
+```swift
+cmd.optionsSetupBlock = {(options, configuration) in
+    options.onKeys([], usage: "", valueSignature: "") {(key, value) in
+    
+    }
+}
+```
 
 The ```GreetCommand``` could be modified to take a "number of times" option:
 ```swift
-class GreetCommand: Command {
+class GreetCommand: OptionCommandType {
     
     private var numberOfTimes = 1
     
     ...
     
-    override func handleOptions()  {
-        onKeys(["-n", "--number-of-times"], usage: "Makes the greeter greet a certain number of times", valueSignature: "times") {(key, value) in
-            if let times = value.toInt() {
+    func setupOptions(options: Options) {
+        options.onKeys(["-n", "--number-of-times"], usage: "Makes the greeter greet a certain number of times", valueSignature: "times") {(key, value) in
+            if let times = Int(value) {
                 self.numberOfTimes = times
             }
         }
@@ -256,9 +280,9 @@ class GreetCommand: Command {
 
 ### Unrecognized options
 By default, if a command is passed any options it does not handle through ```onFlag(s)``` or ```onKey(s)```, or their respective equivalents in ```ChainableCommand``` and ```LightweightCommand```, the command will fail. This behavior can be changed to allow unrecognized options:
-- **Command subclass**: ```override func failOnUnrecognizedOptions() -> Bool { return false}```
-- **ChainableCommand**: ```.withAllFlagsAndOptionsAllowed()```
-- **LightweightCommand**: ```cmd.shouldFailOnUnrecognizedOptions = false```
+- **Implement OptionCommandType**: ```var failOnUnrecognizedOptions: Bool { return false }```
+- **ChainableCommand**: ```.withFailOnUnrecognizedOptions(false)```
+- **LightweightCommand**: ```cmd.failOnUnrecognizedOptions = false```
 
 ### Usage of options
 As seen in the above examples, ```onFlags``` and ```onKeys``` both take a ```usage``` parameter. A concise description of what the option does should be included here. This allows the command's ```usageStatement()``` to be computed.
@@ -293,7 +317,7 @@ Available commands:
 - help                 Prints this help information
 ```
 
-A custom ```HelpCommand``` can be used by calling ```CLI.registerCustomHelpCommand(customHelp)```.
+A custom ```HelpCommand``` can be used by calling ```CLI.helpCommand = customHelp```.
 
 ### Version Command
 The ```VersionCommand``` can be invoked with ```myapp version``` or ```myapp -v```. The VersionCommand prints the version of the app given during ```CLI.setup()```. 
@@ -303,7 +327,7 @@ The ```VersionCommand``` can be invoked with ```myapp version``` or ```myapp -v`
 Version: 1.0
 ```
 
-A custom ```VersionCommand``` can be used by calling ```CLI.registerCustomVersionCommand(customVersion)```.
+A custom ```VersionCommand``` can be used by calling ```CLI.versionComand = customVersion```.
 
 ### Default command
 The default command is the command that is invoked if no command is specified. By default, this is simply the help command.
@@ -316,7 +340,7 @@ Available commands:
 - help                 Prints this help information
 ```
 
-A custom default command can be specified by calling ```CLI.registerDefaultCommand(customDefault)```.
+A custom default command can be specified by calling ```CLI.defaultCommand = customDefault```.
 
 ## Running your CLI
 
