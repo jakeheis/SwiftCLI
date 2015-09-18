@@ -10,12 +10,11 @@ import Foundation
 
 class CommandMessageGenerator {
     
-    class func generateUsageStatement(command command: CommandType, routedName: String?, options: Options?) -> String {
+    class func generateUsageStatement(command command: CommandType, options: Options?) -> String {
         var message = "Usage: \(CLI.appName)"
         
-        let name = routedName ?? command.commandName
-        if !name.isEmpty {
-            message += " \(name)"
+        if !command.commandName.isEmpty {
+            message += " \(command.commandName)"
         }
         
         if !command.commandSignature.isEmpty {
@@ -49,11 +48,11 @@ class CommandMessageGenerator {
         case .PrintNone:
             return nil
         case .PrintOnlyUsage:
-            return generateUsageStatement(command: command, routedName: nil, options: options)
+            return generateUsageStatement(command: command, options: options)
         case .PrintOnlyUnrecognizedOptions:
             return options.misusedOptionsMessage()
         case .PrintAll:
-            return generateUsageStatement(command: command, routedName: nil, options: options) + "\n" + options.misusedOptionsMessage()
+            return generateUsageStatement(command: command, options: options) + "\n" + options.misusedOptionsMessage()
         }
     }
     

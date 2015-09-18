@@ -85,7 +85,7 @@ extension OptionCommandType {
             let helpFlags = ["-h", "--help"]
             
             options.onFlags(helpFlags, usage: "Show help information for this command") {(flag) in
-                print(CommandMessageGenerator.generateUsageStatement(command: self, routedName: nil, options: options))
+                print(CommandMessageGenerator.generateUsageStatement(command: self, options: options))
             }
 
             options.exitEarlyOptions += helpFlags

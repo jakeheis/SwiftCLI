@@ -16,16 +16,18 @@ class CommandMessageGeneratorTests: XCTestCase {
         super.setUp()
 
         command = createTestCommand()
+        
+        CLI.setup(name: "tester")
     }
 
     func testUsageStatementGeneration() {
         let options = Options()
         command.internalSetupOptions(options)
         
-        let message = CommandMessageGenerator.generateUsageStatement(command: command, routedName: nil, options: options)
+        let message = CommandMessageGenerator.generateUsageStatement(command: command, options: options)
         
         let expectedMessage = ([
-            "Usage:  test <testName> [<testerName>] [options]",
+            "Usage: tester test <testName> [<testerName>] [options]",
             "",
             "-h, --help                               Show help information for this command",
             "-s, --silent                             Silence all test output",
@@ -48,7 +50,7 @@ class CommandMessageGeneratorTests: XCTestCase {
         let message = CommandMessageGenerator.generateMisusedOptionsStatement(command: command, options: options)!
         
         let expectedMessage = ([
-            "Usage:  test <testName> [<testerName>] [options]",
+            "Usage: tester test <testName> [<testerName>] [options]",
             "",
             "-h, --help                               Show help information for this command",
             "-s, --silent                             Silence all test output",

@@ -19,7 +19,7 @@ public class CLI: NSObject {
     private static var commands: [CommandType] = []
     
     static var helpCommand: HelpCommand? = HelpCommand()
-    static var versionComand: VersionCommand? = VersionCommand()
+    static var versionComand: CommandType? = VersionCommand()
     static var defaultCommand: CommandType = helpCommand!
     
     static var routerConfig: Router.Config?
@@ -33,10 +33,16 @@ public class CLI: NSObject {
         - Parameter version: version of the app, printed by the VersionCommand
         - Parameter description: description of the app, printed in the help message
     */
-    public class func setup(name name: String, version: String = "1.0", description: String = "") {
+    public class func setup(name name: String, version: String? = nil, description: String? = nil) {
         appName = name
-        appVersion = version
-        appDescription = description
+        
+        if let version = version {
+            appVersion = version
+        }
+        
+        if let description = description {
+            appDescription = description
+        }
     }
     
     /**
