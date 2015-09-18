@@ -196,7 +196,7 @@ func setupOptions(options: Options) {
 ```
 - **ChainableCommand**: 
 ```swift
-.withOptionsSetup ({(options, configuration) -> () in
+.withOptionsSetup ({(options, configuration) in
     options.onFlags([], usage: "") {(flag) in
     
     }
@@ -243,7 +243,7 @@ func setupOptions(options: Options) {
 ```
 - **ChainableCommand**:
 ```swift
-.withOptionsSetup ({(options, configuration) -> () in
+.withOptionsSetup ({(options, configuration) in
     options.onKeys([], usage: "", valueSignature: "") {(key, value) in
     
     }
