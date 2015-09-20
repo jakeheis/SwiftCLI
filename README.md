@@ -16,7 +16,7 @@ import Foundation
 
 CLI.setup(name: "greeter")
 CLI.registerChainableCommand(commandName: "greet")
-    .withExecutionBlock {(arguments, configuration) in
+    .withExecutionBlock {(arguments) in
         print("Hey there!")
     }
 CLI.go()
@@ -82,7 +82,7 @@ This is the most lightweight option. You should only create this kind of command
 let greetCommand = ChainableCommand(commandName: "greet")
     .withShortDescription("Greets the given person")
     .withSignature("<person>")
-    .withExecutionBlock {(arguments, configuration) in
+    .withExecutionBlock {(arguments) in
         let person = arguments.requiredArgument("person")
         print("Hey there, \(person)!")
     }
@@ -98,7 +98,7 @@ This type of command is very similar to ChainableCommand. In fact, all Chainable
 let greetCommand = LightweightCommand(commandName: "greet")
 greetCommand.commandShortDescription = "Greets the given person"
 greetCommand.commandSignature = "<person>"
-greetCommand.executionBlock = {(arguments, configuration) in
+greetCommand.executionBlock = {(arguments) in
     let person = arguments.requiredArgument("person")
     print("Hey there, \(person)!")
 }
@@ -196,7 +196,7 @@ func setupOptions(options: Options) {
 ```
 - **ChainableCommand**: 
 ```swift
-.withOptionsSetup ({(options, configuration) in
+.withOptionsSetup ({(options) in
     options.onFlags([], usage: "") {(flag) in
     
     }
@@ -204,7 +204,7 @@ func setupOptions(options: Options) {
 ```
 - **LightweightCommand**: 
 ```swift
-cmd.optionsSetupBlock = {(options, configuration) in
+cmd.optionsSetupBlock = {(options) in
     options.onFlags([], usage: "") {(flag) in
         
     }
@@ -243,7 +243,7 @@ func setupOptions(options: Options) {
 ```
 - **ChainableCommand**:
 ```swift
-.withOptionsSetup ({(options, configuration) in
+.withOptionsSetup ({(options) in
     options.onKeys([], usage: "", valueSignature: "") {(key, value) in
     
     }
@@ -251,7 +251,7 @@ func setupOptions(options: Options) {
 ```
 - **LightweightCommand**: 
 ```swift
-cmd.optionsSetupBlock = {(options, configuration) in
+cmd.optionsSetupBlock = {(options) in
     options.onKeys([], usage: "", valueSignature: "") {(key, value) in
     
     }

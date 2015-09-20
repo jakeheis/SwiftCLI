@@ -16,7 +16,7 @@ func createTestCommand(completion: ((executionString: String) -> ())? = nil) -> 
     
     return ChainableCommand(commandName: "test")
         .withSignature("<testName> [<testerName>]")
-        .withOptionsSetup {(options, configuration) in
+        .withOptionsSetup {(options) in
             options.onFlags(["-s", "--silent"], usage: "Silence all test output") {(flag) in
                 silentFlag = true
             }
@@ -24,7 +24,7 @@ func createTestCommand(completion: ((executionString: String) -> ())? = nil) -> 
                 times = Int(value)!
             }
         }
-        .withExecutionBlock {(arguments, configuration) in
+        .withExecutionBlock {(arguments) in
             let testName = arguments.requiredArgument("testName")
             let testerName = arguments.optionalArgument("testerName") ?? "Tester"
             executionString = "\(testerName) will test \(testName), \(times) times"
