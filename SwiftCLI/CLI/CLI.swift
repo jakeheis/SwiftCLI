@@ -44,10 +44,6 @@ public class CLI: NSObject {
             appDescription = description
         }
     }
-
-    public class func appVersion() -> String {
-        return CLIStatic.appVersion
-    }
     
     /**
         Registers a command with the CLI for routing and execution. All commands must be registered 
