@@ -1,5 +1,41 @@
-Big changes
-=====
+CommandType
+===
+
+Instead of subclassing `Command`, custom commands should now implement `CommandType` or `OptionCommandType`, depending on what functionality is needed.
+
+```swift
+// Old Command Sublcass:
+
+public func commandName() -> String
+public func commandSignature() -> String
+public func commandShortDescription() -> String
+public func commandShortcut() -> String?
+
+// New CommandType Implementation:
+
+var commandName: String { get }
+var commandSignature: String { get }
+var commandShortDescription: String { get }
+var commandShortcut: String? { get }
+```
+
+If option handling functionality is now needed, `OptionCommandType` (which inherits from `CommandType`) should be implemented :
+
+```swift
+// Old Command Sublcass:
+
+public func handleOptions()
+public func showHelpOnHFlag() -> Bool // Default true
+public func unrecognizedOptionsPrintingBehavior() -> UnrecognizedOptionsPrintingBehavior // Default .PrintAll
+public func failOnUnrecognizedOptions() -> Bool // Default true 
+
+// New CommandType Implementation:
+
+func setupOptions(options: Options)
+var helpOnHFlag: Bool { get } // Default still true
+var unrecognizedOptionsPrintingBehavior: UnrecognizedOptionsPrintingBehavior { get } // Default still .PrintAll
+var failOnUnrecognizedOptions: Bool { get } // Default still true
+```
 
 Error handling
 ===
