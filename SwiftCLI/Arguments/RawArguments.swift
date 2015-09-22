@@ -8,7 +8,7 @@
 
 import Foundation
 
-class RawArguments {
+class RawArguments: CustomStringConvertible {
     
     enum RawArgumentType {
         case AppName
@@ -22,9 +22,7 @@ class RawArguments {
     private var argumentClassifications: [RawArgumentType] = []
     
     convenience init() {
-        let arguments = NSProcessInfo.processInfo().arguments as! [String]
-        
-        self.init(arguments: arguments)
+        self.init(arguments: NSProcessInfo.processInfo().arguments)
     }
     
     convenience init(argumentString: String) {
@@ -40,13 +38,13 @@ class RawArguments {
         classifyArgument(index: 0, type: .AppName)
     }
     
-    func classifyArgument(#argument: String, type: RawArgumentType) {
-        if let index = find(arguments, argument) {
+    func classifyArgument(argument argument: String, type: RawArgumentType) {
+        if let index = arguments.indexOf(argument) {
             classifyArgument(index: index, type: type)
         }
     }
     
-    private func classifyArgument(#index: Int, type: RawArgumentType) {
+    private func classifyArgument(index index: Int, type: RawArgumentType) {
         argumentClassifications[index] = type
     }
     
@@ -61,7 +59,7 @@ class RawArguments {
     }
     
     func firstArgumentOfType(type: RawArgumentType) -> String? {
-        if let index = find(argumentClassifications, type) {
+        if let index = argumentClassifications.indexOf(type) {
             return arguments[index]
         }
 
@@ -69,10 +67,14 @@ class RawArguments {
     }
     
     func argumentFollowingArgument(argument: String) -> String? {
-        if let index = find(arguments, argument) where index + 1 < arguments.count {
+        if let index = arguments.indexOf(argument) where index + 1 < arguments.count {
             return arguments[index + 1]
         }
         return nil
+    }
+    
+    var description: String {
+        return arguments.description
     }
     
 }

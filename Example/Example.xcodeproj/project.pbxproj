@@ -7,119 +7,109 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		EF8C1C701ACCFB79008AB225 /* CommandArgumentsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFEB0BD1198DD0E90040AFF0 /* CommandArgumentsTests.swift */; };
-		EF8D198F1B5D8C9E00C38AB4 /* Result.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF8D198E1B5D8C9E00C38AB4 /* Result.swift */; };
-		EF8D19901B5D8C9E00C38AB4 /* Result.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF8D198E1B5D8C9E00C38AB4 /* Result.swift */; };
-		EF92BF71198AEF7900BAA12B /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF92BF70198AEF7900BAA12B /* main.swift */; };
-		EFA57FDF19A151BC00340DD8 /* RecipeCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFA57FDE19A151BC00340DD8 /* RecipeCommand.swift */; };
-		EFCC4C5F1A5D8B310043A606 /* RouterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFCC4C5E1A5D8B310043A606 /* RouterTests.swift */; };
-		EFCE40C41ADB0F4D00A69BC9 /* CommandArguments.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFCE40B11ADB0F4D00A69BC9 /* CommandArguments.swift */; };
-		EFCE40C51ADB0F4D00A69BC9 /* Options.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFCE40B21ADB0F4D00A69BC9 /* Options.swift */; };
-		EFCE40C61ADB0F4D00A69BC9 /* RawArguments.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFCE40B31ADB0F4D00A69BC9 /* RawArguments.swift */; };
-		EFCE40C71ADB0F4D00A69BC9 /* CLI.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFCE40B51ADB0F4D00A69BC9 /* CLI.swift */; };
-		EFCE40C81ADB0F4D00A69BC9 /* CommandSignature.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFCE40B61ADB0F4D00A69BC9 /* CommandSignature.swift */; };
-		EFCE40C91ADB0F4D00A69BC9 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFCE40B71ADB0F4D00A69BC9 /* Extensions.swift */; };
-		EFCE40CA1ADB0F4D00A69BC9 /* Router.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFCE40B81ADB0F4D00A69BC9 /* Router.swift */; };
-		EFCE40CB1ADB0F4D00A69BC9 /* ChainableCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFCE40BB1ADB0F4D00A69BC9 /* ChainableCommand.swift */; };
-		EFCE40CC1ADB0F4D00A69BC9 /* Command.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFCE40BC1ADB0F4D00A69BC9 /* Command.swift */; };
-		EFCE40CD1ADB0F4D00A69BC9 /* LightweightCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFCE40BD1ADB0F4D00A69BC9 /* LightweightCommand.swift */; };
-		EFCE40CE1ADB0F4D00A69BC9 /* HelpCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFCE40BF1ADB0F4D00A69BC9 /* HelpCommand.swift */; };
-		EFCE40CF1ADB0F4D00A69BC9 /* VersionCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFCE40C01ADB0F4D00A69BC9 /* VersionCommand.swift */; };
-		EFCE40D01ADB0F4D00A69BC9 /* Input.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFCE40C21ADB0F4D00A69BC9 /* Input.swift */; };
-		EFCE40D11ADB0F4D00A69BC9 /* Output.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFCE40C31ADB0F4D00A69BC9 /* Output.swift */; };
-		EFCE40D21ADB0FDA00A69BC9 /* CLI.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFCE40B51ADB0F4D00A69BC9 /* CLI.swift */; };
-		EFCE40D31ADB0FDA00A69BC9 /* CommandSignature.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFCE40B61ADB0F4D00A69BC9 /* CommandSignature.swift */; };
-		EFCE40D41ADB0FDA00A69BC9 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFCE40B71ADB0F4D00A69BC9 /* Extensions.swift */; };
-		EFCE40D51ADB0FDA00A69BC9 /* Router.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFCE40B81ADB0F4D00A69BC9 /* Router.swift */; };
-		EFCE40D61ADB0FDA00A69BC9 /* Command.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFCE40BC1ADB0F4D00A69BC9 /* Command.swift */; };
-		EFCE40D71ADB0FDA00A69BC9 /* ChainableCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFCE40BB1ADB0F4D00A69BC9 /* ChainableCommand.swift */; };
-		EFCE40D81ADB0FDA00A69BC9 /* LightweightCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFCE40BD1ADB0F4D00A69BC9 /* LightweightCommand.swift */; };
-		EFCE40D91ADB0FDA00A69BC9 /* HelpCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFCE40BF1ADB0F4D00A69BC9 /* HelpCommand.swift */; };
-		EFCE40DA1ADB0FDA00A69BC9 /* VersionCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFCE40C01ADB0F4D00A69BC9 /* VersionCommand.swift */; };
-		EFCE40DB1ADB0FDA00A69BC9 /* CommandArguments.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFCE40B11ADB0F4D00A69BC9 /* CommandArguments.swift */; };
-		EFCE40DC1ADB0FDA00A69BC9 /* Options.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFCE40B21ADB0F4D00A69BC9 /* Options.swift */; };
-		EFCE40DD1ADB0FDA00A69BC9 /* RawArguments.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFCE40B31ADB0F4D00A69BC9 /* RawArguments.swift */; };
-		EFCE40DE1ADB0FDA00A69BC9 /* Input.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFCE40C21ADB0F4D00A69BC9 /* Input.swift */; };
-		EFCE40DF1ADB0FDA00A69BC9 /* Output.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFCE40C31ADB0F4D00A69BC9 /* Output.swift */; };
-		EFCF34761997FF41008691D1 /* OptionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFCF34751997FF41008691D1 /* OptionsTests.swift */; };
-		EFEB0B55198C4D200040AFF0 /* BakeCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFEB0B54198C4D200040AFF0 /* BakeCommand.swift */; };
-		EFEB0BCA198DCEDA0040AFF0 /* SwiftCLITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFEB0BC9198DCEDA0040AFF0 /* SwiftCLITests.swift */; };
+		EF28EE091B2C4E7A0030ED5C /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF28EE081B2C4E7A0030ED5C /* main.swift */; };
+		EF28EE241B2C4E8C0030ED5C /* CommandArguments.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF28EE111B2C4E8C0030ED5C /* CommandArguments.swift */; };
+		EF28EE251B2C4E8C0030ED5C /* Options.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF28EE121B2C4E8C0030ED5C /* Options.swift */; };
+		EF28EE261B2C4E8C0030ED5C /* RawArguments.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF28EE131B2C4E8C0030ED5C /* RawArguments.swift */; };
+		EF28EE271B2C4E8C0030ED5C /* CLI.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF28EE151B2C4E8C0030ED5C /* CLI.swift */; };
+		EF28EE281B2C4E8C0030ED5C /* CommandSignature.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF28EE161B2C4E8C0030ED5C /* CommandSignature.swift */; };
+		EF28EE291B2C4E8C0030ED5C /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF28EE171B2C4E8C0030ED5C /* Extensions.swift */; };
+		EF28EE2A1B2C4E8C0030ED5C /* Router.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF28EE181B2C4E8C0030ED5C /* Router.swift */; };
+		EF28EE301B2C4E8C0030ED5C /* Input.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF28EE221B2C4E8C0030ED5C /* Input.swift */; };
+		EF28EE311B2C4E8C0030ED5C /* Output.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF28EE231B2C4E8C0030ED5C /* Output.swift */; };
+		EF28EE341B2C4E9E0030ED5C /* BakeCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF28EE321B2C4E9E0030ED5C /* BakeCommand.swift */; };
+		EF28EE351B2C4E9E0030ED5C /* RecipeCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF28EE331B2C4E9E0030ED5C /* RecipeCommand.swift */; };
+		EF28EE491B2C5A150030ED5C /* CommandArgumentsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF28EE441B2C5A150030ED5C /* CommandArgumentsTests.swift */; };
+		EF28EE4A1B2C5A150030ED5C /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = EF28EE451B2C5A150030ED5C /* Info.plist */; };
+		EF28EE4B1B2C5A150030ED5C /* OptionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF28EE461B2C5A150030ED5C /* OptionsTests.swift */; };
+		EF28EE4C1B2C5A150030ED5C /* RouterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF28EE471B2C5A150030ED5C /* RouterTests.swift */; };
+		EF28EE4D1B2C5A150030ED5C /* SwiftCLITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF28EE481B2C5A150030ED5C /* SwiftCLITests.swift */; };
+		EF28EE501B2C5AC20030ED5C /* CommandArguments.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF28EE111B2C4E8C0030ED5C /* CommandArguments.swift */; };
+		EF28EE511B2C5AC20030ED5C /* Options.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF28EE121B2C4E8C0030ED5C /* Options.swift */; };
+		EF28EE521B2C5AC20030ED5C /* RawArguments.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF28EE131B2C4E8C0030ED5C /* RawArguments.swift */; };
+		EF28EE531B2C5AC20030ED5C /* CLI.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF28EE151B2C4E8C0030ED5C /* CLI.swift */; };
+		EF28EE541B2C5AC20030ED5C /* CommandSignature.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF28EE161B2C4E8C0030ED5C /* CommandSignature.swift */; };
+		EF28EE551B2C5AC20030ED5C /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF28EE171B2C4E8C0030ED5C /* Extensions.swift */; };
+		EF28EE561B2C5AC20030ED5C /* Router.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF28EE181B2C4E8C0030ED5C /* Router.swift */; };
+		EF28EE5C1B2C5AC20030ED5C /* Input.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF28EE221B2C4E8C0030ED5C /* Input.swift */; };
+		EF28EE5D1B2C5AC20030ED5C /* Output.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF28EE231B2C4E8C0030ED5C /* Output.swift */; };
+		EF28EE641B2C665B0030ED5C /* CommandMessageGeneratorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF28EE631B2C665B0030ED5C /* CommandMessageGeneratorTests.swift */; };
+		EF87C4C71BAB98EE008DF84F /* ChainableCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF87C4C01BAB98EE008DF84F /* ChainableCommand.swift */; settings = {ASSET_TAGS = (); }; };
+		EF87C4C81BAB98EE008DF84F /* ChainableCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF87C4C01BAB98EE008DF84F /* ChainableCommand.swift */; settings = {ASSET_TAGS = (); }; };
+		EF87C4C91BAB98EE008DF84F /* Command.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF87C4C11BAB98EE008DF84F /* Command.swift */; settings = {ASSET_TAGS = (); }; };
+		EF87C4CA1BAB98EE008DF84F /* Command.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF87C4C11BAB98EE008DF84F /* Command.swift */; settings = {ASSET_TAGS = (); }; };
+		EF87C4CB1BAB98EE008DF84F /* CommandMessageGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF87C4C21BAB98EE008DF84F /* CommandMessageGenerator.swift */; settings = {ASSET_TAGS = (); }; };
+		EF87C4CC1BAB98EE008DF84F /* CommandMessageGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF87C4C21BAB98EE008DF84F /* CommandMessageGenerator.swift */; settings = {ASSET_TAGS = (); }; };
+		EF87C4CD1BAB98EE008DF84F /* LightweightCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF87C4C31BAB98EE008DF84F /* LightweightCommand.swift */; settings = {ASSET_TAGS = (); }; };
+		EF87C4CE1BAB98EE008DF84F /* LightweightCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF87C4C31BAB98EE008DF84F /* LightweightCommand.swift */; settings = {ASSET_TAGS = (); }; };
+		EF87C4CF1BAB98EE008DF84F /* HelpCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF87C4C51BAB98EE008DF84F /* HelpCommand.swift */; settings = {ASSET_TAGS = (); }; };
+		EF87C4D01BAB98EE008DF84F /* HelpCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF87C4C51BAB98EE008DF84F /* HelpCommand.swift */; settings = {ASSET_TAGS = (); }; };
+		EF87C4D11BAB98EE008DF84F /* VersionCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF87C4C61BAB98EE008DF84F /* VersionCommand.swift */; settings = {ASSET_TAGS = (); }; };
+		EF87C4D21BAB98EE008DF84F /* VersionCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF87C4C61BAB98EE008DF84F /* VersionCommand.swift */; settings = {ASSET_TAGS = (); }; };
+		EF96F95E1B2CD96B00454C13 /* Bakefile.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF96F95D1B2CD96B00454C13 /* Bakefile.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		EFEB0BD3198DD1790040AFF0 /* PBXContainerItemProxy */ = {
+		EF28EE4E1B2C5AB00030ED5C /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = EF92BF65198AEF7900BAA12B /* Project object */;
+			containerPortal = EF28EDFD1B2C4E7A0030ED5C /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = EF92BF6C198AEF7900BAA12B;
-			remoteInfo = Example;
-		};
-		EFEB0BD5198DD1850040AFF0 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = EF92BF65198AEF7900BAA12B /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = EF92BF6C198AEF7900BAA12B;
-			remoteInfo = Example;
-		};
-		EFEB0C06198DD1B40040AFF0 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = EF92BF65198AEF7900BAA12B /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = EF92BF6C198AEF7900BAA12B;
+			remoteGlobalIDString = EF28EE041B2C4E7A0030ED5C;
 			remoteInfo = Example;
 		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		EF92BF6B198AEF7900BAA12B /* Copy Files */ = {
+		EF28EE031B2C4E7A0030ED5C /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
-			dstPath = usr/share/man/man1;
-			dstSubfolderSpec = 10;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
 			files = (
 			);
-			name = "Copy Files";
 			runOnlyForDeploymentPostprocessing = 1;
 		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		EF8D198E1B5D8C9E00C38AB4 /* Result.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Result.swift; sourceTree = "<group>"; };
-		EF92BF6D198AEF7900BAA12B /* Example */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Example; sourceTree = BUILT_PRODUCTS_DIR; };
-		EF92BF70198AEF7900BAA12B /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
-		EFA57FDE19A151BC00340DD8 /* RecipeCommand.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RecipeCommand.swift; sourceTree = "<group>"; };
-		EFCC4C5E1A5D8B310043A606 /* RouterTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RouterTests.swift; sourceTree = "<group>"; };
-		EFCE40B11ADB0F4D00A69BC9 /* CommandArguments.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommandArguments.swift; sourceTree = "<group>"; };
-		EFCE40B21ADB0F4D00A69BC9 /* Options.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Options.swift; sourceTree = "<group>"; };
-		EFCE40B31ADB0F4D00A69BC9 /* RawArguments.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RawArguments.swift; sourceTree = "<group>"; };
-		EFCE40B51ADB0F4D00A69BC9 /* CLI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CLI.swift; sourceTree = "<group>"; };
-		EFCE40B61ADB0F4D00A69BC9 /* CommandSignature.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommandSignature.swift; sourceTree = "<group>"; };
-		EFCE40B71ADB0F4D00A69BC9 /* Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
-		EFCE40B81ADB0F4D00A69BC9 /* Router.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Router.swift; sourceTree = "<group>"; };
-		EFCE40BB1ADB0F4D00A69BC9 /* ChainableCommand.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChainableCommand.swift; sourceTree = "<group>"; };
-		EFCE40BC1ADB0F4D00A69BC9 /* Command.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Command.swift; sourceTree = "<group>"; };
-		EFCE40BD1ADB0F4D00A69BC9 /* LightweightCommand.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LightweightCommand.swift; sourceTree = "<group>"; };
-		EFCE40BF1ADB0F4D00A69BC9 /* HelpCommand.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HelpCommand.swift; sourceTree = "<group>"; };
-		EFCE40C01ADB0F4D00A69BC9 /* VersionCommand.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VersionCommand.swift; sourceTree = "<group>"; };
-		EFCE40C21ADB0F4D00A69BC9 /* Input.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Input.swift; sourceTree = "<group>"; };
-		EFCE40C31ADB0F4D00A69BC9 /* Output.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Output.swift; sourceTree = "<group>"; };
-		EFCF34751997FF41008691D1 /* OptionsTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OptionsTests.swift; sourceTree = "<group>"; };
-		EFEB0B54198C4D200040AFF0 /* BakeCommand.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BakeCommand.swift; sourceTree = "<group>"; };
-		EFEB0BC5198DCEDA0040AFF0 /* SwiftCLITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SwiftCLITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		EFEB0BC8198DCEDA0040AFF0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		EFEB0BC9198DCEDA0040AFF0 /* SwiftCLITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftCLITests.swift; sourceTree = "<group>"; };
-		EFEB0BD1198DD0E90040AFF0 /* CommandArgumentsTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommandArgumentsTests.swift; sourceTree = "<group>"; };
+		EF28EE051B2C4E7A0030ED5C /* Example */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Example; sourceTree = BUILT_PRODUCTS_DIR; };
+		EF28EE081B2C4E7A0030ED5C /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
+		EF28EE111B2C4E8C0030ED5C /* CommandArguments.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommandArguments.swift; sourceTree = "<group>"; };
+		EF28EE121B2C4E8C0030ED5C /* Options.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Options.swift; sourceTree = "<group>"; };
+		EF28EE131B2C4E8C0030ED5C /* RawArguments.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RawArguments.swift; sourceTree = "<group>"; };
+		EF28EE151B2C4E8C0030ED5C /* CLI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CLI.swift; sourceTree = "<group>"; };
+		EF28EE161B2C4E8C0030ED5C /* CommandSignature.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommandSignature.swift; sourceTree = "<group>"; };
+		EF28EE171B2C4E8C0030ED5C /* Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
+		EF28EE181B2C4E8C0030ED5C /* Router.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Router.swift; sourceTree = "<group>"; };
+		EF28EE221B2C4E8C0030ED5C /* Input.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Input.swift; sourceTree = "<group>"; };
+		EF28EE231B2C4E8C0030ED5C /* Output.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Output.swift; sourceTree = "<group>"; };
+		EF28EE321B2C4E9E0030ED5C /* BakeCommand.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BakeCommand.swift; sourceTree = "<group>"; };
+		EF28EE331B2C4E9E0030ED5C /* RecipeCommand.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RecipeCommand.swift; sourceTree = "<group>"; };
+		EF28EE3A1B2C59CB0030ED5C /* SwiftCLITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SwiftCLITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		EF28EE441B2C5A150030ED5C /* CommandArgumentsTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommandArgumentsTests.swift; sourceTree = "<group>"; };
+		EF28EE451B2C5A150030ED5C /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		EF28EE461B2C5A150030ED5C /* OptionsTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OptionsTests.swift; sourceTree = "<group>"; };
+		EF28EE471B2C5A150030ED5C /* RouterTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RouterTests.swift; sourceTree = "<group>"; };
+		EF28EE481B2C5A150030ED5C /* SwiftCLITests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftCLITests.swift; sourceTree = "<group>"; };
+		EF28EE631B2C665B0030ED5C /* CommandMessageGeneratorTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommandMessageGeneratorTests.swift; sourceTree = "<group>"; };
+		EF87C4C01BAB98EE008DF84F /* ChainableCommand.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChainableCommand.swift; sourceTree = "<group>"; };
+		EF87C4C11BAB98EE008DF84F /* Command.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Command.swift; sourceTree = "<group>"; };
+		EF87C4C21BAB98EE008DF84F /* CommandMessageGenerator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommandMessageGenerator.swift; sourceTree = "<group>"; };
+		EF87C4C31BAB98EE008DF84F /* LightweightCommand.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LightweightCommand.swift; sourceTree = "<group>"; };
+		EF87C4C51BAB98EE008DF84F /* HelpCommand.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HelpCommand.swift; sourceTree = "<group>"; };
+		EF87C4C61BAB98EE008DF84F /* VersionCommand.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VersionCommand.swift; sourceTree = "<group>"; };
+		EF96F95D1B2CD96B00454C13 /* Bakefile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Bakefile.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		EF92BF6A198AEF7900BAA12B /* Frameworks */ = {
+		EF28EE021B2C4E7A0030ED5C /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		EFEB0BC2198DCEDA0040AFF0 /* Frameworks */ = {
+		EF28EE371B2C59CB0030ED5C /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -129,146 +119,124 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		EF8D198D1B5D8C9E00C38AB4 /* Result */ = {
+		EF28EDFC1B2C4E7A0030ED5C = {
 			isa = PBXGroup;
 			children = (
-				EF8D198E1B5D8C9E00C38AB4 /* Result.swift */,
-			);
-			path = Result;
-			sourceTree = "<group>";
-		};
-		EF92BF64198AEF7900BAA12B = {
-			isa = PBXGroup;
-			children = (
-				EF92BF6F198AEF7900BAA12B /* Example */,
-				EFEB0BC6198DCEDA0040AFF0 /* SwiftCLITests */,
-				EF92BF6E198AEF7900BAA12B /* Products */,
+				EF28EE071B2C4E7A0030ED5C /* Example */,
+				EF28EE431B2C5A150030ED5C /* SwiftCLITests */,
+				EF28EE061B2C4E7A0030ED5C /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		EF92BF6E198AEF7900BAA12B /* Products */ = {
+		EF28EE061B2C4E7A0030ED5C /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				EF92BF6D198AEF7900BAA12B /* Example */,
-				EFEB0BC5198DCEDA0040AFF0 /* SwiftCLITests.xctest */,
+				EF28EE051B2C4E7A0030ED5C /* Example */,
+				EF28EE3A1B2C59CB0030ED5C /* SwiftCLITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		EF92BF6F198AEF7900BAA12B /* Example */ = {
+		EF28EE071B2C4E7A0030ED5C /* Example */ = {
 			isa = PBXGroup;
 			children = (
-				EF92BF70198AEF7900BAA12B /* main.swift */,
-				EFEB0B54198C4D200040AFF0 /* BakeCommand.swift */,
-				EFA57FDE19A151BC00340DD8 /* RecipeCommand.swift */,
-				EFCE40AF1ADB0F4D00A69BC9 /* SwiftCLI */,
+				EF28EE081B2C4E7A0030ED5C /* main.swift */,
+				EF28EE321B2C4E9E0030ED5C /* BakeCommand.swift */,
+				EF28EE331B2C4E9E0030ED5C /* RecipeCommand.swift */,
+				EF96F95D1B2CD96B00454C13 /* Bakefile.swift */,
+				EF28EE0F1B2C4E8C0030ED5C /* SwiftCLI */,
 			);
 			path = Example;
 			sourceTree = "<group>";
 		};
-		EFCE40AF1ADB0F4D00A69BC9 /* SwiftCLI */ = {
+		EF28EE0F1B2C4E8C0030ED5C /* SwiftCLI */ = {
 			isa = PBXGroup;
 			children = (
-				EFCE40B41ADB0F4D00A69BC9 /* CLI */,
-				EFCE40B91ADB0F4D00A69BC9 /* Commands */,
-				EFCE40B01ADB0F4D00A69BC9 /* Arguments */,
-				EFCE40C11ADB0F4D00A69BC9 /* IO */,
-				EF8D198D1B5D8C9E00C38AB4 /* Result */,
+				EF28EE101B2C4E8C0030ED5C /* Arguments */,
+				EF28EE141B2C4E8C0030ED5C /* CLI */,
+				EF87C4BF1BAB98EE008DF84F /* Commands */,
+				EF28EE211B2C4E8C0030ED5C /* IO */,
 			);
 			name = SwiftCLI;
 			path = ../../SwiftCLI;
 			sourceTree = "<group>";
 		};
-		EFCE40B01ADB0F4D00A69BC9 /* Arguments */ = {
+		EF28EE101B2C4E8C0030ED5C /* Arguments */ = {
 			isa = PBXGroup;
 			children = (
-				EFCE40B11ADB0F4D00A69BC9 /* CommandArguments.swift */,
-				EFCE40B21ADB0F4D00A69BC9 /* Options.swift */,
-				EFCE40B31ADB0F4D00A69BC9 /* RawArguments.swift */,
+				EF28EE111B2C4E8C0030ED5C /* CommandArguments.swift */,
+				EF28EE121B2C4E8C0030ED5C /* Options.swift */,
+				EF28EE131B2C4E8C0030ED5C /* RawArguments.swift */,
 			);
 			path = Arguments;
 			sourceTree = "<group>";
 		};
-		EFCE40B41ADB0F4D00A69BC9 /* CLI */ = {
+		EF28EE141B2C4E8C0030ED5C /* CLI */ = {
 			isa = PBXGroup;
 			children = (
-				EFCE40B51ADB0F4D00A69BC9 /* CLI.swift */,
-				EFCE40B61ADB0F4D00A69BC9 /* CommandSignature.swift */,
-				EFCE40B71ADB0F4D00A69BC9 /* Extensions.swift */,
-				EFCE40B81ADB0F4D00A69BC9 /* Router.swift */,
+				EF28EE151B2C4E8C0030ED5C /* CLI.swift */,
+				EF28EE161B2C4E8C0030ED5C /* CommandSignature.swift */,
+				EF28EE171B2C4E8C0030ED5C /* Extensions.swift */,
+				EF28EE181B2C4E8C0030ED5C /* Router.swift */,
 			);
 			path = CLI;
 			sourceTree = "<group>";
 		};
-		EFCE40B91ADB0F4D00A69BC9 /* Commands */ = {
+		EF28EE211B2C4E8C0030ED5C /* IO */ = {
 			isa = PBXGroup;
 			children = (
-				EFCE40BA1ADB0F4D00A69BC9 /* Base */,
-				EFCE40BE1ADB0F4D00A69BC9 /* Special */,
-			);
-			path = Commands;
-			sourceTree = "<group>";
-		};
-		EFCE40BA1ADB0F4D00A69BC9 /* Base */ = {
-			isa = PBXGroup;
-			children = (
-				EFCE40BC1ADB0F4D00A69BC9 /* Command.swift */,
-				EFCE40BB1ADB0F4D00A69BC9 /* ChainableCommand.swift */,
-				EFCE40BD1ADB0F4D00A69BC9 /* LightweightCommand.swift */,
-			);
-			path = Base;
-			sourceTree = "<group>";
-		};
-		EFCE40BE1ADB0F4D00A69BC9 /* Special */ = {
-			isa = PBXGroup;
-			children = (
-				EFCE40BF1ADB0F4D00A69BC9 /* HelpCommand.swift */,
-				EFCE40C01ADB0F4D00A69BC9 /* VersionCommand.swift */,
-			);
-			path = Special;
-			sourceTree = "<group>";
-		};
-		EFCE40C11ADB0F4D00A69BC9 /* IO */ = {
-			isa = PBXGroup;
-			children = (
-				EFCE40C21ADB0F4D00A69BC9 /* Input.swift */,
-				EFCE40C31ADB0F4D00A69BC9 /* Output.swift */,
+				EF28EE221B2C4E8C0030ED5C /* Input.swift */,
+				EF28EE231B2C4E8C0030ED5C /* Output.swift */,
 			);
 			path = IO;
 			sourceTree = "<group>";
 		};
-		EFEB0BC6198DCEDA0040AFF0 /* SwiftCLITests */ = {
+		EF28EE431B2C5A150030ED5C /* SwiftCLITests */ = {
 			isa = PBXGroup;
 			children = (
-				EFEB0BC9198DCEDA0040AFF0 /* SwiftCLITests.swift */,
-				EFEB0BD1198DD0E90040AFF0 /* CommandArgumentsTests.swift */,
-				EFCF34751997FF41008691D1 /* OptionsTests.swift */,
-				EFCC4C5E1A5D8B310043A606 /* RouterTests.swift */,
-				EFEB0BC7198DCEDA0040AFF0 /* Supporting Files */,
+				EF28EE441B2C5A150030ED5C /* CommandArgumentsTests.swift */,
+				EF28EE461B2C5A150030ED5C /* OptionsTests.swift */,
+				EF28EE471B2C5A150030ED5C /* RouterTests.swift */,
+				EF28EE481B2C5A150030ED5C /* SwiftCLITests.swift */,
+				EF28EE631B2C665B0030ED5C /* CommandMessageGeneratorTests.swift */,
+				EF28EE451B2C5A150030ED5C /* Info.plist */,
 			);
 			name = SwiftCLITests;
 			path = ../SwiftCLITests;
 			sourceTree = "<group>";
 		};
-		EFEB0BC7198DCEDA0040AFF0 /* Supporting Files */ = {
+		EF87C4BF1BAB98EE008DF84F /* Commands */ = {
 			isa = PBXGroup;
 			children = (
-				EFEB0BC8198DCEDA0040AFF0 /* Info.plist */,
+				EF87C4C01BAB98EE008DF84F /* ChainableCommand.swift */,
+				EF87C4C11BAB98EE008DF84F /* Command.swift */,
+				EF87C4C21BAB98EE008DF84F /* CommandMessageGenerator.swift */,
+				EF87C4C31BAB98EE008DF84F /* LightweightCommand.swift */,
+				EF87C4C41BAB98EE008DF84F /* Special */,
 			);
-			name = "Supporting Files";
+			path = Commands;
+			sourceTree = "<group>";
+		};
+		EF87C4C41BAB98EE008DF84F /* Special */ = {
+			isa = PBXGroup;
+			children = (
+				EF87C4C51BAB98EE008DF84F /* HelpCommand.swift */,
+				EF87C4C61BAB98EE008DF84F /* VersionCommand.swift */,
+			);
+			path = Special;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		EF92BF6C198AEF7900BAA12B /* Example */ = {
+		EF28EE041B2C4E7A0030ED5C /* Example */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = EF92BF74198AEF7900BAA12B /* Build configuration list for PBXNativeTarget "Example" */;
+			buildConfigurationList = EF28EE0C1B2C4E7A0030ED5C /* Build configuration list for PBXNativeTarget "Example" */;
 			buildPhases = (
-				EF92BF69198AEF7900BAA12B /* Sources */,
-				EF92BF6A198AEF7900BAA12B /* Frameworks */,
-				EF92BF6B198AEF7900BAA12B /* Copy Files */,
-				EFC9E18D19910A4500BC9B48 /* ShellScript */,
+				EF28EE011B2C4E7A0030ED5C /* Sources */,
+				EF28EE021B2C4E7A0030ED5C /* Frameworks */,
+				EF28EE031B2C4E7A0030ED5C /* CopyFiles */,
+				EF28EE621B2C64880030ED5C /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -276,77 +244,75 @@
 			);
 			name = Example;
 			productName = Example;
-			productReference = EF92BF6D198AEF7900BAA12B /* Example */;
+			productReference = EF28EE051B2C4E7A0030ED5C /* Example */;
 			productType = "com.apple.product-type.tool";
 		};
-		EFEB0BC4198DCEDA0040AFF0 /* SwiftCLITests */ = {
+		EF28EE391B2C59CB0030ED5C /* SwiftCLITests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = EFEB0BCD198DCEDA0040AFF0 /* Build configuration list for PBXNativeTarget "SwiftCLITests" */;
+			buildConfigurationList = EF28EE3F1B2C59CB0030ED5C /* Build configuration list for PBXNativeTarget "SwiftCLITests" */;
 			buildPhases = (
-				EFEB0BC1198DCEDA0040AFF0 /* Sources */,
-				EFEB0BC2198DCEDA0040AFF0 /* Frameworks */,
-				EFEB0BC3198DCEDA0040AFF0 /* Resources */,
+				EF28EE361B2C59CB0030ED5C /* Sources */,
+				EF28EE371B2C59CB0030ED5C /* Frameworks */,
+				EF28EE381B2C59CB0030ED5C /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				EFEB0BD4198DD1790040AFF0 /* PBXTargetDependency */,
-				EFEB0BD6198DD1850040AFF0 /* PBXTargetDependency */,
-				EFEB0C07198DD1B40040AFF0 /* PBXTargetDependency */,
+				EF28EE4F1B2C5AB00030ED5C /* PBXTargetDependency */,
 			);
 			name = SwiftCLITests;
 			productName = SwiftCLITests;
-			productReference = EFEB0BC5198DCEDA0040AFF0 /* SwiftCLITests.xctest */;
+			productReference = EF28EE3A1B2C59CB0030ED5C /* SwiftCLITests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		EF92BF65198AEF7900BAA12B /* Project object */ = {
+		EF28EDFD1B2C4E7A0030ED5C /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0600;
+				LastUpgradeCheck = 0700;
 				ORGANIZATIONNAME = jakeheis;
 				TargetAttributes = {
-					EF92BF6C198AEF7900BAA12B = {
-						CreatedOnToolsVersion = 6.0;
+					EF28EE041B2C4E7A0030ED5C = {
+						CreatedOnToolsVersion = 7.0;
 					};
-					EFEB0BC4198DCEDA0040AFF0 = {
-						CreatedOnToolsVersion = 6.0;
-						TestTargetID = EF92BF6C198AEF7900BAA12B;
+					EF28EE391B2C59CB0030ED5C = {
+						CreatedOnToolsVersion = 7.0;
 					};
 				};
 			};
-			buildConfigurationList = EF92BF68198AEF7900BAA12B /* Build configuration list for PBXProject "Example" */;
+			buildConfigurationList = EF28EE001B2C4E7A0030ED5C /* Build configuration list for PBXProject "Example" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
 			);
-			mainGroup = EF92BF64198AEF7900BAA12B;
-			productRefGroup = EF92BF6E198AEF7900BAA12B /* Products */;
+			mainGroup = EF28EDFC1B2C4E7A0030ED5C;
+			productRefGroup = EF28EE061B2C4E7A0030ED5C /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				EF92BF6C198AEF7900BAA12B /* Example */,
-				EFEB0BC4198DCEDA0040AFF0 /* SwiftCLITests */,
+				EF28EE041B2C4E7A0030ED5C /* Example */,
+				EF28EE391B2C59CB0030ED5C /* SwiftCLITests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		EFEB0BC3198DCEDA0040AFF0 /* Resources */ = {
+		EF28EE381B2C59CB0030ED5C /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EF28EE4A1B2C5A150030ED5C /* Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		EFC9E18D19910A4500BC9B48 /* ShellScript */ = {
+		EF28EE621B2C64880030ED5C /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -357,85 +323,76 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "lowercase_name=\"baker\"\nnew_path=/usr/local/bin/$lowercase_name\n\nln -nsf \"$BUILT_PRODUCTS_DIR/$PRODUCT_NAME\" \"$new_path\"\n";
-			showEnvVarsInLog = 0;
+			shellScript = "lowercase_name=baker\nnew_path=/usr/local/bin/$lowercase_name\n\nif [ ! -f $new_path ]; then ln -s \"$BUILT_PRODUCTS_DIR/$PRODUCT_NAME\" \"$new_path\";fi";
 		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		EF92BF69198AEF7900BAA12B /* Sources */ = {
+		EF28EE011B2C4E7A0030ED5C /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EF8D198F1B5D8C9E00C38AB4 /* Result.swift in Sources */,
-				EFCE40D21ADB0FDA00A69BC9 /* CLI.swift in Sources */,
-				EFCE40D31ADB0FDA00A69BC9 /* CommandSignature.swift in Sources */,
-				EFCE40D41ADB0FDA00A69BC9 /* Extensions.swift in Sources */,
-				EFCE40D51ADB0FDA00A69BC9 /* Router.swift in Sources */,
-				EFCE40D61ADB0FDA00A69BC9 /* Command.swift in Sources */,
-				EFCE40D71ADB0FDA00A69BC9 /* ChainableCommand.swift in Sources */,
-				EFCE40D81ADB0FDA00A69BC9 /* LightweightCommand.swift in Sources */,
-				EFCE40D91ADB0FDA00A69BC9 /* HelpCommand.swift in Sources */,
-				EFCE40DA1ADB0FDA00A69BC9 /* VersionCommand.swift in Sources */,
-				EFCE40DB1ADB0FDA00A69BC9 /* CommandArguments.swift in Sources */,
-				EFCE40DC1ADB0FDA00A69BC9 /* Options.swift in Sources */,
-				EFCE40DD1ADB0FDA00A69BC9 /* RawArguments.swift in Sources */,
-				EFCE40DE1ADB0FDA00A69BC9 /* Input.swift in Sources */,
-				EFCE40DF1ADB0FDA00A69BC9 /* Output.swift in Sources */,
-				EFEB0B55198C4D200040AFF0 /* BakeCommand.swift in Sources */,
-				EFA57FDF19A151BC00340DD8 /* RecipeCommand.swift in Sources */,
-				EF92BF71198AEF7900BAA12B /* main.swift in Sources */,
+				EF28EE351B2C4E9E0030ED5C /* RecipeCommand.swift in Sources */,
+				EF28EE301B2C4E8C0030ED5C /* Input.swift in Sources */,
+				EF28EE2A1B2C4E8C0030ED5C /* Router.swift in Sources */,
+				EF87C4CB1BAB98EE008DF84F /* CommandMessageGenerator.swift in Sources */,
+				EF28EE281B2C4E8C0030ED5C /* CommandSignature.swift in Sources */,
+				EF28EE241B2C4E8C0030ED5C /* CommandArguments.swift in Sources */,
+				EF87C4C71BAB98EE008DF84F /* ChainableCommand.swift in Sources */,
+				EF87C4D11BAB98EE008DF84F /* VersionCommand.swift in Sources */,
+				EF28EE261B2C4E8C0030ED5C /* RawArguments.swift in Sources */,
+				EF28EE271B2C4E8C0030ED5C /* CLI.swift in Sources */,
+				EF87C4C91BAB98EE008DF84F /* Command.swift in Sources */,
+				EF28EE311B2C4E8C0030ED5C /* Output.swift in Sources */,
+				EF28EE251B2C4E8C0030ED5C /* Options.swift in Sources */,
+				EF87C4CF1BAB98EE008DF84F /* HelpCommand.swift in Sources */,
+				EF96F95E1B2CD96B00454C13 /* Bakefile.swift in Sources */,
+				EF28EE091B2C4E7A0030ED5C /* main.swift in Sources */,
+				EF28EE341B2C4E9E0030ED5C /* BakeCommand.swift in Sources */,
+				EF87C4CD1BAB98EE008DF84F /* LightweightCommand.swift in Sources */,
+				EF28EE291B2C4E8C0030ED5C /* Extensions.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		EFEB0BC1198DCEDA0040AFF0 /* Sources */ = {
+		EF28EE361B2C59CB0030ED5C /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EFCE40C81ADB0F4D00A69BC9 /* CommandSignature.swift in Sources */,
-				EFCF34761997FF41008691D1 /* OptionsTests.swift in Sources */,
-				EF8D19901B5D8C9E00C38AB4 /* Result.swift in Sources */,
-				EFCE40D11ADB0F4D00A69BC9 /* Output.swift in Sources */,
-				EFCC4C5F1A5D8B310043A606 /* RouterTests.swift in Sources */,
-				EFCE40CE1ADB0F4D00A69BC9 /* HelpCommand.swift in Sources */,
-				EFCE40CA1ADB0F4D00A69BC9 /* Router.swift in Sources */,
-				EFCE40D01ADB0F4D00A69BC9 /* Input.swift in Sources */,
-				EFEB0BCA198DCEDA0040AFF0 /* SwiftCLITests.swift in Sources */,
-				EFCE40C41ADB0F4D00A69BC9 /* CommandArguments.swift in Sources */,
-				EFCE40CF1ADB0F4D00A69BC9 /* VersionCommand.swift in Sources */,
-				EFCE40C71ADB0F4D00A69BC9 /* CLI.swift in Sources */,
-				EFCE40CB1ADB0F4D00A69BC9 /* ChainableCommand.swift in Sources */,
-				EFCE40CD1ADB0F4D00A69BC9 /* LightweightCommand.swift in Sources */,
-				EFCE40C61ADB0F4D00A69BC9 /* RawArguments.swift in Sources */,
-				EF8C1C701ACCFB79008AB225 /* CommandArgumentsTests.swift in Sources */,
-				EFCE40CC1ADB0F4D00A69BC9 /* Command.swift in Sources */,
-				EFCE40C91ADB0F4D00A69BC9 /* Extensions.swift in Sources */,
-				EFCE40C51ADB0F4D00A69BC9 /* Options.swift in Sources */,
+				EF87C4D21BAB98EE008DF84F /* VersionCommand.swift in Sources */,
+				EF87C4C81BAB98EE008DF84F /* ChainableCommand.swift in Sources */,
+				EF28EE501B2C5AC20030ED5C /* CommandArguments.swift in Sources */,
+				EF28EE511B2C5AC20030ED5C /* Options.swift in Sources */,
+				EF87C4CC1BAB98EE008DF84F /* CommandMessageGenerator.swift in Sources */,
+				EF28EE521B2C5AC20030ED5C /* RawArguments.swift in Sources */,
+				EF28EE531B2C5AC20030ED5C /* CLI.swift in Sources */,
+				EF28EE541B2C5AC20030ED5C /* CommandSignature.swift in Sources */,
+				EF28EE551B2C5AC20030ED5C /* Extensions.swift in Sources */,
+				EF87C4CA1BAB98EE008DF84F /* Command.swift in Sources */,
+				EF28EE561B2C5AC20030ED5C /* Router.swift in Sources */,
+				EF28EE5C1B2C5AC20030ED5C /* Input.swift in Sources */,
+				EF87C4D01BAB98EE008DF84F /* HelpCommand.swift in Sources */,
+				EF28EE5D1B2C5AC20030ED5C /* Output.swift in Sources */,
+				EF87C4CE1BAB98EE008DF84F /* LightweightCommand.swift in Sources */,
+				EF28EE4B1B2C5A150030ED5C /* OptionsTests.swift in Sources */,
+				EF28EE4C1B2C5A150030ED5C /* RouterTests.swift in Sources */,
+				EF28EE4D1B2C5A150030ED5C /* SwiftCLITests.swift in Sources */,
+				EF28EE491B2C5A150030ED5C /* CommandArgumentsTests.swift in Sources */,
+				EF28EE641B2C665B0030ED5C /* CommandMessageGeneratorTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		EFEB0BD4198DD1790040AFF0 /* PBXTargetDependency */ = {
+		EF28EE4F1B2C5AB00030ED5C /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = EF92BF6C198AEF7900BAA12B /* Example */;
-			targetProxy = EFEB0BD3198DD1790040AFF0 /* PBXContainerItemProxy */;
-		};
-		EFEB0BD6198DD1850040AFF0 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = EF92BF6C198AEF7900BAA12B /* Example */;
-			targetProxy = EFEB0BD5198DD1850040AFF0 /* PBXContainerItemProxy */;
-		};
-		EFEB0C07198DD1B40040AFF0 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = EF92BF6C198AEF7900BAA12B /* Example */;
-			targetProxy = EFEB0C06198DD1B40040AFF0 /* PBXContainerItemProxy */;
+			target = EF28EE041B2C4E7A0030ED5C /* Example */;
+			targetProxy = EF28EE4E1B2C5AB00030ED5C /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		EF92BF72198AEF7900BAA12B /* Debug */ = {
+		EF28EE0A1B2C4E7A0030ED5C /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -453,16 +410,17 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
 				);
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
@@ -477,7 +435,7 @@
 			};
 			name = Debug;
 		};
-		EF92BF73198AEF7900BAA12B /* Release */ = {
+		EF28EE0B1B2C4E7A0030ED5C /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -494,12 +452,12 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				COPY_PHASE_STRIP = YES;
+				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
@@ -512,62 +470,38 @@
 			};
 			name = Release;
 		};
-		EF92BF75198AEF7900BAA12B /* Debug */ = {
+		EF28EE0D1B2C4E7A0030ED5C /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build/Mac",
-					"$(LOCAL_LIBRARY_DIR)/Frameworks",
-				);
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) '@executable_path/../Frameworks' '@loader_path/Frameworks'";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
 		};
-		EF92BF76198AEF7900BAA12B /* Release */ = {
+		EF28EE0E1B2C4E7A0030ED5C /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build/Mac",
-					"$(LOCAL_LIBRARY_DIR)/Frameworks",
-				);
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) '@executable_path/../Frameworks' '@loader_path/Frameworks'";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
 		};
-		EFEB0BCB198DCEDA0040AFF0 /* Debug */ = {
+		EF28EE401B2C59CB0030ED5C /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COMBINE_HIDPI_IMAGES = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(DEVELOPER_FRAMEWORKS_DIR)",
-					"$(inherited)",
-				);
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
 				INFOPLIST_FILE = ../SwiftCLITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = jakeheis.SwiftCLITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
 		};
-		EFEB0BCC198DCEDA0040AFF0 /* Release */ = {
+		EF28EE411B2C59CB0030ED5C /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COMBINE_HIDPI_IMAGES = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(DEVELOPER_FRAMEWORKS_DIR)",
-					"$(inherited)",
-				);
 				INFOPLIST_FILE = ../SwiftCLITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = jakeheis.SwiftCLITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
@@ -575,34 +509,34 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		EF92BF68198AEF7900BAA12B /* Build configuration list for PBXProject "Example" */ = {
+		EF28EE001B2C4E7A0030ED5C /* Build configuration list for PBXProject "Example" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				EF92BF72198AEF7900BAA12B /* Debug */,
-				EF92BF73198AEF7900BAA12B /* Release */,
+				EF28EE0A1B2C4E7A0030ED5C /* Debug */,
+				EF28EE0B1B2C4E7A0030ED5C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		EF92BF74198AEF7900BAA12B /* Build configuration list for PBXNativeTarget "Example" */ = {
+		EF28EE0C1B2C4E7A0030ED5C /* Build configuration list for PBXNativeTarget "Example" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				EF92BF75198AEF7900BAA12B /* Debug */,
-				EF92BF76198AEF7900BAA12B /* Release */,
+				EF28EE0D1B2C4E7A0030ED5C /* Debug */,
+				EF28EE0E1B2C4E7A0030ED5C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		EFEB0BCD198DCEDA0040AFF0 /* Build configuration list for PBXNativeTarget "SwiftCLITests" */ = {
+		EF28EE3F1B2C59CB0030ED5C /* Build configuration list for PBXNativeTarget "SwiftCLITests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				EFEB0BCB198DCEDA0040AFF0 /* Debug */,
-				EFEB0BCC198DCEDA0040AFF0 /* Release */,
+				EF28EE401B2C59CB0030ED5C /* Debug */,
+				EF28EE411B2C59CB0030ED5C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
-	rootObject = EF92BF65198AEF7900BAA12B /* Project object */;
+	rootObject = EF28EDFD1B2C4E7A0030ED5C /* Project object */;
 }

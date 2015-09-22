@@ -23,14 +23,14 @@ class OptionsTests: XCTestCase {
     
     func testOnFlags() {
         options.onFlags(["-a", "--awesome"], block: nil)
-        XCTAssert(contains(options.flagOptions.keys, "-a"), "Options should expect flags after a call to onFlags")
-        XCTAssert(contains(options.flagOptions.keys, "--awesome"), "Options should expect flags after a call to onFlags")
+        XCTAssert(options.allFlagOptions.keys.contains("-a"), "Options should expect flags after a call to onFlags")
+        XCTAssert(options.allFlagOptions.keys.contains("--awesome"), "Options should expect flags after a call to onFlags")
     }
     
     func testOnKeys() {
         options.onKeys(["-a", "--awesome"], block: nil)
-        XCTAssert(contains(options.keyOptions.keys, "-a"), "Options should expect keys after a call to onKeys")
-        XCTAssert(contains(options.keyOptions.keys, "--awesome"), "Options should expect keys after a call to onKeys")
+        XCTAssert(options.allKeyOptions.keys.contains("-a"), "Options should expect keys after a call to onKeys")
+        XCTAssert(options.allKeyOptions.keys.contains("--awesome"), "Options should expect keys after a call to onKeys")
     }
     
     func testSimpleFlagParsing() {
@@ -151,6 +151,22 @@ class OptionsTests: XCTestCase {
         XCTAssertFalse(options.misusedOptionsPresent(), "Options should recognize all flags added with onFlags")
         
         XCTAssert(aBlockCalled && bBlockCalled, "Options should execute the closures of passed flags")
+    }
+    
+    func testExitEarlyFlags() {
+        options.onFlags(["-a"], block: nil)
+        options.onFlags(["-b"], block: nil)
+        options.exitEarlyOptions = ["-a"]
+        
+        var arguments = RawArguments(argumentString: "tester -a")
+        options.recognizeOptionsInArguments(arguments)
+        XCTAssert(options.exitEarly, "Options should set exitEarly on when exit early flag is given")
+        
+        options.exitEarly = false
+        
+        arguments = RawArguments(argumentString: "tester -b")
+        options.recognizeOptionsInArguments(arguments)
+        XCTAssertFalse(options.exitEarly, "Options should set exitEarly on when exit early flag is given")
     }
     
 }

@@ -8,24 +8,26 @@
 
 import Foundation
 
-public class VersionCommand: Command {
+public class VersionCommand: CommandType {
     
-    override public func commandName() -> String  {
+    public var commandName: String  {
         return "version"
     }
     
-    override public func commandShortDescription() -> String  {
+    public var commandSignature: String {
+        return ""
+    }
+    
+    public var commandShortDescription: String  {
         return "Prints the current version of this app"
     }
     
-    override public func commandShortcut() -> String?  {
+    public var commandShortcut: String?  {
         return "-v"
     }
     
-    override public func execute() -> ExecutionResult  {
-        println("Version: \(CLI.appVersion())")
-        
-        return success()
+    public func execute(arguments: CommandArguments) throws  {
+        print("Version: \(CLI.appVersion)")
     }
     
 }

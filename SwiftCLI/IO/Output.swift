@@ -8,12 +8,16 @@
 
 import Foundation
 
-func printlnError(error: String) {
+func printError(error: String) {
+    printError(error, terminator: "\n")
+}
+
+func printError(error: String, terminator: String) {
     let handle = NSFileHandle.fileHandleWithStandardError()
-    let fullString = error + "\n"
+    let fullString = error + terminator
     if let errorData = fullString.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: false) {
         handle.writeData(errorData)
     } else {
-        println(error)
+        print(error)
     }
 }

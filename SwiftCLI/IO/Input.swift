@@ -10,31 +10,31 @@ import Foundation
 
 public class Input {
     
-    public class func awaitInput(#message: String?) -> String {
+    public class func awaitInput(message message: String?) -> String {
         if let message = message {
-            println(message)
+            print(message)
         }
         
         let fh = NSFileHandle.fileHandleWithStandardInput()
         var input = NSString(data: fh.availableData, encoding: NSUTF8StringEncoding) as! String
-        input = input.substringToIndex(advance(input.endIndex, -1))
+        input = input.substringToIndex(input.endIndex.advancedBy(-1))
         
         return input
     }
     
-    public class func awaitInputWithValidation(#message: String?, validation: (input: String) -> Bool) -> String {
+    public class func awaitInputWithValidation(message message: String?, validation: (input: String) -> Bool) -> String {
         while (true) {
             let str = awaitInput(message: message)
             
             if validation(input: str) {
                 return str
             } else {
-                println("Invalid input")
+                print("Invalid input")
             }
         }
     }
     
-    public class func awaitInputWithConversion<T>(#message: String?, conversion: (input: String) -> T?) -> T {
+    public class func awaitInputWithConversion<T>(message message: String?, conversion: (input: String) -> T?) -> T {
         let input = awaitInputWithValidation(message: message) {(input) in
             return conversion(input: input) != nil
         }
@@ -42,11 +42,11 @@ public class Input {
         return conversion(input: input)!
     }
     
-    public class func awaitInt(#message: String?) -> Int {
-        return awaitInputWithConversion(message: message) { $0.toInt() }
+    public class func awaitInt(message message: String?) -> Int {
+        return awaitInputWithConversion(message: message) { Int($0) }
     }
     
-    public class func awaitYesNoInput(message: String = "Confirm?") -> Bool {
+    public class func awaitYesNoInput(message message: String = "Confirm?") -> Bool {
         return awaitInputWithConversion(message: "\(message) [y/N]: ") {input in
             if input.lowercaseString == "y" || input.lowercaseString == "yes" {
                 return true

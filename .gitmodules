@@ -1,3 +1,0 @@
-[submodule "Vendor/LlamaKit"]
-	path = Vendor/LlamaKit
-	url = https://github.com/LlamaKit/LlamaKit.git

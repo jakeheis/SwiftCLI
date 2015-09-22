@@ -8,48 +8,30 @@
 
 import Foundation
 
-class RecipeCommand: Command {
+class RecipeCommand: CommandType {
     
-    override func commandName() -> String {
+    var commandName: String {
         return "recipe"
     }
     
-    override func commandShortDescription() -> String {
+    var commandShortDescription: String {
         return "Creates a recipe interactively"
     }
     
-    override func commandSignature() -> String {
+    var commandSignature: String {
         return ""
     }
     
-    override func execute() -> ExecutionResult {
-        let data = NSData(contentsOfFile: "./Bakefile")
-        if data == nil {
-            return failure("No Bakefile could be found in the current directory. Run 'baker init' before this command.")
-        }
+    func execute(arguments: CommandArguments) throws {
+        let bakefile = try Bakefile()
         
-        if let data = data,
-            var bakefile = NSJSONSerialization.JSONObjectWithData(data, options: nil, error: nil)?.mutableCopy() as? NSMutableDictionary
-        {
-            let name = Input.awaitInput(message: "Name of your recipe: ")
-            let cookTime = Input.awaitInt(message: "Cook time: ")
-            let silently = Input.awaitYesNoInput(message: "Bake silently?")
-            
-            let recipe = ["name": name, "cookTime": cookTime, "silently": silently]
-            
-            var customRecipes: [NSDictionary] = bakefile["custom_recipes"] as? [NSDictionary] ?? []
-            customRecipes.append(recipe)
-            bakefile["custom_recipes"] = customRecipes
-            
-            let finalData = NSJSONSerialization.dataWithJSONObject(bakefile, options: .PrettyPrinted, error: nil)
-            if finalData?.writeToFile("./Bakefile", atomically: true) == false {
-                return failure("The Bakefile could not be written to.")
-            }
-            
-            return success()
-        } else {
-            return failure("The Bakefile could not be parsed.")
-        }
+        let name = Input.awaitInput(message: "Name of your recipe: ")
+        let cookTime = Input.awaitInt(message: "Cook time: ")
+        let silently = Input.awaitYesNoInput(message: "Bake silently?")
+        
+        let recipe = ["name": name, "cookTime": cookTime, "silently": silently]
+        
+        try bakefile.addRecipe(recipe)
     }
    
 }

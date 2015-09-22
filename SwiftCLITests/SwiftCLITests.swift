@@ -9,33 +9,44 @@
 import Cocoa
 import XCTest
 
-class SwiftCLITests: XCTestCase {
-    
+func createTestCommand(completion: ((executionString: String) -> ())? = nil) -> OptionCommandType {
     var silentFlag = false
     var times: Int = 1
+    var executionString = ""
+    
+    return ChainableCommand(commandName: "test")
+        .withSignature("<testName> [<testerName>]")
+        .withOptionsSetup {(options) in
+            options.onFlags(["-s", "--silent"], usage: "Silence all test output") {(flag) in
+                silentFlag = true
+            }
+            options.onKeys(["-t", "--times"], usage: "Number of times to run the test", valueSignature: "times") {(key, value) in
+                times = Int(value)!
+            }
+        }
+        .withExecutionBlock {(arguments) in
+            let testName = arguments.requiredArgument("testName")
+            let testerName = arguments.optionalArgument("testerName") ?? "Tester"
+            executionString = "\(testerName) will test \(testName), \(times) times"
+            if silentFlag {
+                executionString += ", silently"
+            }
+            
+            completion?(executionString: executionString)
+    }
+}
+
+class SwiftCLITests: XCTestCase {
+    
     var executionString = ""
     
     override func setUp() {
         super.setUp()
         
         CLI.setup(name: "tester")
-        CLI.registerChainableCommand(commandName: "test")
-            .withSignature("<testName> [<testerName>]")
-            .withFlagsHandled(["-s"], usage: "Silent flag", block: {(flag) in
-                self.silentFlag = true
-            })
-            .withKeysHandled(["-t"], usage: "Times to test", valueSignature: "times", block: {(key, value) in
-                self.times = value.toInt()!
-            })
-            .withExecutionBlock {(arguments, options) in
-                let testName = arguments.requiredArgument("testName")
-                let testerName = arguments.optionalArgument("testerName") ?? "Tester"
-                self.executionString = "\(testerName) will test \(testName), \(self.times) times"
-                if self.silentFlag {
-                    self.executionString += ", silently"
-                }
-                return success()
-            }
+        CLI.registerCommand(createTestCommand {(executionString) in
+            self.executionString = executionString
+        })
     }
     
     // Integration test

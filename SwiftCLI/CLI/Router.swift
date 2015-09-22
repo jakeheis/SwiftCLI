@@ -8,64 +8,73 @@
 
 import Foundation
 
-class Router {
+public class Router {
     
-    private let commands: [Command]
-    private let arguments: RawArguments
-    private let defaultCommand: Command
-    
-    struct Route {
-        let command: Command
-        let arguments: RawArguments
+    /// Optional configuration for the Router
+    public struct Config {
         
-        init(command: Command, arguments: RawArguments) {
-            self.command = command
-            self.arguments = arguments
+        /// Allow shortcut flags to be routed to commands; e.g. route -h to the HelpCommand
+        public var enableShortcutRouting: Bool = true
+        
+        init() {}
+        
+        init(enableShortcutRouting: Bool) {
+            self.enableShortcutRouting = enableShortcutRouting
         }
     }
     
-    init(commands: [Command], arguments: RawArguments, defaultCommand: Command) {
+    private let commands: [CommandType]
+    private let arguments: RawArguments
+    private let defaultCommand: CommandType
+    
+    private var config: Config
+    
+    static let CommandNotFoundError = CLIError.Error("Command not found")
+    static let ArgumentError = CLIError.Error("Router failed")
+    
+    init(commands: [CommandType], arguments: RawArguments, defaultCommand: CommandType, config: Config?) {
         self.commands = commands
         self.arguments = arguments
         self.defaultCommand = defaultCommand
+        
+        self.config = config ?? Config()
     }
     
-    func route() -> Result<Route, String> {
-        if arguments.unclassifiedArguments().count == 0 {
-            let result = Route(command: defaultCommand, arguments: arguments)
-            return success(result)
+    func route() throws -> CommandType {
+        guard arguments.unclassifiedArguments().count > 0 else {
+            return defaultCommand
         }
         
-        return findCommand().map { Route(command: $0, arguments: self.arguments) }
+        return try findCommand()
     }
     
     // MARK: - Privates
     
-    private func findCommand() -> Result<Command, String> {
-        var command: Command?
+    private func findCommand() throws -> CommandType {
+        var command: CommandType?
         
-        if let commandSearchName = arguments.firstArgumentOfType(.Unclassified) {
-            
-            if commandSearchName.hasPrefix("-") {
-                command = commands.filter({ $0.commandShortcut() == commandSearchName }).first
-                
-                if command == nil {
-                    command = defaultCommand
-                } else {
-                    arguments.classifyArgument(argument: commandSearchName, type: .CommandName)
-                }
-            } else {
-                command = commands.filter({ $0.commandName() == commandSearchName }).first
-                arguments.classifyArgument(argument: commandSearchName, type: .CommandName)
-            }
-            
-            if let command = command {
-                return success(command)
-            }
-            
+        guard let commandSearchName = arguments.firstArgumentOfType(.Unclassified) else {
+            throw Router.ArgumentError
         }
         
-        return failure("Command not found")
+        if commandSearchName.hasPrefix("-") {
+            if let shortcutCommand = commands.filter({ $0.commandShortcut == commandSearchName }).first
+                where config.enableShortcutRouting {
+                command = shortcutCommand
+                arguments.classifyArgument(argument: commandSearchName, type: .CommandName)
+            } else {
+                command = defaultCommand
+            }
+        } else {
+            command = commands.filter { $0.commandName == commandSearchName }.first
+            arguments.classifyArgument(argument: commandSearchName, type: .CommandName)
+        }
+        
+        guard let foundCommand = command else {
+            throw Router.CommandNotFoundError
+        }
+        
+        return foundCommand
     }
     
 }

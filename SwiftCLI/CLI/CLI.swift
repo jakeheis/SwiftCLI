@@ -12,137 +12,172 @@ public class CLI: NSObject {
     
     // MARK: - Information
     
-    private struct CLIStatic {
-        static var appName = ""
-        static var appVersion = "1.0"
-        static var appDescription = ""
+    static var appName = ""
+    static var appVersion = "1.0"
+    static var appDescription = ""
+    
+    private static var commands: [CommandType] = []
+    
+    static var helpCommand: HelpCommand? = HelpCommand()
+    static var versionComand: CommandType? = VersionCommand()
+    static var defaultCommand: CommandType = helpCommand!
+    
+    static var routerConfig: Router.Config?
+    
+    // MARK: - Setup
+    
+    /**
+        Sets the CLI up with basic information
+    
+        - Parameter name: name of the app, printed in the help message and command usage statements
+        - Parameter version: version of the app, printed by the VersionCommand
+        - Parameter description: description of the app, printed in the help message
+    */
+    public class func setup(name name: String, version: String? = nil, description: String? = nil) {
+        appName = name
         
-        static var commands: [Command] = []
-        static var helpCommand: HelpCommand? = HelpCommand()
-        static var versionCommand: VersionCommand? = VersionCommand()
-        static var defaultCommand: Command = CLIStatic.helpCommand!
-    }
-    
-    public class func setup(#name: String, version: String? = nil, description: String? = nil) {
-        CLIStatic.appName = name
-        if let v = version     { CLIStatic.appVersion = v }
-        if let d = description { CLIStatic.appDescription = d }
-    }
-    
-    public class func appName() -> String {
-        return CLIStatic.appName
-    }
-    
-    public class func appDescription() -> String {
-        return CLIStatic.appDescription
+        if let version = version {
+            appVersion = version
+        }
+        
+        if let description = description {
+            appDescription = description
+        }
     }
 
     public class func appVersion() -> String {
         return CLIStatic.appVersion
     }
     
-    // MARK: - Registering commands
+    /**
+        Registers a command with the CLI for routing and execution. All commands must be registered 
+        with this method or its siblings before calling `CLI.go()`
     
-    public class func registerCommand(command: Command) {
-        CLIStatic.commands.append(command)
+        - Parameter command: the command to be registered
+    */
+    public class func registerCommand(command: CommandType) {
+        commands.append(command)
     }
     
-    public class func registerCommands(commands: [Command]) {
+    /**
+        Registers a group of commands with the CLI for routing and execution. All commands must be registered
+        with this method or its siblings before calling `CLI.go()`
+    
+        - Parameter commands: the commands to be registered
+    */
+    public class func registerCommands(commands: [CommandType]) {
         commands.each { self.registerCommand($0) }
     }
     
-    public class func registerChainableCommand(#commandName: String) -> ChainableCommand {
+    /**
+        Registers a chainable command with the CLI for routing and execution.
+    
+        - Parameter commandName: the name of the new chainable command
+        - Returns: a new chainable command for immediate chaining
+    */
+    public class func registerChainableCommand(commandName commandName: String) -> ChainableCommand {
         let chainable = ChainableCommand(commandName: commandName)
         registerCommand(chainable)
         return chainable
     }
     
-    public class func registerCustomHelpCommand(helpCommand: HelpCommand?) {
-        CLIStatic.helpCommand = helpCommand
-    }
-    
-    public class func registerCustomVersionCommand(versionCommand: VersionCommand?) {
-        CLIStatic.versionCommand = versionCommand
-    }
-    
-    public class func registerDefaultCommand(command: Command) {
-        CLIStatic.defaultCommand = command
-    }
-    
     // MARK: - Go
     
+    /**
+        Kicks off the entire CLI process, routing to and executing the command specified by the passed arguments. 
+        Uses the arguments passed in the command line.
+    
+        - SeeAlso: `debugGoWithArgumentString()` when debugging
+        - Returns: a CLIResult (Int) representing the success of the CLI in routing to and executing the correct
+                    command. Usually should be passed to `exit(result)`
+    */
     public class func go() -> CLIResult {
        return goWithArguments(RawArguments())
     }
     
+    /**
+        Kicks off the entire CLI process, routing to and executing the command specified by the passed arguments.
+        Uses the arguments passed in as an argument.
+    
+        - Parameter argumentString: the arguments to use when running the CLI
+        - SeeAlso: `go()` when running from the command line
+        - Returns: a CLIResult (Int) representing the success of the CLI in routing to and executing the correct
+                    command. Usually should be passed to `exit(result)`
+    */
     public class func debugGoWithArgumentString(argumentString: String) -> CLIResult {
+        print("[Debug Mode]")
         return goWithArguments(RawArguments(argumentString: argumentString))
     }
     
     private class func goWithArguments(arguments: RawArguments) -> CLIResult {
-        let result = routeCommand(arguments: arguments)
-        .flatMap( {(route) in
-            return self.setupOptionsAndArguments(route)
-        })
-        .flatMap( {(command) -> Command.ExecutionResult in
-            if command.showingHelp { // Don't actually execute command if showing help, e.g. git clone -h
-                return success()
+        do {
+            let command = try routeCommand(arguments: arguments)
+            let result = try setupOptionsAndArguments(command, arguments: arguments)
+            if let arguments = result.arguments where result.execute {
+                try command.execute(arguments)
             }
             
-            return command.execute()
-        })
-        
-        if result.isSuccess {
             return CLIResult.Success
-        } else {
-            if let error = result.error where !error.isEmpty {
-                printlnError(error)
-            }
-            return CLIResult.Error
+        } catch CLIError.Error(let error) {
+            printError(error)
+        } catch CLIError.EmptyError {
+            // Do nothing
+        } catch _ {
+            printError("An error occurred")
         }
+        
+        return CLIResult.Error
     }
     
     // MARK: - Privates
     
-    class private func routeCommand(#arguments: RawArguments) -> Result<Router.Route, String> {
-        var allCommands = CLIStatic.commands
-        if let hc = CLIStatic.helpCommand {
-            hc.allCommands = CLIStatic.commands
+    class private func routeCommand(arguments arguments: RawArguments) throws -> CommandType {
+        var allCommands = commands
+        if let hc = helpCommand {
+            hc.allCommands = commands
             allCommands.append(hc)
         }
-        if let vc = CLIStatic.versionCommand {
+        if let vc = versionComand {
             allCommands.append(vc)
         }
         
-        let router = Router(commands: allCommands, arguments: arguments, defaultCommand: CLIStatic.defaultCommand)
-        
-        return router.route()
+        let router = Router(commands: allCommands, arguments: arguments, defaultCommand: defaultCommand, config: routerConfig)        
+        return try router.route()
     }
-    
-    class private func setupOptionsAndArguments(route: Router.Route) -> Result<Command, String> {
-        route.command.setupExpectedOptions()
         
-        var errorMessage = ""
-        
-        if route.command.recognizeOptionsInArguments(route.arguments) {
-            if route.command.showingHelp {
-                return success(route.command)
+    class private func setupOptionsAndArguments(command: CommandType, arguments: RawArguments) throws -> (execute: Bool, arguments: CommandArguments?) {
+        if let optionCommand = command as? OptionCommandType {
+            let options = Options()
+          
+            optionCommand.internalSetupOptions(options)
+            options.recognizeOptionsInArguments(arguments)
+            
+            if options.exitEarly { // True if -h flag given (show help but exit early before executing command)
+                return (false, nil)
             }
             
-            let commandSignature = CommandSignature(route.command.commandSignature())
-            let commandArgumentsResult = CommandArguments.fromRawArguments(route.arguments, signature: commandSignature)
-            
-            if let commandArguments = commandArgumentsResult.value {
-                route.command.arguments = commandArguments
-                return success(route.command)
+            if options.misusedOptionsPresent() {
+                if let message = CommandMessageGenerator.generateMisusedOptionsStatement(command: optionCommand, options: options) {
+                    printError(message)
+                }
+                if optionCommand.failOnUnrecognizedOptions {
+                    throw CLIError.EmptyError
+                }
             }
-            
-            errorMessage = commandArgumentsResult.error ?? ""
         }
         
-        return failure(errorMessage)
+        let commandSignature = CommandSignature(command.commandSignature)
+        
+        return (true, try CommandArguments.fromRawArguments(arguments, signature: commandSignature))
     }
     
+}
+
+// MARK: -
+
+public enum CLIError: ErrorType {
+    case Error(String)
+    case EmptyError
 }
 
 public typealias CLIResult = Int32

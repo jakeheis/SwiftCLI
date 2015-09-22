@@ -8,67 +8,57 @@
 
 import Foundation
 
-class BakeCommand: Command {
-    
+class BakeCommand: OptionCommandType {
+        
     private var quickly = false
     private var silently = false
     private var topping: String? = nil
     
-    override func commandName() -> String  {
+    var commandName: String  {
         return "bake"
     }
     
-    override func commandShortDescription() -> String  {
-        return "Bakes the items in the Bakefile"
-    }
-    
-    override func commandSignature() -> String  {
+    var commandSignature: String  {
         return "[<item>]"
     }
     
-    override func handleOptions()  {
-        onFlags(["-q", "--quickly"], usage: "Bake more quickly") {(flag) in
+    var commandShortDescription: String  {
+        return "Bakes the items in the Bakefile"
+    }
+    
+    func setupOptions(options: Options) {
+        options.onFlags(["-q", "--quickly"], usage: "Bake more quickly") {(flag) in
             self.quickly = true
         }
         
-        onFlag("-s", usage: "Bake silently") {(flag) in
+        options.onFlags(["-s", "--silently"], usage: "Bake silently") {(flag) in
             self.silently = true
         }
         
-        onKeys(["-t", "--with-topping"], usage: "Adds a topping to the baked good", valueSignature: "topping") {(key, value) in
+        options.onKeys(["-t", "--with-topping"], usage: "Adds a topping to the baked good", valueSignature: "topping") {(key, value) in
             self.topping = value
         }
     }
     
-    override func execute() -> ExecutionResult  {
+    func execute(arguments: CommandArguments) throws  {
         if let item = arguments.optionalArgument("item") {
             bakeItem(item)
         } else {
-            let data = NSData(contentsOfFile: "./Bakefile")
-            if data == nil {
-                return failure("No Bakefile could be found in the current directory")
-            }
+            let items = try loadBakefileItems()
             
-            if  let data = data,
-                let dict = NSJSONSerialization.JSONObjectWithData(data, options: nil, error: nil) as? NSDictionary,
-                let items = dict["items"] as? [String] {
-                
-                for item in items {
-                    bakeItem(item)
-                }
-            } else {
-                return failure("The Bakefile could not be parsed")
+            for item in items {
+                bakeItem(item)
             }
         }
-        
-        return success()
     }
+    
+    // MARK: - Baking
     
     private func bakeItem(item: String) {
         let quicklyStr = quickly ? " quickly" : ""
         let toppingStr = topping == nil ? "" : " topped with \(topping!)"
 
-        println("Baking a \(item)\(quicklyStr)\(toppingStr)")
+        print("Baking a \(item)\(quicklyStr)\(toppingStr)")
         
         var cookTime = 4
         
@@ -85,25 +75,43 @@ class BakeCommand: Command {
         for _ in 1...cookTime {
             NSThread.sleepForTimeInterval(1)
             if !silently {
-                println("...")
+                print("...")
             }
         }
         
-        println("Your \(item) is now ready!")
+        print("Your \(item) is now ready!")
     }
     
     private func checkForRecipe(item: String) -> NSDictionary? {
-        if let data = NSData(contentsOfFile: "./Bakefile"),
-            let dict = NSJSONSerialization.JSONObjectWithData(data, options: nil, error: nil) as? NSDictionary,
-            let customRecipes = dict["custom_recipes"] as? [NSDictionary] {
+        do {
+            let recipes = try loadBakefileRecipes()
             
-            for recipe in customRecipes {
+            for recipe in recipes {
                 if recipe["name"] as? String == item {
                     return recipe
                 }
             }
+        } catch {
+            return nil
         }
-
+        
         return nil
     }
+    
+    // MARK: - Loading
+    
+    private func loadBakefileItems() throws -> [String] {
+        let bakefile = try Bakefile()
+        let items = try bakefile.items()
+        
+        return items
+    }
+    
+    private func loadBakefileRecipes() throws -> [NSDictionary] {
+        let bakefile = try Bakefile()
+        let recipes = try bakefile.customRecipes()
+        
+        return recipes
+    }
+    
 }

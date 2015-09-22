@@ -10,7 +10,7 @@ import Foundation
 
 extension String {
     
-    func padFront(#totalLength: Int) -> String {
+    func padFront(totalLength totalLength: Int) -> String {
         var spacing = ""
         for _ in 0...totalLength {
             spacing += " "
@@ -20,8 +20,8 @@ extension String {
     }
     
     func trimEndsByLength(trimLength: Int) -> String {
-        let firstIndex = advance(startIndex, trimLength)
-        let lastIndex = advance(endIndex, -trimLength)
+        let firstIndex = startIndex.advancedBy(trimLength)
+        let lastIndex = endIndex.advancedBy(-trimLength)
         return substringWithRange(Range(start: firstIndex, end: lastIndex))
     }
     
@@ -29,14 +29,14 @@ extension String {
 
 extension Array {
     
-    func each(block: (object: T) -> ()) {
+    func each(block: (object: Element) -> ()) {
         for object in self {
             block(object: object)
         }
     }
     
-    func eachWithIndex(block: (object: T, index: Int) -> ()) {
-        for (index, object) in enumerate(self) {
+    func eachWithIndex(block: (object: Element, index: Int) -> ()) {
+        for (index, object) in self.enumerate() {
             block(object: object, index: index)
         }
     }

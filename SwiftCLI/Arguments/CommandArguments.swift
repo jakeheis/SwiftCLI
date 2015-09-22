@@ -26,26 +26,26 @@ public class CommandArguments {
     
     // Keying arguments
     
-    class func fromRawArguments(rawArguments: RawArguments, signature: CommandSignature) -> Result<CommandArguments, String> {
+    class func fromRawArguments(rawArguments: RawArguments, signature: CommandSignature) throws -> CommandArguments {
         if signature.isEmpty {
-            return handleEmptySignature(rawArguments: rawArguments)
+            return try handleEmptySignature(rawArguments: rawArguments)
         }
         
         let arguments = rawArguments.unclassifiedArguments()
         
         if arguments.count < signature.requiredParameters.count {
-            return failure(errorMessage(expectedCount: signature.requiredParameters.count, givenCount: arguments.count))
+            throw CLIError.Error(errorMessage(expectedCount: signature.requiredParameters.count, givenCount: arguments.count))
         }
         
         if !signature.collectRemainingArguments && signature.optionalParameters.isEmpty && arguments.count != signature.requiredParameters.count {
-            return failure(errorMessage(expectedCount: signature.requiredParameters.count, givenCount: arguments.count))
+            throw CLIError.Error(errorMessage(expectedCount: signature.requiredParameters.count, givenCount: arguments.count))
         }
         
         if !signature.collectRemainingArguments && arguments.count > signature.requiredParameters.count + signature.optionalParameters.count {
-            return failure(errorMessage(expectedCount: signature.requiredParameters.count + signature.optionalParameters.count, givenCount: arguments.count))
+            throw CLIError.Error(errorMessage(expectedCount: signature.requiredParameters.count + signature.optionalParameters.count, givenCount: arguments.count))
         }
         
-        var commandArguments = CommandArguments()
+        let commandArguments = CommandArguments()
         
         // First handle required arguments
         for i in 0..<signature.requiredParameters.count {
@@ -81,24 +81,29 @@ public class CommandArguments {
             commandArguments[parameter] = collectedArgument
         }
         
-        return success(commandArguments)
+        return commandArguments
     }
     
-    private class func handleEmptySignature(#rawArguments: RawArguments)-> Result<CommandArguments, String> {
-        if rawArguments.unclassifiedArguments().count == 0 {
-            return success(CommandArguments())
-        } else {
-            return failure("Expected no arguments, got \(rawArguments.unclassifiedArguments().count).")
+    private class func handleEmptySignature(rawArguments rawArguments: RawArguments) throws -> CommandArguments {
+        guard rawArguments.unclassifiedArguments().count == 0  else {
+            throw CLIError.Error("Expected no arguments, got \(rawArguments.unclassifiedArguments().count).")
         }
+    
+        return CommandArguments()
     }
     
-    private class func errorMessage(#expectedCount: Int, givenCount: Int) -> String {
+    private class func errorMessage(expectedCount expectedCount: Int, givenCount: Int) -> String {
         let argString = expectedCount == 1 ? "argument" : "arguments"
         return "Expected \(expectedCount) \(argString), but got \(givenCount)."
     }
     
     // MARK: - Subscripting
     
+    /**
+        Generic subscripting of arguments
+    
+        - SeeAlso: Typesafe shortcuts such as `args.requiredArguments("arg")`
+    */
     public subscript(key: String) -> AnyObject? {
         get {
             return keyedArguments[key]
@@ -110,10 +115,22 @@ public class CommandArguments {
     
     // MARK: - Typesafe shortcuts
     
+    /**
+        Subscripting shortcut for arguments guaranteed to be present. Only use for arguments
+        in the command signature of the form `<requiredArgument>`
+    
+        - Parameter key: the name of the argument as seen in the command signature
+    */
     public func requiredArgument(key: String) -> String {
         return optionalArgument(key)!
     }
     
+    /**
+        Subscripting shortcut for arguments sometimes present. Only use for arguments
+        in the command signature of the form `[<optionalArgument>]`
+    
+        - Parameter key: the name of the argument as seen in the command signature
+    */
     public func optionalArgument(key: String) -> String? {
         if let arg = keyedArguments[key] as? String {
             return arg
@@ -121,10 +138,22 @@ public class CommandArguments {
         return nil
     }
     
+    /**
+        Subscripting shortcut for a collected argument guaranteed to be present. Only use
+        for arguments in the command signature of the form `<requiredArgument> ...`
+    
+        - Parameter key: the name of the argument as seen in the command signature
+    */
     public func requiredCollectedArgument(key: String) -> [String] {
         return optionalCollectedArgument(key)!
     }
     
+    /**
+        Subscripting shortcut for a collected argument sometimes present. Only use
+        for arguments in the command signature of the form `[<optionalArgument>] ...`
+    
+        - Parameter key: the name of the argument as seen in the command signature
+    */
     public func optionalCollectedArgument(key: String) -> [String]? {
         if let arg = keyedArguments[key] as? [String] {
             return arg
