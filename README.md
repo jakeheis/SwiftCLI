@@ -26,6 +26,10 @@ CLI.go()
 Hey there!
 ```
 
+## Upgrading from SwiftCLI 1.0?
+
+Check out the [migration guide](MIGRATION.md)!
+
 ## Contents
 * [Creating a CLI](#creating-a-cli)
 * [Commands](#commands)
@@ -376,7 +380,7 @@ Right now, Swift frameworks cannot be embedded into command line tools, meaning 
 In your project directory, run:
 ```bash
 git submodule add https://github.com/jakeheis/SwiftCLI.git
-git submodule update --init --recursive
+git submodule update --init
 ```
 Then drag the SwiftCLI/SwiftCLI folder into your Xcode project:
 
