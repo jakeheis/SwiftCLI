@@ -1,4 +1,4 @@
-Overall, SwiftCLI has been updated in version 1.1 to take advantage of new features in Swift 2.0. This includes a new protocol oriented design (which is much more elegant than the class inheritance based structure of SwiftCLI 1.0) and the usage of Swift 2.0's new error handling functionality.
+SwiftCLI has been updated in version 1.1 to take advantage of new features in Swift 2.0. This includes a new protocol oriented design (which is much more elegant than the class inheritance based structure of SwiftCLI 1.0) and the usage of Swift 2.0's new error handling functionality.
 
 CommandType
 ===
