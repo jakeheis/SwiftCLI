@@ -1,4 +1,4 @@
-SwiftCLI has been updated in version 1.1 to take advantage of new features in Swift 2.0. This includes a new protocol oriented design (which is much more elegant than the class inheritance based structure of SwiftCLI 1.0) and the usage of Swift 2.0's new error handling functionality.
+SwiftCLI has been updated in version 1.1 to take advantage of new features in Swift 2.0. This includes a new protocol oriented design (which is much more elegant than the class inheritance based structure of SwiftCLI 1.0) and the usage of Swift 2's new error handling functionality.
 
 CommandType
 ===
@@ -31,7 +31,7 @@ public func showHelpOnHFlag() -> Bool // Default true
 public func unrecognizedOptionsPrintingBehavior() -> UnrecognizedOptionsPrintingBehavior // Default .PrintAll
 public func failOnUnrecognizedOptions() -> Bool // Default true 
 
-// New CommandType Implementation:
+// New OptionCommandType Implementation:
 
 func setupOptions(options: Options)
 var helpOnHFlag: Bool { get } // Default still true
@@ -72,7 +72,7 @@ class ReadCommand: CommandType {
 }
 ```
 
- If no errors are thrown in the duration of the command, the command is assumed to have succeeded.
+If no errors are thrown in the duration of the command, the command is assumed to have succeeded.
 
 Small changes
 =====
