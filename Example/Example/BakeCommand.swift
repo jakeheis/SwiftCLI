@@ -43,6 +43,11 @@ class BakeCommand: OptionCommandType {
     func execute(arguments: CommandArguments) throws  {
         if let item = arguments.optionalArgument("item") {
             bakeItem(item)
+        } else if let pipedList = Input.pipedData {
+            let items = pipedList.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet()).componentsSeparatedByString(" ")
+            for item in items {
+                bakeItem(item)
+            }
         } else {
             let items = try loadBakefileItems()
             

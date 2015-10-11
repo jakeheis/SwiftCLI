@@ -10,21 +10,32 @@ import Foundation
 
 public class Input {
     
-    public class func awaitInput(message message: String?) -> String {
+    private static let inputHandle = NSFileHandle.fileHandleWithStandardInput()
+    
+    private(set) static var pipedData: String? = nil
+    
+    static let PipeUserInputOverlapError = CLIError.Error("Data should not be both piped and input")
+    
+    //  MARK: - Public
+    
+    public class func awaitInput(message message: String?) throws -> String {
+        if pipedData != nil {
+            throw PipeUserInputOverlapError
+        }
+        
         if let message = message {
             print(message)
         }
         
-        let fh = NSFileHandle.fileHandleWithStandardInput()
-        var input = NSString(data: fh.availableData, encoding: NSUTF8StringEncoding) as! String
+        var input = String(data: inputHandle.availableData, encoding: NSUTF8StringEncoding)!
         input = input.substringToIndex(input.endIndex.advancedBy(-1))
         
         return input
     }
     
-    public class func awaitInputWithValidation(message message: String?, validation: (input: String) -> Bool) -> String {
+    public class func awaitInputWithValidation(message message: String?, validation: (input: String) -> Bool) throws -> String {
         while (true) {
-            let str = awaitInput(message: message)
+            let str = try awaitInput(message: message)
             
             if validation(input: str) {
                 return str
@@ -34,20 +45,20 @@ public class Input {
         }
     }
     
-    public class func awaitInputWithConversion<T>(message message: String?, conversion: (input: String) -> T?) -> T {
-        let input = awaitInputWithValidation(message: message) {(input) in
+    public class func awaitInputWithConversion<T>(message message: String?, conversion: (input: String) -> T?) throws -> T {
+        let input = try awaitInputWithValidation(message: message) {(input) in
             return conversion(input: input) != nil
         }
         
         return conversion(input: input)!
     }
     
-    public class func awaitInt(message message: String?) -> Int {
-        return awaitInputWithConversion(message: message) { Int($0) }
+    public class func awaitInt(message message: String?) throws -> Int {
+        return try awaitInputWithConversion(message: message) { Int($0) }
     }
     
-    public class func awaitYesNoInput(message message: String = "Confirm?") -> Bool {
-        return awaitInputWithConversion(message: "\(message) [y/N]: ") {input in
+    public class func awaitYesNoInput(message message: String = "Confirm?") throws -> Bool {
+        return try awaitInputWithConversion(message: "\(message) [y/N]: ") {(input) in
             if input.lowercaseString == "y" || input.lowercaseString == "yes" {
                 return true
             } else if input.lowercaseString == "n" || input.lowercaseString == "no" {
@@ -56,6 +67,16 @@ public class Input {
             
             return nil
         }
+    }
+    
+    // MARK: - Internal
+    
+    class func checkForPipedData() {
+        inputHandle.readabilityHandler = {(inputHandle) in
+            pipedData = String(data: inputHandle.availableData, encoding: NSUTF8StringEncoding)
+            inputHandle.readabilityHandler = nil
+        }
+        NSProcessInfo.processInfo().arguments // For whatever reason, this triggers readabilityHandler for the pipe data
     }
     
 }

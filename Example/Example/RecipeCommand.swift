@@ -25,11 +25,17 @@ class RecipeCommand: CommandType {
     func execute(arguments: CommandArguments) throws {
         let bakefile = try Bakefile()
         
-        let name = Input.awaitInput(message: "Name of your recipe: ")
-        let cookTime = Input.awaitInt(message: "Cook time: ")
-        let silently = Input.awaitYesNoInput(message: "Bake silently?")
+        let recipe: [String: AnyObject]
         
-        let recipe = ["name": name, "cookTime": cookTime, "silently": silently]
+        do {
+            let name = try Input.awaitInput(message: "Name of your recipe: ")
+            let cookTime = try Input.awaitInt(message: "Cook time: ")
+            let silently = try Input.awaitYesNoInput(message: "Bake silently?")
+
+            recipe = ["name": name, "cookTime": cookTime, "silently": silently]
+        } catch _ {
+            throw CLIError.Error("Data should not be piped to the recipe command")
+        }
         
         try bakefile.addRecipe(recipe)
     }

@@ -43,6 +43,8 @@ public class CLI: NSObject {
         if let description = description {
             appDescription = description
         }
+        
+        Input.checkForPipedData()
     }
     
     /**
