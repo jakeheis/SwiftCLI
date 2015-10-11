@@ -36,6 +36,7 @@ Check out the [migration guide](MIGRATION.md)!
 * [Parameters](#parameters)
 * [Options](#options)
 * [Special Commands](#special-commands)
+* [Input](#input)
 * [Running your CLI](#running-your-cli)
 * [Installation](#swiftcli-installation)
 * [Example](#example)
@@ -345,6 +346,30 @@ Available commands:
 ```
 
 A custom default command can be specified by calling ```CLI.defaultCommand = customDefault```.
+
+## Input
+
+The `Input` class wraps the handling of input from stdin. Several methods are available:
+
+```swift
+// Simple input:
+public class func awaitInput(message message: String?) throws -> String {}
+public class func awaitInt(message message: String?) throws -> Int {}
+public class func awaitYesNoInput(message message: String = "Confirm?") throws -> Bool {}
+
+// Complex input (if the simple input methods are not sufficient):
+public class func awaitInputWithValidation(message message: String?, validation: (input: String) -> Bool) throws -> String {}
+public class func awaitInputWithConversion<T>(message message: String?, conversion: (input: String) -> T?) throws -> T {}
+```
+
+Additionally, the `Input` class makes data piped to the CLI (`echo "piped string" | myCLI command"`) easily available:
+```swift
+if let pipedData = Input.pipedData {
+    print("Something was piped! " + pipedData)
+}
+```
+
+See the `RecipeCommand` in the example project for a demonstration of all this input functionality.
 
 ## Running your CLI
 
