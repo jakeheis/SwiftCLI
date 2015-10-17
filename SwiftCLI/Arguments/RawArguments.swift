@@ -26,7 +26,19 @@ class RawArguments: CustomStringConvertible {
     }
     
     convenience init(argumentString: String) {
-        let arguments = argumentString.componentsSeparatedByString(" ").filter { !$0.isEmpty }
+        let regex = try! NSRegularExpression(pattern: "(\"[^\"]*\")|[^\"\\s]+", options: [])
+        
+        let argumentMatches = regex.matchesInString(argumentString, options: [], range: NSRange(location: 0, length: argumentString.utf8.count))
+        
+        let arguments: [String] = argumentMatches.map {(match) in
+            let matchRange = match.range
+            var argument = argumentString.substringFromIndex(argumentString.startIndex.advancedBy(matchRange.location))
+            argument = argument.substringToIndex(argument.startIndex.advancedBy(matchRange.length))
+            if argument.hasPrefix("\"") {
+                argument = argument.substringWithRange(Range(start: argument.startIndex.advancedBy(1), end: argument.endIndex.advancedBy(-1)))
+            }
+            return argument
+        }
 
         self.init(arguments: arguments)
     }
