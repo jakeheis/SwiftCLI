@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		EF28EE491B2C5A150030ED5C /* CommandArgumentsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF28EE441B2C5A150030ED5C /* CommandArgumentsTests.swift */; };
-		EF28EE4A1B2C5A150030ED5C /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = EF28EE451B2C5A150030ED5C /* Info.plist */; };
 		EF28EE4B1B2C5A150030ED5C /* OptionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF28EE461B2C5A150030ED5C /* OptionsTests.swift */; };
 		EF28EE4C1B2C5A150030ED5C /* RouterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF28EE471B2C5A150030ED5C /* RouterTests.swift */; };
 		EF28EE4D1B2C5A150030ED5C /* SwiftCLITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF28EE481B2C5A150030ED5C /* SwiftCLITests.swift */; };
@@ -163,7 +162,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0720;
-				LastUpgradeCheck = 0700;
+				LastUpgradeCheck = 0720;
 				ORGANIZATIONNAME = jakeheis;
 				TargetAttributes = {
 					EF28EE041B2C4E7A0030ED5C = {
@@ -197,7 +196,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EF28EE4A1B2C5A150030ED5C /* Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -275,6 +273,7 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				FRAMEWORK_SEARCH_PATHS = "";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -318,6 +317,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				FRAMEWORK_SEARCH_PATHS = "";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -335,14 +335,24 @@
 		EF28EE0D1B2C4E7A0030ED5C /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				FRAMEWORK_SEARCH_PATHS = "\"$(SRCROOT)/../../../../Library/Developer/Xcode/DerivedData/SwiftCLI-bzldzllnxvphykbdfaqgicniizln/Build/Products/Debug\"";
+				HEADER_SEARCH_PATHS = "";
+				LD_RUNPATH_SEARCH_PATHS = "";
+				LIBRARY_SEARCH_PATHS = "";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_INCLUDE_PATHS = "";
 			};
 			name = Debug;
 		};
 		EF28EE0E1B2C4E7A0030ED5C /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				FRAMEWORK_SEARCH_PATHS = "\"$(SRCROOT)/../../../../Library/Developer/Xcode/DerivedData/SwiftCLI-bzldzllnxvphykbdfaqgicniizln/Build/Products/Debug\"";
+				HEADER_SEARCH_PATHS = "";
+				LD_RUNPATH_SEARCH_PATHS = "";
+				LIBRARY_SEARCH_PATHS = "";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_INCLUDE_PATHS = "";
 			};
 			name = Release;
 		};

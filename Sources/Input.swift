@@ -12,7 +12,7 @@ public class Input {
     
     private static let inputHandle = NSFileHandle.fileHandleWithStandardInput()
     
-    private(set) static var pipedData: String? = nil
+    public private(set) static var pipedData: String? = nil
     
     static let PipeUserInputOverlapError = CLIError.Error("Data should not be both piped and input")
     
