@@ -10,17 +10,17 @@ public class CLI {
     
     // MARK: - Information
     
-    static var appName = ""
-    static var appVersion = "1.0"
-    static var appDescription = ""
+    public static var appName = ""
+    public static var appVersion = "1.0"
+    public static var appDescription = ""
     
     private static var commands: [CommandType] = []
     
-    static var helpCommand: HelpCommand? = HelpCommand()
-    static var versionComand: CommandType? = VersionCommand()
-    static var defaultCommand: CommandType = helpCommand!
+    public static var helpCommand: HelpCommand? = HelpCommand()
+    public static var versionComand: CommandType? = VersionCommand()
+    public static var defaultCommand: CommandType = helpCommand!
     
-    static var routerConfig: Router.Config?
+    public static var routerConfig: Router.Config?
     
     // MARK: - Setup
     
