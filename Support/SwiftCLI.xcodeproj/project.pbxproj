@@ -7,24 +7,29 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		EF96C4681C32F9850031CEAC /* ChainableCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF96C4591C32F9850031CEAC /* ChainableCommand.swift */; };
+		EF96C4691C32F9850031CEAC /* CLI.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF96C45A1C32F9850031CEAC /* CLI.swift */; };
+		EF96C46A1C32F9850031CEAC /* Command.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF96C45B1C32F9850031CEAC /* Command.swift */; };
+		EF96C46B1C32F9850031CEAC /* CommandArguments.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF96C45C1C32F9850031CEAC /* CommandArguments.swift */; };
+		EF96C46C1C32F9850031CEAC /* CommandMessageGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF96C45D1C32F9850031CEAC /* CommandMessageGenerator.swift */; };
+		EF96C46D1C32F9850031CEAC /* CommandSignature.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF96C45E1C32F9850031CEAC /* CommandSignature.swift */; };
+		EF96C46E1C32F9850031CEAC /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF96C45F1C32F9850031CEAC /* Extensions.swift */; };
+		EF96C46F1C32F9850031CEAC /* HelpCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF96C4601C32F9850031CEAC /* HelpCommand.swift */; };
+		EF96C4701C32F9850031CEAC /* Input.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF96C4611C32F9850031CEAC /* Input.swift */; };
+		EF96C4711C32F9850031CEAC /* LightweightCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF96C4621C32F9850031CEAC /* LightweightCommand.swift */; };
+		EF96C4721C32F9850031CEAC /* Options.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF96C4631C32F9850031CEAC /* Options.swift */; };
+		EF96C4731C32F9850031CEAC /* Output.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF96C4641C32F9850031CEAC /* Output.swift */; };
+		EF96C4741C32F9850031CEAC /* RawArguments.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF96C4651C32F9850031CEAC /* RawArguments.swift */; };
+		EF96C4751C32F9850031CEAC /* Router.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF96C4661C32F9850031CEAC /* Router.swift */; };
+		EF96C4761C32F9850031CEAC /* VersionCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF96C4671C32F9850031CEAC /* VersionCommand.swift */; };
+		EF96C47E1C32F98F0031CEAC /* CommandArgumentsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF96C4781C32F98F0031CEAC /* CommandArgumentsTests.swift */; };
+		EF96C47F1C32F98F0031CEAC /* CommandMessageGeneratorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF96C4791C32F98F0031CEAC /* CommandMessageGeneratorTests.swift */; };
+		EF96C4801C32F98F0031CEAC /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = EF96C47A1C32F98F0031CEAC /* Info.plist */; };
+		EF96C4811C32F98F0031CEAC /* OptionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF96C47B1C32F98F0031CEAC /* OptionsTests.swift */; };
+		EF96C4821C32F98F0031CEAC /* RouterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF96C47C1C32F98F0031CEAC /* RouterTests.swift */; };
+		EF96C4831C32F98F0031CEAC /* SwiftCLITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF96C47D1C32F98F0031CEAC /* SwiftCLITests.swift */; };
 		EFBFD6CA1C3251E10068CB26 /* SwiftCLI.h in Headers */ = {isa = PBXBuildFile; fileRef = EFBFD6C91C3251E10068CB26 /* SwiftCLI.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		EFBFD6D11C3251E10068CB26 /* SwiftCLI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EFBFD6C61C3251E10068CB26 /* SwiftCLI.framework */; };
-		EFBFD6D61C3251E10068CB26 /* SwiftCLITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFBFD6D51C3251E10068CB26 /* SwiftCLITests.swift */; };
-		EFBFD6F01C3251F20068CB26 /* ChainableCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFBFD6E11C3251F20068CB26 /* ChainableCommand.swift */; };
-		EFBFD6F11C3251F20068CB26 /* CLI.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFBFD6E21C3251F20068CB26 /* CLI.swift */; };
-		EFBFD6F21C3251F20068CB26 /* Command.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFBFD6E31C3251F20068CB26 /* Command.swift */; };
-		EFBFD6F31C3251F20068CB26 /* CommandArguments.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFBFD6E41C3251F20068CB26 /* CommandArguments.swift */; };
-		EFBFD6F41C3251F20068CB26 /* CommandMessageGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFBFD6E51C3251F20068CB26 /* CommandMessageGenerator.swift */; };
-		EFBFD6F51C3251F20068CB26 /* CommandSignature.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFBFD6E61C3251F20068CB26 /* CommandSignature.swift */; };
-		EFBFD6F61C3251F20068CB26 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFBFD6E71C3251F20068CB26 /* Extensions.swift */; };
-		EFBFD6F71C3251F20068CB26 /* HelpCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFBFD6E81C3251F20068CB26 /* HelpCommand.swift */; };
-		EFBFD6F81C3251F20068CB26 /* Input.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFBFD6E91C3251F20068CB26 /* Input.swift */; };
-		EFBFD6F91C3251F20068CB26 /* LightweightCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFBFD6EA1C3251F20068CB26 /* LightweightCommand.swift */; };
-		EFBFD6FA1C3251F20068CB26 /* Options.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFBFD6EB1C3251F20068CB26 /* Options.swift */; };
-		EFBFD6FB1C3251F20068CB26 /* Output.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFBFD6EC1C3251F20068CB26 /* Output.swift */; };
-		EFBFD6FC1C3251F20068CB26 /* RawArguments.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFBFD6ED1C3251F20068CB26 /* RawArguments.swift */; };
-		EFBFD6FD1C3251F20068CB26 /* Router.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFBFD6EE1C3251F20068CB26 /* Router.swift */; };
-		EFBFD6FE1C3251F20068CB26 /* VersionCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFBFD6EF1C3251F20068CB26 /* VersionCommand.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -38,27 +43,32 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		EF96C4551C32F8B10031CEAC /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		EF96C4591C32F9850031CEAC /* ChainableCommand.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChainableCommand.swift; sourceTree = "<group>"; };
+		EF96C45A1C32F9850031CEAC /* CLI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CLI.swift; sourceTree = "<group>"; };
+		EF96C45B1C32F9850031CEAC /* Command.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Command.swift; sourceTree = "<group>"; };
+		EF96C45C1C32F9850031CEAC /* CommandArguments.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommandArguments.swift; sourceTree = "<group>"; };
+		EF96C45D1C32F9850031CEAC /* CommandMessageGenerator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommandMessageGenerator.swift; sourceTree = "<group>"; };
+		EF96C45E1C32F9850031CEAC /* CommandSignature.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommandSignature.swift; sourceTree = "<group>"; };
+		EF96C45F1C32F9850031CEAC /* Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
+		EF96C4601C32F9850031CEAC /* HelpCommand.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HelpCommand.swift; sourceTree = "<group>"; };
+		EF96C4611C32F9850031CEAC /* Input.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Input.swift; sourceTree = "<group>"; };
+		EF96C4621C32F9850031CEAC /* LightweightCommand.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LightweightCommand.swift; sourceTree = "<group>"; };
+		EF96C4631C32F9850031CEAC /* Options.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Options.swift; sourceTree = "<group>"; };
+		EF96C4641C32F9850031CEAC /* Output.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Output.swift; sourceTree = "<group>"; };
+		EF96C4651C32F9850031CEAC /* RawArguments.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RawArguments.swift; sourceTree = "<group>"; };
+		EF96C4661C32F9850031CEAC /* Router.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Router.swift; sourceTree = "<group>"; };
+		EF96C4671C32F9850031CEAC /* VersionCommand.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VersionCommand.swift; sourceTree = "<group>"; };
+		EF96C4781C32F98F0031CEAC /* CommandArgumentsTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommandArgumentsTests.swift; sourceTree = "<group>"; };
+		EF96C4791C32F98F0031CEAC /* CommandMessageGeneratorTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommandMessageGeneratorTests.swift; sourceTree = "<group>"; };
+		EF96C47A1C32F98F0031CEAC /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		EF96C47B1C32F98F0031CEAC /* OptionsTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OptionsTests.swift; sourceTree = "<group>"; };
+		EF96C47C1C32F98F0031CEAC /* RouterTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RouterTests.swift; sourceTree = "<group>"; };
+		EF96C47D1C32F98F0031CEAC /* SwiftCLITests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftCLITests.swift; sourceTree = "<group>"; };
 		EFBFD6C61C3251E10068CB26 /* SwiftCLI.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftCLI.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		EFBFD6C91C3251E10068CB26 /* SwiftCLI.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SwiftCLI.h; sourceTree = "<group>"; };
 		EFBFD6CB1C3251E10068CB26 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		EFBFD6D01C3251E10068CB26 /* SwiftCLITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SwiftCLITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		EFBFD6D51C3251E10068CB26 /* SwiftCLITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftCLITests.swift; sourceTree = "<group>"; };
-		EFBFD6D71C3251E10068CB26 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		EFBFD6E11C3251F20068CB26 /* ChainableCommand.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChainableCommand.swift; sourceTree = "<group>"; };
-		EFBFD6E21C3251F20068CB26 /* CLI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CLI.swift; sourceTree = "<group>"; };
-		EFBFD6E31C3251F20068CB26 /* Command.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Command.swift; sourceTree = "<group>"; };
-		EFBFD6E41C3251F20068CB26 /* CommandArguments.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommandArguments.swift; sourceTree = "<group>"; };
-		EFBFD6E51C3251F20068CB26 /* CommandMessageGenerator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommandMessageGenerator.swift; sourceTree = "<group>"; };
-		EFBFD6E61C3251F20068CB26 /* CommandSignature.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommandSignature.swift; sourceTree = "<group>"; };
-		EFBFD6E71C3251F20068CB26 /* Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
-		EFBFD6E81C3251F20068CB26 /* HelpCommand.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HelpCommand.swift; sourceTree = "<group>"; };
-		EFBFD6E91C3251F20068CB26 /* Input.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Input.swift; sourceTree = "<group>"; };
-		EFBFD6EA1C3251F20068CB26 /* LightweightCommand.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LightweightCommand.swift; sourceTree = "<group>"; };
-		EFBFD6EB1C3251F20068CB26 /* Options.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Options.swift; sourceTree = "<group>"; };
-		EFBFD6EC1C3251F20068CB26 /* Output.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Output.swift; sourceTree = "<group>"; };
-		EFBFD6ED1C3251F20068CB26 /* RawArguments.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RawArguments.swift; sourceTree = "<group>"; };
-		EFBFD6EE1C3251F20068CB26 /* Router.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Router.swift; sourceTree = "<group>"; };
-		EFBFD6EF1C3251F20068CB26 /* VersionCommand.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VersionCommand.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -80,6 +90,43 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		EF96C4581C32F9850031CEAC /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				EF96C4591C32F9850031CEAC /* ChainableCommand.swift */,
+				EF96C45A1C32F9850031CEAC /* CLI.swift */,
+				EF96C45B1C32F9850031CEAC /* Command.swift */,
+				EF96C45C1C32F9850031CEAC /* CommandArguments.swift */,
+				EF96C45D1C32F9850031CEAC /* CommandMessageGenerator.swift */,
+				EF96C45E1C32F9850031CEAC /* CommandSignature.swift */,
+				EF96C45F1C32F9850031CEAC /* Extensions.swift */,
+				EF96C4601C32F9850031CEAC /* HelpCommand.swift */,
+				EF96C4611C32F9850031CEAC /* Input.swift */,
+				EF96C4621C32F9850031CEAC /* LightweightCommand.swift */,
+				EF96C4631C32F9850031CEAC /* Options.swift */,
+				EF96C4641C32F9850031CEAC /* Output.swift */,
+				EF96C4651C32F9850031CEAC /* RawArguments.swift */,
+				EF96C4661C32F9850031CEAC /* Router.swift */,
+				EF96C4671C32F9850031CEAC /* VersionCommand.swift */,
+			);
+			name = Sources;
+			path = ../../Sources;
+			sourceTree = "<group>";
+		};
+		EF96C4771C32F98F0031CEAC /* Tests */ = {
+			isa = PBXGroup;
+			children = (
+				EF96C4781C32F98F0031CEAC /* CommandArgumentsTests.swift */,
+				EF96C4791C32F98F0031CEAC /* CommandMessageGeneratorTests.swift */,
+				EF96C47A1C32F98F0031CEAC /* Info.plist */,
+				EF96C47B1C32F98F0031CEAC /* OptionsTests.swift */,
+				EF96C47C1C32F98F0031CEAC /* RouterTests.swift */,
+				EF96C47D1C32F98F0031CEAC /* SwiftCLITests.swift */,
+			);
+			name = Tests;
+			path = ../../Tests;
+			sourceTree = "<group>";
+		};
 		EFBFD6BC1C3251E10068CB26 = {
 			isa = PBXGroup;
 			children = (
@@ -103,7 +150,7 @@
 			children = (
 				EFBFD6C91C3251E10068CB26 /* SwiftCLI.h */,
 				EFBFD6CB1C3251E10068CB26 /* Info.plist */,
-				EFBFD6E01C3251F20068CB26 /* Sources */,
+				EF96C4581C32F9850031CEAC /* Sources */,
 			);
 			path = SwiftCLI;
 			sourceTree = "<group>";
@@ -111,33 +158,10 @@
 		EFBFD6D41C3251E10068CB26 /* SwiftCLITests */ = {
 			isa = PBXGroup;
 			children = (
-				EFBFD6D51C3251E10068CB26 /* SwiftCLITests.swift */,
-				EFBFD6D71C3251E10068CB26 /* Info.plist */,
+				EF96C4551C32F8B10031CEAC /* Info.plist */,
+				EF96C4771C32F98F0031CEAC /* Tests */,
 			);
 			path = SwiftCLITests;
-			sourceTree = "<group>";
-		};
-		EFBFD6E01C3251F20068CB26 /* Sources */ = {
-			isa = PBXGroup;
-			children = (
-				EFBFD6E11C3251F20068CB26 /* ChainableCommand.swift */,
-				EFBFD6E21C3251F20068CB26 /* CLI.swift */,
-				EFBFD6E31C3251F20068CB26 /* Command.swift */,
-				EFBFD6E41C3251F20068CB26 /* CommandArguments.swift */,
-				EFBFD6E51C3251F20068CB26 /* CommandMessageGenerator.swift */,
-				EFBFD6E61C3251F20068CB26 /* CommandSignature.swift */,
-				EFBFD6E71C3251F20068CB26 /* Extensions.swift */,
-				EFBFD6E81C3251F20068CB26 /* HelpCommand.swift */,
-				EFBFD6E91C3251F20068CB26 /* Input.swift */,
-				EFBFD6EA1C3251F20068CB26 /* LightweightCommand.swift */,
-				EFBFD6EB1C3251F20068CB26 /* Options.swift */,
-				EFBFD6EC1C3251F20068CB26 /* Output.swift */,
-				EFBFD6ED1C3251F20068CB26 /* RawArguments.swift */,
-				EFBFD6EE1C3251F20068CB26 /* Router.swift */,
-				EFBFD6EF1C3251F20068CB26 /* VersionCommand.swift */,
-			);
-			name = Sources;
-			path = ../../../Sources;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -238,6 +262,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EF96C4801C32F98F0031CEAC /* Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -248,21 +273,21 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EFBFD6FE1C3251F20068CB26 /* VersionCommand.swift in Sources */,
-				EFBFD6FC1C3251F20068CB26 /* RawArguments.swift in Sources */,
-				EFBFD6F51C3251F20068CB26 /* CommandSignature.swift in Sources */,
-				EFBFD6F11C3251F20068CB26 /* CLI.swift in Sources */,
-				EFBFD6F01C3251F20068CB26 /* ChainableCommand.swift in Sources */,
-				EFBFD6FA1C3251F20068CB26 /* Options.swift in Sources */,
-				EFBFD6FB1C3251F20068CB26 /* Output.swift in Sources */,
-				EFBFD6F31C3251F20068CB26 /* CommandArguments.swift in Sources */,
-				EFBFD6F91C3251F20068CB26 /* LightweightCommand.swift in Sources */,
-				EFBFD6F71C3251F20068CB26 /* HelpCommand.swift in Sources */,
-				EFBFD6F21C3251F20068CB26 /* Command.swift in Sources */,
-				EFBFD6FD1C3251F20068CB26 /* Router.swift in Sources */,
-				EFBFD6F81C3251F20068CB26 /* Input.swift in Sources */,
-				EFBFD6F41C3251F20068CB26 /* CommandMessageGenerator.swift in Sources */,
-				EFBFD6F61C3251F20068CB26 /* Extensions.swift in Sources */,
+				EF96C4761C32F9850031CEAC /* VersionCommand.swift in Sources */,
+				EF96C4741C32F9850031CEAC /* RawArguments.swift in Sources */,
+				EF96C46D1C32F9850031CEAC /* CommandSignature.swift in Sources */,
+				EF96C4691C32F9850031CEAC /* CLI.swift in Sources */,
+				EF96C4681C32F9850031CEAC /* ChainableCommand.swift in Sources */,
+				EF96C4721C32F9850031CEAC /* Options.swift in Sources */,
+				EF96C4731C32F9850031CEAC /* Output.swift in Sources */,
+				EF96C46B1C32F9850031CEAC /* CommandArguments.swift in Sources */,
+				EF96C4711C32F9850031CEAC /* LightweightCommand.swift in Sources */,
+				EF96C46F1C32F9850031CEAC /* HelpCommand.swift in Sources */,
+				EF96C46A1C32F9850031CEAC /* Command.swift in Sources */,
+				EF96C4751C32F9850031CEAC /* Router.swift in Sources */,
+				EF96C4701C32F9850031CEAC /* Input.swift in Sources */,
+				EF96C46C1C32F9850031CEAC /* CommandMessageGenerator.swift in Sources */,
+				EF96C46E1C32F9850031CEAC /* Extensions.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -270,7 +295,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EFBFD6D61C3251E10068CB26 /* SwiftCLITests.swift in Sources */,
+				EF96C4821C32F98F0031CEAC /* RouterTests.swift in Sources */,
+				EF96C4831C32F98F0031CEAC /* SwiftCLITests.swift in Sources */,
+				EF96C47E1C32F98F0031CEAC /* CommandArgumentsTests.swift in Sources */,
+				EF96C47F1C32F98F0031CEAC /* CommandMessageGeneratorTests.swift in Sources */,
+				EF96C4811C32F98F0031CEAC /* OptionsTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

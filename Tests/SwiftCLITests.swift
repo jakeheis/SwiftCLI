@@ -8,6 +8,7 @@
 
 import Cocoa
 import XCTest
+@testable import SwiftCLI
 
 func createTestCommand(completion: ((executionString: String) -> ())? = nil) -> OptionCommandType {
     var silentFlag = false
