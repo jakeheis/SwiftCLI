@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 jakeheis. All rights reserved.
 //
 
-public class CLI: NSObject {
+public class CLI {
     
     // MARK: - Information
     
