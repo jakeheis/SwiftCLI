@@ -26,6 +26,27 @@
 			remoteGlobalIDString = EF28EE041B2C4E7A0030ED5C;
 			remoteInfo = Example;
 		};
+		EF96C4421C32F7E90031CEAC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = EF96C4351C32F7E30031CEAC /* SwiftCLI.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = EFBFD6C61C3251E10068CB26;
+			remoteInfo = SwiftCLI;
+		};
+		EF96C4441C32F7E90031CEAC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = EF96C4351C32F7E30031CEAC /* SwiftCLI.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = EFBFD6D01C3251E10068CB26;
+			remoteInfo = SwiftCLITests;
+		};
+		EF96C4461C32F7F40031CEAC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = EF96C4351C32F7E30031CEAC /* SwiftCLI.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = EFBFD6C51C3251E10068CB26;
+			remoteInfo = SwiftCLI;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -53,6 +74,7 @@
 		EF28EE471B2C5A150030ED5C /* RouterTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RouterTests.swift; sourceTree = "<group>"; };
 		EF28EE481B2C5A150030ED5C /* SwiftCLITests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftCLITests.swift; sourceTree = "<group>"; };
 		EF28EE631B2C665B0030ED5C /* CommandMessageGeneratorTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommandMessageGeneratorTests.swift; sourceTree = "<group>"; };
+		EF96C4351C32F7E30031CEAC /* SwiftCLI.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SwiftCLI.xcodeproj; path = ../Support/SwiftCLI/SwiftCLI.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -76,6 +98,7 @@
 		EF28EDFC1B2C4E7A0030ED5C = {
 			isa = PBXGroup;
 			children = (
+				EF96C4351C32F7E30031CEAC /* SwiftCLI.xcodeproj */,
 				EF28EE071B2C4E7A0030ED5C /* Example */,
 				EF28EE431B2C5A150030ED5C /* SwiftCLITests */,
 				EF28EE061B2C4E7A0030ED5C /* Products */,
@@ -116,6 +139,15 @@
 			path = ../SwiftCLITests;
 			sourceTree = "<group>";
 		};
+		EF96C43E1C32F7E90031CEAC /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				EF96C4431C32F7E90031CEAC /* SwiftCLI.framework */,
+				EF96C4451C32F7E90031CEAC /* SwiftCLITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -131,6 +163,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				EF96C4471C32F7F40031CEAC /* PBXTargetDependency */,
 			);
 			name = Example;
 			productName = Example;
@@ -183,6 +216,12 @@
 			mainGroup = EF28EDFC1B2C4E7A0030ED5C;
 			productRefGroup = EF28EE061B2C4E7A0030ED5C /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = EF96C43E1C32F7E90031CEAC /* Products */;
+					ProjectRef = EF96C4351C32F7E30031CEAC /* SwiftCLI.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				EF28EE041B2C4E7A0030ED5C /* Example */,
@@ -190,6 +229,23 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		EF96C4431C32F7E90031CEAC /* SwiftCLI.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = SwiftCLI.framework;
+			remoteRef = EF96C4421C32F7E90031CEAC /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		EF96C4451C32F7E90031CEAC /* SwiftCLITests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = SwiftCLITests.xctest;
+			remoteRef = EF96C4441C32F7E90031CEAC /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		EF28EE381B2C59CB0030ED5C /* Resources */ = {
@@ -248,6 +304,11 @@
 			isa = PBXTargetDependency;
 			target = EF28EE041B2C4E7A0030ED5C /* Example */;
 			targetProxy = EF28EE4E1B2C5AB00030ED5C /* PBXContainerItemProxy */;
+		};
+		EF96C4471C32F7F40031CEAC /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = SwiftCLI;
+			targetProxy = EF96C4461C32F7F40031CEAC /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -335,9 +396,10 @@
 		EF28EE0D1B2C4E7A0030ED5C /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				EMBEDDED_CONTENT_CONTAINS_SWIFT = NO;
 				FRAMEWORK_SEARCH_PATHS = "";
 				HEADER_SEARCH_PATHS = "";
-				LD_RUNPATH_SEARCH_PATHS = "";
+				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks $(inherited)";
 				LIBRARY_SEARCH_PATHS = "";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_INCLUDE_PATHS = "";
@@ -347,9 +409,10 @@
 		EF28EE0E1B2C4E7A0030ED5C /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				EMBEDDED_CONTENT_CONTAINS_SWIFT = NO;
 				FRAMEWORK_SEARCH_PATHS = "";
 				HEADER_SEARCH_PATHS = "";
-				LD_RUNPATH_SEARCH_PATHS = "";
+				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks $(inherited)";
 				LIBRARY_SEARCH_PATHS = "";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_INCLUDE_PATHS = "";
