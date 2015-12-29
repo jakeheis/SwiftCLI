@@ -6,8 +6,6 @@
 //  Copyright © 2015 jakeheis. All rights reserved.
 //
 
-import Foundation
-
 class CommandMessageGenerator {
     
     class func generateUsageStatement(command command: CommandType, options: Options?) -> String {

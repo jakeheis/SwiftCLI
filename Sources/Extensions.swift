@@ -6,8 +6,6 @@
 //  Copyright (c) 2015 jakeheis. All rights reserved.
 //
 
-import Foundation
-
 extension String {
     
     func padFront(totalLength totalLength: Int) -> String {

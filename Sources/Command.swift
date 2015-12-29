@@ -6,8 +6,6 @@
 //  Copyright (c) 2014 jakeheis. All rights reserved.
 //
 
-import Foundation
-
 // MARK: Protocols
 
 /// The base protocol for all commands

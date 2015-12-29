@@ -16,7 +16,6 @@
 		EF709CCB1C321A53003D8098 /* Bakefile.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF20FB781C3218D9009A8109 /* Bakefile.swift */; };
 		EF709CCC1C321A53003D8098 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF20FB791C3218D9009A8109 /* main.swift */; };
 		EF709CCD1C321A53003D8098 /* RecipeCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF20FB7A1C3218D9009A8109 /* RecipeCommand.swift */; };
-		EFBFD71E1C32555A0068CB26 /* SwiftCLI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EFBFD7191C3255290068CB26 /* SwiftCLI.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -26,20 +25,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = EF28EE041B2C4E7A0030ED5C;
 			remoteInfo = Example;
-		};
-		EFBFD7181C3255290068CB26 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = EFBFD7131C3255290068CB26 /* SwiftCLI.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = EFBFD6C61C3251E10068CB26;
-			remoteInfo = SwiftCLI;
-		};
-		EFBFD71A1C3255290068CB26 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = EFBFD7131C3255290068CB26 /* SwiftCLI.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = EFBFD6D01C3251E10068CB26;
-			remoteInfo = SwiftCLITests;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -68,7 +53,6 @@
 		EF28EE471B2C5A150030ED5C /* RouterTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RouterTests.swift; sourceTree = "<group>"; };
 		EF28EE481B2C5A150030ED5C /* SwiftCLITests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftCLITests.swift; sourceTree = "<group>"; };
 		EF28EE631B2C665B0030ED5C /* CommandMessageGeneratorTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommandMessageGeneratorTests.swift; sourceTree = "<group>"; };
-		EFBFD7131C3255290068CB26 /* SwiftCLI.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SwiftCLI.xcodeproj; path = ../Support/SwiftCLI/SwiftCLI.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -76,7 +60,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EFBFD71E1C32555A0068CB26 /* SwiftCLI.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -115,7 +98,6 @@
 				EF20FB781C3218D9009A8109 /* Bakefile.swift */,
 				EF20FB791C3218D9009A8109 /* main.swift */,
 				EF20FB7A1C3218D9009A8109 /* RecipeCommand.swift */,
-				EFBFD7131C3255290068CB26 /* SwiftCLI.xcodeproj */,
 			);
 			path = Example;
 			sourceTree = "<group>";
@@ -132,15 +114,6 @@
 			);
 			name = SwiftCLITests;
 			path = ../SwiftCLITests;
-			sourceTree = "<group>";
-		};
-		EFBFD7141C3255290068CB26 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				EFBFD7191C3255290068CB26 /* SwiftCLI.framework */,
-				EFBFD71B1C3255290068CB26 /* SwiftCLITests.xctest */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -210,12 +183,6 @@
 			mainGroup = EF28EDFC1B2C4E7A0030ED5C;
 			productRefGroup = EF28EE061B2C4E7A0030ED5C /* Products */;
 			projectDirPath = "";
-			projectReferences = (
-				{
-					ProductGroup = EFBFD7141C3255290068CB26 /* Products */;
-					ProjectRef = EFBFD7131C3255290068CB26 /* SwiftCLI.xcodeproj */;
-				},
-			);
 			projectRoot = "";
 			targets = (
 				EF28EE041B2C4E7A0030ED5C /* Example */,
@@ -223,23 +190,6 @@
 			);
 		};
 /* End PBXProject section */
-
-/* Begin PBXReferenceProxy section */
-		EFBFD7191C3255290068CB26 /* SwiftCLI.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = SwiftCLI.framework;
-			remoteRef = EFBFD7181C3255290068CB26 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		EFBFD71B1C3255290068CB26 /* SwiftCLITests.xctest */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.cfbundle;
-			path = SwiftCLITests.xctest;
-			remoteRef = EFBFD71A1C3255290068CB26 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		EF28EE381B2C59CB0030ED5C /* Resources */ = {

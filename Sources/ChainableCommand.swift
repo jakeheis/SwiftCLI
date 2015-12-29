@@ -6,8 +6,6 @@
 //  Copyright (c) 2014 jakeheis. All rights reserved.
 //
 
-import Foundation
-
 /// A chainable interface to a CommandType; all functions return the object itself for easy chaining.
 /// Should only be used for simple commands.
 public class ChainableCommand: LightweightCommand {

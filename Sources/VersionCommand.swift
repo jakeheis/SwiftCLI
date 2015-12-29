@@ -6,8 +6,6 @@
 //  Copyright (c) 2014 jakeheis. All rights reserved.
 //
 
-import Foundation
-
 public class VersionCommand: CommandType {
     
     public var commandName: String  {
