@@ -10,3 +10,5 @@ xcuserdata
 xcshareddata
 
 .DS_Store
+
+.build
