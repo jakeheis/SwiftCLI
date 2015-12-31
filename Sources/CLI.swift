@@ -6,6 +6,8 @@
 //  Copyright (c) 2014 jakeheis. All rights reserved.
 //
 
+import Foundation
+
 public class CLI {
     
     // MARK: - Information
@@ -118,8 +120,8 @@ public class CLI {
             printError(error)
         } catch CLIError.EmptyError {
             // Do nothing
-        } catch _ {
-            printError("An error occurred")
+        } catch let error as NSError {
+            printError("An error occurred: \(error.localizedDescription)")
         }
         
         return CLIResult.Error
