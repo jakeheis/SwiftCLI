@@ -162,7 +162,7 @@ public class CLI {
             }
         }
         
-        let commandSignature = CommandSignature(command.commandSignature)
+        let commandSignature = try CommandSignature(command.commandSignature)
         
         return (true, try CommandArguments.fromRawArguments(arguments, signature: commandSignature))
     }

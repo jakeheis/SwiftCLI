@@ -14,15 +14,17 @@ class CommandSignature {
     var optionalParameters: [String] = []
     var collectRemainingArguments = false
     
-    init(_ string: String) {
+    init(_ string: String) throws {
         let parameters = string.componentsSeparatedByString(" ").filter { !$0.isEmpty }
         
-        let requiredRegex = try! NSRegularExpression(pattern: "^<.*>$", options: [])
-        let optionalRegex = try! NSRegularExpression(pattern: "^\\[<.*>\\]$", options: [])
+        let requiredRegex = try NSRegularExpression(pattern: "^<.*>$", options: [])
+        let optionalRegex = try NSRegularExpression(pattern: "^\\[<.*>\\]$", options: [])
         
         for parameter in parameters {
             if parameter == "..." {
-                assert(parameter == parameters.last, "The collection operator (...) must come at the end of a command signature.")
+                guard parameter == parameters.last else {
+                    throw CLIError.Error("The collection operator (...) must come at the end of a command signature.")
+                }
                 collectRemainingArguments = true
                 continue
             }
@@ -30,12 +32,14 @@ class CommandSignature {
             let parameterRange = NSRange(location: 0, length: parameter.characters.count)
             
             if requiredRegex.numberOfMatchesInString(parameter, options: [], range: parameterRange) > 0 {
-                assert(optionalParameters.count == 0, "All required parameters must come before any optional parameter.")
+                guard optionalParameters.count == 0 else {
+                    throw CLIError.Error("All required parameters must come before any optional parameter.")
+                }
                 required(parameter.trimEndsByLength(1))
             } else if optionalRegex.numberOfMatchesInString(parameter, options: [], range: parameterRange) > 0 {
                 optional(parameter.trimEndsByLength(2))
             } else {
-                assert(false, "Unrecognized parameter format: \(parameter)")
+                throw CLIError.Error("Unrecognized parameter format: \(parameter)")
             }
         }
     }
