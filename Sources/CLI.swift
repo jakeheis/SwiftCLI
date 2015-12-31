@@ -20,7 +20,7 @@ public class CLI {
     
     public static var helpCommand: HelpCommand? = HelpCommand()
     public static var versionComand: CommandType? = VersionCommand()
-    public static var defaultCommand: CommandType = helpCommand!
+    public static var defaultCommand: CommandType = HelpCommand()
     
     // MARK: - Setup
     
