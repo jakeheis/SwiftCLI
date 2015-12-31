@@ -69,14 +69,16 @@ public class CommandArguments {
         if signature.collectRemainingArguments {
             let parameter = signature.optionalParameters.isEmpty ? signature.requiredParameters[signature.requiredParameters.count-1] : signature.optionalParameters[signature.optionalParameters.count-1]
 
-            var collectedArgument = [commandArguments.requiredArgument(parameter)]
-            
-            let startingIndex = signature.requiredParameters.count + signature.optionalParameters.count
-            for i in startingIndex..<arguments.count {
-                collectedArgument.append(arguments[i])
+            if let singleArgument = commandArguments.optionalArgument(parameter) {
+                var collectedArgument = [singleArgument]
+                let startingIndex = signature.requiredParameters.count + signature.optionalParameters.count
+                for i in startingIndex..<arguments.count {
+                    collectedArgument.append(arguments[i])
+                }
+                commandArguments[parameter] = collectedArgument
+            } else {
+                commandArguments[parameter] = []
             }
-            
-            commandArguments[parameter] = collectedArgument
         }
         
         return commandArguments
