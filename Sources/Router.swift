@@ -42,8 +42,6 @@ public class Router {
     // MARK: - Privates
     
     private func findCommand() throws -> CommandType {
-        var command: CommandType?
-        
         guard let commandSearchName = arguments.firstArgumentOfType(.Unclassified) else {
             throw Router.ArgumentError
         }
@@ -51,24 +49,23 @@ public class Router {
         if commandSearchName.hasPrefix("-") {
             if let shortcutCommand = commands.filter({ $0.commandShortcut == commandSearchName }).first
                 where Config.enableShortcutRouting {
-                command = shortcutCommand
                 arguments.classifyArgument(argument: commandSearchName, type: .CommandName)
+                return shortcutCommand
             } else {
-                command = defaultCommand
+                return defaultCommand
             }
-        } else {
-            command = commands.filter { $0.commandName == commandSearchName }.first
+        }
+        
+        if let command = commands.filter({ $0.commandName == commandSearchName }).first {
             arguments.classifyArgument(argument: commandSearchName, type: .CommandName)
+            return command
         }
         
-        guard let foundCommand = command else {
-            if Config.fallbackToDefaultCommand {
-              return defaultCommand
-            }
-            throw Router.CommandNotFoundError
+        if Config.fallbackToDefaultCommand {
+            return defaultCommand
         }
         
-        return foundCommand
+        throw Router.CommandNotFoundError
     }
     
 }
