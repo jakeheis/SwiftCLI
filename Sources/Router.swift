@@ -12,10 +12,10 @@ public class Router {
     public struct Config {
         
         /// Allow shortcut flags to be routed to commands (e.g. route -h to the HelpCommand); default true
-        static public let enableShortcutRouting: Bool = true
+        static public var enableShortcutRouting: Bool = true
         
         /// If true, execute the default command if no command is found; if false, instead show the help message; default false
-        static public let fallbackToDefaultCommand: Bool = false
+        static public var fallbackToDefaultCommand: Bool = false
     }
     
     private let commands: [CommandType]
