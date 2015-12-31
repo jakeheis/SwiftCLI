@@ -22,8 +22,6 @@ public class CLI {
     public static var versionComand: CommandType? = VersionCommand()
     public static var defaultCommand: CommandType = helpCommand!
     
-    public static var routerConfig: Router.Config?
-    
     // MARK: - Setup
     
     /**
@@ -139,7 +137,7 @@ public class CLI {
             allCommands.append(vc)
         }
         
-        let router = Router(commands: allCommands, arguments: arguments, defaultCommand: defaultCommand, config: routerConfig)        
+        let router = Router(commands: allCommands, arguments: arguments, defaultCommand: defaultCommand)
         return try router.route()
     }
         

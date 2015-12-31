@@ -11,31 +11,24 @@ public class Router {
     /// Optional configuration for the Router
     public struct Config {
         
-        /// Allow shortcut flags to be routed to commands; e.g. route -h to the HelpCommand
-        public var enableShortcutRouting: Bool = true
+        /// Allow shortcut flags to be routed to commands (e.g. route -h to the HelpCommand); default true
+        static public let enableShortcutRouting: Bool = true
         
-        init() {}
-        
-        init(enableShortcutRouting: Bool) {
-            self.enableShortcutRouting = enableShortcutRouting
-        }
+        /// If true, execute the default command if no command is found; if false, instead show the help message; default false
+        static public let fallbackToDefaultCommand: Bool = false
     }
     
     private let commands: [CommandType]
     private let arguments: RawArguments
     private let defaultCommand: CommandType
     
-    private var config: Config
-    
     static let CommandNotFoundError = CLIError.Error("Command not found")
     static let ArgumentError = CLIError.Error("Router failed")
     
-    init(commands: [CommandType], arguments: RawArguments, defaultCommand: CommandType, config: Config?) {
+    init(commands: [CommandType], arguments: RawArguments, defaultCommand: CommandType) {
         self.commands = commands
         self.arguments = arguments
         self.defaultCommand = defaultCommand
-        
-        self.config = config ?? Config()
     }
     
     func route() throws -> CommandType {
@@ -57,7 +50,7 @@ public class Router {
         
         if commandSearchName.hasPrefix("-") {
             if let shortcutCommand = commands.filter({ $0.commandShortcut == commandSearchName }).first
-                where config.enableShortcutRouting {
+                where Config.enableShortcutRouting {
                 command = shortcutCommand
                 arguments.classifyArgument(argument: commandSearchName, type: .CommandName)
             } else {
@@ -69,6 +62,9 @@ public class Router {
         }
         
         guard let foundCommand = command else {
+            if Config.fallbackToDefaultCommand {
+              return defaultCommand
+            }
             throw Router.CommandNotFoundError
         }
         
