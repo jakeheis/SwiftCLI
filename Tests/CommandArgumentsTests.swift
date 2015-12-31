@@ -113,7 +113,7 @@ class CommandArgumentsTests: XCTestCase {
     private func createCommandArguments() throws -> CommandArguments {
         let stringArguments = arguments.joinWithSeparator(" ")
         let rawArguments = RawArguments(argumentString: "tester \(stringArguments)")
-        let commandSignature = try CommandSignature(signature)
+        let commandSignature = CommandSignature(signature)
 
         return try CommandArguments.fromRawArguments(rawArguments, signature: commandSignature)
     }
