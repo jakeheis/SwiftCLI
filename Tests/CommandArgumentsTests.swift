@@ -102,6 +102,12 @@ class CommandArgumentsTests: XCTestCase {
         assertParseResultEquals(["req1": "arg1", "req2": "arg2", "opt1": "arg3", "opt2": "arg4"], assertMessage: "Signature parser should succeed for combined signature and 4 passed arguments")
     }
     
+    func testEmptyOptionalCollectedParameter() { // Tests regression
+        signature = "[<opt1>] ..."
+        arguments = []
+        assertParseResultEquals([:], assertMessage: "Signature parser should succeed with empty optional collected parameters")
+    }
+    
     // MARK: - Helpers
     
     private func createCommandArguments() throws -> CommandArguments {

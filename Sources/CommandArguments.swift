@@ -76,8 +76,6 @@ public class CommandArguments {
                     collectedArgument.append(arguments[i])
                 }
                 commandArguments[parameter] = collectedArgument
-            } else {
-                commandArguments[parameter] = []
             }
         }
         
