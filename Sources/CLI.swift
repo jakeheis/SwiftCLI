@@ -20,7 +20,8 @@ public class CLI {
     
     public static var helpCommand: HelpCommand? = HelpCommand()
     public static var versionComand: CommandType? = VersionCommand()
-    public static var defaultCommand: CommandType = HelpCommand()
+    
+    public static var router: RouterType = DefaultRouter()
     
     // MARK: - Setup
     
@@ -137,8 +138,7 @@ public class CLI {
             allCommands.append(vc)
         }
         
-        let router = Router(commands: allCommands, arguments: arguments, defaultCommand: defaultCommand)
-        return try router.route()
+        return try router.route(allCommands, arguments: arguments)
     }
         
     class private func setupOptionsAndArguments(command: CommandType, arguments: RawArguments) throws -> (execute: Bool, arguments: CommandArguments?) {

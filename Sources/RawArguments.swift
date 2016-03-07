@@ -8,9 +8,9 @@
 
 import Foundation
 
-class RawArguments: CustomStringConvertible {
+public class RawArguments: CustomStringConvertible {
     
-    enum RawArgumentType {
+    public enum RawArgumentType {
         case AppName
         case CommandName
         case Option
@@ -50,7 +50,7 @@ class RawArguments: CustomStringConvertible {
         classifyArgument(index: 0, type: .AppName)
     }
     
-    func classifyArgument(argument argument: String, type: RawArgumentType) {
+    public func classifyArgument(argument argument: String, type: RawArgumentType) {
         if let index = arguments.indexOf(argument) {
             classifyArgument(index: index, type: type)
         }
@@ -70,7 +70,7 @@ class RawArguments: CustomStringConvertible {
         return unclassifiedArguments
     }
     
-    func firstArgumentOfType(type: RawArgumentType) -> String? {
+    public func firstArgumentOfType(type: RawArgumentType) -> String? {
         if let index = argumentClassifications.indexOf(type) {
             return arguments[index]
         }
@@ -78,14 +78,14 @@ class RawArguments: CustomStringConvertible {
         return nil
     }
     
-    func argumentFollowingArgument(argument: String) -> String? {
+    public func argumentFollowingArgument(argument: String) -> String? {
         if let index = arguments.indexOf(argument) where index + 1 < arguments.count {
             return arguments[index + 1]
         }
         return nil
     }
     
-    var description: String {
+    public var description: String {
         return arguments.description
     }
     
