@@ -6,31 +6,26 @@
 //  Copyright (c) 2014 jakeheis. All rights reserved.
 //
 
-public class HelpCommand: CommandType {
+public class HelpCommand: OptionCommandType {
     
     var allCommands: [CommandType] = []
     
-    public var commandName: String  {
-        return "help"
-    }
+    public let commandName = "help"
+    public let commandSignature = "[<opt>]"
+    public let commandShortDescription = "Prints this help information"
+    public let commandShortcut = "-h"
     
-    public var commandSignature: String {
-        return ""
-    }
+    public let failOnUnrecognizedOptions = false
+    public let unrecognizedOptionsPrintingBehavior = UnrecognizedOptionsPrintingBehavior.PrintOnlyUnrecognizedOptions
+    public let helpOnHFlag = false
     
-    public var commandShortDescription: String  {
-        return "Prints this help information"
-    }
-    
-    public var commandShortcut: String?  {
-        return "-h"
-    }
-    
-    public var failOnUnrecognizedOptions: Bool  {
-        return false
-    }
+    public func setupOptions(options: Options) {} // Don't actually do anything with any options
     
     public func execute(arguments: CommandArguments) throws {
+        if arguments.optionalArgument("opt") != nil {
+            print("Usage: baker help\n")
+        }
+        
         print("\(CLI.appDescription)\n")
         print("Available commands: ")
 
