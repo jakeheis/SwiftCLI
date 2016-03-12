@@ -35,6 +35,7 @@ Check out the [migration guide](MIGRATION.md)!
 * [Commands](#commands)
 * [Parameters](#parameters)
 * [Options](#options)
+* [Routing commands](#routing-commands)
 * [Special Commands](#special-commands)
 * [Input](#input)
 * [Running your CLI](#running-your-cli)
@@ -306,7 +307,7 @@ Usage: greeter greet <person> [options]
 
 The ```valueSignature``` argument in the ```onKeys``` family of methods is displayed like a parameter following the key: ```--my-key <valueSignature>```.
 
-## Command routing
+## Routing commands
 Command routing is done by an object implementing `RouterType`, which is just one simple method:
 ```swift
 func route(commands: [CommandType], arguments: RawArguments) throws -> CommandType
