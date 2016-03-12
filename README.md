@@ -345,7 +345,7 @@ Available commands:
 - help                 Prints this help information
 ```
 
-A custom default command can be specified by calling ```CLI.defaultCommand = customDefault```.
+A custom default command can be specified by calling ```CLI.router = DefaultRouter(defaultCommand: customDefault)```.
 
 ## Input
 
@@ -409,9 +409,9 @@ git submodule update --init
 ```
 Then drag the SwiftCLI/SwiftCLI folder into your Xcode project:
 
-![alt tag](https://github.com/jakeheis/SwiftCLI/blob/master/Example/DragScreenshot.png)
+![alt tag](https://github.com/jakeheis/SwiftCLI/blob/master/Support/DragScreenshot.png)
 
-![alt tag](https://github.com/jakeheis/SwiftCLI/blob/master/Example/AddFiles.png)
+![alt tag](https://github.com/jakeheis/SwiftCLI/blob/master/Support/AddFiles.png)
 
 ## Example
 An example of a CLI developed with SwfitCLI can be found in the Example directory in this repo.
