@@ -306,9 +306,26 @@ Usage: greeter greet <person> [options]
 
 The ```valueSignature``` argument in the ```onKeys``` family of methods is displayed like a parameter following the key: ```--my-key <valueSignature>```.
 
+## Command routing
+Command routing is done by an object implementing `RouterType`, which is just one simple method:
+```swift
+func route(commands: [CommandType], arguments: RawArguments) throws -> CommandType
+```
+SwiftCLI supplies a default implementation of `RouterType` with `DefaultRouter`. `DefaultRouter` finds commands based on the first passed argument. So, `greeter greet` would search for commmands with the `commandName` of "greet" and `greeter -g` would search for commands with the `commandShortcut` of "-g". 
+
+If a command is not found, `DefaultRouter` falls back to its `defaultCommand`. The `defaultCommand` is usually the help command:
+```bash
+~ > greeter
+Greeter - your own personal greeter
+
+Available commands: 
+- greet                Greets the given person
+- help                 Prints this help information
+```
+A custom default command can be specified by calling ```CLI.router = DefaultRouter(defaultCommand: customDefault)```.
 
 ## Special commands
-```CLI``` has three special commands: ```helpCommand```, ```versionCommand```, and ```defaultCommand```.
+```CLI``` has two special commands: ```helpCommand``` and ```versionCommand```.
 
 ### Help Command
 The ```HelpCommand``` can be invoked with ```myapp help``` or ```myapp -h```. The ```HelpCommand``` first prints the app description (if any was given during ```CLI.setup()```). It then iterates through all available commands, printing their name and their short description.
@@ -333,19 +350,6 @@ Version: 1.0
 ```
 
 A custom ```VersionCommand``` can be used by calling ```CLI.versionComand = customVersion```.
-
-### Default command
-The default command is the command that is invoked if no command is specified. By default, this is simply the help command.
-```bash
-~ > greeter
-Greeter - your own personal greeter
-
-Available commands: 
-- greet                Greets the given person
-- help                 Prints this help information
-```
-
-A custom default command can be specified by calling ```CLI.router = DefaultRouter(defaultCommand: customDefault)```.
 
 ## Input
 
