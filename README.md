@@ -404,9 +404,14 @@ You then need to Build your app once inside of Xcode. From then on, you should b
 Again, be sure to use ```CLI.go()``` with this method, not ```CLI.debugGoWithArgumentString("")```.
 
 ## SwiftCLI Installation
-
-Right now, Swift frameworks cannot be embedded into command line tools, meaning CocoaPods and Carthage can't easily be used. There is a [way to get around this](http://colemancda.github.io/programming/2015/02/12/embedded-swift-frameworks-osx-command-line-tools/), but it's so difficult that using Git submodules is easier.
-
+### With Swift Package Manager
+Add SwiftCLI as a dependency to your project:
+```swift
+dependencies: [
+    .Package(url: "https://github.com/jakeheis/SwiftCLI", majorVersion: 1, minor: 2)
+]
+```
+### With Xcode
 In your project directory, run:
 ```bash
 git submodule add https://github.com/jakeheis/SwiftCLI.git
@@ -419,8 +424,4 @@ Then drag the SwiftCLI/SwiftCLI folder into your Xcode project:
 ![alt tag](https://github.com/jakeheis/SwiftCLI/blob/master/Support/AddFiles.png)
 
 ## Example
-An example of a CLI developed with SwfitCLI can be found in the Example directory in this repo.
-
-The example project is a command called "baker" - a command to cook you whatever food you would like. It includes three commands, one implemented in each method described in the "Commands" section above - init, list, and bake.
-
-To run the Example project, Build it, and then in your terminal enter in "baker".
+An example of a CLI developed with SwfitCLI can be found at https://github.com/jakeheis/Baker.
