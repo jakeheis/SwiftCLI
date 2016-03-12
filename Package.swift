@@ -1,6 +1,5 @@
 import PackageDescription
 
 let package = Package(
-  name: "SwiftCLI",
-  exclude: ["Example"]
+    name: "SwiftCLI"
 )
