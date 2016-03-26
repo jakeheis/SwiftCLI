@@ -35,7 +35,7 @@ public class RawArguments: CustomStringConvertible {
             var argument = argumentString.substringFromIndex(argumentString.startIndex.advancedBy(matchRange.location))
             argument = argument.substringToIndex(argument.startIndex.advancedBy(matchRange.length))
             if argument.hasPrefix("\"") {
-                argument = argument.substringWithRange(Range(start: argument.startIndex.advancedBy(1), end: argument.endIndex.advancedBy(-1)))
+                argument = argument.substringWithRange(argument.startIndex.advancedBy(1)...argument.endIndex.advancedBy(-1))
             }
             return argument
         }
