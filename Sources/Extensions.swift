@@ -19,8 +19,8 @@ extension String {
     
     func trimEndsByLength(trimLength: Int) -> String {
         let firstIndex = startIndex.advancedBy(trimLength)
-        let lastIndex = endIndex.advancedBy(-trimLength)
-        return substringWithRange(Range(start: firstIndex, end: lastIndex))
+        let lastIndex = endIndex.advancedBy(-trimLength-1)
+        return substringWithRange(firstIndex...lastIndex)
     }
     
 }
