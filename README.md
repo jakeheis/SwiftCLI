@@ -31,6 +31,7 @@ Hey there!
 Check out the [migration guide](MIGRATION.md)!
 
 ## Contents
+* [Installation](#installation)
 * [Creating a CLI](#creating-a-cli)
 * [Commands](#commands)
 * [Parameters](#parameters)
@@ -39,9 +40,19 @@ Check out the [migration guide](MIGRATION.md)!
 * [Special Commands](#special-commands)
 * [Input](#input)
 * [Running your CLI](#running-your-cli)
-* [Installation](#swiftcli-installation)
+* [Xcode Installation](#xcode-installation)
 * [Example](#example)
 
+## Installation
+#### With Swift Package Manager
+Add SwiftCLI as a dependency to your project:
+```swift
+dependencies: [
+    .Package(url: "https://github.com/jakeheis/SwiftCLI", majorVersion: 1, minor: 2)
+]
+```
+#### With Xcode
+[See below](#xcode-installation)
 ## Creating a CLI
 ### Setup
 In the call to ```CLI.setup()```, a ```name``` must be passed, and a ```version``` and a ```description``` are both optional.
@@ -403,15 +414,7 @@ You then need to Build your app once inside of Xcode. From then on, you should b
 
 Again, be sure to use ```CLI.go()``` with this method, not ```CLI.debugGoWithArgumentString("")```.
 
-## SwiftCLI Installation
-### With Swift Package Manager
-Add SwiftCLI as a dependency to your project:
-```swift
-dependencies: [
-    .Package(url: "https://github.com/jakeheis/SwiftCLI", majorVersion: 1, minor: 2)
-]
-```
-### With Xcode
+## Xcode Installation
 In your project directory, run:
 ```bash
 git submodule add https://github.com/jakeheis/SwiftCLI.git
