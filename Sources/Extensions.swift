@@ -20,7 +20,7 @@ extension String {
     func trimEndsByLength(trimLength: Int) -> String {
         let firstIndex = startIndex.advancedBy(trimLength)
         let lastIndex = endIndex.advancedBy(-trimLength)
-        return substringWithRange(Range(start: firstIndex, end: lastIndex))
+        return substringWithRange(firstIndex...lastIndex)
     }
     
 }
