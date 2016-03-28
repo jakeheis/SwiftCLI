@@ -108,6 +108,23 @@ class CommandArgumentsTests: XCTestCase {
         assertParseResultEquals([:], assertMessage: "Signature parser should succeed with empty optional collected parameters")
     }
     
+    func testQuotedArguments() {
+        signature = "<req1> <req2>"
+        arguments = ["\"hi\" \"hello\""]
+        assertParseResultEquals([
+            "req1": "hi",
+            "req2": "hello"
+        ], assertMessage: "Signature parser should succeed with a two quoted arguments with one word")
+        
+        signature = "<req1>"
+        arguments = ["\"hi hello\""]
+        assertParseResultEquals(["req1": "hi hello"], assertMessage: "Signature parser should succeed with a single quoted argument with two words")
+        
+        signature = "<req1> <req2>"
+        arguments = ["\"hi hello\""]
+        assertParseFails("Signature parser should fail when one quoted argument given when two necessary")
+    }
+    
     // MARK: - Helpers
     
     private func createCommandArguments() throws -> CommandArguments {
