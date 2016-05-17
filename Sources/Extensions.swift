@@ -8,7 +8,7 @@
 
 extension String {
     
-    func padFront(totalLength totalLength: Int) -> String {
+    func padFront(totalLength: Int) -> String {
         var spacing = ""
         for _ in 0...totalLength {
             spacing += " "
@@ -17,10 +17,12 @@ extension String {
         return "\(spacing)\(self)"
     }
     
-    func trimEndsByLength(trimLength: Int) -> String {
-        let firstIndex = startIndex.advancedBy(trimLength)
-        let lastIndex = endIndex.advancedBy(-trimLength)
-        return substringWithRange(Range(start: firstIndex, end: lastIndex))
+    func trimEnds(trimLength: Int) -> String {
+        
+        let firstIndex = index(startIndex, offsetBy: trimLength)
+        let lastIndex = index(endIndex, offsetBy: -trimLength)
+        
+        return self.substring(with: Range(uncheckedBounds: (lower: firstIndex, upper: lastIndex)))
     }
     
 }
@@ -34,7 +36,7 @@ extension Array {
     }
     
     func eachWithIndex(block: (object: Element, index: Int) -> ()) {
-        for (index, object) in self.enumerate() {
+        for (index, object) in self.enumerated() {
             block(object: object, index: index)
         }
     }

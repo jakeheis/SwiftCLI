@@ -77,12 +77,12 @@ extension OptionCommandType {
 extension OptionCommandType {
     
     func internalSetupOptions(options: Options) {
-        setupOptions(options)
+        setupOptions(options: options)
         
         if helpOnHFlag {
             let helpFlags = ["-h", "--help"]
             
-            options.onFlags(helpFlags, usage: "Show help information for this command") {(flag) in
+            options.onFlags(flags: helpFlags, usage: "Show help information for this command") {(flag) in
                 print(CommandMessageGenerator.generateUsageStatement(command: self, options: options))
             }
 
