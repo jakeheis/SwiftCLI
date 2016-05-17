@@ -49,7 +49,7 @@ public class CommandArguments {
         for i in 0..<signature.requiredParameters.count {
             let parameter = signature.requiredParameters[i]
             let value = arguments[i]
-            commandArguments[parameter] = value
+            commandArguments[parameter] = value as AnyObject
         }
         
         // Then handle optional arguments if there are any
@@ -61,7 +61,7 @@ public class CommandArguments {
                 }
                 let parameter = signature.optionalParameters[i]
                 let value = arguments[index]
-                commandArguments[parameter] = value
+                commandArguments[parameter] = value as AnyObject
             }
         }
         
@@ -69,20 +69,20 @@ public class CommandArguments {
         if signature.collectRemainingArguments {
             let parameter = signature.optionalParameters.isEmpty ? signature.requiredParameters[signature.requiredParameters.count-1] : signature.optionalParameters[signature.optionalParameters.count-1]
 
-            if let singleArgument = commandArguments.optionalArgument(parameter) {
+            if let singleArgument = commandArguments.optionalArgument(key: parameter) {
                 var collectedArgument = [singleArgument]
                 let startingIndex = signature.requiredParameters.count + signature.optionalParameters.count
                 for i in startingIndex..<arguments.count {
                     collectedArgument.append(arguments[i])
                 }
-                commandArguments[parameter] = collectedArgument
+                commandArguments[parameter] = collectedArgument as AnyObject
             }
         }
         
         return commandArguments
     }
     
-    private class func handleEmptySignature(rawArguments rawArguments: RawArguments) throws -> CommandArguments {
+    private class func handleEmptySignature(rawArguments: RawArguments) throws -> CommandArguments {
         guard rawArguments.unclassifiedArguments().count == 0  else {
             throw CLIError.Error("Expected no arguments, got \(rawArguments.unclassifiedArguments().count).")
         }
@@ -90,7 +90,7 @@ public class CommandArguments {
         return CommandArguments()
     }
     
-    private class func errorMessage(expectedCount expectedCount: Int, givenCount: Int) -> String {
+    private class func errorMessage(expectedCount: Int, givenCount: Int) -> String {
         let argString = expectedCount == 1 ? "argument" : "arguments"
         return "Expected \(expectedCount) \(argString), but got \(givenCount)."
     }
@@ -120,7 +120,7 @@ public class CommandArguments {
         - Parameter key: the name of the argument as seen in the command signature
     */
     public func requiredArgument(key: String) -> String {
-        return optionalArgument(key)!
+        return optionalArgument(key: key)!
     }
     
     /**
@@ -143,7 +143,7 @@ public class CommandArguments {
         - Parameter key: the name of the argument as seen in the command signature
     */
     public func requiredCollectedArgument(key: String) -> [String] {
-        return optionalCollectedArgument(key)!
+        return optionalCollectedArgument(key: key)!
     }
     
     /**

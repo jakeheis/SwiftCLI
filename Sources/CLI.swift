@@ -32,7 +32,7 @@ public class CLI {
         - Parameter version: version of the app, printed by the VersionCommand
         - Parameter description: description of the app, printed in the help message
     */
-    public class func setup(name name: String, version: String? = nil, description: String? = nil) {
+    public class func setup(name: String, version: String? = nil, description: String? = nil) {
         appName = name
         
         if let version = version {
@@ -63,7 +63,7 @@ public class CLI {
         - Parameter commands: the commands to be registered
     */
     public class func registerCommands(commands: [CommandType]) {
-        commands.each { self.registerCommand($0) }
+        commands.each { self.registerCommand(command: $0) }
     }
     
     /**
@@ -72,9 +72,9 @@ public class CLI {
         - Parameter commandName: the name of the new chainable command
         - Returns: a new chainable command for immediate chaining
     */
-    public class func registerChainableCommand(commandName commandName: String) -> ChainableCommand {
+    public class func registerChainableCommand(commandName: String) -> ChainableCommand {
         let chainable = ChainableCommand(commandName: commandName)
-        registerCommand(chainable)
+        registerCommand(command: chainable)
         return chainable
     }
     
@@ -89,7 +89,7 @@ public class CLI {
                     command. Usually should be passed to `exit(result)`
     */
     public class func go() -> CLIResult {
-       return goWithArguments(RawArguments())
+       return goWithArguments(arguments: RawArguments())
     }
     
     /**
@@ -103,24 +103,24 @@ public class CLI {
     */
     public class func debugGoWithArgumentString(argumentString: String) -> CLIResult {
         print("[Debug Mode]")
-        return goWithArguments(RawArguments(argumentString: argumentString))
+        return goWithArguments(arguments: RawArguments(argumentString: argumentString))
     }
     
     private class func goWithArguments(arguments: RawArguments) -> CLIResult {
         do {
             let command = try routeCommand(arguments: arguments)
-            let result = try setupOptionsAndArguments(command, arguments: arguments)
+            let result = try setupOptionsAndArguments(command: command, arguments: arguments)
             if let arguments = result.arguments where result.execute {
-                try command.execute(arguments)
+                try command.execute(arguments: arguments)
             }
             
             return CLIResult.Success
         } catch CLIError.Error(let error) {
-            printError(error)
+            printError(error: error)
         } catch CLIError.EmptyError {
             // Do nothing
         } catch let error as NSError {
-            printError("An error occurred: \(error.localizedDescription)")
+            printError(error: "An error occurred: \(error.localizedDescription)")
         }
         
         return CLIResult.Error
@@ -128,7 +128,7 @@ public class CLI {
     
     // MARK: - Privates
     
-    class private func routeCommand(arguments arguments: RawArguments) throws -> CommandType {
+    class private func routeCommand(arguments: RawArguments) throws -> CommandType {
         var allCommands = commands
         if let hc = helpCommand {
             hc.allCommands = commands
@@ -138,15 +138,15 @@ public class CLI {
             allCommands.append(vc)
         }
         
-        return try router.route(allCommands, arguments: arguments)
+        return try router.route(commands: allCommands, arguments: arguments)
     }
         
     class private func setupOptionsAndArguments(command: CommandType, arguments: RawArguments) throws -> (execute: Bool, arguments: CommandArguments?) {
         if let optionCommand = command as? OptionCommandType {
             let options = Options()
           
-            optionCommand.internalSetupOptions(options)
-            options.recognizeOptionsInArguments(arguments)
+            optionCommand.internalSetupOptions(options: options)
+            options.recognizeOptionsInArguments(rawArguments: arguments)
             
             if options.exitEarly { // True if -h flag given (show help but exit early before executing command)
                 return (false, nil)
@@ -154,7 +154,7 @@ public class CLI {
             
             if options.misusedOptionsPresent() {
                 if let message = CommandMessageGenerator.generateMisusedOptionsStatement(command: optionCommand, options: options) {
-                    printError(message)
+                    printError(error: message)
                 }
                 if optionCommand.failOnUnrecognizedOptions {
                     throw CLIError.EmptyError
@@ -164,14 +164,14 @@ public class CLI {
         
         let commandSignature = CommandSignature(command.commandSignature)
         
-        return (true, try CommandArguments.fromRawArguments(arguments, signature: commandSignature))
+        return (true, try CommandArguments.fromRawArguments(rawArguments: arguments, signature: commandSignature))
     }
     
 }
 
 // MARK: -
 
-public enum CLIError: ErrorType {
+public enum CLIError: ErrorProtocol {
     case Error(String)
     case EmptyError
 }
