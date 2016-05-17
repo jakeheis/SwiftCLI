@@ -9,14 +9,14 @@
 import Foundation
 
 func printError(error: String) {
-    printError(error, terminator: "\n")
+    printError(error: error, terminator: "\n")
 }
 
 func printError(error: String, terminator: String) {
-    let handle = NSFileHandle.fileHandleWithStandardError()
+    let handle = NSFileHandle.standardError()
     let fullString = error + terminator
-    if let errorData = fullString.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: false) {
-        handle.writeData(errorData)
+    if let errorData = fullString.data(using: NSUTF8StringEncoding, allowLossyConversion: false) {
+        handle.write(errorData)
     } else {
         print(error)
     }

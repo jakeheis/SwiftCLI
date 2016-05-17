@@ -22,7 +22,7 @@ public class FlagOption {
         self.flags = flags
         self.block = block
         
-        let flagsString = flags.joinWithSeparator(", ")
+        let flagsString = flags.joined(separator: ", ")
         let paddedUsage = usage.padFront(totalLength: 40 - flagsString.characters.count)
         self.usage = "\(flagsString)\(paddedUsage)"
     }
@@ -47,7 +47,7 @@ public class KeyOption: Equatable {
         self.valueSignature = valueSignature
         self.block = block
         
-        let keysString = keys.joinWithSeparator(", ")
+        let keysString = keys.joined(separator: ", ")
         let firstPart = "\(keysString) <\(valueSignature)>"
         let paddedUsage = usage.padFront(totalLength: 40 - firstPart.characters.count)
         self.usage = "\(firstPart)\(paddedUsage)"
@@ -86,7 +86,7 @@ public class Options {
         - Parameter block: the block to be called upon recognition of the flags
     */
     public func onFlags(flags: [String], usage: String = "", block: FlagOption.FlagBlock?) {
-        addFlagOption(FlagOption(flags: flags, usage: usage, block: block))
+        addFlagOption(flagOption: FlagOption(flags: flags, usage: usage, block: block))
     }
     
     /**
@@ -101,7 +101,7 @@ public class Options {
         - Parameter block: the block to be called upon recognition of the keys
     */
     public func onKeys(keys: [String], usage: String = "", valueSignature: String = "value", block: KeyOption.KeyBlock?) {
-        addKeyOption(KeyOption(keys: keys, usage: usage, valueSignature: valueSignature, block: block))
+        addKeyOption(keyOption: KeyOption(keys: keys, usage: usage, valueSignature: valueSignature, block: block))
     }
     
     private func addFlagOption(flagOption: FlagOption) {
@@ -122,7 +122,7 @@ public class Options {
         var passedOptions: [String] = []
         rawArguments.unclassifiedArguments().each {(argument) in
             if argument.hasPrefix("-") {
-                passedOptions += self.optionsForRawOption(argument)
+                passedOptions += self.optionsForRawOption(rawOption: argument)
                 rawArguments.classifyArgument(argument: argument, type: .Option)
             }
         }
@@ -131,7 +131,7 @@ public class Options {
             if let flagOption = allFlagOptions[option] {
                 flagOption.block?(flag: option)
             } else if let keyOption = allKeyOptions[option] {
-                if let keyValue = rawArguments.argumentFollowingArgument(option)
+                if let keyValue = rawArguments.argumentFollowingArgument(argument: option)
                     where !keyValue.hasPrefix("-") {
                         rawArguments.classifyArgument(argument: keyValue, type: .Option)
                         
@@ -156,7 +156,7 @@ public class Options {
         
         var chars: [String] = []
         
-        for (index, character) in rawOption.characters.enumerate() {
+        for (index, character) in rawOption.characters.enumerated() {
             if index > 0 {
                 chars.append("-\(character)")
             }

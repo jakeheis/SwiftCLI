@@ -22,7 +22,7 @@ public class HelpCommand: OptionCommandType {
     public func setupOptions(options: Options) {} // Don't actually do anything with any options
     
     public func execute(arguments: CommandArguments) throws {
-        if arguments.optionalArgument("opt") != nil {
+        if arguments.optionalArgument(key: "opt") != nil {
             print("Usage: baker help\n")
         }
         
@@ -30,10 +30,10 @@ public class HelpCommand: OptionCommandType {
         print("Available commands: ")
 
         for command in allCommands {
-            printCommand(command)
+            printCommand(command: command)
         }
         
-        printCommand(self)
+        printCommand(command: self)
     }
     
     func printCommand(command: CommandType) {
