@@ -20,16 +20,16 @@ public class DefaultRouter: RouterType {
     
     public func route(commands: [CommandType], arguments: RawArguments) throws -> CommandType {
         guard arguments.unclassifiedArguments().count > 0 else {
-            return try findDefaultCommand(commands)
+            return try findDefaultCommand(commands: commands)
         }
         
-        return try findCommand(commands, arguments: arguments)
+        return try findCommand(commands: commands, arguments: arguments)
     }
     
     // MARK: - Privates
     
     private func findCommand(commands: [CommandType], arguments: RawArguments) throws -> CommandType {
-        guard let commandSearchName = arguments.firstArgumentOfType(.Unclassified) else {
+        guard let commandSearchName = arguments.firstArgumentOfType(type: .Unclassified) else {
             throw CLIError.Error("Router failed")
         }
         
@@ -43,11 +43,11 @@ public class DefaultRouter: RouterType {
                 arguments.classifyArgument(argument: commandSearchName, type: .CommandName)
                 return shortcutCommand
             } else {
-                return try findDefaultCommand(commands)
+                return try findDefaultCommand(commands: commands)
             }
         }
         
-        return try findDefaultCommand(commands)
+        return try findDefaultCommand(commands: commands)
     }
     
     func findDefaultCommand(commands: [CommandType]) throws -> CommandType {

@@ -15,7 +15,7 @@ class CommandSignature {
     var collectRemainingArguments = false
     
     init(_ string: String) {
-        let parameters = string.componentsSeparatedByString(" ").filter { !$0.isEmpty }
+        let parameters = string.components(separatedBy: " ").filter { !$0.isEmpty }
         
         let requiredRegex = try! NSRegularExpression(pattern: "^<.*>$", options: [])
         let optionalRegex = try! NSRegularExpression(pattern: "^\\[<.*>\\]$", options: [])
@@ -29,11 +29,11 @@ class CommandSignature {
             
             let parameterRange = NSRange(location: 0, length: parameter.characters.count)
             
-            if requiredRegex.numberOfMatchesInString(parameter, options: [], range: parameterRange) > 0 {
+            if requiredRegex.numberOfMatches(in: parameter, options: [], range: parameterRange) > 0 {
                 assert(optionalParameters.count == 0, "All required parameters must come before any optional parameter.")
-                required(parameter.trimEndsByLength(1))
-            } else if optionalRegex.numberOfMatchesInString(parameter, options: [], range: parameterRange) > 0 {
-                optional(parameter.trimEndsByLength(2))
+                required(parameter: parameter.trimEnds(trimLength: 1))
+            } else if optionalRegex.numberOfMatches(in: parameter, options: [], range: parameterRange) > 0 {
+                optional(parameter: parameter.trimEnds(trimLength: 2))
             } else {
                 assert(false, "Unrecognized parameter format: \(parameter)")
             }
