@@ -8,18 +8,39 @@
 
 import Foundation
 
-public class RawArguments: CustomStringConvertible {
+public class RawArgument {
     
-    public enum RawArgumentType {
-        case AppName
-        case CommandName
-        case Option
-        case Unclassified
+    public enum Classification {
+        case appName
+        case commandName
+        case option
+        case unclassified
     }
     
-    private var arguments: [String]
+    let value: String
+    let index: Int
     
-    private var argumentClassifications: [RawArgumentType] = []
+    var next: RawArgument? = nil
+    var classification: Classification = .unclassified
+    
+    var isUnclassified: Bool {
+        return classification == .unclassified
+    }
+    
+    init(value: String, index: Int) {
+        self.value = value
+        self.index = index
+    }
+    
+}
+
+public class RawArguments {
+    
+    private let arguments: [RawArgument]
+    
+    var unclassifiedArguments: [RawArgument] {
+        return arguments.filter { $0.isUnclassified }
+    }
     
     convenience init() {
         self.init(arguments: NSProcessInfo.processInfo().arguments)
@@ -44,50 +65,21 @@ public class RawArguments: CustomStringConvertible {
         self.init(arguments: arguments)
     }
     
-    init(arguments: [String]) {
-        self.arguments = arguments
-        self.argumentClassifications = [RawArgumentType](repeating: .Unclassified, count: arguments.count)
-        
-        classifyArgument(index: 0, type: .AppName)
-    }
-    
-    public func classifyArgument(argument: String, type: RawArgumentType) {
-        if let index = arguments.index(of: argument) {
-            classifyArgument(index: index, type: type)
-        }
-    }
-    
-    private func classifyArgument(index: Int, type: RawArgumentType) {
-        argumentClassifications[index] = type
-    }
-    
-    func unclassifiedArguments() -> [String] {
-        var unclassifiedArguments: [String] = []
-        arguments.eachWithIndex {(argument, index) in
-            if self.argumentClassifications[index] == .Unclassified {
-                unclassifiedArguments.append(argument)
+    init(arguments stringArguments: [String]) {
+        var convertedArguments: [RawArgument] = []
+        var lastArgument: RawArgument? = nil
+        for (index, value) in stringArguments.enumerated() {
+            let argument = RawArgument(value: value, index: index)
+            convertedArguments.append(argument)
+            if let lastArgument = lastArgument {
+                lastArgument.next = argument
             }
+            lastArgument = argument
         }
-        return unclassifiedArguments
-    }
-    
-    public func firstArgumentOfType(type: RawArgumentType) -> String? {
-        if let index = argumentClassifications.index(of: type) {
-            return arguments[index]
-        }
-
-        return nil
-    }
-    
-    public func argumentFollowingArgument(argument: String) -> String? {
-        if let index = arguments.index(of: argument) where index + 1 < arguments.count {
-            return arguments[index + 1]
-        }
-        return nil
-    }
-    
-    public var description: String {
-        return arguments.description
+        
+        convertedArguments.first?.classification = .appName
+        
+        self.arguments = convertedArguments
     }
     
 }

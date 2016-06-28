@@ -119,37 +119,40 @@ public class Options {
     // MARK: - Argument parsing
     
     func recognizeOptionsInArguments(rawArguments: RawArguments) {
-        var passedOptions: [String] = []
-        rawArguments.unclassifiedArguments().each {(argument) in
-            if argument.hasPrefix("-") {
-                passedOptions += self.optionsForRawOption(rawOption: argument)
-                rawArguments.classifyArgument(argument: argument, type: .Option)
-            }
-        }
+        let optionArguments = rawArguments.unclassifiedArguments.filter { $0.value.hasPrefix("-") }
         
-        for option in passedOptions {
-            if let flagOption = allFlagOptions[option] {
-                flagOption.block?(flag: option)
-            } else if let keyOption = allKeyOptions[option] {
-                if let keyValue = rawArguments.argumentFollowingArgument(argument: option)
-                    where !keyValue.hasPrefix("-") {
-                        rawArguments.classifyArgument(argument: keyValue, type: .Option)
-                        
-                        keyOption.block?(key: option, value: keyValue)
-                } else {
-                    keysNotGivenValue.append(option)
-                }
-            } else {
-                unrecognizedOptions.append(option)
-            }
+        for optionArgument in optionArguments {
+            var brokenUpOptions = splitOptions(for: optionArgument.value)
             
-            if exitEarlyOptions.contains(option) {
-                exitEarly = true
+            let lastOption = brokenUpOptions.removeLast()
+            handleOption(option: lastOption, nextArgument: optionArgument.next)
+            
+            for option in brokenUpOptions {
+                handleOption(option: option)
             }
         }
     }
     
-    private func optionsForRawOption(rawOption: String) -> [String] {
+    private func handleOption(option: String, nextArgument: RawArgument? = nil) {
+        if let flagOption = allFlagOptions[option] {
+            flagOption.block?(flag: option)
+        } else if let keyOption = allKeyOptions[option] {
+            if let nextArgument = nextArgument where nextArgument.isUnclassified {
+                nextArgument.classification = .option
+                keyOption.block?(key: option, value: nextArgument.value)
+            } else {
+                keysNotGivenValue.append(option)
+            }
+        } else {
+            unrecognizedOptions.append(option)
+        }
+        
+        if exitEarlyOptions.contains(option) {
+            exitEarly = true
+        }
+    }
+    
+    private func splitOptions(for rawOption: String) -> [String] {
         if rawOption.hasPrefix("--") {
             return [rawOption]
         }

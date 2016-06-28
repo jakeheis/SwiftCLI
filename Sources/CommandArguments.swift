@@ -29,7 +29,7 @@ public class CommandArguments {
             return try handleEmptySignature(rawArguments: rawArguments)
         }
         
-        let arguments = rawArguments.unclassifiedArguments()
+        let arguments = rawArguments.unclassifiedArguments
         
         if arguments.count < signature.requiredParameters.count {
             throw CLIError.Error(errorMessage(expectedCount: signature.requiredParameters.count, givenCount: arguments.count))
@@ -48,7 +48,7 @@ public class CommandArguments {
         // First handle required arguments
         for i in 0..<signature.requiredParameters.count {
             let parameter = signature.requiredParameters[i]
-            let value = arguments[i]
+            let value = arguments[i].value
             commandArguments[parameter] = value as AnyObject
         }
         
@@ -60,7 +60,7 @@ public class CommandArguments {
                     break
                 }
                 let parameter = signature.optionalParameters[i]
-                let value = arguments[index]
+                let value = arguments[index].value
                 commandArguments[parameter] = value as AnyObject
             }
         }
@@ -73,7 +73,7 @@ public class CommandArguments {
                 var collectedArgument = [singleArgument]
                 let startingIndex = signature.requiredParameters.count + signature.optionalParameters.count
                 for i in startingIndex..<arguments.count {
-                    collectedArgument.append(arguments[i])
+                    collectedArgument.append(arguments[i].value)
                 }
                 commandArguments[parameter] = collectedArgument as AnyObject
             }
@@ -83,8 +83,8 @@ public class CommandArguments {
     }
     
     private class func handleEmptySignature(rawArguments: RawArguments) throws -> CommandArguments {
-        guard rawArguments.unclassifiedArguments().count == 0  else {
-            throw CLIError.Error("Expected no arguments, got \(rawArguments.unclassifiedArguments().count).")
+        guard rawArguments.unclassifiedArguments.isEmpty  else {
+            throw CLIError.Error("Expected no arguments, got \(rawArguments.unclassifiedArguments.count).")
         }
     
         return CommandArguments()
