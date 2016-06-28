@@ -22,6 +22,8 @@ public class CLI {
     public static var versionComand: CommandType? = VersionCommand()
     
     public static var router: RouterType = DefaultRouter()
+    public static var usageStatementGenerator: UsageStatementGenerator = DefaultUsageStatementGenerator()
+    public static var misusedOptionsMessageGenerator: MisusedOptionsMessageGenerator = DefaultMisusedOptionsMessageGenerator()
     
     // MARK: - Setup
     
@@ -153,7 +155,7 @@ public class CLI {
             }
             
             if options.misusedOptionsPresent() {
-                if let message = CommandMessageGenerator.generateMisusedOptionsStatement(command: optionCommand, options: options) {
+                if let message = misusedOptionsMessageGenerator.generateMisusedOptionsStatement(for: optionCommand, options: options) {
                     printError(error: message)
                 }
                 if optionCommand.failOnUnrecognizedOptions {

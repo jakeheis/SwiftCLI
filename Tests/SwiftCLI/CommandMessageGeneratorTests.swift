@@ -25,7 +25,7 @@ class CommandMessageGeneratorTests: XCTestCase {
         let options = Options()
         command.internalSetupOptions(options: options)
         
-        let message = CommandMessageGenerator.generateUsageStatement(command: command, options: options)
+        let message = DefaultUsageStatementGenerator().generateUsageStatement(for: command, options: options)
         
         let expectedMessage = ([
             "Usage: tester test <testName> [<testerName>] [options]",
@@ -51,7 +51,7 @@ class CommandMessageGeneratorTests: XCTestCase {
         arguments.unclassifiedArguments.first?.classification = .commandName
         options.recognizeOptions(in: arguments)
         
-        let message = CommandMessageGenerator.generateMisusedOptionsStatement(command: command, options: options)!
+        let message = DefaultMisusedOptionsMessageGenerator().generateMisusedOptionsStatement(for: command, options: options)!
         
         let expectedMessage = ([
             "Usage: tester test <testName> [<testerName>] [options]",

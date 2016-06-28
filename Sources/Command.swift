@@ -83,7 +83,7 @@ extension OptionCommandType {
             let helpFlags = ["-h", "--help"]
             
             options.add(flags: helpFlags, usage: "Show help information for this command") {(flag) in
-                print(CommandMessageGenerator.generateUsageStatement(command: self, options: options))
+                print(CLI.usageStatementGenerator.generateUsageStatement(for: self, options: options))
             }
 
             options.exitEarlyOptions += helpFlags

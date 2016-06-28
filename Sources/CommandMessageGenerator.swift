@@ -6,9 +6,17 @@
 //  Copyright © 2015 jakeheis. All rights reserved.
 //
 
-class CommandMessageGenerator {
+public protocol UsageStatementGenerator {
+    func generateUsageStatement(for command: CommandType, options: Options?) -> String
+}
+
+public protocol MisusedOptionsMessageGenerator {
+    func generateMisusedOptionsStatement(for command: CommandType, options: Options) -> String?
+}
+
+class DefaultUsageStatementGenerator: UsageStatementGenerator {
     
-    class func generateUsageStatement(command: CommandType, options: Options?) -> String {
+    func generateUsageStatement(for command: CommandType, options: Options?) -> String {
         var message = "Usage: \(CLI.appName)"
         
         if !command.commandName.isEmpty {
@@ -38,7 +46,11 @@ class CommandMessageGenerator {
         return message
     }
     
-    class func generateMisusedOptionsStatement(command: CommandType, options: Options) -> String? {
+}
+
+class DefaultMisusedOptionsMessageGenerator: MisusedOptionsMessageGenerator {
+
+    func generateMisusedOptionsStatement(for command: CommandType, options: Options) -> String? {
         guard let optionsCommand = command as? OptionCommandType else {
             return nil
         }
@@ -47,11 +59,11 @@ class CommandMessageGenerator {
         case .PrintNone:
             return nil
         case .PrintOnlyUsage:
-            return generateUsageStatement(command: command, options: options)
+            return CLI.usageStatementGenerator.generateUsageStatement(for: command, options: options)
         case .PrintOnlyUnrecognizedOptions:
             return options.misusedOptionsMessage()
         case .PrintAll:
-            return generateUsageStatement(command: command, options: options) + "\n" + options.misusedOptionsMessage()
+            return CLI.usageStatementGenerator.generateUsageStatement(for: command, options: options) + "\n" + options.misusedOptionsMessage()
         }
     }
     
