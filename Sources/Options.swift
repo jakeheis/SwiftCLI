@@ -24,7 +24,7 @@ public class Option {
     
 }
 
-public class Options {
+public class OptionRegistry {
     
     public typealias FlagBlock = (flag: String) -> ()
     public typealias KeyBlock = (key: String, value: String) -> ()
@@ -34,11 +34,7 @@ public class Options {
     var flagBlocks: [String: FlagBlock] = [:]
     var keyBlocks: [String: KeyBlock] = [:]
     
-    var unrecognizedOptions: [String] = []
-    var keysNotGivenValue: [String] = []
-    
     var exitEarlyOptions: [String] = []
-    var exitEarly = false
     
     // MARK: - Adding options
     
@@ -75,16 +71,51 @@ public class Options {
         }
     }
     
-    // MARK: - Argument parsing
+}
+
+public protocol OptionParser {
+    init(optionRegistry: OptionRegistry)
     
-    func recognizeOptions(in rawArguments: RawArguments) {
+    func recognizeOptions(in rawArguments: RawArguments) -> OptionParserResult
+}
+
+public enum OptionParserResult {
+    case success
+    case exitEarly
+    case incorrectOptionUsage(IncorrectOptionUsage)
+}
+
+extension OptionParserResult: Equatable {}
+
+public func == (lhs: OptionParserResult, rhs: OptionParserResult) -> Bool {
+    switch (lhs, rhs) {
+    case (.success, .success): return true
+    case (.exitEarly, .exitEarly): return true
+    case (.incorrectOptionUsage(_), .incorrectOptionUsage(_)): return true
+    default: return false
+    }
+}
+
+public class DefaultOptionParser: OptionParser {
+    
+    let optionRegistry: OptionRegistry
+    
+    public required init(optionRegistry: OptionRegistry) {
+        self.optionRegistry = optionRegistry
+    }
+    
+    public func recognizeOptions(in rawArguments: RawArguments) -> OptionParserResult {
         let optionArguments = rawArguments.unclassifiedArguments.filter { $0.value.hasPrefix("-") }
+        
+        var unrecognizedOptions: [String] = []
+        var keysNotGivenValue: [String] = []
+        var exitEarly: Bool = false
         
         for optionArgument in optionArguments {
             optionArgument.classification = .option
-            if let flagBlock = flagBlocks[optionArgument.value] {
+            if let flagBlock = optionRegistry.flagBlocks[optionArgument.value] {
                 flagBlock(flag: optionArgument.value)
-            } else if let keyBlock = keyBlocks[optionArgument.value] {
+            } else if let keyBlock = optionRegistry.keyBlocks[optionArgument.value] {
                 if let nextArgument = optionArgument.next where nextArgument.isUnclassified && !nextArgument.value.hasPrefix("-") {
                     nextArgument.classification = .option
                     keyBlock(key: optionArgument.value, value: nextArgument.value)
@@ -95,13 +126,31 @@ public class Options {
                 unrecognizedOptions.append(optionArgument.value)
             }
             
-            if exitEarlyOptions.contains(optionArgument.value) {
+            if optionRegistry.exitEarlyOptions.contains(optionArgument.value) {
                 exitEarly = true
             }
         }
+        
+        if exitEarly {
+            return .exitEarly
+        }
+        
+        if !unrecognizedOptions.isEmpty || !keysNotGivenValue.isEmpty {
+            let incorrect = IncorrectOptionUsage(optionRegistry: optionRegistry, unrecognizedOptions: unrecognizedOptions, keysNotGivenValue: keysNotGivenValue)
+            return .incorrectOptionUsage(incorrect)
+        }
+        
+        
+        return .success
     }
     
-    // MARK: - Misused options
+}
+
+public struct IncorrectOptionUsage {
+    
+    let optionRegistry: OptionRegistry
+    let unrecognizedOptions: [String]
+    let keysNotGivenValue: [String]
     
     func misusedOptionsPresent() -> Bool {
         return unrecognizedOptions.count > 0 || keysNotGivenValue.count > 0

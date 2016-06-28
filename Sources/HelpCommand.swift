@@ -19,7 +19,7 @@ public class HelpCommand: OptionCommandType {
     public let unrecognizedOptionsPrintingBehavior = UnrecognizedOptionsPrintingBehavior.PrintOnlyUnrecognizedOptions
     public let helpOnHFlag = false
     
-    public func setupOptions(options: Options) {} // Don't actually do anything with any options
+    public func setupOptions(options: OptionRegistry) {} // Don't actually do anything with any options
     
     public func execute(arguments: CommandArguments) throws {
         if arguments.optionalArgument("opt") != nil {

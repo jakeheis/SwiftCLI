@@ -50,7 +50,7 @@ public protocol OptionCommandType: CommandType {
     
         - Parameter options: the instance of Options which should be set up
     */
-    func setupOptions(options: Options)
+    func setupOptions(options: OptionRegistry)
 
 }
 
@@ -76,14 +76,14 @@ extension OptionCommandType {
 
 extension OptionCommandType {
     
-    func internalSetupOptions(options: Options) {
+    func internalSetupOptions(options: OptionRegistry) {
         setupOptions(options: options)
         
         if helpOnHFlag {
             let helpFlags = ["-h", "--help"]
             
             options.add(flags: helpFlags, usage: "Show help information for this command") {(flag) in
-                print(CLI.usageStatementGenerator.generateUsageStatement(for: self, options: options))
+                print(CLI.usageStatementGenerator.generateUsageStatement(for: self, optionRegistry: options))
             }
 
             options.exitEarlyOptions += helpFlags

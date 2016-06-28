@@ -7,16 +7,16 @@
 //
 
 public protocol UsageStatementGenerator {
-    func generateUsageStatement(for command: CommandType, options: Options?) -> String
+    func generateUsageStatement(for command: CommandType, optionRegistry: OptionRegistry?) -> String
 }
 
 public protocol MisusedOptionsMessageGenerator {
-    func generateMisusedOptionsStatement(for command: CommandType, options: Options) -> String?
+    func generateMisusedOptionsStatement(for command: CommandType, incorrectOptionUsage: IncorrectOptionUsage) -> String?
 }
 
 class DefaultUsageStatementGenerator: UsageStatementGenerator {
     
-    func generateUsageStatement(for command: CommandType, options: Options?) -> String {
+    func generateUsageStatement(for command: CommandType, optionRegistry: OptionRegistry?) -> String {
         var message = "Usage: \(CLI.appName)"
         
         if !command.commandName.isEmpty {
@@ -27,10 +27,10 @@ class DefaultUsageStatementGenerator: UsageStatementGenerator {
             message += " \(command.commandSignature)"
         }
         
-        if let options = options where !options.options.isEmpty {
+        if let options = optionRegistry?.options where !options.isEmpty {
             message += " [options]\n"
             
-            let sortedOptions = options.options.sorted { (lhs, rhs) in
+            let sortedOptions = options.sorted { (lhs, rhs) in
                 return lhs.options.first < rhs.options.first
             }
             for option in sortedOptions {
@@ -50,7 +50,7 @@ class DefaultUsageStatementGenerator: UsageStatementGenerator {
 
 class DefaultMisusedOptionsMessageGenerator: MisusedOptionsMessageGenerator {
 
-    func generateMisusedOptionsStatement(for command: CommandType, options: Options) -> String? {
+    func generateMisusedOptionsStatement(for command: CommandType, incorrectOptionUsage: IncorrectOptionUsage) -> String? {
         guard let optionsCommand = command as? OptionCommandType else {
             return nil
         }
@@ -59,11 +59,11 @@ class DefaultMisusedOptionsMessageGenerator: MisusedOptionsMessageGenerator {
         case .PrintNone:
             return nil
         case .PrintOnlyUsage:
-            return CLI.usageStatementGenerator.generateUsageStatement(for: command, options: options)
+            return CLI.usageStatementGenerator.generateUsageStatement(for: command, optionRegistry: incorrectOptionUsage.optionRegistry)
         case .PrintOnlyUnrecognizedOptions:
-            return options.misusedOptionsMessage()
+            return incorrectOptionUsage.misusedOptionsMessage()
         case .PrintAll:
-            return CLI.usageStatementGenerator.generateUsageStatement(for: command, options: options) + "\n" + options.misusedOptionsMessage()
+            return CLI.usageStatementGenerator.generateUsageStatement(for: command, optionRegistry: incorrectOptionUsage.optionRegistry) + "\n" + incorrectOptionUsage.misusedOptionsMessage()
         }
     }
     

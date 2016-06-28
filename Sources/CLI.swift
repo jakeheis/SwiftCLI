@@ -24,6 +24,7 @@ public class CLI {
     public static var router: RouterType = DefaultRouter()
     public static var usageStatementGenerator: UsageStatementGenerator = DefaultUsageStatementGenerator()
     public static var misusedOptionsMessageGenerator: MisusedOptionsMessageGenerator = DefaultMisusedOptionsMessageGenerator()
+    public static var optionParserType: OptionParser.Type = DefaultOptionParser.self
     
     // MARK: - Setup
     
@@ -145,22 +146,24 @@ public class CLI {
         
     class private func setupOptionsAndArguments(command: CommandType, arguments: RawArguments) throws -> (execute: Bool, arguments: CommandArguments?) {
         if let optionCommand = command as? OptionCommandType {
-            let options = Options()
+            let optionRegistry = OptionRegistry()
           
-            optionCommand.internalSetupOptions(options: options)
-            options.recognizeOptions(in: arguments)
+            optionCommand.internalSetupOptions(options: optionRegistry)
             
-            if options.exitEarly { // True if -h flag given (show help but exit early before executing command)
+            let optionParser = optionParserType.init(optionRegistry: optionRegistry)
+            let result = optionParser.recognizeOptions(in: arguments)
+            
+            switch result {
+            case .exitEarly: // True if -h flag given (show help but exit early before executing command)
                 return (false, nil)
-            }
-            
-            if options.misusedOptionsPresent() {
-                if let message = misusedOptionsMessageGenerator.generateMisusedOptionsStatement(for: optionCommand, options: options) {
+            case .incorrectOptionUsage(let incorrectOptionUsage):
+                if let message = misusedOptionsMessageGenerator.generateMisusedOptionsStatement(for: optionCommand, incorrectOptionUsage: incorrectOptionUsage) {
                     printError(error: message)
                 }
                 if optionCommand.failOnUnrecognizedOptions {
                     throw CLIError.EmptyError
                 }
+            default: break
             }
         }
         

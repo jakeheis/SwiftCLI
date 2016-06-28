@@ -22,10 +22,10 @@ class CommandMessageGeneratorTests: XCTestCase {
     }
 
     func testUsageStatementGeneration() {
-        let options = Options()
-        command.internalSetupOptions(options: options)
+        let optionRegistry = OptionRegistry()
+        command.internalSetupOptions(options: optionRegistry)
         
-        let message = DefaultUsageStatementGenerator().generateUsageStatement(for: command, options: options)
+        let message = DefaultUsageStatementGenerator().generateUsageStatement(for: command, optionRegistry: optionRegistry)
         
         let expectedMessage = ([
             "Usage: tester test <testName> [<testerName>] [options]",
@@ -35,23 +35,27 @@ class CommandMessageGeneratorTests: XCTestCase {
             "-t, --times <times>                      Number of times to run the test",
             ""
         ]).joined(separator: "\n")
-        print("expected:")
-        print(expectedMessage)
-        print("got")
-        print(message)
+        
         XCTAssertEqual(message, expectedMessage, "Should generate the correct usage statement")
     }
     
     func testMisusedOptionsStatementGeneration() {
-        let options = Options()
-        command.internalSetupOptions(options: options)
+        let optionRegistry = OptionRegistry()
+        command.internalSetupOptions(options: optionRegistry)
         
         let arguments = RawArguments(argumentString: "tester test -s -a --times")
         arguments.unclassifiedArguments.first?.classification = .appName
         arguments.unclassifiedArguments.first?.classification = .commandName
-        options.recognizeOptions(in: arguments)
         
-        let message = DefaultMisusedOptionsMessageGenerator().generateMisusedOptionsStatement(for: command, options: options)!
+        let parser = DefaultOptionParser(optionRegistry: optionRegistry)
+        let result = parser.recognizeOptions(in: arguments)
+        
+        guard case let .incorrectOptionUsage(incorrectOptionUsage) = result else {
+            XCTFail("Option parser should fail on incorrectly used options")
+            return
+        }
+        
+        let message = DefaultMisusedOptionsMessageGenerator().generateMisusedOptionsStatement(for: command, incorrectOptionUsage: incorrectOptionUsage)!
         
         let expectedMessage = ([
             "Usage: tester test <testName> [<testerName>] [options]",

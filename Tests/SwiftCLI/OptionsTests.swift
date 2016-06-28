@@ -12,12 +12,12 @@ import XCTest
 
 class OptionsTests: XCTestCase {
     
-    var options = Options()
+    var options = OptionRegistry()
     
     override func setUp() {
         super.setUp()
         
-        options = Options()
+        options = OptionRegistry()
     }
     
     // MARK: - Tests
@@ -43,11 +43,11 @@ class OptionsTests: XCTestCase {
         
         let arguments = RawArguments(argumentString: "tester -a -b")
         
-        options.recognizeOptions(in: arguments)
+        let result = parse(arguments: arguments, with: options)
 
         XCTAssert(arguments.unclassifiedArguments.isEmpty, "Options should classify all option arguments as options")
         
-        XCTAssertFalse(options.misusedOptionsPresent(), "Options should recognize all flags added with onFlags")
+        XCTAssert(result == .success, "Option parse should succeed when all flags are added with add(flags:)")
         
         XCTAssert(aBlockCalled && bBlockCalled, "Options should execute the closures of passed flags")
     }
@@ -61,11 +61,11 @@ class OptionsTests: XCTestCase {
         
         let arguments = RawArguments(argumentString: "tester -a apple -b banana")
         
-        options.recognizeOptions(in: arguments)
+        let result = parse(arguments: arguments, with: options)
         
         XCTAssert(arguments.unclassifiedArguments.isEmpty, "Options should classify all option arguments as options")
         
-        XCTAssertFalse(options.misusedOptionsPresent(), "Options should recognize all flags added with onFlags")
+        XCTAssert(result == .success, "Option parse should succeed when all keys are added with add(keys:)")
         
         XCTAssertEqual(aValue ?? "", "apple", "Options should execute the closures of passed keys")
         XCTAssertEqual(bValue ?? "", "banana", "Options should execute the closures of passed keys")
@@ -80,11 +80,11 @@ class OptionsTests: XCTestCase {
         
         let arguments = RawArguments(argumentString: "tester -a -b banana")
         
-        options.recognizeOptions(in: arguments)
+        let result = parse(arguments: arguments, with: options)
         
         XCTAssert(arguments.unclassifiedArguments.isEmpty, "Options should classify all option arguments as options")
 
-        XCTAssertFalse(options.misusedOptionsPresent(), "Options should recognize all flags added with onFlags")
+        XCTAssert(result == .success, "Option parse should succeed when all flags/keys are added with add(flags/keys:)")
         
         XCTAssert(aBlockCalled, "Options should execute the closures of passed flags")
         XCTAssertEqual(bValue ?? "", "banana", "Options should execute the closures of passed keys")
@@ -99,11 +99,11 @@ class OptionsTests: XCTestCase {
         
         let arguments = RawArguments(argumentString: "tester -a argument -b banana")
         
-        options.recognizeOptions(in: arguments)
+        let result = parse(arguments: arguments, with: options)
         
         XCTAssertEqual(arguments.unclassifiedArguments.map { $0.value }, ["argument"], "Options should classify all option arguments as options")
         
-        XCTAssertFalse(options.misusedOptionsPresent(), "Options should recognize all flags added with onFlags")
+        XCTAssert(result == .success, "Option parse should succeed when all flags/keys are added with add(flags/keys:)")
         
         XCTAssert(aBlockCalled, "Options should execute the closures of passed flags")
         XCTAssertEqual(bValue ?? "", "banana", "Options should execute the closures of passed keys")
@@ -114,12 +114,15 @@ class OptionsTests: XCTestCase {
         
         let arguments = RawArguments(argumentString: "tester -a -b")
         
-        options.recognizeOptions(in: arguments)
+        let result = parse(arguments: arguments, with: options)
         
         XCTAssert(arguments.unclassifiedArguments.isEmpty, "Options should classify all option arguments as options")
         
-        XCTAssert(options.misusedOptionsPresent(), "Options should identify when unrecognized options are used")
-        XCTAssertEqual(options.unrecognizedOptions.first ?? "", "-b", "Options should identify when unrecognized options are used")
+        if case let .incorrectOptionUsage(incorrectOptionUsage) = result {
+            XCTAssertEqual(incorrectOptionUsage.unrecognizedOptions.first ?? "", "-b", "Options should identify when unrecognized options are used")
+        } else {
+            XCTFail("Options should identify when unrecognized options are used")
+        }
     }
     
     func testKeysNotGivenValues() {
@@ -128,11 +131,15 @@ class OptionsTests: XCTestCase {
         
         let arguments = RawArguments(argumentString: "tester -a -b")
         
-        options.recognizeOptions(in: arguments)
+        let result = parse(arguments: arguments, with: options)
         
         XCTAssert(arguments.unclassifiedArguments.isEmpty, "Options should classify all option arguments as options")
-        XCTAssert(options.misusedOptionsPresent(), "Options should identify when unrecognized options are used")
-        XCTAssertEqual(options.keysNotGivenValue.first ?? "", "-a", "Options should identify when keys are not given values")
+        
+        if case let .incorrectOptionUsage(incorrectOptionUsage) = result {
+            XCTAssertEqual(incorrectOptionUsage.keysNotGivenValue.first ?? "", "-a", "Options should identify when keys are not given values")
+        } else {
+            XCTFail("Options should identify when keys are not given values")
+        }
     }
 
     func testFlagSplitting() {
@@ -144,11 +151,11 @@ class OptionsTests: XCTestCase {
         
         let arguments = RawArguments(argumentString: "tester -ab")
         
-        options.recognizeOptions(in: arguments)
+        let result = parse(arguments: arguments, with: options)
         
         XCTAssert(arguments.unclassifiedArguments.isEmpty, "Options should classify all option arguments as options")
         
-        XCTAssertFalse(options.misusedOptionsPresent(), "Options should recognize all flags added with onFlags")
+        XCTAssert(result == .success, "Options should recognize all flags added with onFlags")
         
         XCTAssert(aBlockCalled && bBlockCalled, "Options should execute the closures of passed flags")
     }
@@ -159,14 +166,19 @@ class OptionsTests: XCTestCase {
         options.exitEarlyOptions = ["-a"]
         
         var arguments = RawArguments(argumentString: "tester -a")
-        options.recognizeOptions(in: arguments)
-        XCTAssert(options.exitEarly, "Options should set exitEarly on when exit early flag is given")
-        
-        options.exitEarly = false
+        let result1 = parse(arguments: arguments, with: options)
+        XCTAssert(result1 == .exitEarly, "Options should exitEarly when exit early flag is given")
         
         arguments = RawArguments(argumentString: "tester -b")
-        options.recognizeOptions(in: arguments)
-        XCTAssertFalse(options.exitEarly, "Options should set exitEarly on when exit early flag is given")
+        let result2 = parse(arguments: arguments, with: options)
+        XCTAssert(result2 == .success, "Options should not exitEarly when no exit early flag is given")
+    }
+    
+    // MARK: - Helpers
+    
+    private func parse(arguments: RawArguments, with optionRegistry: OptionRegistry) -> OptionParserResult {
+        let parser = DefaultOptionParser(optionRegistry: optionRegistry)
+        return parser.recognizeOptions(in: arguments)
     }
     
 }
