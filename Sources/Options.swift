@@ -122,50 +122,24 @@ public class Options {
         let optionArguments = rawArguments.unclassifiedArguments.filter { $0.value.hasPrefix("-") }
         
         for optionArgument in optionArguments {
-            var brokenUpOptions = splitOptions(for: optionArgument.value)
-            
-            let lastOption = brokenUpOptions.removeLast()
-            handleOption(option: lastOption, nextArgument: optionArgument.next)
-            
-            for option in brokenUpOptions {
-                handleOption(option: option)
-            }
-        }
-    }
-    
-    private func handleOption(option: String, nextArgument: RawArgument? = nil) {
-        if let flagOption = allFlagOptions[option] {
-            flagOption.block?(flag: option)
-        } else if let keyOption = allKeyOptions[option] {
-            if let nextArgument = nextArgument where nextArgument.isUnclassified {
-                nextArgument.classification = .option
-                keyOption.block?(key: option, value: nextArgument.value)
+            optionArgument.classification = .option
+            if let flagOption = allFlagOptions[optionArgument.value] {
+                flagOption.block?(flag: optionArgument.value)
+            } else if let keyOption = allKeyOptions[optionArgument.value] {
+                if let nextArgument = optionArgument.next where nextArgument.isUnclassified && !nextArgument.value.hasPrefix("-") {
+                    nextArgument.classification = .option
+                    keyOption.block?(key: optionArgument.value, value: nextArgument.value)
+                } else {
+                    keysNotGivenValue.append(optionArgument.value)
+                }
             } else {
-                keysNotGivenValue.append(option)
+                unrecognizedOptions.append(optionArgument.value)
             }
-        } else {
-            unrecognizedOptions.append(option)
-        }
-        
-        if exitEarlyOptions.contains(option) {
-            exitEarly = true
-        }
-    }
-    
-    private func splitOptions(for rawOption: String) -> [String] {
-        if rawOption.hasPrefix("--") {
-            return [rawOption]
-        }
-        
-        var chars: [String] = []
-        
-        for (index, character) in rawOption.characters.enumerated() {
-            if index > 0 {
-                chars.append("-\(character)")
+            
+            if exitEarlyOptions.contains(optionArgument.value) {
+                exitEarly = true
             }
         }
-        
-        return chars
     }
     
     // MARK: - Misused options

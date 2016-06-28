@@ -131,7 +131,6 @@ class OptionsTests: XCTestCase {
         options.recognizeOptions(in: arguments)
         
         XCTAssert(arguments.unclassifiedArguments.isEmpty, "Options should classify all option arguments as options")
-        
         XCTAssert(options.misusedOptionsPresent(), "Options should identify when unrecognized options are used")
         XCTAssertEqual(options.keysNotGivenValue.first ?? "", "-a", "Options should identify when keys are not given values")
     }
