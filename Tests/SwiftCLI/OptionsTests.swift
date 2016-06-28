@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 jakeheis. All rights reserved.
 //
 
-import Cocoa
+import Foundation
 import XCTest
 @testable import SwiftCLI
 
@@ -43,9 +43,9 @@ class OptionsTests: XCTestCase {
         
         let arguments = RawArguments(argumentString: "tester -a -b")
         
-        options.recognizeOptionsInArguments(arguments)
+        options.recognizeOptions(in: arguments)
 
-        XCTAssert(arguments.unclassifiedArguments().count == 0, "Options should classify all option arguments as options")
+        XCTAssert(arguments.unclassifiedArguments.isEmpty, "Options should classify all option arguments as options")
         
         XCTAssertFalse(options.misusedOptionsPresent(), "Options should recognize all flags added with onFlags")
         
@@ -61,9 +61,9 @@ class OptionsTests: XCTestCase {
         
         let arguments = RawArguments(argumentString: "tester -a apple -b banana")
         
-        options.recognizeOptionsInArguments(arguments)
+        options.recognizeOptions(in: arguments)
         
-        XCTAssert(arguments.unclassifiedArguments().count == 0, "Options should classify all option arguments as options")
+        XCTAssert(arguments.unclassifiedArguments.isEmpty, "Options should classify all option arguments as options")
         
         XCTAssertFalse(options.misusedOptionsPresent(), "Options should recognize all flags added with onFlags")
         
@@ -80,9 +80,9 @@ class OptionsTests: XCTestCase {
         
         let arguments = RawArguments(argumentString: "tester -a -b banana")
         
-        options.recognizeOptionsInArguments(arguments)
+        options.recognizeOptions(in: arguments)
         
-        XCTAssert(arguments.unclassifiedArguments().count == 0, "Options should classify all option arguments as options")
+        XCTAssert(arguments.unclassifiedArguments.isEmpty, "Options should classify all option arguments as options")
 
         XCTAssertFalse(options.misusedOptionsPresent(), "Options should recognize all flags added with onFlags")
         
@@ -99,9 +99,9 @@ class OptionsTests: XCTestCase {
         
         let arguments = RawArguments(argumentString: "tester -a argument -b banana")
         
-        options.recognizeOptionsInArguments(arguments)
+        options.recognizeOptions(in: arguments)
         
-        XCTAssertEqual(arguments.unclassifiedArguments(), ["argument"], "Options should classify all option arguments as options")
+        XCTAssertEqual(arguments.unclassifiedArguments.map { $0.value }, ["argument"], "Options should classify all option arguments as options")
         
         XCTAssertFalse(options.misusedOptionsPresent(), "Options should recognize all flags added with onFlags")
         
@@ -114,9 +114,9 @@ class OptionsTests: XCTestCase {
         
         let arguments = RawArguments(argumentString: "tester -a -b")
         
-        options.recognizeOptionsInArguments(arguments)
+        options.recognizeOptions(in: arguments)
         
-        XCTAssert(arguments.unclassifiedArguments().count == 0, "Options should classify all option arguments as options")
+        XCTAssert(arguments.unclassifiedArguments.isEmpty, "Options should classify all option arguments as options")
         
         XCTAssert(options.misusedOptionsPresent(), "Options should identify when unrecognized options are used")
         XCTAssertEqual(options.unrecognizedOptions.first ?? "", "-b", "Options should identify when unrecognized options are used")
@@ -128,9 +128,9 @@ class OptionsTests: XCTestCase {
         
         let arguments = RawArguments(argumentString: "tester -a -b")
         
-        options.recognizeOptionsInArguments(arguments)
+        options.recognizeOptions(in: arguments)
         
-        XCTAssert(arguments.unclassifiedArguments().count == 0, "Options should classify all option arguments as options")
+        XCTAssert(arguments.unclassifiedArguments.isEmpty, "Options should classify all option arguments as options")
         
         XCTAssert(options.misusedOptionsPresent(), "Options should identify when unrecognized options are used")
         XCTAssertEqual(options.keysNotGivenValue.first ?? "", "-a", "Options should identify when keys are not given values")
@@ -145,9 +145,9 @@ class OptionsTests: XCTestCase {
         
         let arguments = RawArguments(argumentString: "tester -ab")
         
-        options.recognizeOptionsInArguments(arguments)
+        options.recognizeOptions(in: arguments)
         
-        XCTAssert(arguments.unclassifiedArguments().count == 0, "Options should classify all option arguments as options")
+        XCTAssert(arguments.unclassifiedArguments.isEmpty, "Options should classify all option arguments as options")
         
         XCTAssertFalse(options.misusedOptionsPresent(), "Options should recognize all flags added with onFlags")
         
@@ -160,13 +160,13 @@ class OptionsTests: XCTestCase {
         options.exitEarlyOptions = ["-a"]
         
         var arguments = RawArguments(argumentString: "tester -a")
-        options.recognizeOptionsInArguments(arguments)
+        options.recognizeOptions(in: arguments)
         XCTAssert(options.exitEarly, "Options should set exitEarly on when exit early flag is given")
         
         options.exitEarly = false
         
         arguments = RawArguments(argumentString: "tester -b")
-        options.recognizeOptionsInArguments(arguments)
+        options.recognizeOptions(in: arguments)
         XCTAssertFalse(options.exitEarly, "Options should set exitEarly on when exit early flag is given")
     }
     

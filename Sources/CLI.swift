@@ -52,7 +52,7 @@ public class CLI {
     
         - Parameter command: the command to be registered
     */
-    public class func registerCommand(command: CommandType) {
+    public class func register(command: CommandType) {
         commands.append(command)
     }
     
@@ -62,8 +62,8 @@ public class CLI {
     
         - Parameter commands: the commands to be registered
     */
-    public class func registerCommands(commands: [CommandType]) {
-        commands.each { self.registerCommand(command: $0) }
+    public class func register(commands: [CommandType]) {
+        commands.each { self.register(command: $0) }
     }
     
     /**
@@ -74,7 +74,7 @@ public class CLI {
     */
     public class func registerChainableCommand(commandName: String) -> ChainableCommand {
         let chainable = ChainableCommand(commandName: commandName)
-        registerCommand(command: chainable)
+        register(command: chainable)
         return chainable
     }
     
@@ -89,7 +89,7 @@ public class CLI {
                     command. Usually should be passed to `exit(result)`
     */
     public class func go() -> CLIResult {
-       return goWithArguments(arguments: RawArguments())
+       return go(with: RawArguments())
     }
     
     /**
@@ -101,12 +101,12 @@ public class CLI {
         - Returns: a CLIResult (Int) representing the success of the CLI in routing to and executing the correct
                     command. Usually should be passed to `exit(result)`
     */
-    public class func debugGoWithArgumentString(argumentString: String) -> CLIResult {
+    public class func debugGo(with argumentString: String) -> CLIResult {
         print("[Debug Mode]")
-        return goWithArguments(arguments: RawArguments(argumentString: argumentString))
+        return go(with: RawArguments(argumentString: argumentString))
     }
     
-    private class func goWithArguments(arguments: RawArguments) -> CLIResult {
+    private class func go(with arguments: RawArguments) -> CLIResult {
         do {
             let command = try routeCommand(arguments: arguments)
             let result = try setupOptionsAndArguments(command: command, arguments: arguments)
@@ -146,7 +146,7 @@ public class CLI {
             let options = Options()
           
             optionCommand.internalSetupOptions(options: options)
-            options.recognizeOptionsInArguments(rawArguments: arguments)
+            options.recognizeOptions(in: arguments)
             
             if options.exitEarly { // True if -h flag given (show help but exit early before executing command)
                 return (false, nil)
@@ -164,7 +164,7 @@ public class CLI {
         
         let commandSignature = CommandSignature(command.commandSignature)
         
-        return (true, try CommandArguments.fromRawArguments(rawArguments: arguments, signature: commandSignature))
+        return (true, try CommandArguments.fromRawArguments(arguments, signature: commandSignature))
     }
     
 }

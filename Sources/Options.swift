@@ -85,7 +85,7 @@ public class Options {
         - Parameter usage: the usage of these flags, printed in the command usage statement
         - Parameter block: the block to be called upon recognition of the flags
     */
-    public func onFlags(flags: [String], usage: String = "", block: FlagOption.FlagBlock?) {
+    public func onFlags(_ flags: [String], usage: String = "", block: FlagOption.FlagBlock?) {
         addFlagOption(flagOption: FlagOption(flags: flags, usage: usage, block: block))
     }
     
@@ -100,7 +100,7 @@ public class Options {
                                     takes the form "-m, --myKey [valueSignature]"
         - Parameter block: the block to be called upon recognition of the keys
     */
-    public func onKeys(keys: [String], usage: String = "", valueSignature: String = "value", block: KeyOption.KeyBlock?) {
+    public func onKeys(_ keys: [String], usage: String = "", valueSignature: String = "value", block: KeyOption.KeyBlock?) {
         addKeyOption(keyOption: KeyOption(keys: keys, usage: usage, valueSignature: valueSignature, block: block))
     }
     
@@ -118,7 +118,7 @@ public class Options {
     
     // MARK: - Argument parsing
     
-    func recognizeOptionsInArguments(rawArguments: RawArguments) {
+    func recognizeOptions(in rawArguments: RawArguments) {
         let optionArguments = rawArguments.unclassifiedArguments.filter { $0.value.hasPrefix("-") }
         
         for optionArgument in optionArguments {

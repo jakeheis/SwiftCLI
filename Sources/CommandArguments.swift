@@ -24,7 +24,7 @@ public class CommandArguments {
     
     // Keying arguments
     
-    class func fromRawArguments(rawArguments: RawArguments, signature: CommandSignature) throws -> CommandArguments {
+    class func fromRawArguments(_ rawArguments: RawArguments, signature: CommandSignature) throws -> CommandArguments {
         if signature.isEmpty {
             return try handleEmptySignature(rawArguments: rawArguments)
         }
@@ -69,7 +69,7 @@ public class CommandArguments {
         if signature.collectRemainingArguments {
             let parameter = signature.optionalParameters.isEmpty ? signature.requiredParameters[signature.requiredParameters.count-1] : signature.optionalParameters[signature.optionalParameters.count-1]
 
-            if let singleArgument = commandArguments.optionalArgument(key: parameter) {
+            if let singleArgument = commandArguments.optionalArgument(parameter) {
                 var collectedArgument = [singleArgument]
                 let startingIndex = signature.requiredParameters.count + signature.optionalParameters.count
                 for i in startingIndex..<arguments.count {
@@ -119,8 +119,8 @@ public class CommandArguments {
     
         - Parameter key: the name of the argument as seen in the command signature
     */
-    public func requiredArgument(key: String) -> String {
-        return optionalArgument(key: key)!
+    public func requiredArgument(_ key: String) -> String {
+        return optionalArgument(key)!
     }
     
     /**
@@ -129,7 +129,7 @@ public class CommandArguments {
     
         - Parameter key: the name of the argument as seen in the command signature
     */
-    public func optionalArgument(key: String) -> String? {
+    public func optionalArgument(_ key: String) -> String? {
         if let arg = keyedArguments[key] as? String {
             return arg
         }
@@ -142,8 +142,8 @@ public class CommandArguments {
     
         - Parameter key: the name of the argument as seen in the command signature
     */
-    public func requiredCollectedArgument(key: String) -> [String] {
-        return optionalCollectedArgument(key: key)!
+    public func requiredCollectedArgument(_ key: String) -> [String] {
+        return optionalCollectedArgument(key)!
     }
     
     /**
@@ -152,7 +152,7 @@ public class CommandArguments {
     
         - Parameter key: the name of the argument as seen in the command signature
     */
-    public func optionalCollectedArgument(key: String) -> [String]? {
+    public func optionalCollectedArgument(_ key: String) -> [String]? {
         if let arg = keyedArguments[key] as? [String] {
             return arg
         }

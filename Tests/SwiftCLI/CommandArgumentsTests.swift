@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 jakeheis. All rights reserved.
 //
 
-import Cocoa
+import Foundation
 import XCTest
 @testable import SwiftCLI
 
@@ -128,24 +128,24 @@ class CommandArgumentsTests: XCTestCase {
     // MARK: - Helpers
     
     private func createCommandArguments() throws -> CommandArguments {
-        let stringArguments = arguments.joinWithSeparator(" ")
+        let stringArguments = arguments.joined(separator: " ")
         let rawArguments = RawArguments(argumentString: "tester \(stringArguments)")
         let commandSignature = CommandSignature(signature)
 
         return try CommandArguments.fromRawArguments(rawArguments, signature: commandSignature)
     }
 
-    private func assertParseResultEquals(expectedKeyedArguments: NSDictionary, assertMessage: String) {
+    private func assertParseResultEquals(_ expectedKeyedArguments: NSDictionary, assertMessage: String) {
         do {
             let commandArguments = try createCommandArguments()
-            let keyedArguments = commandArguments.keyedArguments
+            let keyedArguments = commandArguments.keyedArguments as NSDictionary
             XCTAssertEqual(keyedArguments, expectedKeyedArguments, assertMessage)
         } catch {
             XCTFail(assertMessage)
         }
     }
     
-    private func assertParseFails(assertMessage: String) {
+    private func assertParseFails(_ assertMessage: String) {
         do {
             try createCommandArguments()
             XCTFail("\(assertMessage); mistakenly passed and returned \(arguments)")

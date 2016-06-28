@@ -14,37 +14,37 @@ public class ChainableCommand: LightweightCommand {
         super.init(commandName: commandName)
     }
     
-    public func withSignature(signature: String) -> ChainableCommand {
+    public func withSignature(_ signature: String) -> ChainableCommand {
         commandSignature = signature
         return self
     }
     
-    public func withShortDescription(shortDescription: String) -> ChainableCommand {
+    public func withShortDescription(_ shortDescription: String) -> ChainableCommand {
         commandShortDescription = shortDescription
         return self
     }
     
-    public func withShortcut(shortcut: String) -> ChainableCommand {
+    public func withShortcut(_ shortcut: String) -> ChainableCommand {
         commandShortcut = shortcut
         return self
     }
     
-    public func withOptionsSetup(optionsSetup: OptionsSetupBlock) -> ChainableCommand {
+    public func withOptionsSetup(_ optionsSetup: OptionsSetupBlock) -> ChainableCommand {
         optionsSetupBlock = optionsSetup
         return self
     }
     
-    public func withUnrecognizedOptionsPrintingBehavior(behavior: UnrecognizedOptionsPrintingBehavior) -> ChainableCommand {
+    public func withUnrecognizedOptionsPrintingBehavior(_ behavior: UnrecognizedOptionsPrintingBehavior) -> ChainableCommand {
         unrecognizedOptionsPrintingBehavior = behavior
         return self
     }
     
-    public func withFailOnUnrecognizedOptions(shouldFail: Bool) -> ChainableCommand {
+    public func withFailOnUnrecognizedOptions(_ shouldFail: Bool) -> ChainableCommand {
         failOnUnrecognizedOptions = shouldFail
         return self
     }
     
-    public func withExecutionBlock(execution: ExecutionBlock) -> ChainableCommand {
+    public func withExecutionBlock(_ execution: ExecutionBlock) -> ChainableCommand {
         executionBlock = execution
         return self
     }

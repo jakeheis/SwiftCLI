@@ -6,7 +6,7 @@
 //  Copyright (c) 2015 jakeheis. All rights reserved.
 //
 
-import Cocoa
+import Foundation
 import XCTest
 @testable import SwiftCLI
 
@@ -32,7 +32,7 @@ class RouterTests: XCTestCase {
         do {
             let command = try route(args, router: DefaultRouter(defaultCommand: defaultCommand))
             XCTAssertEqual(command.commandName, defaultCommand.commandName, "Router should route to the default command if no arguments are given")
-            XCTAssert(args.unclassifiedArguments().count == 0, "Router should leave no arguments for the command")
+            XCTAssert(args.unclassifiedArguments.isEmpty, "Router should leave no arguments for the command")
         } catch {
              XCTFail("Router should not fail when a default command exists")
         }
@@ -44,7 +44,7 @@ class RouterTests: XCTestCase {
         do {
             let command = try route(args)
             XCTAssertEqual(command.commandName, alphaCommand.commandName, "Router should route to the command with the given name")
-            XCTAssert(args.unclassifiedArguments().count == 0, "Router should leave no arguments for the command")
+            XCTAssert(args.unclassifiedArguments.isEmpty, "Router should leave no arguments for the command")
         } catch {
             XCTFail("Router should not fail when the command exists")
         }
@@ -56,7 +56,7 @@ class RouterTests: XCTestCase {
         do {
             let command = try route(args, router: DefaultRouter(defaultCommand: defaultCommand))
             XCTAssertEqual(command.commandName, defaultCommand.commandName, "Router should route to the default command when the flag does not match any command shortcut")
-            XCTAssertEqual(args.unclassifiedArguments(), ["-a"], "Router should pass the flag on to the default command")
+            XCTAssertEqual(args.unclassifiedArguments.map { $0.value }, ["-a"], "Router should pass the flag on to the default command")
         } catch {
             XCTFail("Router should not fail when the command exists")
         }
@@ -79,7 +79,7 @@ class RouterTests: XCTestCase {
             
             XCTAssertEqual(command.commandName, betaCommand.commandName, "Router with enabled shortcut routing should route to the command with the given shortcut")
             
-            XCTAssertEqual(args.unclassifiedArguments(), [], "Enabled router should pass on no arguments to the matched command")
+            XCTAssert(args.unclassifiedArguments.isEmpty, "Enabled router should pass on no arguments to the matched command")
         } catch {
             XCTFail("Router should not fail when the command exists")
         }
@@ -87,10 +87,10 @@ class RouterTests: XCTestCase {
     
     // MARK: - Helper
     
-    private func route(arguments: RawArguments, router: RouterType? = nil) throws -> CommandType {
+    private func route(_ arguments: RawArguments, router: RouterType? = nil) throws -> CommandType {
         let commands = [alphaCommand, betaCommand, defaultCommand] as [CommandType]
         let router = router ?? DefaultRouter()
-        return try router.route(commands, arguments: arguments)
+        return try router.route(commands: commands, arguments: arguments)
     }
     
 }
