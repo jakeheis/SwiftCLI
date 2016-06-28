@@ -35,7 +35,10 @@ class CommandMessageGeneratorTests: XCTestCase {
             "-t, --times <times>                      Number of times to run the test",
             ""
         ]).joined(separator: "\n")
-        
+        print("expected:")
+        print(expectedMessage)
+        print("got")
+        print(message)
         XCTAssertEqual(message, expectedMessage, "Should generate the correct usage statement")
     }
     

@@ -23,23 +23,23 @@ class OptionsTests: XCTestCase {
     // MARK: - Tests
     
     func testOnFlags() {
-        options.onFlags(["-a", "--awesome"], block: nil)
-        XCTAssert(options.allFlagOptions.keys.contains("-a"), "Options should expect flags after a call to onFlags")
-        XCTAssert(options.allFlagOptions.keys.contains("--awesome"), "Options should expect flags after a call to onFlags")
+        options.add(flags: ["-a", "--awesome"]) {_ in}
+        XCTAssert(options.flagBlocks.keys.contains("-a"), "Options should expect flags after a call to onFlags")
+        XCTAssert(options.flagBlocks.keys.contains("--awesome"), "Options should expect flags after a call to onFlags")
     }
     
     func testOnKeys() {
-        options.onKeys(["-a", "--awesome"], block: nil)
-        XCTAssert(options.allKeyOptions.keys.contains("-a"), "Options should expect keys after a call to onKeys")
-        XCTAssert(options.allKeyOptions.keys.contains("--awesome"), "Options should expect keys after a call to onKeys")
+        options.add(keys: ["-a", "--awesome"]) {_,_ in}
+        XCTAssert(options.keyBlocks.keys.contains("-a"), "Options should expect keys after a call to onKeys")
+        XCTAssert(options.keyBlocks.keys.contains("--awesome"), "Options should expect keys after a call to onKeys")
     }
     
     func testSimpleFlagParsing() {
         var aBlockCalled = false
         var bBlockCalled = false
         
-        options.onFlags(["-a"]) {(flag) in aBlockCalled = true }
-        options.onFlags(["-b"]) {(flag) in bBlockCalled = true }
+        options.add(flags: ["-a"]) {(flag) in aBlockCalled = true }
+        options.add(flags: ["-b"]) {(flag) in bBlockCalled = true }
         
         let arguments = RawArguments(argumentString: "tester -a -b")
         
@@ -56,8 +56,8 @@ class OptionsTests: XCTestCase {
         var aValue: String?
         var bValue: String?
         
-        options.onKeys(["-a"]) {(key, value) in aValue = value }
-        options.onKeys(["-b"]) {(key, value) in bValue = value }
+        options.add(keys: ["-a"]) {(key, value) in aValue = value }
+        options.add(keys: ["-b"]) {(key, value) in bValue = value }
         
         let arguments = RawArguments(argumentString: "tester -a apple -b banana")
         
@@ -75,8 +75,8 @@ class OptionsTests: XCTestCase {
         var aBlockCalled = false
         var bValue: String?
         
-        options.onFlags(["-a"]) {(flag) in aBlockCalled = true }
-        options.onKeys(["-b"]) {(key, value) in bValue = value }
+        options.add(flags: ["-a"]) {(flag) in aBlockCalled = true }
+        options.add(keys: ["-b"]) {(key, value) in bValue = value }
         
         let arguments = RawArguments(argumentString: "tester -a -b banana")
         
@@ -94,8 +94,8 @@ class OptionsTests: XCTestCase {
         var aBlockCalled = false
         var bValue: String?
         
-        options.onFlags(["-a"]) {(flag) in aBlockCalled = true }
-        options.onKeys(["-b"]) {(key, value) in bValue = value }
+        options.add(flags: ["-a"]) {(flag) in aBlockCalled = true }
+        options.add(keys: ["-b"]) {(key, value) in bValue = value }
         
         let arguments = RawArguments(argumentString: "tester -a argument -b banana")
         
@@ -110,7 +110,7 @@ class OptionsTests: XCTestCase {
     }
     
     func testUnrecognizedOptions() {
-        options.onFlags(["-a"], block: nil)
+        options.add(flags: ["-a"]) {_ in}
         
         let arguments = RawArguments(argumentString: "tester -a -b")
         
@@ -123,8 +123,8 @@ class OptionsTests: XCTestCase {
     }
     
     func testKeysNotGivenValues() {
-        options.onKeys(["-a"], block: nil)
-        options.onFlags(["-b"], block: nil)
+        options.add(keys: ["-a"])  {_,_ in}
+        options.add(flags: ["-b"]) {_ in}
         
         let arguments = RawArguments(argumentString: "tester -a -b")
         
@@ -139,8 +139,8 @@ class OptionsTests: XCTestCase {
         var aBlockCalled = false
         var bBlockCalled = false
         
-        options.onFlags(["-a"]) {flag in aBlockCalled = true }
-        options.onFlags(["-b"]) {flag in bBlockCalled = true }
+        options.add(flags: ["-a"]) {flag in aBlockCalled = true }
+        options.add(flags: ["-b"]) {flag in bBlockCalled = true }
         
         let arguments = RawArguments(argumentString: "tester -ab")
         
@@ -154,8 +154,8 @@ class OptionsTests: XCTestCase {
     }
     
     func testExitEarlyFlags() {
-        options.onFlags(["-a"], block: nil)
-        options.onFlags(["-b"], block: nil)
+        options.add(flags: ["-a"]) {_ in}
+        options.add(flags: ["-b"]) {_ in}
         options.exitEarlyOptions = ["-a"]
         
         var arguments = RawArguments(argumentString: "tester -a")

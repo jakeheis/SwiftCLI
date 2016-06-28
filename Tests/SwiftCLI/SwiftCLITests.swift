@@ -18,10 +18,10 @@ func createTestCommand(completion: ((executionString: String) -> ())? = nil) -> 
     return ChainableCommand(commandName: "test")
         .withSignature("<testName> [<testerName>]")
         .withOptionsSetup {(options) in
-            options.onFlags(["-s", "--silent"], usage: "Silence all test output") {(flag) in
+            options.add(flags: ["-s", "--silent"], usage: "Silence all test output") {(flag) in
                 silentFlag = true
             }
-            options.onKeys(["-t", "--times"], usage: "Number of times to run the test", valueSignature: "times") {(key, value) in
+            options.add(keys: ["-t", "--times"], usage: "Number of times to run the test", valueSignature: "times") {(key, value) in
                 times = Int(value)!
             }
         }

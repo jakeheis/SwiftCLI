@@ -6,68 +6,33 @@
 //  Copyright (c) 2014 jakeheis. All rights reserved.
 //
 
-public class FlagOption {
+public class Option {
     
-    public typealias FlagBlock = (flag: String) -> ()
-    
-    let flags: [String]
+    let options: [String]
     let usage: String
-    let block: FlagBlock?
     
-    convenience init(flag: String, usage: String, block: FlagBlock?) {
-        self.init(flags: [flag], usage: usage, block: block)
-    }
-    
-    init(flags: [String], usage: String, block: FlagBlock?) {
-        self.flags = flags
-        self.block = block
+    init(options: [String], usage: String, preusage: String? = nil) {
+        self.options = options
         
-        let flagsString = flags.joined(separator: ", ")
-        let paddedUsage = usage.padFront(totalLength: 40 - flagsString.characters.count)
-        self.usage = "\(flagsString)\(paddedUsage)"
+        var optionsString = options.joined(separator: ", ")
+        if let preusage = preusage {
+            optionsString += " \(preusage)"
+        }
+        let paddedUsage = usage.padFront(totalLength: 40 - optionsString.characters.count)
+        self.usage = "\(optionsString)\(paddedUsage)"
     }
     
-}
-
-public class KeyOption: Equatable {
-    
-    public typealias KeyBlock = (key: String, value: String) -> ()
-    
-    let keys: [String]
-    let usage: String
-    let valueSignature: String
-    let block: KeyBlock?
-    
-    convenience init(key: String, usage: String, valueSignature: String, block: KeyBlock?) {
-        self.init(keys: [key], usage: usage, valueSignature: valueSignature, block: block)
-    }
-    
-    init(keys: [String], usage: String, valueSignature: String, block: KeyBlock?) {
-        self.keys = keys
-        self.valueSignature = valueSignature
-        self.block = block
-        
-        let keysString = keys.joined(separator: ", ")
-        let firstPart = "\(keysString) <\(valueSignature)>"
-        let paddedUsage = usage.padFront(totalLength: 40 - firstPart.characters.count)
-        self.usage = "\(firstPart)\(paddedUsage)"
-    }
-    
-}
-
-public func == (lhs: KeyOption, rhs: KeyOption) -> Bool {
-    return lhs.keys == rhs.keys
 }
 
 public class Options {
     
-    // Keyed by first given flag/key
-    var flagOptions: [String: FlagOption] = [:]
-    var keyOptions: [String: KeyOption] = [:]
+    public typealias FlagBlock = (flag: String) -> ()
+    public typealias KeyBlock = (key: String, value: String) -> ()
     
-    // Keyed by each given flag/key
-    var allFlagOptions: [String: FlagOption] = [:]
-    var allKeyOptions: [String: KeyOption] = [:]
+    var options: [Option] = []
+    
+    var flagBlocks: [String: FlagBlock] = [:]
+    var keyBlocks: [String: KeyBlock] = [:]
     
     var unrecognizedOptions: [String] = []
     var keysNotGivenValue: [String] = []
@@ -85,8 +50,11 @@ public class Options {
         - Parameter usage: the usage of these flags, printed in the command usage statement
         - Parameter block: the block to be called upon recognition of the flags
     */
-    public func onFlags(_ flags: [String], usage: String = "", block: FlagOption.FlagBlock?) {
-        addFlagOption(flagOption: FlagOption(flags: flags, usage: usage, block: block))
+    public func add(flags: [String], usage: String = "", block: FlagBlock) {
+        options.append(Option(options: flags, usage: usage))
+        for flag in flags {
+            flagBlocks[flag] = block
+        }
     }
     
     /**
@@ -97,23 +65,14 @@ public class Options {
         - Parameter keys: the keys to be recognized
         - Parameter usage: the usage of these keys, printed in the command usage statement
         - Parameter valueSignature: a name for the associated value, only used in the command usage statement where it
-                                    takes the form "-m, --myKey [valueSignature]"
+                                    takes the form "-m, --myKey <valueSignature>"
         - Parameter block: the block to be called upon recognition of the keys
     */
-    public func onKeys(_ keys: [String], usage: String = "", valueSignature: String = "value", block: KeyOption.KeyBlock?) {
-        addKeyOption(keyOption: KeyOption(keys: keys, usage: usage, valueSignature: valueSignature, block: block))
-    }
-    
-    private func addFlagOption(flagOption: FlagOption) {
-        flagOptions[flagOption.flags.first!] = flagOption
-        
-        flagOption.flags.each { self.allFlagOptions[$0] = flagOption }
-    }
-    
-    private func addKeyOption(keyOption: KeyOption) {
-        keyOptions[keyOption.keys.first!] = keyOption
-        
-        keyOption.keys.each { self.allKeyOptions[$0] = keyOption }
+    public func add(keys: [String], usage: String = "", valueSignature: String = "value", block: KeyBlock) {
+        options.append(Option(options: keys, usage: usage, preusage: "<\(valueSignature)>"))
+        for key in keys {
+            keyBlocks[key] = block
+        }
     }
     
     // MARK: - Argument parsing
@@ -123,12 +82,12 @@ public class Options {
         
         for optionArgument in optionArguments {
             optionArgument.classification = .option
-            if let flagOption = allFlagOptions[optionArgument.value] {
-                flagOption.block?(flag: optionArgument.value)
-            } else if let keyOption = allKeyOptions[optionArgument.value] {
+            if let flagBlock = flagBlocks[optionArgument.value] {
+                flagBlock(flag: optionArgument.value)
+            } else if let keyBlock = keyBlocks[optionArgument.value] {
                 if let nextArgument = optionArgument.next where nextArgument.isUnclassified && !nextArgument.value.hasPrefix("-") {
                     nextArgument.classification = .option
-                    keyOption.block?(key: optionArgument.value, value: nextArgument.value)
+                    keyBlock(key: optionArgument.value, value: nextArgument.value)
                 } else {
                     keysNotGivenValue.append(optionArgument.value)
                 }

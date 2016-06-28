@@ -19,13 +19,14 @@ class CommandMessageGenerator {
             message += " \(command.commandSignature)"
         }
         
-        if let options = options where !options.flagOptions.isEmpty || !options.keyOptions.isEmpty {
+        if let options = options where !options.options.isEmpty {
             message += " [options]\n"
             
-            let allKeys = Array(options.flagOptions.keys) + Array(options.keyOptions.keys)
-            let sortedKeys = allKeys.sorted()
-            for key in sortedKeys {
-                let usage = options.flagOptions[key]?.usage ?? options.keyOptions[key]?.usage ?? ""
+            let sortedOptions = options.options.sorted { (lhs, rhs) in
+                return lhs.options.first < rhs.options.first
+            }
+            for option in sortedOptions {
+                let usage = option.usage
                 message += "\n\(usage)"
             }
             
