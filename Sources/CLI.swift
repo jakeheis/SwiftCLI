@@ -26,6 +26,9 @@ public class CLI {
     public static var misusedOptionsMessageGenerator: MisusedOptionsMessageGenerator = DefaultMisusedOptionsMessageGenerator()
     public static var optionParserType: OptionParser.Type = DefaultOptionParser.self
     
+    public static var rawArgumentParser: RawArgumentParser = DefaultRawArgumentParser()
+    public static var commandArgumentParser: CommandArgumentParser = DefaultCommandArgumentParser()
+    
     // MARK: - Setup
     
     /**
@@ -169,7 +172,7 @@ public class CLI {
         
         let commandSignature = CommandSignature(command.signature)
         
-        return (true, try CommandArguments.fromRawArguments(arguments, signature: commandSignature))
+        return (true, try CommandArguments(rawArguments: arguments, signature: commandSignature))
     }
     
 }

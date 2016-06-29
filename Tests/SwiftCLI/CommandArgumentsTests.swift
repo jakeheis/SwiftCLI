@@ -132,14 +132,24 @@ class CommandArgumentsTests: XCTestCase {
         let rawArguments = RawArguments(argumentString: "tester \(stringArguments)")
         let commandSignature = CommandSignature(signature)
 
-        return try CommandArguments.fromRawArguments(rawArguments, signature: commandSignature)
+        return try CommandArguments(rawArguments: rawArguments, signature: commandSignature)
     }
 
-    private func assertParseResultEquals(_ expectedKeyedArguments: NSDictionary, assertMessage: String) {
+    private func assertParseResultEquals(_ expectedKeyedArguments: [String: Any], assertMessage: String) {
         do {
             let commandArguments = try createCommandArguments()
-            let keyedArguments = commandArguments.keyedArguments as NSDictionary
-            XCTAssertEqual(keyedArguments, expectedKeyedArguments, assertMessage)
+            let keyedArguments = commandArguments.keyedArguments
+            
+            var aggregate: [String: Any] = keyedArguments
+            for expected in expectedKeyedArguments.keys {
+                if aggregate[expected] != nil {
+                    aggregate[expected] = nil
+                } else {
+                    aggregate[expected] = true
+                }
+            }
+            
+            XCTAssert(aggregate.isEmpty, assertMessage)
         } catch {
             XCTFail(assertMessage)
         }

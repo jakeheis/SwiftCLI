@@ -8,91 +8,10 @@
 
 public class CommandArguments {
     
-    var keyedArguments: [String: AnyObject]
+    let keyedArguments: [String: Any]
     
-    init() {
-        self.keyedArguments = [:]
-    }
-    
-    init(keyedArguments: [String: AnyObject]) {
-        self.keyedArguments = keyedArguments
-    }
-    
-    init(rawArguments: RawArguments, signature: CommandSignature) {
-        self.keyedArguments = [:]
-    }
-    
-    // Keying arguments
-    
-    class func fromRawArguments(_ rawArguments: RawArguments, signature: CommandSignature) throws -> CommandArguments {
-        if signature.isEmpty {
-            return try handleEmptySignature(rawArguments: rawArguments)
-        }
-        
-        let arguments = rawArguments.unclassifiedArguments
-        
-        if arguments.count < signature.requiredParameters.count {
-            throw CLIError.Error(errorMessage(expectedCount: signature.requiredParameters.count, givenCount: arguments.count))
-        }
-        
-        if !signature.collectRemainingArguments && signature.optionalParameters.isEmpty && arguments.count != signature.requiredParameters.count {
-            throw CLIError.Error(errorMessage(expectedCount: signature.requiredParameters.count, givenCount: arguments.count))
-        }
-        
-        if !signature.collectRemainingArguments && arguments.count > signature.requiredParameters.count + signature.optionalParameters.count {
-            throw CLIError.Error(errorMessage(expectedCount: signature.requiredParameters.count + signature.optionalParameters.count, givenCount: arguments.count))
-        }
-        
-        let commandArguments = CommandArguments()
-        
-        // First handle required arguments
-        for i in 0..<signature.requiredParameters.count {
-            let parameter = signature.requiredParameters[i]
-            let value = arguments[i].value
-            commandArguments[parameter] = value as AnyObject
-        }
-        
-        // Then handle optional arguments if there are any
-        if !signature.optionalParameters.isEmpty && arguments.count > signature.requiredParameters.count {
-            for i in 0..<signature.optionalParameters.count {
-                let index = i + signature.requiredParameters.count
-                if index >= arguments.count {
-                    break
-                }
-                let parameter = signature.optionalParameters[i]
-                let value = arguments[index].value
-                commandArguments[parameter] = value as AnyObject
-            }
-        }
-        
-        // Finally collect the remaining arguments into an array if ... is present
-        if signature.collectRemainingArguments {
-            let parameter = signature.optionalParameters.isEmpty ? signature.requiredParameters[signature.requiredParameters.count-1] : signature.optionalParameters[signature.optionalParameters.count-1]
-
-            if let singleArgument = commandArguments.optionalArgument(parameter) {
-                var collectedArgument = [singleArgument]
-                let startingIndex = signature.requiredParameters.count + signature.optionalParameters.count
-                for i in startingIndex..<arguments.count {
-                    collectedArgument.append(arguments[i].value)
-                }
-                commandArguments[parameter] = collectedArgument as AnyObject
-            }
-        }
-        
-        return commandArguments
-    }
-    
-    private class func handleEmptySignature(rawArguments: RawArguments) throws -> CommandArguments {
-        guard rawArguments.unclassifiedArguments.isEmpty  else {
-            throw CLIError.Error("Expected no arguments, got \(rawArguments.unclassifiedArguments.count).")
-        }
-    
-        return CommandArguments()
-    }
-    
-    private class func errorMessage(expectedCount: Int, givenCount: Int) -> String {
-        let argString = expectedCount == 1 ? "argument" : "arguments"
-        return "Expected \(expectedCount) \(argString), but got \(givenCount)."
+    init(rawArguments: RawArguments, signature: CommandSignature) throws {
+        keyedArguments = try CLI.commandArgumentParser.parse(rawArguments: rawArguments, with: signature)
     }
     
     // MARK: - Subscripting
@@ -102,12 +21,9 @@ public class CommandArguments {
     
         - SeeAlso: Typesafe shortcuts such as `args.requiredArguments("arg")`
     */
-    public subscript(key: String) -> AnyObject? {
+    public subscript(key: String) -> Any? {
         get {
             return keyedArguments[key]
-        }
-        set(newArgument) {
-            keyedArguments[key] = newArgument
         }
     }
     

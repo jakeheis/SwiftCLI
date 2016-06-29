@@ -8,11 +8,11 @@
 
 import Foundation
 
-class CommandSignature {
+public class CommandSignature {
     
-    var requiredParameters: [String] = []
-    var optionalParameters: [String] = []
-    var collectRemainingArguments = false
+    public var requiredParameters: [String] = []
+    public var optionalParameters: [String] = []
+    public var collectRemainingArguments = false
     
     init(_ string: String) {
         let parameters = string.components(separatedBy: " ").filter { !$0.isEmpty }

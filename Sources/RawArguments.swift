@@ -34,36 +34,6 @@ public class RawArgument {
     
 }
 
-protocol RawArgumentParser {
-    func parse(stringArguments: [String]) -> [RawArgument]
-}
-
-public class DefaultRawArgumentParser: RawArgumentParser {
-    
-    func parse(stringArguments: [String]) -> [RawArgument] {
-        let adjustedArguments = stringArguments.flatMap { (argument) -> [String] in
-            if argument.hasPrefix("-") && !argument.hasPrefix("--") {
-                return argument.characters.dropFirst().map { "-\($0)" } // Turn -am into -a -m
-            }
-            return [argument]
-        }
-        
-        var convertedArguments: [RawArgument] = []
-        var lastArgument: RawArgument? = nil
-        for (index, value) in adjustedArguments.enumerated() {
-            let argument = RawArgument(value: value, index: index)
-            convertedArguments.append(argument)
-            if let lastArgument = lastArgument {
-                lastArgument.next = argument
-            }
-            lastArgument = argument
-        }
-        
-        return convertedArguments
-    }
-    
-}
-
 public class RawArguments {
     
     private let arguments: [RawArgument]
@@ -95,8 +65,8 @@ public class RawArguments {
         self.init(arguments: arguments)
     }
     
-    init(arguments stringArguments: [String], parser: RawArgumentParser = DefaultRawArgumentParser()) {
-        arguments = parser.parse(stringArguments: stringArguments)
+    init(arguments stringArguments: [String]) {
+        arguments = CLI.rawArgumentParser.parse(stringArguments: stringArguments)
         
         arguments.first?.classification = .appName
     }
