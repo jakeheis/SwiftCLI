@@ -8,24 +8,13 @@
 
 public class VersionCommand: CommandType {
     
-    public var commandName: String  {
-        return "version"
-    }
-    
-    public var commandSignature: String {
-        return ""
-    }
-    
-    public var commandShortDescription: String  {
-        return "Prints the current version of this app"
-    }
-    
-    public var commandShortcut: String?  {
-        return "-v"
-    }
+    public let name = "version"
+    public let signature = ""
+    public let shortDescription = "Prints the current version of this app"
+    public let shortcut = "-v"
     
     public func execute(arguments: CommandArguments) throws  {
-        print("Version: \(CLI.appVersion)")
+        print("Version: \(CLI.version)")
     }
     
 }

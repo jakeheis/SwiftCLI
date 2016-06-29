@@ -10,10 +10,10 @@
 /// than manually implementing CommandType. Should only be used for simple commands
 public class LightweightCommand: OptionCommandType {
     
-    public var commandName: String = ""
-    public var commandSignature: String = ""
-    public var commandShortDescription: String = ""
-    public var commandShortcut: String? = nil
+    public var name: String = ""
+    public var signature: String = ""
+    public var shortDescription: String = ""
+    public var shortcut: String? = nil
     
     public var failOnUnrecognizedOptions = true
     public var unrecognizedOptionsPrintingBehavior: UnrecognizedOptionsPrintingBehavior = .PrintAll
@@ -24,8 +24,8 @@ public class LightweightCommand: OptionCommandType {
     public var executionBlock: ExecutionBlock? = nil
     public var optionsSetupBlock: OptionsSetupBlock? = nil
     
-    public init(commandName: String) {
-        self.commandName = commandName
+    public init(name: String) {
+        self.name = name
     }
     
     public func setupOptions(options: OptionRegistry) {

@@ -10,22 +10,18 @@
 /// Should only be used for simple commands.
 public class ChainableCommand: LightweightCommand {
     
-    public override init(commandName: String) {
-        super.init(commandName: commandName)
-    }
-    
     public func withSignature(_ signature: String) -> ChainableCommand {
-        commandSignature = signature
+        self.signature = signature
         return self
     }
     
     public func withShortDescription(_ shortDescription: String) -> ChainableCommand {
-        commandShortDescription = shortDescription
+        self.shortDescription = shortDescription
         return self
     }
     
     public func withShortcut(_ shortcut: String) -> ChainableCommand {
-        commandShortcut = shortcut
+        self.shortcut = shortcut
         return self
     }
     

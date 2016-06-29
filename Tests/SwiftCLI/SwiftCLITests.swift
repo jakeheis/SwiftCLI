@@ -10,33 +10,6 @@ import Foundation
 import XCTest
 @testable import SwiftCLI
 
-func createTestCommand(completion: ((executionString: String) -> ())? = nil) -> OptionCommandType {
-    var silentFlag = false
-    var times: Int = 1
-    var executionString = ""
-    
-    return ChainableCommand(commandName: "test")
-        .withSignature("<testName> [<testerName>]")
-        .withOptionsSetup {(options) in
-            options.add(flags: ["-s", "--silent"], usage: "Silence all test output") {(flag) in
-                silentFlag = true
-            }
-            options.add(keys: ["-t", "--times"], usage: "Number of times to run the test", valueSignature: "times") {(key, value) in
-                times = Int(value)!
-            }
-        }
-        .withExecutionBlock {(arguments) in
-            let testName = arguments.requiredArgument("testName")
-            let testerName = arguments.optionalArgument("testerName") ?? "Tester"
-            executionString = "\(testerName) will test \(testName), \(times) times"
-            if silentFlag {
-                executionString += ", silently"
-            }
-            
-            completion?(executionString: executionString)
-    }
-}
-
 class SwiftCLITests: XCTestCase {
     
     var executionString = ""
@@ -45,7 +18,7 @@ class SwiftCLITests: XCTestCase {
         super.setUp()
         
         CLI.setup(name: "tester")
-        CLI.register(command: createTestCommand {(executionString) in
+        CLI.register(command: TestCommand {(executionString) in
             self.executionString = executionString
         })
     }

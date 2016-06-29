@@ -11,12 +11,10 @@ import XCTest
 
 class CommandMessageGeneratorTests: XCTestCase {
     
-    var command: OptionCommandType!
+    let command = TestCommand()
 
     override func setUp() {
         super.setUp()
-
-        command = createTestCommand()
         
         CLI.setup(name: "tester")
     }

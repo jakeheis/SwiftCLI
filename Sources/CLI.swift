@@ -12,9 +12,9 @@ public class CLI {
     
     // MARK: - Information
     
-    public static var appName = ""
-    public static var appVersion = "1.0"
-    public static var appDescription = ""
+    public static var name = ""
+    public static var version = "1.0"
+    public static var description = ""
     
     private static var commands: [CommandType] = []
     
@@ -36,14 +36,14 @@ public class CLI {
         - Parameter description: description of the app, printed in the help message
     */
     public class func setup(name: String, version: String? = nil, description: String? = nil) {
-        appName = name
+        self.name = name
         
         if let version = version {
-            appVersion = version
+            self.version = version
         }
         
         if let description = description {
-            appDescription = description
+            self.description = description
         }
         
         Input.checkForPipedData()
@@ -66,7 +66,7 @@ public class CLI {
         - Parameter commands: the commands to be registered
     */
     public class func register(commands: [CommandType]) {
-        commands.each { self.register(command: $0) }
+        commands.forEach { self.register(command: $0) }
     }
     
     /**
@@ -75,8 +75,8 @@ public class CLI {
         - Parameter commandName: the name of the new chainable command
         - Returns: a new chainable command for immediate chaining
     */
-    public class func registerChainableCommand(commandName: String) -> ChainableCommand {
-        let chainable = ChainableCommand(commandName: commandName)
+    public class func registerChainableCommand(name: String) -> ChainableCommand {
+        let chainable = ChainableCommand(name: name)
         register(command: chainable)
         return chainable
     }
@@ -167,7 +167,7 @@ public class CLI {
             }
         }
         
-        let commandSignature = CommandSignature(command.commandSignature)
+        let commandSignature = CommandSignature(command.signature)
         
         return (true, try CommandArguments.fromRawArguments(arguments, signature: commandSignature))
     }

@@ -33,13 +33,13 @@ public class DefaultRouter: RouterType {
             throw CLIError.Error("Router failed")
         }
         
-        if let command = commands.filter({ $0.commandName == commandNameArgument.value }).first {
+        if let command = commands.filter({ $0.name == commandNameArgument.value }).first {
             commandNameArgument.classification = .commandName
             return command
         }
         
         if commandNameArgument.value.hasPrefix("-") {
-            if let shortcutCommand = commands.filter({ $0.commandShortcut == commandNameArgument.value }).first {
+            if let shortcutCommand = commands.filter({ $0.shortcut == commandNameArgument.value }).first {
                 commandNameArgument.classification = .commandName
                 return shortcutCommand
             } else {

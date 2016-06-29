@@ -8,12 +8,12 @@
 
 public class HelpCommand: OptionCommandType {
     
-    var allCommands: [CommandType] = []
+    internal(set) var allCommands: [CommandType] = []
     
-    public let commandName = "help"
-    public let commandSignature = "[<opt>]"
-    public let commandShortDescription = "Prints this help information"
-    public let commandShortcut = "-h"
+    public let name = "help"
+    public let signature = "[<opt>]"
+    public let shortDescription = "Prints this help information"
+    public let shortcut = "-h"
     
     public let failOnUnrecognizedOptions = false
     public let unrecognizedOptionsPrintingBehavior = UnrecognizedOptionsPrintingBehavior.PrintOnlyUnrecognizedOptions
@@ -26,7 +26,7 @@ public class HelpCommand: OptionCommandType {
             print("Usage: baker help\n")
         }
         
-        print("\(CLI.appDescription)\n")
+        print("\(CLI.description)\n")
         print("Available commands: ")
 
         for command in allCommands {
@@ -37,8 +37,8 @@ public class HelpCommand: OptionCommandType {
     }
     
     func printCommand(command: CommandType) {
-        let description = command.commandShortDescription.padFront(totalLength: 20 - command.commandName.characters.count)
-        print("- \(command.commandName)\(description)")
+        let description = command.shortDescription.padFront(totalLength: 20 - command.name.characters.count)
+        print("- \(command.name)\(description)")
     }
     
 }

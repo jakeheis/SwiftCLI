@@ -17,14 +17,14 @@ public protocol MisusedOptionsMessageGenerator {
 class DefaultUsageStatementGenerator: UsageStatementGenerator {
     
     func generateUsageStatement(for command: CommandType, optionRegistry: OptionRegistry?) -> String {
-        var message = "Usage: \(CLI.appName)"
+        var message = "Usage: \(CLI.name)"
         
-        if !command.commandName.isEmpty {
-            message += " \(command.commandName)"
+        if !command.name.isEmpty {
+            message += " \(command.name)"
         }
         
-        if !command.commandSignature.isEmpty {
-            message += " \(command.commandSignature)"
+        if !command.signature.isEmpty {
+            message += " \(command.signature)"
         }
         
         if let options = optionRegistry?.options where !options.isEmpty {

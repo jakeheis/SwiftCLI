@@ -12,17 +12,17 @@
 public protocol CommandType {
 
     /// The name of the command; used to route arguments to commands
-    var commandName: String { get }
+    var name: String { get }
     
     // The argument signature of the command; used to map RawArguments to CommandArguments
     /// See the README for details on this
-    var commandSignature: String { get }
+    var signature: String { get }
     
     /// A short description of the command; printed in the command's usage statement
-    var commandShortDescription: String { get }
+    var shortDescription: String { get }
     
     /// An optional flag shorcut for the command; e.g. "-h" for the HelpCommand. Default's to nil.
-    var commandShortcut: String? { get }
+    var shortcut: String? { get }
     
     /**
         The actual execution block of the command
@@ -58,7 +58,7 @@ public protocol OptionCommandType: CommandType {
 
 extension CommandType {
     
-    public var commandShortcut: String? { return nil }
+    public var shortcut: String? { return nil }
     
 }
 
