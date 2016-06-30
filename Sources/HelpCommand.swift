@@ -6,9 +6,9 @@
 //  Copyright (c) 2014 jakeheis. All rights reserved.
 //
 
-public class HelpCommand: OptionCommandType {
+public class HelpCommand: OptionCommand {
     
-    internal(set) var allCommands: [CommandType] = []
+    internal(set) var allCommands: [Command] = []
     
     public let name = "help"
     public let signature = "[<opt>]"
@@ -36,7 +36,7 @@ public class HelpCommand: OptionCommandType {
         printCommand(command: self)
     }
     
-    func printCommand(command: CommandType) {
+    func printCommand(command: Command) {
         let description = command.shortDescription.padFront(totalLength: 20 - command.name.characters.count)
         print("- \(command.name)\(description)")
     }

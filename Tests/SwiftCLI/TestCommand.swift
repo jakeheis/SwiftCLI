@@ -9,7 +9,7 @@
 
 import SwiftCLI
 
-class TestCommand: OptionCommandType {
+class TestCommand: OptionCommand {
     
     let name = "test"
     let signature = "<testName> [<testerName>]"

@@ -7,16 +7,16 @@
 //
 
 public protocol UsageStatementGenerator {
-    func generateUsageStatement(for command: CommandType, optionRegistry: OptionRegistry?) -> String
+    func generateUsageStatement(for command: Command, optionRegistry: OptionRegistry?) -> String
 }
 
 public protocol MisusedOptionsMessageGenerator {
-    func generateMisusedOptionsStatement(for command: CommandType, incorrectOptionUsage: IncorrectOptionUsage) -> String?
+    func generateMisusedOptionsStatement(for command: Command, incorrectOptionUsage: IncorrectOptionUsage) -> String?
 }
 
 class DefaultUsageStatementGenerator: UsageStatementGenerator {
     
-    func generateUsageStatement(for command: CommandType, optionRegistry: OptionRegistry?) -> String {
+    func generateUsageStatement(for command: Command, optionRegistry: OptionRegistry?) -> String {
         var message = "Usage: \(CLI.name)"
         
         if !command.name.isEmpty {
@@ -50,8 +50,8 @@ class DefaultUsageStatementGenerator: UsageStatementGenerator {
 
 class DefaultMisusedOptionsMessageGenerator: MisusedOptionsMessageGenerator {
 
-    func generateMisusedOptionsStatement(for command: CommandType, incorrectOptionUsage: IncorrectOptionUsage) -> String? {
-        guard let optionsCommand = command as? OptionCommandType else {
+    func generateMisusedOptionsStatement(for command: Command, incorrectOptionUsage: IncorrectOptionUsage) -> String? {
+        guard let optionsCommand = command as? OptionCommand else {
             return nil
         }
         

@@ -9,7 +9,7 @@
 // MARK: Protocols
 
 /// The base protocol for all commands
-public protocol CommandType {
+public protocol Command {
 
     /// The name of the command; used to route arguments to commands
     var name: String { get }
@@ -34,7 +34,7 @@ public protocol CommandType {
 }
 
 /// An expansion of CommandType to provide for option handling
-public protocol OptionCommandType: CommandType {
+public protocol OptionCommand: Command {
     
     /// Whether the command should fail if passed unrecognized options. Default is true.
     var failOnUnrecognizedOptions: Bool { get }
@@ -56,13 +56,13 @@ public protocol OptionCommandType: CommandType {
 
 // MARK: Default implementations
 
-extension CommandType {
+extension Command {
     
     public var shortcut: String? { return nil }
     
 }
 
-extension OptionCommandType {
+extension OptionCommand {
     
     public var failOnUnrecognizedOptions: Bool { return true }
     
@@ -74,7 +74,7 @@ extension OptionCommandType {
 
 // MARK: Additional functionality
 
-extension OptionCommandType {
+extension OptionCommand {
     
     func internalSetupOptions(options: OptionRegistry) {
         setupOptions(options: options)

@@ -12,9 +12,9 @@ import XCTest
 
 class RouterTests: XCTestCase {
     
-    var defaultCommand: CommandType!
-    var alphaCommand: CommandType!
-    var betaCommand: CommandType!
+    var defaultCommand: Command!
+    var alphaCommand: Command!
+    var betaCommand: Command!
     
     override func setUp() {
         super.setUp()
@@ -87,8 +87,8 @@ class RouterTests: XCTestCase {
     
     // MARK: - Helper
     
-    private func route(_ arguments: RawArguments, router: RouterType? = nil) throws -> CommandType {
-        let commands = [alphaCommand, betaCommand, defaultCommand] as [CommandType]
+    private func route(_ arguments: RawArguments, router: Router? = nil) throws -> Command {
+        let commands = [alphaCommand, betaCommand, defaultCommand] as [Command]
         let router = router ?? DefaultRouter()
         return try router.route(commands: commands, arguments: arguments)
     }

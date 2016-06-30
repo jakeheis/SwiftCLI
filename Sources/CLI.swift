@@ -16,12 +16,12 @@ public class CLI {
     public static var version = "1.0"
     public static var description = ""
     
-    private static var commands: [CommandType] = []
+    private static var commands: [Command] = []
     
     public static var helpCommand: HelpCommand? = HelpCommand()
-    public static var versionComand: CommandType? = VersionCommand()
+    public static var versionComand: Command? = VersionCommand()
     
-    public static var router: RouterType = DefaultRouter()
+    public static var router: Router = DefaultRouter()
     public static var usageStatementGenerator: UsageStatementGenerator = DefaultUsageStatementGenerator()
     public static var misusedOptionsMessageGenerator: MisusedOptionsMessageGenerator = DefaultMisusedOptionsMessageGenerator()
     public static var optionParserType: OptionParser.Type = DefaultOptionParser.self
@@ -58,7 +58,7 @@ public class CLI {
     
         - Parameter command: the command to be registered
     */
-    public class func register(command: CommandType) {
+    public class func register(command: Command) {
         commands.append(command)
     }
     
@@ -68,7 +68,7 @@ public class CLI {
     
         - Parameter commands: the commands to be registered
     */
-    public class func register(commands: [CommandType]) {
+    public class func register(commands: [Command]) {
         commands.forEach { self.register(command: $0) }
     }
     
@@ -134,7 +134,7 @@ public class CLI {
     
     // MARK: - Privates
     
-    class private func routeCommand(arguments: RawArguments) throws -> CommandType {
+    class private func routeCommand(arguments: RawArguments) throws -> Command {
         var allCommands = commands
         if let hc = helpCommand {
             hc.allCommands = commands
@@ -147,8 +147,8 @@ public class CLI {
         return try router.route(commands: allCommands, arguments: arguments)
     }
         
-    class private func setupOptionsAndArguments(command: CommandType, arguments: RawArguments) throws -> (execute: Bool, arguments: CommandArguments?) {
-        if let optionCommand = command as? OptionCommandType {
+    class private func setupOptionsAndArguments(command: Command, arguments: RawArguments) throws -> (execute: Bool, arguments: CommandArguments?) {
+        if let optionCommand = command as? OptionCommand {
             let optionRegistry = OptionRegistry()
           
             optionCommand.internalSetupOptions(options: optionRegistry)

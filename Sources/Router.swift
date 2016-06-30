@@ -6,19 +6,19 @@
 //  Copyright (c) 2014 jakeheis. All rights reserved.
 //
 
-public protocol RouterType {
-    func route(commands: [CommandType], arguments: RawArguments) throws -> CommandType
+public protocol Router {
+    func route(commands: [Command], arguments: RawArguments) throws -> Command
 }
 
-public class DefaultRouter: RouterType {
+public class DefaultRouter: Router {
     
-    private let defaultCommand: CommandType?
+    private let defaultCommand: Command?
     
-    public init(defaultCommand: CommandType? = nil) {
+    public init(defaultCommand: Command? = nil) {
         self.defaultCommand = defaultCommand
     }
     
-    public func route(commands: [CommandType], arguments: RawArguments) throws -> CommandType {
+    public func route(commands: [Command], arguments: RawArguments) throws -> Command {
         guard arguments.unclassifiedArguments.count > 0 else {
             return try findDefaultCommand(commands: commands)
         }
@@ -28,7 +28,7 @@ public class DefaultRouter: RouterType {
     
     // MARK: - Privates
     
-    private func findCommand(commands: [CommandType], arguments: RawArguments) throws -> CommandType {
+    private func findCommand(commands: [Command], arguments: RawArguments) throws -> Command {
         guard let commandNameArgument = arguments.unclassifiedArguments.first else {
             throw CLIError.Error("Router failed")
         }
@@ -50,7 +50,7 @@ public class DefaultRouter: RouterType {
         return try findDefaultCommand(commands: commands)
     }
     
-    func findDefaultCommand(commands: [CommandType]) throws -> CommandType {
+    func findDefaultCommand(commands: [Command]) throws -> Command {
         if let d = defaultCommand {
             return d
         }

@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 jakeheis. All rights reserved.
 //
 
-public class VersionCommand: CommandType {
+public class VersionCommand: Command {
     
     public let name = "version"
     public let signature = ""
