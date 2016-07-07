@@ -32,7 +32,7 @@ public class CLI {
         - Parameter version: version of the app, printed by the VersionCommand
         - Parameter description: description of the app, printed in the help message
     */
-    public class func setup(name name: String, version: String? = nil, description: String? = nil) {
+    public class func setup(_ name: String, version: String? = nil, description: String? = nil) {
         appName = name
         
         if let version = version {
@@ -52,7 +52,7 @@ public class CLI {
     
         - Parameter command: the command to be registered
     */
-    public class func registerCommand(command: CommandType) {
+    public class func registerCommand(_ command: CommandType) {
         commands.append(command)
     }
     
@@ -62,7 +62,7 @@ public class CLI {
     
         - Parameter commands: the commands to be registered
     */
-    public class func registerCommands(commands: [CommandType]) {
+    public class func registerCommands(_ commands: [CommandType]) {
         commands.each { self.registerCommand($0) }
     }
     
@@ -72,7 +72,7 @@ public class CLI {
         - Parameter commandName: the name of the new chainable command
         - Returns: a new chainable command for immediate chaining
     */
-    public class func registerChainableCommand(commandName commandName: String) -> ChainableCommand {
+    public class func registerChainableCommand(_ commandName: String) -> ChainableCommand {
         let chainable = ChainableCommand(commandName: commandName)
         registerCommand(chainable)
         return chainable
@@ -101,23 +101,23 @@ public class CLI {
         - Returns: a CLIResult (Int) representing the success of the CLI in routing to and executing the correct
                     command. Usually should be passed to `exit(result)`
     */
-    public class func debugGoWithArgumentString(argumentString: String) -> CLIResult {
+    public class func debugGoWithArgumentString(_ argumentString: String) -> CLIResult {
         print("[Debug Mode]")
         return goWithArguments(RawArguments(argumentString: argumentString))
     }
     
-    private class func goWithArguments(arguments: RawArguments) -> CLIResult {
+    private class func goWithArguments(_ arguments: RawArguments) -> CLIResult {
         do {
-            let command = try routeCommand(arguments: arguments)
+            let command = try routeCommand(arguments)
             let result = try setupOptionsAndArguments(command, arguments: arguments)
             if let arguments = result.arguments where result.execute {
                 try command.execute(arguments)
             }
             
             return CLIResult.Success
-        } catch CLIError.Error(let error) {
+        } catch CLIError.error(let error) {
             printError(error)
-        } catch CLIError.EmptyError {
+        } catch CLIError.emptyError {
             // Do nothing
         } catch let error as NSError {
             printError("An error occurred: \(error.localizedDescription)")
@@ -128,7 +128,7 @@ public class CLI {
     
     // MARK: - Privates
     
-    class private func routeCommand(arguments arguments: RawArguments) throws -> CommandType {
+    class private func routeCommand(_ arguments: RawArguments) throws -> CommandType {
         var allCommands = commands
         if let hc = helpCommand {
             hc.allCommands = commands
@@ -141,7 +141,7 @@ public class CLI {
         return try router.route(allCommands, arguments: arguments)
     }
         
-    class private func setupOptionsAndArguments(command: CommandType, arguments: RawArguments) throws -> (execute: Bool, arguments: CommandArguments?) {
+    class private func setupOptionsAndArguments(_ command: CommandType, arguments: RawArguments) throws -> (execute: Bool, arguments: CommandArguments?) {
         if let optionCommand = command as? OptionCommandType {
             let options = Options()
           
@@ -153,11 +153,11 @@ public class CLI {
             }
             
             if options.misusedOptionsPresent() {
-                if let message = CommandMessageGenerator.generateMisusedOptionsStatement(command: optionCommand, options: options) {
+                if let message = CommandMessageGenerator.generateMisusedOptionsStatement(optionCommand, options: options) {
                     printError(message)
                 }
                 if optionCommand.failOnUnrecognizedOptions {
-                    throw CLIError.EmptyError
+                    throw CLIError.emptyError
                 }
             }
         }
@@ -171,9 +171,9 @@ public class CLI {
 
 // MARK: -
 
-public enum CLIError: ErrorType {
-    case Error(String)
-    case EmptyError
+public enum CLIError: ErrorProtocol {
+    case error(String)
+    case emptyError
 }
 
 public typealias CLIResult = Int32

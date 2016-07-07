@@ -24,23 +24,23 @@ public class CommandArguments {
     
     // Keying arguments
     
-    class func fromRawArguments(rawArguments: RawArguments, signature: CommandSignature) throws -> CommandArguments {
+    class func fromRawArguments(_ rawArguments: RawArguments, signature: CommandSignature) throws -> CommandArguments {
         if signature.isEmpty {
-            return try handleEmptySignature(rawArguments: rawArguments)
+            return try handleEmptySignature(rawArguments)
         }
         
         let arguments = rawArguments.unclassifiedArguments()
         
         if arguments.count < signature.requiredParameters.count {
-            throw CLIError.Error(errorMessage(expectedCount: signature.requiredParameters.count, givenCount: arguments.count))
+            throw CLIError.error(errorMessage(signature.requiredParameters.count, givenCount: arguments.count))
         }
         
         if !signature.collectRemainingArguments && signature.optionalParameters.isEmpty && arguments.count != signature.requiredParameters.count {
-            throw CLIError.Error(errorMessage(expectedCount: signature.requiredParameters.count, givenCount: arguments.count))
+            throw CLIError.error(errorMessage(signature.requiredParameters.count, givenCount: arguments.count))
         }
         
         if !signature.collectRemainingArguments && arguments.count > signature.requiredParameters.count + signature.optionalParameters.count {
-            throw CLIError.Error(errorMessage(expectedCount: signature.requiredParameters.count + signature.optionalParameters.count, givenCount: arguments.count))
+            throw CLIError.error(errorMessage(signature.requiredParameters.count + signature.optionalParameters.count, givenCount: arguments.count))
         }
         
         let commandArguments = CommandArguments()
@@ -82,15 +82,15 @@ public class CommandArguments {
         return commandArguments
     }
     
-    private class func handleEmptySignature(rawArguments rawArguments: RawArguments) throws -> CommandArguments {
+    private class func handleEmptySignature(_ rawArguments: RawArguments) throws -> CommandArguments {
         guard rawArguments.unclassifiedArguments().count == 0  else {
-            throw CLIError.Error("Expected no arguments, got \(rawArguments.unclassifiedArguments().count).")
+            throw CLIError.error("Expected no arguments, got \(rawArguments.unclassifiedArguments().count).")
         }
     
         return CommandArguments()
     }
     
-    private class func errorMessage(expectedCount expectedCount: Int, givenCount: Int) -> String {
+    private class func errorMessage(_ expectedCount: Int, givenCount: Int) -> String {
         let argString = expectedCount == 1 ? "argument" : "arguments"
         return "Expected \(expectedCount) \(argString), but got \(givenCount)."
     }
@@ -119,7 +119,7 @@ public class CommandArguments {
     
         - Parameter key: the name of the argument as seen in the command signature
     */
-    public func requiredArgument(key: String) -> String {
+    public func requiredArgument(_ key: String) -> String {
         return optionalArgument(key)!
     }
     
@@ -129,7 +129,7 @@ public class CommandArguments {
     
         - Parameter key: the name of the argument as seen in the command signature
     */
-    public func optionalArgument(key: String) -> String? {
+    public func optionalArgument(_ key: String) -> String? {
         if let arg = keyedArguments[key] as? String {
             return arg
         }
@@ -142,7 +142,7 @@ public class CommandArguments {
     
         - Parameter key: the name of the argument as seen in the command signature
     */
-    public func requiredCollectedArgument(key: String) -> [String] {
+    public func requiredCollectedArgument(_ key: String) -> [String] {
         return optionalCollectedArgument(key)!
     }
     
@@ -152,7 +152,7 @@ public class CommandArguments {
     
         - Parameter key: the name of the argument as seen in the command signature
     */
-    public func optionalCollectedArgument(key: String) -> [String]? {
+    public func optionalCollectedArgument(_ key: String) -> [String]? {
         if let arg = keyedArguments[key] as? [String] {
             return arg
         }

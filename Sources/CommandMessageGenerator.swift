@@ -8,7 +8,7 @@
 
 class CommandMessageGenerator {
     
-    class func generateUsageStatement(command command: CommandType, options: Options?) -> String {
+    class func generateUsageStatement(_ command: CommandType, options: Options?) -> String {
         var message = "Usage: \(CLI.appName)"
         
         if !command.commandName.isEmpty {
@@ -23,7 +23,7 @@ class CommandMessageGenerator {
             message += " [options]\n"
             
             let allKeys = Array(options.flagOptions.keys) + Array(options.keyOptions.keys)
-            let sortedKeys = allKeys.sort()
+            let sortedKeys = allKeys.sorted()
             for key in sortedKeys {
                 let usage = options.flagOptions[key]?.usage ?? options.keyOptions[key]?.usage ?? ""
                 message += "\n\(usage)"
@@ -37,20 +37,20 @@ class CommandMessageGenerator {
         return message
     }
     
-    class func generateMisusedOptionsStatement(command command: CommandType, options: Options) -> String? {
+    class func generateMisusedOptionsStatement(_ command: CommandType, options: Options) -> String? {
         guard let optionsCommand = command as? OptionCommandType else {
             return nil
         }
         
         switch optionsCommand.unrecognizedOptionsPrintingBehavior {
-        case .PrintNone:
+        case .printNone:
             return nil
-        case .PrintOnlyUsage:
-            return generateUsageStatement(command: command, options: options)
-        case .PrintOnlyUnrecognizedOptions:
+        case .printOnlyUsage:
+            return generateUsageStatement(command, options: options)
+        case .printOnlyUnrecognizedOptions:
             return options.misusedOptionsMessage()
-        case .PrintAll:
-            return generateUsageStatement(command: command, options: options) + "\n" + options.misusedOptionsMessage()
+        case .printAll:
+            return generateUsageStatement(command, options: options) + "\n" + options.misusedOptionsMessage()
         }
     }
     

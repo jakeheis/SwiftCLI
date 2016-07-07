@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		EEF43B601D26943E00FFCB1F /* BioSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EEF43B5F1D26943E00FFCB1F /* BioSwift.framework */; };
 		EF96C4681C32F9850031CEAC /* ChainableCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF96C4591C32F9850031CEAC /* ChainableCommand.swift */; };
 		EF96C4691C32F9850031CEAC /* CLI.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF96C45A1C32F9850031CEAC /* CLI.swift */; };
 		EF96C46A1C32F9850031CEAC /* Command.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF96C45B1C32F9850031CEAC /* Command.swift */; };
@@ -43,6 +44,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		EEF43B5F1D26943E00FFCB1F /* BioSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = BioSwift.framework; path = "../../../../../Library/Developer/Xcode/DerivedData/DesignGuide-edicxbogtrtmmcdvrxebkyhcfilr/Build/Products/Debug/BioSwift.framework"; sourceTree = "<group>"; };
 		EF96C4551C32F8B10031CEAC /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		EF96C4591C32F9850031CEAC /* ChainableCommand.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChainableCommand.swift; sourceTree = "<group>"; };
 		EF96C45A1C32F9850031CEAC /* CLI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CLI.swift; sourceTree = "<group>"; };
@@ -76,6 +78,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EEF43B601D26943E00FFCB1F /* BioSwift.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -90,6 +93,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		EEF43B5E1D26943E00FFCB1F /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				EEF43B5F1D26943E00FFCB1F /* BioSwift.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		EF96C4581C32F9850031CEAC /* Sources */ = {
 			isa = PBXGroup;
 			children = (
@@ -133,6 +144,7 @@
 				EFBFD6C81C3251E10068CB26 /* SwiftCLI */,
 				EFBFD6D41C3251E10068CB26 /* SwiftCLITests */,
 				EFBFD6C71C3251E10068CB26 /* Products */,
+				EEF43B5E1D26943E00FFCB1F /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};

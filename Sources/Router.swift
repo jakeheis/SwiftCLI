@@ -7,7 +7,7 @@
 //
 
 public protocol RouterType {
-    func route(commands: [CommandType], arguments: RawArguments) throws -> CommandType
+    func route(_ commands: [CommandType], arguments: RawArguments) throws -> CommandType
 }
 
 public class DefaultRouter: RouterType {
@@ -18,7 +18,7 @@ public class DefaultRouter: RouterType {
         self.defaultCommand = defaultCommand
     }
     
-    public func route(commands: [CommandType], arguments: RawArguments) throws -> CommandType {
+    public func route(_ commands: [CommandType], arguments: RawArguments) throws -> CommandType {
         guard arguments.unclassifiedArguments().count > 0 else {
             return try findDefaultCommand(commands)
         }
@@ -28,19 +28,19 @@ public class DefaultRouter: RouterType {
     
     // MARK: - Privates
     
-    private func findCommand(commands: [CommandType], arguments: RawArguments) throws -> CommandType {
-        guard let commandSearchName = arguments.firstArgumentOfType(.Unclassified) else {
-            throw CLIError.Error("Router failed")
+    private func findCommand(_ commands: [CommandType], arguments: RawArguments) throws -> CommandType {
+        guard let commandSearchName = arguments.firstArgumentOfType(.unclassified) else {
+            throw CLIError.error("Router failed")
         }
         
         if let command = commands.filter({ $0.commandName == commandSearchName }).first {
-            arguments.classifyArgument(argument: commandSearchName, type: .CommandName)
+            arguments.classifyArgument(commandSearchName, type: .commandName)
             return command
         }
         
         if commandSearchName.hasPrefix("-") {
             if let shortcutCommand = commands.filter({ $0.commandShortcut == commandSearchName }).first {
-                arguments.classifyArgument(argument: commandSearchName, type: .CommandName)
+                arguments.classifyArgument(commandSearchName, type: .commandName)
                 return shortcutCommand
             } else {
                 return try findDefaultCommand(commands)
@@ -50,14 +50,14 @@ public class DefaultRouter: RouterType {
         return try findDefaultCommand(commands)
     }
     
-    func findDefaultCommand(commands: [CommandType]) throws -> CommandType {
+    func findDefaultCommand(_ commands: [CommandType]) throws -> CommandType {
         if let d = defaultCommand {
             return d
         }
         if let d = commands.flatMap({ $0 as? HelpCommand }).first {
             return d
         }
-        throw CLIError.Error("Command not found")
+        throw CLIError.error("Command not found")
     }
     
 }

@@ -22,8 +22,8 @@ public class FlagOption {
         self.flags = flags
         self.block = block
         
-        let flagsString = flags.joinWithSeparator(", ")
-        let paddedUsage = usage.padFront(totalLength: 40 - flagsString.characters.count)
+        let flagsString = flags.joined(separator: ", ")
+        let paddedUsage = usage.padFront(40 - flagsString.characters.count)
         self.usage = "\(flagsString)\(paddedUsage)"
     }
     
@@ -47,9 +47,9 @@ public class KeyOption: Equatable {
         self.valueSignature = valueSignature
         self.block = block
         
-        let keysString = keys.joinWithSeparator(", ")
+        let keysString = keys.joined(separator: ", ")
         let firstPart = "\(keysString) <\(valueSignature)>"
-        let paddedUsage = usage.padFront(totalLength: 40 - firstPart.characters.count)
+        let paddedUsage = usage.padFront(40 - firstPart.characters.count)
         self.usage = "\(firstPart)\(paddedUsage)"
     }
     
@@ -85,7 +85,7 @@ public class Options {
         - Parameter usage: the usage of these flags, printed in the command usage statement
         - Parameter block: the block to be called upon recognition of the flags
     */
-    public func onFlags(flags: [String], usage: String = "", block: FlagOption.FlagBlock?) {
+    public func onFlags(_ flags: [String], usage: String = "", block: FlagOption.FlagBlock?) {
         addFlagOption(FlagOption(flags: flags, usage: usage, block: block))
     }
     
@@ -100,17 +100,17 @@ public class Options {
                                     takes the form "-m, --myKey [valueSignature]"
         - Parameter block: the block to be called upon recognition of the keys
     */
-    public func onKeys(keys: [String], usage: String = "", valueSignature: String = "value", block: KeyOption.KeyBlock?) {
+    public func onKeys(_ keys: [String], usage: String = "", valueSignature: String = "value", block: KeyOption.KeyBlock?) {
         addKeyOption(KeyOption(keys: keys, usage: usage, valueSignature: valueSignature, block: block))
     }
     
-    private func addFlagOption(flagOption: FlagOption) {
+    private func addFlagOption(_ flagOption: FlagOption) {
         flagOptions[flagOption.flags.first!] = flagOption
         
         flagOption.flags.each { self.allFlagOptions[$0] = flagOption }
     }
     
-    private func addKeyOption(keyOption: KeyOption) {
+    private func addKeyOption(_ keyOption: KeyOption) {
         keyOptions[keyOption.keys.first!] = keyOption
         
         keyOption.keys.each { self.allKeyOptions[$0] = keyOption }
@@ -118,12 +118,12 @@ public class Options {
     
     // MARK: - Argument parsing
     
-    func recognizeOptionsInArguments(rawArguments: RawArguments) {
+    func recognizeOptionsInArguments(_ rawArguments: RawArguments) {
         var passedOptions: [String] = []
         rawArguments.unclassifiedArguments().each {(argument) in
             if argument.hasPrefix("-") {
                 passedOptions += self.optionsForRawOption(argument)
-                rawArguments.classifyArgument(argument: argument, type: .Option)
+                rawArguments.classifyArgument(argument, type: .option)
             }
         }
         
@@ -133,7 +133,7 @@ public class Options {
             } else if let keyOption = allKeyOptions[option] {
                 if let keyValue = rawArguments.argumentFollowingArgument(option)
                     where !keyValue.hasPrefix("-") {
-                        rawArguments.classifyArgument(argument: keyValue, type: .Option)
+                        rawArguments.classifyArgument(keyValue, type: .option)
                         
                         keyOption.block?(key: option, value: keyValue)
                 } else {
@@ -149,14 +149,14 @@ public class Options {
         }
     }
     
-    private func optionsForRawOption(rawOption: String) -> [String] {
+    private func optionsForRawOption(_ rawOption: String) -> [String] {
         if rawOption.hasPrefix("--") {
             return [rawOption]
         }
         
         var chars: [String] = []
         
-        for (index, character) in rawOption.characters.enumerate() {
+        for (index, character) in rawOption.characters.enumerated() {
             if index > 0 {
                 chars.append("-\(character)")
             }

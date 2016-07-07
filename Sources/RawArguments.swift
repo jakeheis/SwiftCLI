@@ -11,10 +11,10 @@ import Foundation
 public class RawArguments: CustomStringConvertible {
     
     public enum RawArgumentType {
-        case AppName
-        case CommandName
-        case Option
-        case Unclassified
+        case appName
+        case commandName
+        case option
+        case unclassified
     }
     
     private var arguments: [String]
@@ -22,20 +22,20 @@ public class RawArguments: CustomStringConvertible {
     private var argumentClassifications: [RawArgumentType] = []
     
     convenience init() {
-        self.init(arguments: NSProcessInfo.processInfo().arguments)
+        self.init(arguments: ProcessInfo.processInfo().arguments)
     }
     
     convenience init(argumentString: String) {
-        let regex = try! NSRegularExpression(pattern: "(\"[^\"]*\")|[^\"\\s]+", options: [])
+        let regex = try! RegularExpression(pattern: "(\"[^\"]*\")|[^\"\\s]+", options: [])
         
-        let argumentMatches = regex.matchesInString(argumentString, options: [], range: NSRange(location: 0, length: argumentString.utf8.count))
+        let argumentMatches = regex.matches(in: argumentString, options: [], range: NSRange(location: 0, length: argumentString.utf8.count))
         
         let arguments: [String] = argumentMatches.map {(match) in
             let matchRange = match.range
-            var argument = argumentString.substringFromIndex(argumentString.startIndex.advancedBy(matchRange.location))
-            argument = argument.substringToIndex(argument.startIndex.advancedBy(matchRange.length))
+            var argument = argumentString.substring(from: argumentString.characters.index(argumentString.startIndex, offsetBy: matchRange.location))
+            argument = argument.substring(to: argument.index(argument.startIndex, offsetBy: matchRange.length))
             if argument.hasPrefix("\"") {
-                argument = argument.substringWithRange(Range(start: argument.startIndex.advancedBy(1), end: argument.endIndex.advancedBy(-1)))
+                argument = argument.substring(with: (argument.index(argument.startIndex, offsetBy: 1) ..< argument.index(argument.endIndex, offsetBy: -1)))
             }
             return argument
         }
@@ -45,41 +45,41 @@ public class RawArguments: CustomStringConvertible {
     
     init(arguments: [String]) {
         self.arguments = arguments
-        self.argumentClassifications = [RawArgumentType](count: arguments.count, repeatedValue: .Unclassified)
+        self.argumentClassifications = [RawArgumentType](repeating: .unclassified, count: arguments.count)
         
-        classifyArgument(index: 0, type: .AppName)
+        classifyArgument(0, type: RawArgumentType.appName)
     }
     
-    public func classifyArgument(argument argument: String, type: RawArgumentType) {
-        if let index = arguments.indexOf(argument) {
-            classifyArgument(index: index, type: type)
+    public func classifyArgument(_ argument: String, type: RawArgumentType) {
+        if let index = arguments.index(of: argument) {
+            classifyArgument(index, type: type)
         }
     }
     
-    private func classifyArgument(index index: Int, type: RawArgumentType) {
+    private func classifyArgument(_ index: Int, type: RawArgumentType) {
         argumentClassifications[index] = type
     }
     
     func unclassifiedArguments() -> [String] {
         var unclassifiedArguments: [String] = []
         arguments.eachWithIndex {(argument, index) in
-            if self.argumentClassifications[index] == .Unclassified {
+            if self.argumentClassifications[index] == .unclassified {
                 unclassifiedArguments.append(argument)
             }
         }
         return unclassifiedArguments
     }
     
-    public func firstArgumentOfType(type: RawArgumentType) -> String? {
-        if let index = argumentClassifications.indexOf(type) {
+    public func firstArgumentOfType(_ type: RawArgumentType) -> String? {
+        if let index = argumentClassifications.index(of: type) {
             return arguments[index]
         }
 
         return nil
     }
     
-    public func argumentFollowingArgument(argument: String) -> String? {
-        if let index = arguments.indexOf(argument) where index + 1 < arguments.count {
+    public func argumentFollowingArgument(_ argument: String) -> String? {
+        if let index = arguments.index(of: argument) where index + 1 < arguments.count {
             return arguments[index + 1]
         }
         return nil
