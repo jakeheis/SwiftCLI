@@ -43,11 +43,11 @@ public class RawArguments {
     }
     
     convenience init() {
-        self.init(arguments: NSProcessInfo.processInfo().arguments)
+        self.init(arguments: ProcessInfo.processInfo.arguments)
     }
     
     convenience init(argumentString: String) {
-        let regex = try! NSRegularExpression(pattern: "(\"[^\"]*\")|[^\"\\s]+", options: [])
+        let regex = try! RegularExpression(pattern: "(\"[^\"]*\")|[^\"\\s]+", options: [])
         
         let argumentMatches = regex.matches(in: argumentString, options: [], range: NSRange(location: 0, length: argumentString.utf8.count))
         

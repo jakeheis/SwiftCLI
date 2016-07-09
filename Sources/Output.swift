@@ -13,9 +13,9 @@ func printError(error: String) {
 }
 
 func printError(error: String, terminator: String) {
-    let handle = NSFileHandle.standardError()
+    let handle = FileHandle.withStandardError
     let fullString = error + terminator
-    if let errorData = fullString.data(using: NSUTF8StringEncoding, allowLossyConversion: false) {
+    if let errorData = fullString.data(using: String.Encoding.utf8, allowLossyConversion: false) {
         handle.write(errorData)
     } else {
         print(error)

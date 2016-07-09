@@ -7,6 +7,16 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		EF192A4B1D319C3400B484A1 /* OptionParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF192A491D319C3400B484A1 /* OptionParser.swift */; };
+		EF192A4C1D319C3400B484A1 /* OptionRegistry.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF192A4A1D319C3400B484A1 /* OptionRegistry.swift */; };
+		EF192A4E1D319C4900B484A1 /* CommandArgumentParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF192A4D1D319C4900B484A1 /* CommandArgumentParser.swift */; };
+		EF192A501D319C9200B484A1 /* RawArgumentParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF192A4F1D319C9200B484A1 /* RawArgumentParser.swift */; };
+		EF192A571D319D5100B484A1 /* CommandArgumentsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF192A511D319D5100B484A1 /* CommandArgumentsTests.swift */; };
+		EF192A581D319D5100B484A1 /* CommandMessageGeneratorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF192A521D319D5100B484A1 /* CommandMessageGeneratorTests.swift */; };
+		EF192A591D319D5100B484A1 /* OptionParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF192A531D319D5100B484A1 /* OptionParserTests.swift */; };
+		EF192A5A1D319D5100B484A1 /* RouterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF192A541D319D5100B484A1 /* RouterTests.swift */; };
+		EF192A5B1D319D5100B484A1 /* SwiftCLITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF192A551D319D5100B484A1 /* SwiftCLITests.swift */; };
+		EF192A5C1D319D5100B484A1 /* TestCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF192A561D319D5100B484A1 /* TestCommand.swift */; };
 		EF96C4681C32F9850031CEAC /* ChainableCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF96C4591C32F9850031CEAC /* ChainableCommand.swift */; };
 		EF96C4691C32F9850031CEAC /* CLI.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF96C45A1C32F9850031CEAC /* CLI.swift */; };
 		EF96C46A1C32F9850031CEAC /* Command.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF96C45B1C32F9850031CEAC /* Command.swift */; };
@@ -17,17 +27,11 @@
 		EF96C46F1C32F9850031CEAC /* HelpCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF96C4601C32F9850031CEAC /* HelpCommand.swift */; };
 		EF96C4701C32F9850031CEAC /* Input.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF96C4611C32F9850031CEAC /* Input.swift */; };
 		EF96C4711C32F9850031CEAC /* LightweightCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF96C4621C32F9850031CEAC /* LightweightCommand.swift */; };
-		EF96C4721C32F9850031CEAC /* Options.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF96C4631C32F9850031CEAC /* Options.swift */; };
 		EF96C4731C32F9850031CEAC /* Output.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF96C4641C32F9850031CEAC /* Output.swift */; };
 		EF96C4741C32F9850031CEAC /* RawArguments.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF96C4651C32F9850031CEAC /* RawArguments.swift */; };
 		EF96C4751C32F9850031CEAC /* Router.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF96C4661C32F9850031CEAC /* Router.swift */; };
 		EF96C4761C32F9850031CEAC /* VersionCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF96C4671C32F9850031CEAC /* VersionCommand.swift */; };
-		EF96C47E1C32F98F0031CEAC /* CommandArgumentsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF96C4781C32F98F0031CEAC /* CommandArgumentsTests.swift */; };
-		EF96C47F1C32F98F0031CEAC /* CommandMessageGeneratorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF96C4791C32F98F0031CEAC /* CommandMessageGeneratorTests.swift */; };
 		EF96C4801C32F98F0031CEAC /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = EF96C47A1C32F98F0031CEAC /* Info.plist */; };
-		EF96C4811C32F98F0031CEAC /* OptionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF96C47B1C32F98F0031CEAC /* OptionsTests.swift */; };
-		EF96C4821C32F98F0031CEAC /* RouterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF96C47C1C32F98F0031CEAC /* RouterTests.swift */; };
-		EF96C4831C32F98F0031CEAC /* SwiftCLITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF96C47D1C32F98F0031CEAC /* SwiftCLITests.swift */; };
 		EFBFD6CA1C3251E10068CB26 /* SwiftCLI.h in Headers */ = {isa = PBXBuildFile; fileRef = EFBFD6C91C3251E10068CB26 /* SwiftCLI.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		EFBFD6D11C3251E10068CB26 /* SwiftCLI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EFBFD6C61C3251E10068CB26 /* SwiftCLI.framework */; };
 /* End PBXBuildFile section */
@@ -43,6 +47,16 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		EF192A491D319C3400B484A1 /* OptionParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OptionParser.swift; sourceTree = "<group>"; };
+		EF192A4A1D319C3400B484A1 /* OptionRegistry.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OptionRegistry.swift; sourceTree = "<group>"; };
+		EF192A4D1D319C4900B484A1 /* CommandArgumentParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommandArgumentParser.swift; sourceTree = "<group>"; };
+		EF192A4F1D319C9200B484A1 /* RawArgumentParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RawArgumentParser.swift; sourceTree = "<group>"; };
+		EF192A511D319D5100B484A1 /* CommandArgumentsTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CommandArgumentsTests.swift; path = SwiftCLI/CommandArgumentsTests.swift; sourceTree = "<group>"; };
+		EF192A521D319D5100B484A1 /* CommandMessageGeneratorTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CommandMessageGeneratorTests.swift; path = SwiftCLI/CommandMessageGeneratorTests.swift; sourceTree = "<group>"; };
+		EF192A531D319D5100B484A1 /* OptionParserTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = OptionParserTests.swift; path = SwiftCLI/OptionParserTests.swift; sourceTree = "<group>"; };
+		EF192A541D319D5100B484A1 /* RouterTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RouterTests.swift; path = SwiftCLI/RouterTests.swift; sourceTree = "<group>"; };
+		EF192A551D319D5100B484A1 /* SwiftCLITests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SwiftCLITests.swift; path = SwiftCLI/SwiftCLITests.swift; sourceTree = "<group>"; };
+		EF192A561D319D5100B484A1 /* TestCommand.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = TestCommand.swift; path = SwiftCLI/TestCommand.swift; sourceTree = "<group>"; };
 		EF96C4551C32F8B10031CEAC /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		EF96C4591C32F9850031CEAC /* ChainableCommand.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChainableCommand.swift; sourceTree = "<group>"; };
 		EF96C45A1C32F9850031CEAC /* CLI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CLI.swift; sourceTree = "<group>"; };
@@ -54,17 +68,11 @@
 		EF96C4601C32F9850031CEAC /* HelpCommand.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HelpCommand.swift; sourceTree = "<group>"; };
 		EF96C4611C32F9850031CEAC /* Input.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Input.swift; sourceTree = "<group>"; };
 		EF96C4621C32F9850031CEAC /* LightweightCommand.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LightweightCommand.swift; sourceTree = "<group>"; };
-		EF96C4631C32F9850031CEAC /* Options.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Options.swift; sourceTree = "<group>"; };
 		EF96C4641C32F9850031CEAC /* Output.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Output.swift; sourceTree = "<group>"; };
 		EF96C4651C32F9850031CEAC /* RawArguments.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RawArguments.swift; sourceTree = "<group>"; };
 		EF96C4661C32F9850031CEAC /* Router.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Router.swift; sourceTree = "<group>"; };
 		EF96C4671C32F9850031CEAC /* VersionCommand.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VersionCommand.swift; sourceTree = "<group>"; };
-		EF96C4781C32F98F0031CEAC /* CommandArgumentsTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommandArgumentsTests.swift; sourceTree = "<group>"; };
-		EF96C4791C32F98F0031CEAC /* CommandMessageGeneratorTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommandMessageGeneratorTests.swift; sourceTree = "<group>"; };
 		EF96C47A1C32F98F0031CEAC /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		EF96C47B1C32F98F0031CEAC /* OptionsTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OptionsTests.swift; sourceTree = "<group>"; };
-		EF96C47C1C32F98F0031CEAC /* RouterTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RouterTests.swift; sourceTree = "<group>"; };
-		EF96C47D1C32F98F0031CEAC /* SwiftCLITests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftCLITests.swift; sourceTree = "<group>"; };
 		EFBFD6C61C3251E10068CB26 /* SwiftCLI.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftCLI.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		EFBFD6C91C3251E10068CB26 /* SwiftCLI.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SwiftCLI.h; sourceTree = "<group>"; };
 		EFBFD6CB1C3251E10068CB26 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -96,6 +104,7 @@
 				EF96C4591C32F9850031CEAC /* ChainableCommand.swift */,
 				EF96C45A1C32F9850031CEAC /* CLI.swift */,
 				EF96C45B1C32F9850031CEAC /* Command.swift */,
+				EF192A4D1D319C4900B484A1 /* CommandArgumentParser.swift */,
 				EF96C45C1C32F9850031CEAC /* CommandArguments.swift */,
 				EF96C45D1C32F9850031CEAC /* CommandMessageGenerator.swift */,
 				EF96C45E1C32F9850031CEAC /* CommandSignature.swift */,
@@ -103,8 +112,10 @@
 				EF96C4601C32F9850031CEAC /* HelpCommand.swift */,
 				EF96C4611C32F9850031CEAC /* Input.swift */,
 				EF96C4621C32F9850031CEAC /* LightweightCommand.swift */,
-				EF96C4631C32F9850031CEAC /* Options.swift */,
+				EF192A491D319C3400B484A1 /* OptionParser.swift */,
+				EF192A4A1D319C3400B484A1 /* OptionRegistry.swift */,
 				EF96C4641C32F9850031CEAC /* Output.swift */,
+				EF192A4F1D319C9200B484A1 /* RawArgumentParser.swift */,
 				EF96C4651C32F9850031CEAC /* RawArguments.swift */,
 				EF96C4661C32F9850031CEAC /* Router.swift */,
 				EF96C4671C32F9850031CEAC /* VersionCommand.swift */,
@@ -116,12 +127,13 @@
 		EF96C4771C32F98F0031CEAC /* Tests */ = {
 			isa = PBXGroup;
 			children = (
-				EF96C4781C32F98F0031CEAC /* CommandArgumentsTests.swift */,
-				EF96C4791C32F98F0031CEAC /* CommandMessageGeneratorTests.swift */,
 				EF96C47A1C32F98F0031CEAC /* Info.plist */,
-				EF96C47B1C32F98F0031CEAC /* OptionsTests.swift */,
-				EF96C47C1C32F98F0031CEAC /* RouterTests.swift */,
-				EF96C47D1C32F98F0031CEAC /* SwiftCLITests.swift */,
+				EF192A511D319D5100B484A1 /* CommandArgumentsTests.swift */,
+				EF192A521D319D5100B484A1 /* CommandMessageGeneratorTests.swift */,
+				EF192A531D319D5100B484A1 /* OptionParserTests.swift */,
+				EF192A541D319D5100B484A1 /* RouterTests.swift */,
+				EF192A551D319D5100B484A1 /* SwiftCLITests.swift */,
+				EF192A561D319D5100B484A1 /* TestCommand.swift */,
 			);
 			name = Tests;
 			path = ../../Tests;
@@ -221,14 +233,16 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0720;
-				LastUpgradeCheck = 0720;
+				LastUpgradeCheck = 0800;
 				ORGANIZATIONNAME = jakeheis;
 				TargetAttributes = {
 					EFBFD6C51C3251E10068CB26 = {
 						CreatedOnToolsVersion = 7.2;
+						LastSwiftMigration = 0800;
 					};
 					EFBFD6CF1C3251E10068CB26 = {
 						CreatedOnToolsVersion = 7.2;
+						LastSwiftMigration = 0800;
 					};
 				};
 			};
@@ -276,9 +290,10 @@
 				EF96C4761C32F9850031CEAC /* VersionCommand.swift in Sources */,
 				EF96C4741C32F9850031CEAC /* RawArguments.swift in Sources */,
 				EF96C46D1C32F9850031CEAC /* CommandSignature.swift in Sources */,
+				EF192A4B1D319C3400B484A1 /* OptionParser.swift in Sources */,
+				EF192A501D319C9200B484A1 /* RawArgumentParser.swift in Sources */,
 				EF96C4691C32F9850031CEAC /* CLI.swift in Sources */,
 				EF96C4681C32F9850031CEAC /* ChainableCommand.swift in Sources */,
-				EF96C4721C32F9850031CEAC /* Options.swift in Sources */,
 				EF96C4731C32F9850031CEAC /* Output.swift in Sources */,
 				EF96C46B1C32F9850031CEAC /* CommandArguments.swift in Sources */,
 				EF96C4711C32F9850031CEAC /* LightweightCommand.swift in Sources */,
@@ -288,6 +303,8 @@
 				EF96C4701C32F9850031CEAC /* Input.swift in Sources */,
 				EF96C46C1C32F9850031CEAC /* CommandMessageGenerator.swift in Sources */,
 				EF96C46E1C32F9850031CEAC /* Extensions.swift in Sources */,
+				EF192A4E1D319C4900B484A1 /* CommandArgumentParser.swift in Sources */,
+				EF192A4C1D319C3400B484A1 /* OptionRegistry.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -295,11 +312,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EF96C4821C32F98F0031CEAC /* RouterTests.swift in Sources */,
-				EF96C4831C32F98F0031CEAC /* SwiftCLITests.swift in Sources */,
-				EF96C47E1C32F98F0031CEAC /* CommandArgumentsTests.swift in Sources */,
-				EF96C47F1C32F98F0031CEAC /* CommandMessageGeneratorTests.swift in Sources */,
-				EF96C4811C32F98F0031CEAC /* OptionsTests.swift in Sources */,
+				EF192A5A1D319D5100B484A1 /* RouterTests.swift in Sources */,
+				EF192A5B1D319D5100B484A1 /* SwiftCLITests.swift in Sources */,
+				EF192A591D319D5100B484A1 /* OptionParserTests.swift in Sources */,
+				EF192A571D319D5100B484A1 /* CommandArgumentsTests.swift in Sources */,
+				EF192A581D319D5100B484A1 /* CommandMessageGeneratorTests.swift in Sources */,
+				EF192A5C1D319D5100B484A1 /* TestCommand.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -403,12 +421,12 @@
 		EFBFD6DB1C3251E10068CB26 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
 				FRAMEWORK_VERSION = A;
 				INFOPLIST_FILE = SwiftCLI/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
@@ -416,18 +434,19 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.jakeheis.SwiftCLI;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
 		};
 		EFBFD6DC1C3251E10068CB26 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
 				FRAMEWORK_VERSION = A;
 				INFOPLIST_FILE = SwiftCLI/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
@@ -435,28 +454,36 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.jakeheis.SwiftCLI;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_VERSION = 3.0;
 			};
 			name = Release;
 		};
 		EFBFD6DE1C3251E10068CB26 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = SwiftCLITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.jakeheis.SwiftCLITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
 		};
 		EFBFD6DF1C3251E10068CB26 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = SwiftCLITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.jakeheis.SwiftCLITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_VERSION = 3.0;
 			};
 			name = Release;
 		};

@@ -66,7 +66,7 @@ class RouterTests: XCTestCase {
         let args = RawArguments(argumentString: "tester charlie")
         
         do {
-            try route(args)
+            let _ = try route(args)
             XCTFail("Router should throw an error when the command does not exist")
         } catch {}
     }

@@ -10,7 +10,7 @@ import Foundation
 
 public class Input {
     
-    private static let inputHandle = NSFileHandle.standardInput()
+    private static let inputHandle = FileHandle.withStandardInput
     
     public private(set) static var pipedData: String? = nil
     
@@ -32,7 +32,7 @@ public class Input {
             print(message)
         }
         
-        var input = String(data: inputHandle.availableData, encoding: NSUTF8StringEncoding)!
+        var input = String(data: inputHandle.availableData, encoding: String.Encoding.utf8)!
         input = input.substring(to: input.index(input.endIndex, offsetBy: -1))
         
         return input
@@ -100,10 +100,10 @@ public class Input {
     
     class func checkForPipedData() {
         inputHandle.readabilityHandler = {(inputHandle) in
-            pipedData = String(data: inputHandle.availableData, encoding: NSUTF8StringEncoding)
+            pipedData = String(data: inputHandle.availableData, encoding: String.Encoding.utf8)
             inputHandle.readabilityHandler = nil
         }
-        NSProcessInfo.processInfo().arguments // For whatever reason, this triggers readabilityHandler for the pipe data
+        let _ = ProcessInfo.processInfo.arguments // For whatever reason, this triggers readabilityHandler for the pipe data
     }
     
 }

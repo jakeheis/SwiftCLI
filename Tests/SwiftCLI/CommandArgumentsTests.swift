@@ -157,7 +157,7 @@ class CommandArgumentsTests: XCTestCase {
     
     private func assertParseFails(_ assertMessage: String) {
         do {
-            try createCommandArguments()
+            let _ = try createCommandArguments()
             XCTFail("\(assertMessage); mistakenly passed and returned \(arguments)")
         } catch {}
     }
