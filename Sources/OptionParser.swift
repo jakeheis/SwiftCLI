@@ -9,9 +9,7 @@
 // MARK: - OptionParser
 
 public protocol OptionParser {
-    init(optionRegistry: OptionRegistry)
-    
-    func recognizeOptions(in rawArguments: RawArguments) -> OptionParserResult
+    func recognizeOptions(in rawArguments: RawArguments, from optionRegistry: OptionRegistry) -> OptionParserResult
 }
 
 // MARK: - OptionParserResult
@@ -37,13 +35,7 @@ public func == (lhs: OptionParserResult, rhs: OptionParserResult) -> Bool {
 
 public class DefaultOptionParser: OptionParser {
     
-    let optionRegistry: OptionRegistry
-    
-    public required init(optionRegistry: OptionRegistry) {
-        self.optionRegistry = optionRegistry
-    }
-    
-    public func recognizeOptions(in rawArguments: RawArguments) -> OptionParserResult {
+    public func recognizeOptions(in rawArguments: RawArguments, from optionRegistry: OptionRegistry) -> OptionParserResult {
         let optionArguments = rawArguments.unclassifiedArguments.filter { $0.value.hasPrefix("-") }
         
         var unrecognizedOptions: [String] = []

@@ -177,8 +177,7 @@ class OptionsTests: XCTestCase {
     // MARK: - Helpers
     
     private func parse(arguments: RawArguments, with optionRegistry: OptionRegistry) -> OptionParserResult {
-        let parser = DefaultOptionParser(optionRegistry: optionRegistry)
-        return parser.recognizeOptions(in: arguments)
+        return DefaultOptionParser().recognizeOptions(in: arguments, from: optionRegistry)
     }
     
 }

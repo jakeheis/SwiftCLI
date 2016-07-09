@@ -31,9 +31,9 @@ public class CommandSignature {
             
             if requiredRegex.numberOfMatches(in: parameter, options: [], range: parameterRange) > 0 {
                 assert(optionalParameters.count == 0, "All required parameters must come before any optional parameter.")
-                required(parameter: parameter.trimEnds(trimLength: 1))
+                required(parameter: parameter.trimEnds(by: 1))
             } else if optionalRegex.numberOfMatches(in: parameter, options: [], range: parameterRange) > 0 {
-                optional(parameter: parameter.trimEnds(trimLength: 2))
+                optional(parameter: parameter.trimEnds(by: 2))
             } else {
                 assert(false, "Unrecognized parameter format: \(parameter)")
             }

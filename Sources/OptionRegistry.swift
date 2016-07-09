@@ -67,8 +67,8 @@ public class Option {
         if let preusage = preusage {
             optionsString += " \(preusage)"
         }
-        let paddedUsage = usage.padFront(totalLength: 40 - optionsString.characters.count)
-        self.usage = "\(optionsString)\(paddedUsage)"
+        let spacing = String(repeating: " " as Character, count: 40 - optionsString.characters.count)
+        self.usage = "\(optionsString)\(spacing)\(usage)"
     }
     
 }

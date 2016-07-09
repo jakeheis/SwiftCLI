@@ -23,22 +23,22 @@ public class HelpCommand: OptionCommand {
     
     public func execute(arguments: CommandArguments) throws {
         if arguments.optionalArgument("opt") != nil {
-            print("Usage: baker help\n")
+            print("Usage: \(CLI.name) help\n")
         }
         
         print("\(CLI.description)\n")
         print("Available commands: ")
 
         for command in allCommands {
-            printCommand(command: command)
+            printCommand(command)
         }
         
-        printCommand(command: self)
+        printCommand(self)
     }
     
-    func printCommand(command: Command) {
-        let description = command.shortDescription.padFront(totalLength: 20 - command.name.characters.count)
-        print("- \(command.name)\(description)")
+    func printCommand(_ command: Command) {
+        let spacing = String(repeating: " " as Character, count: 20 - command.name.characters.count)
+        print("- \(command.name)\(spacing)\(command.shortDescription)")
     }
     
 }

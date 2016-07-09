@@ -24,10 +24,10 @@ public class CLI {
     public static var router: Router = DefaultRouter()
     public static var usageStatementGenerator: UsageStatementGenerator = DefaultUsageStatementGenerator()
     public static var misusedOptionsMessageGenerator: MisusedOptionsMessageGenerator = DefaultMisusedOptionsMessageGenerator()
-    public static var optionParserType: OptionParser.Type = DefaultOptionParser.self
     
     public static var rawArgumentParser: RawArgumentParser = DefaultRawArgumentParser()
     public static var commandArgumentParser: CommandArgumentParser = DefaultCommandArgumentParser()
+    public static var optionParser: OptionParser = DefaultOptionParser()
     
     // MARK: - Setup
     
@@ -122,11 +122,11 @@ public class CLI {
             
             return CLIResult.Success
         } catch CLIError.Error(let error) {
-            printError(error: error)
+            printError(error)
         } catch CLIError.EmptyError {
             // Do nothing
         } catch let error as NSError {
-            printError(error: "An error occurred: \(error.localizedDescription)")
+            printError("An error occurred: \(error.localizedDescription)")
         }
         
         return CLIResult.Error
@@ -153,15 +153,14 @@ public class CLI {
           
             optionCommand.internalSetupOptions(options: optionRegistry)
             
-            let optionParser = optionParserType.init(optionRegistry: optionRegistry)
-            let result = optionParser.recognizeOptions(in: arguments)
-            
+            let result = optionParser.recognizeOptions(in: arguments, from: optionRegistry)
+
             switch result {
             case .exitEarly: // True if -h flag given (show help but exit early before executing command)
                 return (false, nil)
             case .incorrectOptionUsage(let incorrectOptionUsage):
                 if let message = misusedOptionsMessageGenerator.generateMisusedOptionsStatement(for: optionCommand, incorrectOptionUsage: incorrectOptionUsage) {
-                    printError(error: message)
+                    printError(message)
                 }
                 if optionCommand.failOnUnrecognizedOptions {
                     throw CLIError.EmptyError

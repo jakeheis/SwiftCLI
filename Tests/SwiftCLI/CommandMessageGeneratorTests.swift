@@ -28,9 +28,9 @@ class CommandMessageGeneratorTests: XCTestCase {
         let expectedMessage = ([
             "Usage: tester test <testName> [<testerName>] [options]",
             "",
-            "-h, --help                               Show help information for this command",
-            "-s, --silent                             Silence all test output",
-            "-t, --times <times>                      Number of times to run the test",
+            "-h, --help                              Show help information for this command",
+            "-s, --silent                            Silence all test output",
+            "-t, --times <times>                     Number of times to run the test",
             ""
         ]).joined(separator: "\n")
         
@@ -45,8 +45,7 @@ class CommandMessageGeneratorTests: XCTestCase {
         arguments.unclassifiedArguments.first?.classification = .appName
         arguments.unclassifiedArguments.first?.classification = .commandName
         
-        let parser = DefaultOptionParser(optionRegistry: optionRegistry)
-        let result = parser.recognizeOptions(in: arguments)
+        let result = DefaultOptionParser().recognizeOptions(in: arguments, from: optionRegistry)
         
         guard case let .incorrectOptionUsage(incorrectOptionUsage) = result else {
             XCTFail("Option parser should fail on incorrectly used options")
@@ -58,9 +57,9 @@ class CommandMessageGeneratorTests: XCTestCase {
         let expectedMessage = ([
             "Usage: tester test <testName> [<testerName>] [options]",
             "",
-            "-h, --help                               Show help information for this command",
-            "-s, --silent                             Silence all test output",
-            "-t, --times <times>                      Number of times to run the test",
+            "-h, --help                              Show help information for this command",
+            "-s, --silent                            Silence all test output",
+            "-t, --times <times>                     Number of times to run the test",
             "",
             "Unrecognized options:",
             "\t-a",
