@@ -16,7 +16,7 @@ public class HelpCommand: OptionCommand {
     public let shortcut = "-h"
     
     public let failOnUnrecognizedOptions = false
-    public let unrecognizedOptionsPrintingBehavior = UnrecognizedOptionsPrintingBehavior.PrintOnlyUnrecognizedOptions
+    public let unrecognizedOptionsPrintingBehavior = UnrecognizedOptionsPrintingBehavior.printOnlyUnrecognizedOptions
     public let helpOnHFlag = false
     
     public func setupOptions(options: OptionRegistry) {} // Don't actually do anything with any options

@@ -56,13 +56,13 @@ class DefaultMisusedOptionsMessageGenerator: MisusedOptionsMessageGenerator {
         }
         
         switch optionsCommand.unrecognizedOptionsPrintingBehavior {
-        case .PrintNone:
+        case .printNone:
             return nil
-        case .PrintOnlyUsage:
+        case .printOnlyUsage:
             return CLI.usageStatementGenerator.generateUsageStatement(for: command, optionRegistry: incorrectOptionUsage.optionRegistry)
-        case .PrintOnlyUnrecognizedOptions:
+        case .printOnlyUnrecognizedOptions:
             return incorrectOptionUsage.misusedOptionsMessage()
-        case .PrintAll:
+        case .printAll:
             return CLI.usageStatementGenerator.generateUsageStatement(for: command, optionRegistry: incorrectOptionUsage.optionRegistry) + "\n" + incorrectOptionUsage.misusedOptionsMessage()
         }
     }

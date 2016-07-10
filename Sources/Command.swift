@@ -66,7 +66,7 @@ extension OptionCommand {
     
     public var failOnUnrecognizedOptions: Bool { return true }
     
-    public var unrecognizedOptionsPrintingBehavior: UnrecognizedOptionsPrintingBehavior { return .PrintAll }
+    public var unrecognizedOptionsPrintingBehavior: UnrecognizedOptionsPrintingBehavior { return .printAll }
     
     public var helpOnHFlag: Bool { return true }
     
@@ -95,8 +95,8 @@ extension OptionCommand {
 // MARK: Enums
 
 public enum UnrecognizedOptionsPrintingBehavior {
-    case PrintNone
-    case PrintOnlyUnrecognizedOptions
-    case PrintOnlyUsage
-    case PrintAll
+    case printNone
+    case printOnlyUnrecognizedOptions
+    case printOnlyUsage
+    case printAll
 }

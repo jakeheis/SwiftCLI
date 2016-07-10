@@ -20,17 +20,6 @@ public enum OptionParserResult {
     case incorrectOptionUsage(IncorrectOptionUsage)
 }
 
-extension OptionParserResult: Equatable {}
-
-public func == (lhs: OptionParserResult, rhs: OptionParserResult) -> Bool {
-    switch (lhs, rhs) {
-    case (.success, .success): return true
-    case (.exitEarly, .exitEarly): return true
-    case (.incorrectOptionUsage(_), .incorrectOptionUsage(_)): return true
-    default: return false
-    }
-}
-
 // MARK: - DefaultOptionParser
 
 public class DefaultOptionParser: OptionParser {
@@ -70,7 +59,6 @@ public class DefaultOptionParser: OptionParser {
             let incorrect = IncorrectOptionUsage(optionRegistry: optionRegistry, unrecognizedOptions: unrecognizedOptions, keysNotGivenValue: keysNotGivenValue)
             return .incorrectOptionUsage(incorrect)
         }
-        
         
         return .success
     }

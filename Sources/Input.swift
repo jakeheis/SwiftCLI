@@ -14,8 +14,6 @@ public class Input {
     
     public private(set) static var pipedData: String? = nil
     
-    static let PipeUserInputOverlapError = CLIError.Error("Data should not be both piped and input")
-    
     //  MARK: - Public
     
     /**
@@ -25,7 +23,7 @@ public class Input {
     */
     public class func awaitInput(message: String?) throws -> String {
         if pipedData != nil {
-            throw PipeUserInputOverlapError
+            throw CLIError.error("Data should not be both piped and input")
         }
         
         if let message = message {

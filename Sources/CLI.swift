@@ -112,18 +112,26 @@ public class CLI {
         return go(with: RawArguments(argumentString: argumentString))
     }
     
+    // MARK: - Privates
+    
     private class func go(with arguments: RawArguments) -> CLIResult {
         do {
             let command = try routeCommand(arguments: arguments)
-            let result = try setupOptionsAndArguments(command: command, arguments: arguments)
-            if let arguments = result.arguments where result.execute {
-                try command.execute(arguments: arguments)
+            
+            if let optionCommand = command as? OptionCommand {
+                let result = try parseOptions(command: optionCommand, arguments: arguments)
+                if case .exitEarly = result {
+                    return CLIResult.Success
+                }
             }
             
+            let commandArguments = try parseArguments(command: command, arguments: arguments)
+            try command.execute(arguments: commandArguments)
+            
             return CLIResult.Success
-        } catch CLIError.Error(let error) {
+        } catch CLIError.error(let error) {
             printError(error)
-        } catch CLIError.EmptyError {
+        } catch CLIError.emptyError {
             // Do nothing
         } catch let error as NSError {
             printError("An error occurred: \(error.localizedDescription)")
@@ -132,9 +140,7 @@ public class CLI {
         return CLIResult.Error
     }
     
-    // MARK: - Privates
-    
-    class private func routeCommand(arguments: RawArguments) throws -> Command {
+    private class func routeCommand(arguments: RawArguments) throws -> Command {
         var allCommands = commands
         if let hc = helpCommand {
             hc.allCommands = commands
@@ -146,32 +152,29 @@ public class CLI {
         
         return try router.route(commands: allCommands, arguments: arguments)
     }
+    
+    private class func parseOptions(command: OptionCommand, arguments: RawArguments) throws -> OptionParserResult {
+        let optionRegistry = OptionRegistry()
         
-    class private func setupOptionsAndArguments(command: Command, arguments: RawArguments) throws -> (execute: Bool, arguments: CommandArguments?) {
-        if let optionCommand = command as? OptionCommand {
-            let optionRegistry = OptionRegistry()
-          
-            optionCommand.internalSetupOptions(options: optionRegistry)
-            
-            let result = optionParser.recognizeOptions(in: arguments, from: optionRegistry)
-
-            switch result {
-            case .exitEarly: // True if -h flag given (show help but exit early before executing command)
-                return (false, nil)
-            case .incorrectOptionUsage(let incorrectOptionUsage):
-                if let message = misusedOptionsMessageGenerator.generateMisusedOptionsStatement(for: optionCommand, incorrectOptionUsage: incorrectOptionUsage) {
-                    printError(message)
-                }
-                if optionCommand.failOnUnrecognizedOptions {
-                    throw CLIError.EmptyError
-                }
-            default: break
+        command.internalSetupOptions(options: optionRegistry)
+        
+        let result = optionParser.recognizeOptions(in: arguments, from: optionRegistry)
+        
+        if case .incorrectOptionUsage(let incorrectOptionUsage) = result {
+            if let message = misusedOptionsMessageGenerator.generateMisusedOptionsStatement(for: command, incorrectOptionUsage: incorrectOptionUsage) {
+                printError(message)
+            }
+            if command.failOnUnrecognizedOptions {
+                throw CLIError.emptyError
             }
         }
         
+        return result
+    }
+    
+    private class func parseArguments(command: Command, arguments: RawArguments) throws -> CommandArguments {
         let commandSignature = CommandSignature(command.signature)
-        
-        return (true, try CommandArguments(rawArguments: arguments, signature: commandSignature))
+        return try CommandArguments(rawArguments: arguments, signature: commandSignature)
     }
     
 }
@@ -179,8 +182,8 @@ public class CLI {
 // MARK: -
 
 public enum CLIError: ErrorProtocol {
-    case Error(String)
-    case EmptyError
+    case error(String)
+    case emptyError
 }
 
 public typealias CLIResult = Int32

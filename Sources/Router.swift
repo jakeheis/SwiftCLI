@@ -30,7 +30,7 @@ public class DefaultRouter: Router {
     
     private func findCommand(commands: [Command], arguments: RawArguments) throws -> Command {
         guard let commandNameArgument = arguments.unclassifiedArguments.first else {
-            throw CLIError.Error("Router failed")
+            throw CLIError.error("Router failed")
         }
         
         if let command = commands.filter({ $0.name == commandNameArgument.value }).first {
@@ -57,7 +57,7 @@ public class DefaultRouter: Router {
         if let d = commands.flatMap({ $0 as? HelpCommand }).first {
             return d
         }
-        throw CLIError.Error("Command not found")
+        throw CLIError.error("Command not found")
     }
     
 }
