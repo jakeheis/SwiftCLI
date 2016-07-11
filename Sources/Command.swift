@@ -29,7 +29,7 @@ public protocol CommandType {
     
         - Parameter arguments: the parsed arguments
     */
-    func execute(arguments: CommandArguments) throws
+    func execute(_ arguments: CommandArguments) throws
     
 }
 
@@ -50,7 +50,7 @@ public protocol OptionCommandType: CommandType {
     
         - Parameter options: the instance of Options which should be set up
     */
-    func setupOptions(options: Options)
+    func setupOptions(_ options: Options)
 
 }
 
@@ -66,7 +66,7 @@ extension OptionCommandType {
     
     public var failOnUnrecognizedOptions: Bool { return true }
     
-    public var unrecognizedOptionsPrintingBehavior: UnrecognizedOptionsPrintingBehavior { return .PrintAll }
+    public var unrecognizedOptionsPrintingBehavior: UnrecognizedOptionsPrintingBehavior { return .printAll }
     
     public var helpOnHFlag: Bool { return true }
     
@@ -76,7 +76,7 @@ extension OptionCommandType {
 
 extension OptionCommandType {
     
-    func internalSetupOptions(options: Options) {
+    func internalSetupOptions(_ options: Options) {
         setupOptions(options)
         
         if helpOnHFlag {
@@ -95,8 +95,8 @@ extension OptionCommandType {
 // MARK: Enums
 
 public enum UnrecognizedOptionsPrintingBehavior {
-    case PrintNone
-    case PrintOnlyUnrecognizedOptions
-    case PrintOnlyUsage
-    case PrintAll
+    case printNone
+    case printOnlyUnrecognizedOptions
+    case printOnlyUsage
+    case printAll
 }

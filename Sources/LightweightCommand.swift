@@ -16,7 +16,7 @@ public class LightweightCommand: OptionCommandType {
     public var commandShortcut: String? = nil
     
     public var failOnUnrecognizedOptions = true
-    public var unrecognizedOptionsPrintingBehavior: UnrecognizedOptionsPrintingBehavior = .PrintAll
+    public var unrecognizedOptionsPrintingBehavior: UnrecognizedOptionsPrintingBehavior = .printAll
     
     public typealias ExecutionBlock = (arguments: CommandArguments) throws -> ()
     public typealias OptionsSetupBlock = (options: Options) -> ()
@@ -28,11 +28,11 @@ public class LightweightCommand: OptionCommandType {
         self.commandName = commandName
     }
     
-    public func setupOptions(options: Options) {
+    public func setupOptions(_ options: Options) {
         optionsSetupBlock?(options: options)
     }
     
-    public func execute(arguments: CommandArguments) throws {
+    public func execute(_ arguments: CommandArguments) throws {
         try executionBlock?(arguments: arguments)
     }
     

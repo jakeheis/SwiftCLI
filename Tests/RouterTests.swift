@@ -87,7 +87,7 @@ class RouterTests: XCTestCase {
     
     // MARK: - Helper
     
-    private func route(arguments: RawArguments, router: RouterType? = nil) throws -> CommandType {
+    private func route(_ arguments: RawArguments, router: RouterType? = nil) throws -> CommandType {
         let commands = [alphaCommand, betaCommand, defaultCommand] as [CommandType]
         let router = router ?? DefaultRouter()
         return try router.route(commands, arguments: arguments)
