@@ -34,13 +34,13 @@ public class DefaultRouter: RouterType {
         }
         
         if let command = commands.filter({ $0.commandName == commandSearchName }).first {
-            arguments.classifyArgument(commandSearchName, type: .commandName)
+            arguments.classifyArgument(argument: commandSearchName, type: .commandName)
             return command
         }
         
         if commandSearchName.hasPrefix("-") {
             if let shortcutCommand = commands.filter({ $0.commandShortcut == commandSearchName }).first {
-                arguments.classifyArgument(commandSearchName, type: .commandName)
+                arguments.classifyArgument(argument: commandSearchName, type: .commandName)
                 return shortcutCommand
             } else {
                 return try findDefaultCommand(commands)

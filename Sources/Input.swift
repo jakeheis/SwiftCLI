@@ -103,7 +103,9 @@ public class Input {
             pipedData = String(data: inputHandle.availableData, encoding: String.Encoding.utf8)
             inputHandle.readabilityHandler = nil
         }
-        //FIXME: ProcessInfo.processInfo().arguments // For whatever reason, this triggers readabilityHandler for the pipe data
+        
+        //MARK: Resuls is not used. 
+        // ProcessInfo.processInfo().arguments // For whatever reason, this triggers readabilityHandler for the pipe data
     }
     
 }

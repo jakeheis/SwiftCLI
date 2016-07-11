@@ -23,7 +23,7 @@ public class FlagOption {
         self.block = block
         
         let flagsString = flags.joined(separator: ", ")
-        let paddedUsage = usage.padFront(40 - flagsString.characters.count)
+        let paddedUsage = usage.padFront(totalLength: 40 - flagsString.characters.count)
         self.usage = "\(flagsString)\(paddedUsage)"
     }
     
@@ -49,7 +49,7 @@ public class KeyOption: Equatable {
         
         let keysString = keys.joined(separator: ", ")
         let firstPart = "\(keysString) <\(valueSignature)>"
-        let paddedUsage = usage.padFront(40 - firstPart.characters.count)
+        let paddedUsage = usage.padFront(totalLength: 40 - firstPart.characters.count)
         self.usage = "\(firstPart)\(paddedUsage)"
     }
     
@@ -123,7 +123,7 @@ public class Options {
         rawArguments.unclassifiedArguments().each {(argument) in
             if argument.hasPrefix("-") {
                 passedOptions += self.optionsForRawOption(argument)
-                rawArguments.classifyArgument(argument, type: .option)
+                rawArguments.classifyArgument(argument: argument, type: .option)
             }
         }
         
@@ -133,7 +133,7 @@ public class Options {
             } else if let keyOption = allKeyOptions[option] {
                 if let keyValue = rawArguments.argumentFollowingArgument(option)
                     where !keyValue.hasPrefix("-") {
-                        rawArguments.classifyArgument(keyValue, type: .option)
+                        rawArguments.classifyArgument(argument: keyValue, type: .option)
                         
                         keyOption.block?(key: option, value: keyValue)
                 } else {

@@ -32,15 +32,15 @@ public class CommandArguments {
         let arguments = rawArguments.unclassifiedArguments()
         
         if arguments.count < signature.requiredParameters.count {
-            throw CLIError.error(errorMessage(signature.requiredParameters.count, givenCount: arguments.count))
+            throw CLIError.error(errorMessage(expectedCount: signature.requiredParameters.count, givenCount: arguments.count))
         }
         
         if !signature.collectRemainingArguments && signature.optionalParameters.isEmpty && arguments.count != signature.requiredParameters.count {
-            throw CLIError.error(errorMessage(signature.requiredParameters.count, givenCount: arguments.count))
+            throw CLIError.error(errorMessage(expectedCount: signature.requiredParameters.count, givenCount: arguments.count))
         }
         
         if !signature.collectRemainingArguments && arguments.count > signature.requiredParameters.count + signature.optionalParameters.count {
-            throw CLIError.error(errorMessage(signature.requiredParameters.count + signature.optionalParameters.count, givenCount: arguments.count))
+            throw CLIError.error(errorMessage(expectedCount: signature.requiredParameters.count + signature.optionalParameters.count, givenCount: arguments.count))
         }
         
         let commandArguments = CommandArguments()
@@ -90,7 +90,7 @@ public class CommandArguments {
         return CommandArguments()
     }
     
-    private class func errorMessage(_ expectedCount: Int, givenCount: Int) -> String {
+    private class func errorMessage(expectedCount: Int, givenCount: Int) -> String {
         let argString = expectedCount == 1 ? "argument" : "arguments"
         return "Expected \(expectedCount) \(argString), but got \(givenCount)."
     }

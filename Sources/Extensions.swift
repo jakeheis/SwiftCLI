@@ -8,7 +8,7 @@
 
 extension String {
     
-    func padFront(_ totalLength: Int) -> String {
+    func padFront(totalLength: Int) -> String {
         var spacing = ""
         for _ in 0...totalLength {
             spacing += " "

@@ -72,7 +72,7 @@ public class CLI {
         - Parameter commandName: the name of the new chainable command
         - Returns: a new chainable command for immediate chaining
     */
-    public class func registerChainableCommand(_ commandName: String) -> ChainableCommand {
+    public class func registerChainableCommand(commandName: String) -> ChainableCommand {
         let chainable = ChainableCommand(commandName: commandName)
         registerCommand(chainable)
         return chainable
@@ -108,7 +108,7 @@ public class CLI {
     
     private class func goWithArguments(_ arguments: RawArguments) -> CLIResult {
         do {
-            let command = try routeCommand(arguments)
+            let command = try routeCommand(arguments: arguments)
             let result = try setupOptionsAndArguments(command, arguments: arguments)
             if let arguments = result.arguments where result.execute {
                 try command.execute(arguments)
@@ -128,7 +128,7 @@ public class CLI {
     
     // MARK: - Privates
     
-    class private func routeCommand(_ arguments: RawArguments) throws -> CommandType {
+    class private func routeCommand(arguments: RawArguments) throws -> CommandType {
         var allCommands = commands
         if let hc = helpCommand {
             hc.allCommands = commands
@@ -153,7 +153,7 @@ public class CLI {
             }
             
             if options.misusedOptionsPresent() {
-                if let message = CommandMessageGenerator.generateMisusedOptionsStatement(optionCommand, options: options) {
+                if let message = CommandMessageGenerator.generateMisusedOptionsStatement(command: optionCommand, options: options) {
                     printError(message)
                 }
                 if optionCommand.failOnUnrecognizedOptions {

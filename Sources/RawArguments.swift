@@ -47,10 +47,10 @@ public class RawArguments: CustomStringConvertible {
         self.arguments = arguments
         self.argumentClassifications = [RawArgumentType](repeating: .unclassified, count: arguments.count)
         
-        classifyArgument(0, type: RawArgumentType.appName)
+        classifyArgument(0, type: .appName)
     }
     
-    public func classifyArgument(_ argument: String, type: RawArgumentType) {
+    public func classifyArgument(argument: String, type: RawArgumentType) {
         if let index = arguments.index(of: argument) {
             classifyArgument(index, type: type)
         }

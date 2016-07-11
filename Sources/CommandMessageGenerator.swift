@@ -8,7 +8,7 @@
 
 class CommandMessageGenerator {
     
-    class func generateUsageStatement(_ command: CommandType, options: Options?) -> String {
+    class func generateUsageStatement(command: CommandType, options: Options?) -> String {
         var message = "Usage: \(CLI.appName)"
         
         if !command.commandName.isEmpty {
@@ -37,7 +37,7 @@ class CommandMessageGenerator {
         return message
     }
     
-    class func generateMisusedOptionsStatement(_ command: CommandType, options: Options) -> String? {
+    class func generateMisusedOptionsStatement(command: CommandType, options: Options) -> String? {
         guard let optionsCommand = command as? OptionCommandType else {
             return nil
         }
@@ -46,11 +46,11 @@ class CommandMessageGenerator {
         case .printNone:
             return nil
         case .printOnlyUsage:
-            return generateUsageStatement(command, options: options)
+            return generateUsageStatement(command: command, options: options)
         case .printOnlyUnrecognizedOptions:
             return options.misusedOptionsMessage()
         case .printAll:
-            return generateUsageStatement(command, options: options) + "\n" + options.misusedOptionsMessage()
+            return generateUsageStatement(command: command, options: options) + "\n" + options.misusedOptionsMessage()
         }
     }
     

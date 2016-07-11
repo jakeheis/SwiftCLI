@@ -37,7 +37,7 @@ public class HelpCommand: OptionCommandType {
     }
     
     func printCommand(_ command: CommandType) {
-        let description = command.commandShortDescription.padFront(20 - command.commandName.characters.count)
+        let description = command.commandShortDescription.padFront(totalLength: 20 - command.commandName.characters.count)
         print("- \(command.commandName)\(description)")
     }
     
