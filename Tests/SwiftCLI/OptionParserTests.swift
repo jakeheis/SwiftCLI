@@ -181,3 +181,14 @@ class OptionsTests: XCTestCase {
     }
     
 }
+
+extension OptionParserResult: Equatable {}
+
+public func == (lhs: OptionParserResult, rhs: OptionParserResult) -> Bool  {
+    switch (lhs, rhs) {
+    case (.success, .success): return true
+    case (.exitEarly, .exitEarly): return true
+    case (.incorrectOptionUsage(_), .incorrectOptionUsage(_)): return true
+    default: return false
+    }
+}
