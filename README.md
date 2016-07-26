@@ -15,8 +15,8 @@ A powerful framework that can be used to develop a CLI, from the simplest to the
 import Foundation
 
 CLI.setup(name: "greeter")
-CLI.registerChainableCommand(commandName: "greet")
-    .withExecutionBlock {(arguments) in
+CLI.registerChainableCommand(name: "greet")
+    .withExecutionBlock { (arguments) in
         print("Hey there!")
     }
 CLI.go()
@@ -61,15 +61,15 @@ CLI.setup(name: "greeter", version: "1.0", description: "Greeter - your own pers
 ```
 ### Registering commands
 ```swift
-CLI.registerCommand(myCommand)
-CLI.registerCommands([myCommand, myOtherCommand])
+CLI.register(command: myCommand)
+CLI.register(commands: [myCommand, myOtherCommand])
 ```
 ### Calling go
 In any production app, ```go()``` should be used. This method uses the arguments passed to it on launch.
 ```swift
 CLI.go()
 ```
-When you are creating and debugging your app, ```debugGoWithArgumentString()``` is the better choice. Xcode does make it possible to pass arguments to a command line app on launch by editing the app's scheme, but this can be a pain. ```debugGoWithArgumentString()``` makes it easier to pass an argument string to your app during development.
+When you are creating and debugging your app, ```debugGo(with:)``` is the better choice. Xcode does make it possible to pass arguments to a command line app on launch by editing the app's scheme, but this can be a pain. ```debugGo(with:)``` makes it easier to pass an argument string to your app during development.
 ```swift
 CLI.debugGoWithArgumentString("greeter greet")
 ```
@@ -80,11 +80,11 @@ There are three ways to create a command. You should decide which way to create 
 ### Implement CommandType
 This is usually the best choice for a command. Any command that involves a non-trivial amount of execution or option-handling code should be created with this method. A command subclass provides a structured way to develop a complex command, keeping it organized and easy to read.
 ```swift
-class GreetCommand: CommandType {
+class GreetCommand: Command {
     
-    let commandName = "greet"
-    let commandShortDescription = "Greets the given person"
-    let commandSignature = "<person>"
+    let name = "greet"
+    let shortDescription = "Greets the given person"
+    let signature = "<person>"
     
     func execute(arguments: CommandArguments) throws  {
         let person = arguments.requiredArgument("person")
@@ -96,10 +96,10 @@ class GreetCommand: CommandType {
 ### Create a ChainableCommand
 This is the most lightweight option. You should only create this kind of command if the command is very simple and doesn't involve a lot of execution or option-handling code. It has all the same capabilities as a subclass of Command does, but it can quickly become bloated and hard to understand if there is a large amount of code involved.
 ```swift
-let greetCommand = ChainableCommand(commandName: "greet")
+let greetCommand = ChainableCommand(name: "greet")
     .withShortDescription("Greets the given person")
     .withSignature("<person>")
-    .withExecutionBlock {(arguments) in
+    .withExecutionBlock { (arguments) in
         let person = arguments.requiredArgument("person")
         print("Hey there, \(person)!")
     }
@@ -113,9 +113,9 @@ CLI.registerChainableCommand(commandName: "greet")
 This type of command is very similar to ChainableCommand. In fact, all ChainableCommand does is provide an alternative interface to its superclass, LightweightCommand. As with ChainableCommands, this type of command should only be used when the command is relatively simple.
 ```swift
 let greetCommand = LightweightCommand(commandName: "greet")
-greetCommand.commandShortDescription = "Greets the given person"
-greetCommand.commandSignature = "<person>"
-greetCommand.executionBlock = {(arguments) in
+greetCommand.shortDescription = "Greets the given person"
+greetCommand.signature = "<person>"
+greetCommand.executionBlock = { (arguments) in
     let person = arguments.requiredArgument("person")
     print("Hey there, \(person)!")
 }
@@ -128,9 +128,9 @@ Each command must have a command signature describing its expected/permitted arg
 For example, a signature of ```<person> <greeting>``` and a call of ```greeter greet Jack Hello``` would result in the arguments dictionary ```["greeting": "Hello", "person": "Jack"]```.
 
 To set a command's signature:
-- **Implement CommandType**: ```var commandSignature: String { get }```
+- **Implement CommandType**: ```var signature: String { get }```
 - **ChainableCommand**: ```.withSignature("")```
-- **LightweightCommand**: ```cmd.commandSignature = ""```
+- **LightweightCommand**: ```cmd.signature = ""```
 
 ### Required parameters
 
@@ -205,8 +205,8 @@ Flag options are simple options that act as boolean switches. For example, if yo
 To configure a command for flag options:
 - **Implement OptionCommandType**: 
 ```swift
-func setupOptions(options: Options) {
-    options.onFlags([], usage: "") {(flag) in
+func setupOptions(options: OptionRegistry) {
+    options.add(flags: [], usage: "") { (flag) in
         
     }
 }
@@ -214,7 +214,7 @@ func setupOptions(options: Options) {
 - **ChainableCommand**: 
 ```swift
 .withOptionsSetup ({(options) in
-    options.onFlags([], usage: "") {(flag) in
+    options.add(flags: [], usage: "") { (flag) in
     
     }
 })
@@ -222,7 +222,7 @@ func setupOptions(options: Options) {
 - **LightweightCommand**: 
 ```swift
 cmd.optionsSetupBlock = {(options) in
-    options.onFlags([], usage: "") {(flag) in
+    options.add(flags: [], usage: "") { (flag) in
         
     }
 }
@@ -236,8 +236,8 @@ class GreetCommand: OptionCommandType {
     
     ...
 
-    func setupOptions(options: Options) {
-        options.onFlags(["-l", "--loudly"], usage: "Makes the the greeting be said loudly") {(flag) in
+    func setupOptions(options: OptionRegistry) {
+        options.add(flags: ["-l", "--loudly"], usage: "Makes the the greeting be said loudly") { (flag) in
             self.loudly = true
         }
     }
@@ -252,8 +252,8 @@ Keyed options are options that have an associated value. Using "git commit" as a
 To configure a command for keyed options:
 - **Implement OptionCommandType**: 
 ```
-func setupOptions(options: Options) {
-    options.onKeys([], usage: "", valueSignature: "") {(key, value) in
+func setupOptions(options: OptionRegistry) {
+    options.add(keys: [], usage: "", valueSignature: "") { (key, value) in
     
     }
 }
@@ -261,7 +261,7 @@ func setupOptions(options: Options) {
 - **ChainableCommand**:
 ```swift
 .withOptionsSetup ({(options) in
-    options.onKeys([], usage: "", valueSignature: "") {(key, value) in
+    options.add(keys: [], usage: "", valueSignature: "") { (key, value) in
     
     }
 })
@@ -269,7 +269,7 @@ func setupOptions(options: Options) {
 - **LightweightCommand**: 
 ```swift
 cmd.optionsSetupBlock = {(options) in
-    options.onKeys([], usage: "", valueSignature: "") {(key, value) in
+    options.add(keys: [], usage: "", valueSignature: "") { (key, value) in
     
     }
 }
@@ -283,8 +283,8 @@ class GreetCommand: OptionCommandType {
     
     ...
     
-    func setupOptions(options: Options) {
-        options.onKeys(["-n", "--number-of-times"], usage: "Makes the greeter greet a certain number of times", valueSignature: "times") {(key, value) in
+    func setupOptions(options: OptionRegistry) {
+        options.add(keys: ["-n", "--number-of-times"], usage: "Makes the greeter greet a certain number of times", valueSignature: "times") {(key, value) in
             if let times = Int(value) {
                 self.numberOfTimes = times
             }
@@ -296,13 +296,13 @@ class GreetCommand: OptionCommandType {
 ```
 
 ### Unrecognized options
-By default, if a command is passed any options it does not handle through ```onFlag(s)``` or ```onKey(s)```, or their respective equivalents in ```ChainableCommand``` and ```LightweightCommand```, the command will fail. This behavior can be changed to allow unrecognized options:
+By default, if a command is passed any options it does not handle through ```add(flags:)``` or ```add(keys:)```, or their respective equivalents in ```ChainableCommand``` and ```LightweightCommand```, the command will fail. This behavior can be changed to allow unrecognized options:
 - **Implement OptionCommandType**: ```var failOnUnrecognizedOptions: Bool { return false }```
 - **ChainableCommand**: ```.withFailOnUnrecognizedOptions(false)```
 - **LightweightCommand**: ```cmd.failOnUnrecognizedOptions = false```
 
 ### Usage of options
-As seen in the above examples, ```onFlags``` and ```onKeys``` both take a ```usage``` parameter. A concise description of what the option does should be included here. This allows the command's ```usageStatement()``` to be computed.
+As seen in the above examples, ```add(flags:)``` and ```add(keys:)``` both take a ```usage``` parameter. A concise description of what the option does should be included here. This allows the command's ```usageStatement()``` to be computed.
 
 A command's ```usageStatement()``` is shown in two situations: 
 - The user passed an option that the command does not support -- ```greeter greet -z```
@@ -316,14 +316,14 @@ Usage: greeter greet <person> [options]
 -h, --help                               Show help information for this command
 ```
 
-The ```valueSignature``` argument in the ```onKeys``` family of methods is displayed like a parameter following the key: ```--my-key <valueSignature>```.
+The ```valueSignature``` argument in the ```add(keys:)``` family of methods is displayed like a parameter following the key: ```--my-key <valueSignature>```.
 
 ## Routing commands
-Command routing is done by an object implementing `RouterType`, which is just one simple method:
+Command routing is done by an object implementing `Router`, which is just one simple method:
 ```swift
-func route(commands: [CommandType], arguments: RawArguments) throws -> CommandType
+func route(commands: [Command], arguments: RawArguments) throws -> Command
 ```
-SwiftCLI supplies a default implementation of `RouterType` with `DefaultRouter`. `DefaultRouter` finds commands based on the first passed argument. So, `greeter greet` would search for commmands with the `commandName` of "greet" and `greeter -g` would search for commands with the `commandShortcut` of "-g". 
+SwiftCLI supplies a default implementation of `Router` with `DefaultRouter`. `DefaultRouter` finds commands based on the first passed argument. So, `greeter greet` would search for commmands with the `commandName` of "greet" and `greeter -g` would search for commands with the `commandShortcut` of "-g". 
 
 If a command is not found, `DefaultRouter` falls back to its `defaultCommand`. The `defaultCommand` is usually the help command:
 ```bash
@@ -369,13 +369,13 @@ The `Input` class wraps the handling of input from stdin. Several methods are av
 
 ```swift
 // Simple input:
-public class func awaitInput(message message: String?) throws -> String {}
-public class func awaitInt(message message: String?) throws -> Int {}
-public class func awaitYesNoInput(message message: String = "Confirm?") throws -> Bool {}
+public class func awaitInput(message: String?) throws -> String {}
+public class func awaitInt(message: String?) throws -> Int {}
+public class func awaitYesNoInput(message: String = "Confirm?") throws -> Bool {}
 
 // Complex input (if the simple input methods are not sufficient):
-public class func awaitInputWithValidation(message message: String?, validation: (input: String) -> Bool) throws -> String {}
-public class func awaitInputWithConversion<T>(message message: String?, conversion: (input: String) -> T?) throws -> T {}
+public class func awaitInputWithValidation(message: String?, validation: (input: String) -> Bool) throws -> String {}
+public class func awaitInputWithConversion<T>(message: String?, conversion: (input: String) -> T?) throws -> T {}
 ```
 
 Additionally, the `Input` class makes data piped to the CLI (`echo "piped string" | myCLI command"`) easily available:
@@ -392,16 +392,16 @@ See the `RecipeCommand` in the example project for a demonstration of all this i
 ### Within Xcode
 There are two methods to pass in arguments to your CLI within Xcode, explained below. After the arguments are set up using one of these methods, you just need to Build and Run, and your app will execute and print its ouput in Xcode's Console.
 
-##### CLI ```debugGoWithArgumentString()```
-As discussed before, this is the easiest way to pass arguments to the CLI. Just replace the ```CLI.go()``` call with ```CLI.debugGoWithArgumentString("")```. This is only appropriate for development, as when this method is called, the CLI disregards any arguments passed in on launch.
+##### CLI ```debugGo(with:)```
+As discussed before, this is the easiest way to pass arguments to the CLI. Just replace the ```CLI.go()``` call with ```CLI.debugGo(with: "")```. This is only appropriate for development, as when this method is called, the CLI disregards any arguments passed in on launch.
 
 ##### Xcode Scheme
 This is not recommended, as the above option is simpler, but it is included for completions's sake. First click on your app's scheme, then "Edit Scheme...". Go to the "Run" section, then the "Arguments" tab. You can then add arguments where it says "Arguments Passed On Launch".
 
-Make sure to use ```CLI.go()``` with this method, **not** ```CLI.debugGoWithArgumentString("")```.
+Make sure to use ```CLI.go()``` with this method, **not** ```CLI.debugGo(with: "")```.
 
 ### In Terminal
-To actually make your CLI accessible and executable outside of Xcode, you need to add a symbolic link somewhere in your $PATH to the exectuable product Xcode outputs. The easiest way to do this is to click on your project in Xcode, then your executable target, then Build Phases. Add a new Run Script with this command:
+To actually make your CLI accessible and executable outside of Xcode, you need to add a symbolic link somewhere in your $PATH to the executable product Xcode outputs. The easiest way to do this is to click on your project in Xcode, then your executable target, then Build Phases. Add a new Run Script with this command:
 ```sh
 lowercase_name=`echo $PRODUCT_NAME | tr '[A-Z]' '[a-z]'`
 new_path=/usr/local/bin/$lowercase_name
@@ -420,7 +420,7 @@ In your project directory, run:
 git submodule add https://github.com/jakeheis/SwiftCLI.git
 git submodule update --init
 ```
-Then drag the SwiftCLI/SwiftCLI folder into your Xcode project:
+Then drag the SwiftCLI/Sources folder into your Xcode project:
 
 ![alt tag](https://github.com/jakeheis/SwiftCLI/blob/master/Support/DragScreenshot.png)
 
