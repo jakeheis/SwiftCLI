@@ -387,6 +387,30 @@ if let pipedData = Input.pipedData {
 
 See the `RecipeCommand` in the example project for a demonstration of all this input functionality.
 
+## Customization
+
+SwiftCLI was designed with sensible defaults but also the ability to be customized at every level. ``CLI`` has six properties that can be changed from the default implementations to customized implementations:
+```swift
+// Convert an array of strings to RawArguments
+public static var rawArgumentParser: RawArgumentParser = DefaultRawArgumentParser()
+
+// Find the specified command using RawArguments
+public static var router: Router = DefaultRouter()
+
+// Convert RawArguments to CommandArguments using a CommandSignature
+public static var commandArgumentParser: CommandArgumentParser = DefaultCommandArgumentParser()
+
+// Recognize options in RawArguments
+public static var optionParser: OptionParser = DefaultOptionParser()
+
+// Generate a usage statement for the given command
+public static var usageStatementGenerator: UsageStatementGenerator = DefaultUsageStatementGenerator()
+
+// Generate a misused options message for the given command with the given incorrect options
+public static var misusedOptionsMessageGenerator: MisusedOptionsMessageGenerator = DefaultMisusedOptionsMessageGenerator()
+```
+See the individual files of each of these protocols in order to see how to provide a custom implementation.
+
 ## Running your CLI
 
 ### Within Xcode
