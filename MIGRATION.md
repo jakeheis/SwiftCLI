@@ -1,3 +1,13 @@
+SwiftCLI 2.0
+==
+
+In SwiftCLI 2.0, the library has been updated for Swift 3 as well as had a number of customization options made available.
+
+
+
+SwiftCLI 1.1
+==
+
 SwiftCLI has been updated in version 1.1 to take advantage of new features in Swift 2.0. This includes a new protocol oriented design (which is much more elegant than the class inheritance based structure of SwiftCLI 1.0) and the usage of Swift 2's new error handling functionality.
 
 CommandType
