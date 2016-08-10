@@ -27,7 +27,7 @@ class DefaultUsageStatementGenerator: UsageStatementGenerator {
             message += " \(command.signature)"
         }
         
-        if let options = optionRegistry?.options where !options.isEmpty {
+        if let options = optionRegistry?.options, !options.isEmpty {
             message += " [options]\n"
             
             let sortedOptions = options.sorted { (lhs, rhs) in

@@ -13,7 +13,7 @@ func printError(_ error: String) {
 }
 
 func printError(_ error: String, terminator: String) {
-    let handle = FileHandle.withStandardError
+    let handle = FileHandle.standardError
     let fullString = error + terminator
     if let errorData = fullString.data(using: String.Encoding.utf8, allowLossyConversion: false) {
         handle.write(errorData)

@@ -10,7 +10,7 @@ import Foundation
 
 public class Input {
     
-    private static let inputHandle = FileHandle.withStandardInput
+    private static let inputHandle = FileHandle.standardInput
     
     public private(set) static var pipedData: String? = nil
     

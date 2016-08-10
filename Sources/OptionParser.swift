@@ -36,7 +36,7 @@ public class DefaultOptionParser: OptionParser {
             if let flagBlock = optionRegistry.flagBlocks[optionArgument.value] {
                 flagBlock(flag: optionArgument.value)
             } else if let keyBlock = optionRegistry.keyBlocks[optionArgument.value] {
-                if let nextArgument = optionArgument.next where nextArgument.isUnclassified && !nextArgument.value.hasPrefix("-") {
+                if let nextArgument = optionArgument.next, nextArgument.isUnclassified && !nextArgument.value.hasPrefix("-") {
                     nextArgument.classification = .option
                     keyBlock(key: optionArgument.value, value: nextArgument.value)
                 } else {

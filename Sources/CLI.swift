@@ -181,7 +181,7 @@ public class CLI {
 
 // MARK: -
 
-public enum CLIError: ErrorProtocol {
+public enum CLIError: Error {
     case error(String)
     case emptyError
 }
