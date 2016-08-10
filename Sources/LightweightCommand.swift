@@ -16,7 +16,7 @@ public class LightweightCommand: OptionCommandType {
     public var commandShortcut: String? = nil
     
     public var failOnUnrecognizedOptions = true
-    public var unrecognizedOptionsPrintingBehavior: UnrecognizedOptionsPrintingBehavior = .PrintAll
+    public var unrecognizedOptionsPrintingBehavior: UnrecognizedOptionsPrintingBehavior = .printAll
     
     public typealias ExecutionBlock = (arguments: CommandArguments) throws -> ()
     public typealias OptionsSetupBlock = (options: Options) -> ()

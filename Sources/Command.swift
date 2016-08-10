@@ -66,7 +66,7 @@ extension OptionCommandType {
     
     public var failOnUnrecognizedOptions: Bool { return true }
     
-    public var unrecognizedOptionsPrintingBehavior: UnrecognizedOptionsPrintingBehavior { return .PrintAll }
+    public var unrecognizedOptionsPrintingBehavior: UnrecognizedOptionsPrintingBehavior { return .printAll }
     
     public var helpOnHFlag: Bool { return true }
     
@@ -76,8 +76,8 @@ extension OptionCommandType {
 
 extension OptionCommandType {
     
-    func internalSetupOptions(options: Options) {
-        setupOptions(options)
+    func internalSetupOptions(_ options: Options) {
+        setupOptions(options: options)
         
         if helpOnHFlag {
             let helpFlags = ["-h", "--help"]
@@ -95,8 +95,8 @@ extension OptionCommandType {
 // MARK: Enums
 
 public enum UnrecognizedOptionsPrintingBehavior {
-    case PrintNone
-    case PrintOnlyUnrecognizedOptions
-    case PrintOnlyUsage
-    case PrintAll
+    case printNone
+    case printOnlyUnrecognizedOptions
+    case printOnlyUsage
+    case printAll
 }

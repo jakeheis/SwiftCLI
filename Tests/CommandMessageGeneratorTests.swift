@@ -34,7 +34,7 @@ class CommandMessageGeneratorTests: XCTestCase {
             "-s, --silent                             Silence all test output",
             "-t, --times <times>                      Number of times to run the test",
             ""
-        ]).joinWithSeparator("\n")
+        ]).joined(separator: "\n")
         
         XCTAssertEqual(message, expectedMessage, "Should generate the correct usage statement")
     }
@@ -44,8 +44,8 @@ class CommandMessageGeneratorTests: XCTestCase {
         command.internalSetupOptions(options)
         
         let arguments = RawArguments(argumentString: "tester test -s -a --times")
-        arguments.classifyArgument(argument: "tester", type: .AppName)
-        arguments.classifyArgument(argument: "test", type: .CommandName)
+        arguments.classifyArgument(argument: "tester", type: .appName)
+        arguments.classifyArgument(argument: "test", type: .commandName)
         options.recognizeOptionsInArguments(arguments)
         
         let message = CommandMessageGenerator.generateMisusedOptionsStatement(command: command, options: options)!
@@ -62,7 +62,7 @@ class CommandMessageGeneratorTests: XCTestCase {
             "Required values for options but given none:",
             "\t--times",
             ""
-        ]).joinWithSeparator("\n")
+        ]).joined(separator: "\n")
         
         XCTAssertEqual(message, expectedMessage, "Should generate the correct misused options statement")
     }

@@ -10,11 +10,11 @@ import Foundation
 
 public class Input {
     
-    private static let inputHandle = NSFileHandle.fileHandleWithStandardInput()
+    private static let inputHandle = FileHandle.standardInput
     
     public private(set) static var pipedData: String? = nil
     
-    static let PipeUserInputOverlapError = CLIError.Error("Data should not be both piped and input")
+    static let PipeUserInputOverlapError = CLIError.error("Data should not be both piped and input")
     
     //  MARK: - Public
     
@@ -23,7 +23,7 @@ public class Input {
         - Parameter message: message to be printed before accepting input (e.g. "Name: ")
         - Throws: Input.PipeUserInputOverlapError if the user piped data and this method was called
     */
-    public class func awaitInput(message message: String?) throws -> String {
+    public class func awaitInput(message: String?) throws -> String {
         if pipedData != nil {
             throw PipeUserInputOverlapError
         }
@@ -32,8 +32,8 @@ public class Input {
             print(message)
         }
         
-        var input = String(data: inputHandle.availableData, encoding: NSUTF8StringEncoding)!
-        input = input.substringToIndex(input.endIndex.advancedBy(-1))
+        var input = String(data: inputHandle.availableData, encoding: String.Encoding.utf8)!
+        input = input.substring(to: input.index(input.endIndex, offsetBy: -1))
         
         return input
     }
@@ -44,7 +44,7 @@ public class Input {
         - Parameter validation: closure evaluating whether the given input was valid
         - Throws: Input.PipeUserInputOverlapError if the user piped data and this method was called
     */
-    public class func awaitInputWithValidation(message message: String?, validation: (input: String) -> Bool) throws -> String {
+    public class func awaitInputWithValidation(message: String?, validation: (input: String) -> Bool) throws -> String {
         while (true) {
             let str = try awaitInput(message: message)
             
@@ -62,7 +62,7 @@ public class Input {
         - Parameter conversion: closure attempting to convert the input to the desired output
         - Throws: Input.PipeUserInputOverlapError if the user piped data and this method was called
     */
-    public class func awaitInputWithConversion<T>(message message: String?, conversion: (input: String) -> T?) throws -> T {
+    public class func awaitInputWithConversion<T>(message: String?, conversion: (input: String) -> T?) throws -> T {
         let input = try awaitInputWithValidation(message: message) {(input) in
             return conversion(input: input) != nil
         }
@@ -75,7 +75,7 @@ public class Input {
         - Parameter message: message to be printed before accepting input (e.g. "Name: ")
         - Throws: Input.PipeUserInputOverlapError if the user piped data and this method was called
     */
-    public class func awaitInt(message message: String?) throws -> Int {
+    public class func awaitInt(message: String?) throws -> Int {
         return try awaitInputWithConversion(message: message) { Int($0) }
     }
     
@@ -84,11 +84,11 @@ public class Input {
         - Parameter message: message to be printed before accepting input (e.g. "Name: ")
         - Throws: Input.PipeUserInputOverlapError if the user piped data and this method was called
     */
-    public class func awaitYesNoInput(message message: String = "Confirm?") throws -> Bool {
+    public class func awaitYesNoInput(message: String = "Confirm?") throws -> Bool {
         return try awaitInputWithConversion(message: "\(message) [y/N]: ") {(input) in
-            if input.lowercaseString == "y" || input.lowercaseString == "yes" {
+            if input.lowercased() == "y" || input.lowercased() == "yes" {
                 return true
-            } else if input.lowercaseString == "n" || input.lowercaseString == "no" {
+            } else if input.lowercased() == "n" || input.lowercased() == "no" {
                 return false
             }
             
@@ -100,10 +100,10 @@ public class Input {
     
     class func checkForPipedData() {
         inputHandle.readabilityHandler = {(inputHandle) in
-            pipedData = String(data: inputHandle.availableData, encoding: NSUTF8StringEncoding)
+            pipedData = String(data: inputHandle.availableData, encoding: String.Encoding.utf8)
             inputHandle.readabilityHandler = nil
         }
-        NSProcessInfo.processInfo().arguments // For whatever reason, this triggers readabilityHandler for the pipe data
+        let _ = ProcessInfo.processInfo.arguments // For whatever reason, this triggers readabilityHandler for the pipe data
     }
     
 }

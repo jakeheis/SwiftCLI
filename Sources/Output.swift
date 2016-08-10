@@ -8,15 +8,15 @@
 
 import Foundation
 
-func printError(error: String) {
+func printError(_ error: String) {
     printError(error, terminator: "\n")
 }
 
-func printError(error: String, terminator: String) {
-    let handle = NSFileHandle.fileHandleWithStandardError()
+func printError(_ error: String, terminator: String) {
+    let handle = FileHandle.standardError
     let fullString = error + terminator
-    if let errorData = fullString.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: false) {
-        handle.writeData(errorData)
+    if let errorData = fullString.data(using: String.Encoding.utf8, allowLossyConversion: false) {
+        handle.write(errorData)
     } else {
         print(error)
     }
