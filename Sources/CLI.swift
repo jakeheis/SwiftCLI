@@ -62,6 +62,9 @@ public class CLI {
         commands.append(command)
     }
     
+    @available(*, unavailable, renamed: "register(command:)")
+    public class func registerCommand(_ command: Command) {}
+    
     /**
         Registers a group of commands with the CLI for routing and execution. All commands must be registered
         with this method or its siblings before calling `CLI.go()`
@@ -71,6 +74,9 @@ public class CLI {
     public class func register(commands: [Command]) {
         commands.forEach { self.register(command: $0) }
     }
+    
+    @available(*, unavailable, renamed: "register(commands:)")
+    public class func registerCommands(_ commands: [Command]) {}
     
     /**
         Registers a chainable command with the CLI for routing and execution.
@@ -82,6 +88,11 @@ public class CLI {
         let chainable = ChainableCommand(name: name)
         register(command: chainable)
         return chainable
+    }
+    
+    @available(*, unavailable, renamed: "registerChainableCommand(name:)")
+    public class func registerChainableCommand(commandName: String) -> ChainableCommand {
+        return registerChainableCommand(name: commandName)
     }
     
     // MARK: - Go
@@ -110,6 +121,11 @@ public class CLI {
     public class func debugGo(with argumentString: String) -> CLIResult {
         print("[Debug Mode]")
         return go(with: RawArguments(argumentString: argumentString))
+    }
+    
+    @available(*, unavailable, renamed: "debugGo(with:)")
+    public class func debugGoWithArgumentString(_ argumentString: String) -> CLIResult {
+        return debugGo(with: argumentString)
     }
     
     // MARK: - Privates

@@ -33,6 +33,9 @@ public protocol Command {
     
 }
 
+@available(*, unavailable, renamed: "Command")
+typealias CommandType = Command
+
 /// An expansion of CommandType to provide for option handling
 public protocol OptionCommand: Command {
     
@@ -53,6 +56,9 @@ public protocol OptionCommand: Command {
     func setupOptions(options: OptionRegistry)
 
 }
+
+@available(*, unavailable, renamed: "OptionCommand")
+typealias OptionCommandType = OptionCommand
 
 // MARK: Default implementations
 
