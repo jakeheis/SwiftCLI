@@ -35,6 +35,12 @@ public class OptionRegistry {
         }
     }
     
+    @available(*, unavailable, renamed: "add(flags:block:)")
+    public func onFlags(_ flags: [String], block: FlagBlock?) {}
+    
+    @available(*, unavailable, renamed: "add(flags:usage:block:)")
+    public func onFlags(_ flags: [String], usage: String, block: FlagBlock?) {}
+    
     /**
         Registers a block to be called on the recognition of certain keys. Keys have an associated value
         recognized as the argument following the key. Usually best to pair a single letter key with a more 
@@ -53,7 +59,22 @@ public class OptionRegistry {
         }
     }
     
+    @available(*, unavailable, renamed: "add(keys:block:)")
+    public func onKeys(_ keys: [String], block: KeyBlock?) {}
+    
+    @available(*, unavailable, renamed: "add(keys:usage:block:)")
+    public func onKeys(_ keys: [String], usage: String, block: KeyBlock?) {}
+    
+    @available(*, unavailable, renamed: "add(keys:valueSignature:block:)")
+    public func onKeys(_ keys: [String], valueSignature: String, block: KeyBlock?) {}
+    
+    @available(*, unavailable, renamed: "add(keys:usage:valueSignature:block:)")
+    public func onKeys(_ keys: [String], usage: String, valueSignature: String, block: KeyBlock?) {}
+    
 }
+
+@available(*, unavailable, renamed: "OptionRegistry")
+public typealias Options = OptionRegistry
 
 public class Option {
     
