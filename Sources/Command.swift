@@ -34,7 +34,7 @@ public protocol Command {
 }
 
 @available(*, unavailable, renamed: "Command")
-typealias CommandType = Command
+public typealias CommandType = Command
 
 /// An expansion of CommandType to provide for option handling
 public protocol OptionCommand: Command {
@@ -58,7 +58,7 @@ public protocol OptionCommand: Command {
 }
 
 @available(*, unavailable, renamed: "OptionCommand")
-typealias OptionCommandType = OptionCommand
+public typealias OptionCommandType = OptionCommand
 
 // MARK: Default implementations
 
