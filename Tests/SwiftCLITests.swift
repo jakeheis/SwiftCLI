@@ -10,7 +10,7 @@ import Cocoa
 import XCTest
 @testable import SwiftCLI
 
-func createTestCommand(_ completion: ((executionString: String) -> ())? = nil) -> OptionCommandType {
+func createTestCommand(_ completion: ((_ executionString: String) -> ())? = nil) -> OptionCommandType {
     var silentFlag = false
     var times: Int = 1
     var executionString = ""
@@ -33,7 +33,7 @@ func createTestCommand(_ completion: ((executionString: String) -> ())? = nil) -
                 executionString += ", silently"
             }
             
-            completion?(executionString: executionString)
+            completion?(executionString)
     }
 }
 

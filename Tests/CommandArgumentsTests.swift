@@ -138,7 +138,7 @@ class CommandArgumentsTests: XCTestCase {
     private func assertParseResultEquals(_ expectedKeyedArguments: NSDictionary, assertMessage: String) {
         do {
             let commandArguments = try createCommandArguments()
-            let keyedArguments = commandArguments.keyedArguments
+            let keyedArguments = commandArguments.keyedArguments as NSDictionary
             XCTAssertEqual(keyedArguments, expectedKeyedArguments, assertMessage)
         } catch {
             XCTFail(assertMessage)

@@ -27,15 +27,15 @@ extension String {
 
 extension Array {
     
-    func each(_ block: (object: Element) -> ()) {
+    func each(_ block: (_ object: Element) -> ()) {
         for object in self {
-            block(object: object)
+            block(object)
         }
     }
     
-    func eachWithIndex(_ block: (object: Element, index: Int) -> ()) {
+    func eachWithIndex(_ block: (_ object: Element, _ index: Int) -> ()) {
         for (index, object) in self.enumerated() {
-            block(object: object, index: index)
+            block(object, index)
         }
     }
     

@@ -8,7 +8,7 @@
 
 public class CommandArguments {
     
-    var keyedArguments: [String: AnyObject]
+    var keyedArguments: [String: Any]
     
     init() {
         self.keyedArguments = [:]
@@ -102,7 +102,7 @@ public class CommandArguments {
     
         - SeeAlso: Typesafe shortcuts such as `args.requiredArguments("arg")`
     */
-    public subscript(key: String) -> AnyObject? {
+    public subscript(key: String) -> Any? {
         get {
             return keyedArguments[key]
         }

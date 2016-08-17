@@ -8,7 +8,7 @@
 
 public class FlagOption {
     
-    public typealias FlagBlock = (flag: String) -> ()
+    public typealias FlagBlock = (_ flag: String) -> ()
     
     let flags: [String]
     let usage: String
@@ -31,7 +31,7 @@ public class FlagOption {
 
 public class KeyOption: Equatable {
     
-    public typealias KeyBlock = (key: String, value: String) -> ()
+    public typealias KeyBlock = (_ key: String, _ value: String) -> ()
     
     let keys: [String]
     let usage: String
@@ -129,12 +129,12 @@ public class Options {
         
         for option in passedOptions {
             if let flagOption = allFlagOptions[option] {
-                flagOption.block?(flag: option)
+                flagOption.block?(option)
             } else if let keyOption = allKeyOptions[option] {
                 if let keyValue = rawArguments.argumentFollowingArgument(option), !keyValue.hasPrefix("-") {
                         rawArguments.classifyArgument(argument: keyValue, type: .option)
                         
-                        keyOption.block?(key: option, value: keyValue)
+                        keyOption.block?(option, keyValue)
                 } else {
                     keysNotGivenValue.append(option)
                 }
