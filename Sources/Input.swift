@@ -10,7 +10,7 @@ import Foundation
 
 public class Input {
     
-    private static let inputHandle = FileHandle.standardInput
+    private static let inputHandle = FileHandle.stdInput
     
     public private(set) static var pipedData: String? = nil
     
@@ -103,7 +103,7 @@ public class Input {
             pipedData = String(data: inputHandle.availableData, encoding: String.Encoding.utf8)
             inputHandle.readabilityHandler = nil
         }
-        let _ = ProcessInfo.processInfo.arguments // For whatever reason, this triggers readabilityHandler for the pipe data
+        let _ = ProcessInfo.info.arguments // For whatever reason, this triggers readabilityHandler for the pipe data
     }
     
 }

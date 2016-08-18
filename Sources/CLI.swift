@@ -189,3 +189,45 @@ extension CLIResult {
     }
     
 }
+
+// MARK: - Compatibility
+
+#if os(Linux)
+typealias Regex = RegularExpression
+
+extension FileHandle {
+    static var stdInput: FileHandle {
+        return standardInput()
+    }
+    
+    static var stdError: FileHandle {
+        return standardError()
+    }
+}
+
+extension ProcessInfo {
+    static var info: ProcessInfo {
+        return processsInfo()
+    }
+}
+
+#else
+typealias Regex = NSRegularExpression
+
+extension FileHandle {
+    static var stdInput: FileHandle {
+        return standardInput
+    }
+    
+    static var stdError: FileHandle {
+        return standardError
+    }
+}
+
+extension ProcessInfo {
+    static var info: ProcessInfo {
+        return processInfo
+    }
+}
+
+#endif
