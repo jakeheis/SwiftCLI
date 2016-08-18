@@ -10,7 +10,7 @@ import Foundation
 
 public class Input {
     
-    private static let inputHandle = FileHandle.standardInput
+    private static let inputHandle = FileHandle.standardInput()
     
     public private(set) static var pipedData: String? = nil
     
@@ -99,10 +99,10 @@ public class Input {
     // MARK: - Internal
     
     class func checkForPipedData() {
-        inputHandle.readabilityHandler = {(inputHandle) in
-            pipedData = String(data: inputHandle.availableData, encoding: String.Encoding.utf8)
-            inputHandle.readabilityHandler = nil
-        }
+//        inputHandle.readabilityHandler = {(inputHandle) in
+//            pipedData = String(data: inputHandle.availableData, encoding: String.Encoding.utf8)
+//            inputHandle.readabilityHandler = nil
+//        }
         let _ = ProcessInfo.processInfo.arguments // For whatever reason, this triggers readabilityHandler for the pipe data
     }
     

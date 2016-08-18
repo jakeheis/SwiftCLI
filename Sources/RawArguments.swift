@@ -22,11 +22,11 @@ public class RawArguments: CustomStringConvertible {
     private var argumentClassifications: [RawArgumentType] = []
     
     convenience init() {
-        self.init(arguments: ProcessInfo.processInfo.arguments)
+        self.init(arguments: ProcessInfo.processInfo().arguments)
     }
     
     convenience init(argumentString: String) {
-        let regex = try! NSRegularExpression(pattern: "(\"[^\"]*\")|[^\"\\s]+", options: [])
+        let regex = try! RegularExpression(pattern: "(\"[^\"]*\")|[^\"\\s]+", options: [])
         
         let argumentMatches = regex.matches(in: argumentString, options: [], range: NSRange(location: 0, length: argumentString.utf8.count))
         
