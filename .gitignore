@@ -12,3 +12,5 @@ xcshareddata
 .DS_Store
 
 .build
+
+/*.xcodeproj
