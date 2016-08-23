@@ -37,7 +37,7 @@ public class HelpCommand: OptionCommand {
     }
     
     func printCommand(_ command: Command) {
-        let spacing = String(repeating: " " as Character, count: 20 - command.name.characters.count)
+        let spacing = String(repeating: " ", count: 20 - command.name.characters.count)
         print("- \(command.name)\(spacing)\(command.shortDescription)")
     }
     

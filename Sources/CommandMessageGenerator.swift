@@ -31,7 +31,7 @@ class DefaultUsageStatementGenerator: UsageStatementGenerator {
             message += " [options]\n"
             
             let sortedOptions = options.sorted { (lhs, rhs) in
-                return lhs.options.first < rhs.options.first
+                return lhs.options.first! < rhs.options.first!
             }
             for option in sortedOptions {
                 let usage = option.usage

@@ -8,8 +8,8 @@
 
 public class OptionRegistry {
     
-    public typealias FlagBlock = (flag: String) -> ()
-    public typealias KeyBlock = (key: String, value: String) -> ()
+    public typealias FlagBlock = (_ flag: String) -> ()
+    public typealias KeyBlock = (_ key: String, _ value: String) -> ()
     
     var options: [Option] = []
     
@@ -29,6 +29,7 @@ public class OptionRegistry {
         - Parameter block: the block to be called upon recognition of the flags
     */
     public func add(flags: [String], usage: String = "", block: FlagBlock) {
+        precondition(!flags.isEmpty, "At least one flag must be added")
         options.append(Option(options: flags, usage: usage))
         for flag in flags {
             flagBlocks[flag] = block
@@ -53,6 +54,7 @@ public class OptionRegistry {
         - Parameter block: the block to be called upon recognition of the keys
     */
     public func add(keys: [String], usage: String = "", valueSignature: String = "value", block: KeyBlock) {
+        precondition(!keys.isEmpty, "At least one key must be added")
         options.append(Option(options: keys, usage: usage, preusage: "<\(valueSignature)>"))
         for key in keys {
             keyBlocks[key] = block
@@ -88,7 +90,7 @@ public class Option {
         if let preusage = preusage {
             optionsString += " \(preusage)"
         }
-        let spacing = String(repeating: " " as Character, count: 40 - optionsString.characters.count)
+        let spacing = String(repeating: " ", count: 40 - optionsString.characters.count)
         self.usage = "\(optionsString)\(spacing)\(usage)"
     }
     

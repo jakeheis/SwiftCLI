@@ -42,11 +42,11 @@ public class Input {
         - Parameter validation: closure evaluating whether the given input was valid
         - Throws: Input.PipeUserInputOverlapError if the user piped data and this method was called
     */
-    public class func awaitInputWithValidation(message: String?, validation: (input: String) -> Bool) throws -> String {
+    public class func awaitInputWithValidation(message: String?, validation: (_ input: String) -> Bool) throws -> String {
         while (true) {
             let str = try awaitInput(message: message)
             
-            if validation(input: str) {
+            if validation(str) {
                 return str
             } else {
                 print("Invalid input")
@@ -60,12 +60,12 @@ public class Input {
         - Parameter conversion: closure attempting to convert the input to the desired output
         - Throws: Input.PipeUserInputOverlapError if the user piped data and this method was called
     */
-    public class func awaitInputWithConversion<T>(message: String?, conversion: (input: String) -> T?) throws -> T {
+    public class func awaitInputWithConversion<T>(message: String?, conversion: (_ input: String) -> T?) throws -> T {
         let input = try awaitInputWithValidation(message: message) {(input) in
-            return conversion(input: input) != nil
+            return conversion(input) != nil
         }
         
-        return conversion(input: input)!
+        return conversion(input)!
     }
     
     /**
