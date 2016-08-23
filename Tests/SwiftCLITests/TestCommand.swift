@@ -19,9 +19,9 @@ class TestCommand: OptionCommand {
     var times: Int = 1
     var executionString = ""
     
-    let completion: ((executionString: String) -> ())?
+    let completion: ((_ executionString: String) -> ())?
     
-    init(completion: ((executionString: String) -> ())? = nil) {
+    init(completion: ((_ executionString: String) -> ())? = nil) {
         self.completion = completion
     }
     
@@ -42,7 +42,7 @@ class TestCommand: OptionCommand {
             executionString += ", silently"
         }
         
-        completion?(executionString: executionString)
+        completion?(executionString)
     }
     
 }
