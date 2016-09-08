@@ -25,7 +25,7 @@ public class ChainableCommand: LightweightCommand {
         return self
     }
     
-    public func withOptionsSetup(_ optionsSetup: OptionsSetupBlock) -> ChainableCommand {
+    public func withOptionsSetup(_ optionsSetup: @escaping OptionsSetupBlock) -> ChainableCommand {
         optionsSetupBlock = optionsSetup
         return self
     }
@@ -40,7 +40,7 @@ public class ChainableCommand: LightweightCommand {
         return self
     }
     
-    public func withExecutionBlock(_ execution: ExecutionBlock) -> ChainableCommand {
+    public func withExecutionBlock(_ execution: @escaping ExecutionBlock) -> ChainableCommand {
         executionBlock = execution
         return self
     }

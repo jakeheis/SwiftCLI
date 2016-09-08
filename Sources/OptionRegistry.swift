@@ -28,7 +28,7 @@ public class OptionRegistry {
         - Parameter usage: the usage of these flags, printed in the command usage statement
         - Parameter block: the block to be called upon recognition of the flags
     */
-    public func add(flags: [String], usage: String = "", block: FlagBlock) {
+    public func add(flags: [String], usage: String = "", block: @escaping FlagBlock) {
         precondition(!flags.isEmpty, "At least one flag must be added")
         options.append(Option(options: flags, usage: usage))
         for flag in flags {
@@ -53,7 +53,7 @@ public class OptionRegistry {
                                     takes the form "-m, --myKey <valueSignature>"
         - Parameter block: the block to be called upon recognition of the keys
     */
-    public func add(keys: [String], usage: String = "", valueSignature: String = "value", block: KeyBlock) {
+    public func add(keys: [String], usage: String = "", valueSignature: String = "value", block: @escaping KeyBlock) {
         precondition(!keys.isEmpty, "At least one key must be added")
         options.append(Option(options: keys, usage: usage, preusage: "<\(valueSignature)>"))
         for key in keys {
