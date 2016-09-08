@@ -26,7 +26,11 @@ public class HelpCommand: OptionCommand {
             print("Usage: \(CLI.name) help\n")
         }
         
-        print("\(CLI.description)\n")
+        if !CLI.description.isEmpty {
+            print("\(CLI.description)")
+            print()
+        }
+        
         print("Available commands: ")
 
         for command in allCommands {
