@@ -36,10 +36,10 @@ public class OptionRegistry {
         }
     }
     
-    @available(*, unavailable, renamed: "add(flags:block:)")
+    @available(*, unavailable, renamed: "add(flags:block:)", message: "also, flag block no longer passes flag")
     public func onFlags(_ flags: [String], block: FlagBlock?) {}
     
-    @available(*, unavailable, renamed: "add(flags:usage:block:)")
+    @available(*, unavailable, renamed: "add(flags:usage:block:)", message: "also, flag block no longer passes flag")
     public func onFlags(_ flags: [String], usage: String, block: FlagBlock?) {}
     
     /**
@@ -61,17 +61,19 @@ public class OptionRegistry {
         }
     }
     
-    @available(*, unavailable, renamed: "add(keys:block:)")
-    public func onKeys(_ keys: [String], block: KeyBlock?) {}
+    public typealias OldKeyBlock = (_ key: String, _ value: String) -> ()
     
-    @available(*, unavailable, renamed: "add(keys:usage:block:)")
-    public func onKeys(_ keys: [String], usage: String, block: KeyBlock?) {}
+    @available(*, unavailable, renamed: "add(keys:block:)", message: "also, key block no longer passes key (only value)")
+    public func onKeys(_ keys: [String], block: OldKeyBlock?) {}
     
-    @available(*, unavailable, renamed: "add(keys:valueSignature:block:)")
-    public func onKeys(_ keys: [String], valueSignature: String, block: KeyBlock?) {}
+    @available(*, unavailable, renamed: "add(keys:usage:block:)", message: "also, key block no longer passes key (only value)")
+    public func onKeys(_ keys: [String], usage: String, block: OldKeyBlock?) {}
     
-    @available(*, unavailable, renamed: "add(keys:usage:valueSignature:block:)")
-    public func onKeys(_ keys: [String], usage: String, valueSignature: String, block: KeyBlock?) {}
+    @available(*, unavailable, renamed: "add(keys:valueSignature:block:)", message: "also, key block no longer passes key (only value)")
+    public func onKeys(_ keys: [String], valueSignature: String, block: OldKeyBlock?) {}
+    
+    @available(*, unavailable, renamed: "add(keys:usage:valueSignature:block:)", message: "also, key block no longer passes key (only value)")
+    public func onKeys(_ keys: [String], usage: String, valueSignature: String, block: OldKeyBlock?) {}
     
 }
 
