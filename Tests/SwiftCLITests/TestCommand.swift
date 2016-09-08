@@ -26,10 +26,10 @@ class TestCommand: OptionCommand {
     }
     
     func setupOptions(options: OptionRegistry) {
-        options.add(flags: ["-s", "--silent"], usage: "Silence all test output") {(flag) in
+        options.add(flags: ["-s", "--silent"], usage: "Silence all test output") {
             self.silentFlag = true
         }
-        options.add(keys: ["-t", "--times"], usage: "Number of times to run the test", valueSignature: "times") {(key, value) in
+        options.add(keys: ["-t", "--times"], usage: "Number of times to run the test", valueSignature: "times") { (value) in
             self.times = Int(value)!
         }
     }

@@ -8,8 +8,8 @@
 
 public class OptionRegistry {
     
-    public typealias FlagBlock = (_ flag: String) -> ()
-    public typealias KeyBlock = (_ key: String, _ value: String) -> ()
+    public typealias FlagBlock = () -> ()
+    public typealias KeyBlock = (_ value: String) -> ()
     
     var options: [Option] = []
     

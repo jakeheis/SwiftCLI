@@ -34,11 +34,11 @@ public class DefaultOptionParser: OptionParser {
         for optionArgument in optionArguments {
             optionArgument.classification = .option
             if let flagBlock = optionRegistry.flagBlocks[optionArgument.value] {
-                flagBlock(optionArgument.value)
+                flagBlock()
             } else if let keyBlock = optionRegistry.keyBlocks[optionArgument.value] {
                 if let nextArgument = optionArgument.next, nextArgument.isUnclassified && !nextArgument.value.hasPrefix("-") {
                     nextArgument.classification = .option
-                    keyBlock(optionArgument.value, nextArgument.value)
+                    keyBlock(nextArgument.value)
                 } else {
                     keysNotGivenValue.append(optionArgument.value)
                 }
