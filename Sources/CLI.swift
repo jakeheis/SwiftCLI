@@ -166,7 +166,10 @@ public class CLI {
         }
         
         guard let command = router.route(commands: allCommands, arguments: arguments) else {
-            printError("Command not found")
+            if let attemptedCommandName = arguments.unclassifiedArguments.first?.value {
+                printError("Command \"\(attemptedCommandName)\" not found\n")
+                helpCommand.printCLIDescription = false // Only print available commands if passed an unavailable command
+            }
             helpCommand.allCommands = allCommands
             return helpCommand
         }

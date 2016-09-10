@@ -8,8 +8,6 @@
 
 public class HelpCommand: OptionCommand {
     
-    internal(set) public var allCommands: [Command] = []
-    
     public let name = "help"
     public let signature = "[<opt>] ..."
     public let shortDescription = "Prints this help information"
@@ -19,14 +17,13 @@ public class HelpCommand: OptionCommand {
     public let unrecognizedOptionsPrintingBehavior = UnrecognizedOptionsPrintingBehavior.printNone
     public let helpOnHFlag = false
     
+    public var allCommands: [Command] = []
+    public var printCLIDescription = true
+    
     public func setupOptions(options: OptionRegistry) {} // Don't actually do anything with any options
     
     public func execute(arguments: CommandArguments) throws {
-        if arguments.optionalArgument("opt") != nil {
-            print("Usage: \(CLI.name) help\n")
-        }
-        
-        if !CLI.description.isEmpty {
+        if printCLIDescription && !CLI.description.isEmpty {
             print("\(CLI.description)")
             print()
         }
