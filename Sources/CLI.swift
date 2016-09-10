@@ -165,13 +165,17 @@ public class CLI {
             allCommands.append(vc)
         }
         
+        helpCommand.allCommands = allCommands
+        
         guard let command = router.route(commands: allCommands, arguments: arguments) else {
             if let attemptedCommandName = arguments.unclassifiedArguments.first?.value {
                 printError("Command \"\(attemptedCommandName)\" not found\n")
                 helpCommand.printCLIDescription = false // Only print available commands if passed an unavailable command
             }
-            helpCommand.allCommands = allCommands
-            return helpCommand
+            
+            try helpCommand.execute(arguments: CommandArguments())
+            
+            throw CLIError.emptyError
         }
         
         return command

@@ -31,6 +31,14 @@ class SwiftCLITests: XCTestCase {
         XCTAssertEqual(self.executionString, "MyTester will test firstTest, 5 times, silently", "Command should have produced accurate output")
     }
     
+    func testCLIHelp() {
+        let result = CLI.debugGo(with: "tester help")
+        XCTAssertEqual(result, CLIResult.success, "Command should have succeeded")
+        
+        let result2 = CLI.debugGo(with: "tester -h")
+        XCTAssertEqual(result2, CLIResult.success, "Command should have succeeded")
+    }
+    
     // Tear down
     
     override func tearDown() {

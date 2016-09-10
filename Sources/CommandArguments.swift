@@ -10,6 +10,10 @@ public class CommandArguments {
     
     let keyedArguments: [String: Any]
     
+    init() {
+        keyedArguments = [:]
+    }
+    
     init(rawArguments: RawArguments, signature: CommandSignature) throws {
         keyedArguments = try CLI.commandArgumentParser.parse(rawArguments: rawArguments, with: signature)
     }
