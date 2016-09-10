@@ -18,8 +18,10 @@ public class CLI {
     
     private static var commands: [Command] = []
     
-    public static var helpCommand: HelpCommand? = HelpCommand()
+    public static var helpCommand: HelpCommand = HelpCommand()
     public static var versionComand: Command? = VersionCommand()
+    
+    // MARK: - Advanced customization
     
     public static var router: Router = DefaultRouter()
     public static var usageStatementGenerator: UsageStatementGenerator = DefaultUsageStatementGenerator()
@@ -38,7 +40,7 @@ public class CLI {
         - Parameter version: version of the app, printed by the VersionCommand
         - Parameter description: description of the app, printed in the help message
     */
-    public class func setup(name: String, version: String? = nil, description: String? = nil) {
+    public static func setup(name: String, version: String? = nil, description: String? = nil) {
         self.name = name
         
         if let version = version {
@@ -58,12 +60,12 @@ public class CLI {
     
         - Parameter command: the command to be registered
     */
-    public class func register(command: Command) {
+    public static func register(command: Command) {
         commands.append(command)
     }
     
     @available(*, unavailable, renamed: "register(command:)")
-    public class func registerCommand(_ command: Command) {}
+    public static func registerCommand(_ command: Command) {}
     
     /**
         Registers a group of commands with the CLI for routing and execution. All commands must be registered
@@ -71,12 +73,12 @@ public class CLI {
     
         - Parameter commands: the commands to be registered
     */
-    public class func register(commands: [Command]) {
+    public static func register(commands: [Command]) {
         commands.forEach { self.register(command: $0) }
     }
     
     @available(*, unavailable, renamed: "register(commands:)")
-    public class func registerCommands(_ commands: [Command]) {}
+    public static func registerCommands(_ commands: [Command]) {}
     
     /**
         Registers a chainable command with the CLI for routing and execution.
@@ -84,14 +86,14 @@ public class CLI {
         - Parameter commandName: the name of the new chainable command
         - Returns: a new chainable command for immediate chaining
     */
-    public class func registerChainableCommand(name: String) -> ChainableCommand {
+    public static func registerChainableCommand(name: String) -> ChainableCommand {
         let chainable = ChainableCommand(name: name)
         register(command: chainable)
         return chainable
     }
     
     @available(*, unavailable, renamed: "registerChainableCommand(name:)")
-    public class func registerChainableCommand(commandName: String) -> ChainableCommand {
+    public static func registerChainableCommand(commandName: String) -> ChainableCommand {
         return registerChainableCommand(name: commandName)
     }
     
@@ -105,7 +107,7 @@ public class CLI {
         - Returns: a CLIResult (Int) representing the success of the CLI in routing to and executing the correct
                     command. Usually should be passed to `exit(result)`
     */
-    public class func go() -> CLIResult {
+    public static func go() -> CLIResult {
        return go(with: RawArguments())
     }
     
@@ -118,33 +120,33 @@ public class CLI {
         - Returns: a CLIResult (Int) representing the success of the CLI in routing to and executing the correct
                     command. Usually should be passed to `exit(result)`
     */
-    public class func debugGo(with argumentString: String) -> CLIResult {
+    public static func debugGo(with argumentString: String) -> CLIResult {
         print("[Debug Mode]")
         return go(with: RawArguments(argumentString: argumentString))
     }
     
     @available(*, unavailable, renamed: "debugGo(with:)")
-    public class func debugGoWithArgumentString(_ argumentString: String) -> CLIResult {
+    public static func debugGoWithArgumentString(_ argumentString: String) -> CLIResult {
         return debugGo(with: argumentString)
     }
     
     // MARK: - Privates
     
-    private class func go(with arguments: RawArguments) -> CLIResult {
+    private static func go(with arguments: RawArguments) -> CLIResult {
         do {
             let command = try routeCommand(arguments: arguments)
             
             if let optionCommand = command as? OptionCommand {
                 let result = try parseOptions(command: optionCommand, arguments: arguments)
                 if case .exitEarly = result {
-                    return CLIResult.Success
+                    return CLIResult.success
                 }
             }
             
             let commandArguments = try parseArguments(command: command, arguments: arguments)
             try command.execute(arguments: commandArguments)
             
-            return CLIResult.Success
+            return CLIResult.success
         } catch CLIError.error(let error) {
             printError(error)
         } catch CLIError.emptyError {
@@ -153,23 +155,26 @@ public class CLI {
             printError("An error occurred: \(error.localizedDescription)")
         }
         
-        return CLIResult.Error
+        return CLIResult.error
     }
     
-    private class func routeCommand(arguments: RawArguments) throws -> Command {
+    private static func routeCommand(arguments: RawArguments) throws -> Command {
         var allCommands = commands
-        if let hc = helpCommand {
-            hc.allCommands = commands
-            allCommands.append(hc)
-        }
+        allCommands.append(helpCommand)
         if let vc = versionComand {
             allCommands.append(vc)
         }
         
-        return try router.route(commands: allCommands, arguments: arguments)
+        guard let command = router.route(commands: allCommands, arguments: arguments) else {
+            printError("Command not found")
+            helpCommand.allCommands = allCommands
+            return helpCommand
+        }
+        
+        return command
     }
     
-    private class func parseOptions(command: OptionCommand, arguments: RawArguments) throws -> OptionParserResult {
+    private static func parseOptions(command: OptionCommand, arguments: RawArguments) throws -> OptionParserResult {
         let optionRegistry = OptionRegistry()
         
         command.internalSetupOptions(options: optionRegistry)
@@ -188,7 +193,7 @@ public class CLI {
         return result
     }
     
-    private class func parseArguments(command: Command, arguments: RawArguments) throws -> CommandArguments {
+    private static func parseArguments(command: Command, arguments: RawArguments) throws -> CommandArguments {
         let commandSignature = CommandSignature(command.signature)
         return try CommandArguments(rawArguments: arguments, signature: commandSignature)
     }
@@ -206,11 +211,11 @@ public typealias CLIResult = Int32
 
 extension CLIResult {
     
-    static var Success: CLIResult {
+    public static var success: CLIResult {
         return 0
     }
     
-    static var Error: CLIResult {
+    public static var error: CLIResult {
         return 1
     }
     

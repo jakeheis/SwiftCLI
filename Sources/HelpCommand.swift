@@ -8,15 +8,15 @@
 
 public class HelpCommand: OptionCommand {
     
-    internal(set) var allCommands: [Command] = []
+    internal(set) public var allCommands: [Command] = []
     
     public let name = "help"
-    public let signature = "[<opt>]"
+    public let signature = "[<opt>] ..."
     public let shortDescription = "Prints this help information"
     public let shortcut = "-h"
     
     public let failOnUnrecognizedOptions = false
-    public let unrecognizedOptionsPrintingBehavior = UnrecognizedOptionsPrintingBehavior.printOnlyUnrecognizedOptions
+    public let unrecognizedOptionsPrintingBehavior = UnrecognizedOptionsPrintingBehavior.printNone
     public let helpOnHFlag = false
     
     public func setupOptions(options: OptionRegistry) {} // Don't actually do anything with any options
@@ -36,8 +36,6 @@ public class HelpCommand: OptionCommand {
         for command in allCommands {
             printCommand(command)
         }
-        
-        printCommand(self)
     }
     
     func printCommand(_ command: Command) {

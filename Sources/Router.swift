@@ -7,57 +7,37 @@
 //
 
 public protocol Router {
-    func route(commands: [Command], arguments: RawArguments) throws -> Command
+    func route(commands: [Command], arguments: RawArguments) -> Command?
 }
+
+// MARK: - DefaultRouter
 
 public class DefaultRouter: Router {
     
-    private let defaultCommand: Command?
+    let fallbackCommand: Command?
     
-    public init(defaultCommand: Command? = nil) {
-        self.defaultCommand = defaultCommand
+    init(fallbackCommand: Command? = nil) {
+        self.fallbackCommand = fallbackCommand
     }
     
-    public func route(commands: [Command], arguments: RawArguments) throws -> Command {
-        guard arguments.unclassifiedArguments.count > 0 else {
-            return try findDefaultCommand(commands: commands)
-        }
-        
-        return try findCommand(commands: commands, arguments: arguments)
-    }
-    
-    // MARK: - Privates
-    
-    private func findCommand(commands: [Command], arguments: RawArguments) throws -> Command {
+    public func route(commands: [Command], arguments: RawArguments) -> Command? {
         guard let commandNameArgument = arguments.unclassifiedArguments.first else {
-            throw CLIError.error("Router failed")
+            return fallbackCommand
         }
         
-        if let command = commands.filter({ $0.name == commandNameArgument.value }).first {
+        if let command = commands.first(where: { $0.name == commandNameArgument.value }) {
             commandNameArgument.classification = .commandName
             return command
         }
         
         if commandNameArgument.value.hasPrefix("-") {
-            if let shortcutCommand = commands.filter({ $0.shortcut == commandNameArgument.value }).first {
+            if let shortcutCommand = commands.first(where: { $0.shortcut == commandNameArgument.value }) {
                 commandNameArgument.classification = .commandName
                 return shortcutCommand
-            } else {
-                return try findDefaultCommand(commands: commands)
             }
         }
         
-        return try findDefaultCommand(commands: commands)
-    }
-    
-    func findDefaultCommand(commands: [Command]) throws -> Command {
-        if let d = defaultCommand {
-            return d
-        }
-        if let d = commands.flatMap({ $0 as? HelpCommand }).first {
-            return d
-        }
-        throw CLIError.error("Command not found")
+        return fallbackCommand
     }
     
 }

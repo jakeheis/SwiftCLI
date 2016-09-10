@@ -27,7 +27,7 @@ class SwiftCLITests: XCTestCase {
     
     func testCLIGo() {
         let result = CLI.debugGo(with: "tester test firstTest MyTester -t 5 -s")
-        XCTAssertEqual(result, CLIResult.Success, "Command should have succeeded")
+        XCTAssertEqual(result, CLIResult.success, "Command should have succeeded")
         XCTAssertEqual(self.executionString, "MyTester will test firstTest, 5 times, silently", "Command should have produced accurate output")
     }
     
