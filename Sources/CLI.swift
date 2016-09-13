@@ -190,7 +190,13 @@ extension CLIResult {
     
 }
 
+// MARK: - Compatibility - temporary until Swift Foundation and Objective-C Foundation have the same APIs
+
+#if os(Linux)
 typealias Regex = RegularExpression
+#else
+typealias Regex = NSRegularExpression
+#endif
 
 extension FileHandle {
     static var stdInput: FileHandle {
