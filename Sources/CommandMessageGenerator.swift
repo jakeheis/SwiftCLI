@@ -17,15 +17,7 @@ public protocol MisusedOptionsMessageGenerator {
 class DefaultUsageStatementGenerator: UsageStatementGenerator {
     
     func generateUsageStatement(for command: Command, optionRegistry: OptionRegistry?) -> String {
-        var message = "Usage: \(CLI.name)"
-        
-        if !command.name.isEmpty {
-            message += " \(command.name)"
-        }
-        
-        if !command.signature.isEmpty {
-            message += " \(command.signature)"
-        }
+        var message = command.usage
         
         if let options = optionRegistry?.options, !options.isEmpty {
             message += " [options]\n"

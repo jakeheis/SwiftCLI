@@ -71,6 +71,24 @@ extension OptionCommand {
 
 // MARK: Additional functionality
 
+extension Command {
+    
+    var usage: String {
+        var message = "Usage: \(CLI.name)"
+        
+        if !name.isEmpty {
+            message += " \(name)"
+        }
+        
+        if !signature.isEmpty {
+            message += " \(signature)"
+        }
+        
+        return message
+    }
+    
+}
+
 extension OptionCommand {
     
     func internalSetupOptions(options: OptionRegistry) {

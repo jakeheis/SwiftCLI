@@ -18,8 +18,8 @@ public class DefaultCommandArgumentParser: CommandArgumentParser {
     
     public func parse(rawArguments: RawArguments, with signature: CommandSignature) throws -> [String: Any] {
         if signature.isEmpty {
-            guard rawArguments.unclassifiedArguments.isEmpty  else {
-                throw CLIError.error("Expected no arguments, got \(rawArguments.unclassifiedArguments.count).")
+            guard rawArguments.unclassifiedArguments.isEmpty else {
+                throw CommandArgumentParserError.incorrectUsage("Expected no arguments, got \(rawArguments.unclassifiedArguments.count).")
             }
             return [:]
         }
@@ -28,12 +28,12 @@ public class DefaultCommandArgumentParser: CommandArgumentParser {
         
         // Not enough arguments
         if arguments.count < signature.requiredParameters.count {
-            throw CLIError.error(errorMessage(expectedCount: signature.requiredParameters.count, givenCount: arguments.count))
+            throw CommandArgumentParserError.incorrectUsage(errorMessage(expectedCount: signature.requiredParameters.count, givenCount: arguments.count))
         }
         
         // Too many arguments
         if !signature.collectRemainingArguments && arguments.count > signature.requiredParameters.count + signature.optionalParameters.count {
-            throw CLIError.error(errorMessage(expectedCount: signature.requiredParameters.count + signature.optionalParameters.count, givenCount: arguments.count))
+            throw CommandArgumentParserError.incorrectUsage(errorMessage(expectedCount: signature.requiredParameters.count + signature.optionalParameters.count, givenCount: arguments.count))
         }
         
         var commandArguments: [String: Any] = [:]
@@ -80,4 +80,10 @@ public class DefaultCommandArgumentParser: CommandArgumentParser {
         return "Expected \(expectedCount) \(argString), but got \(givenCount)."
     }
     
+}
+
+// MARK: - CommandArgumentParserError
+
+enum CommandArgumentParserError: Error {
+    case incorrectUsage(String)
 }

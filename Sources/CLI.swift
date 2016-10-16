@@ -156,7 +156,17 @@ public class CLI {
                 }
             }
             
-            let commandArguments = try parseArguments(command: command, arguments: arguments)
+            let commandArguments: CommandArguments
+            do {
+                commandArguments = try parseArguments(command: command, arguments: arguments)
+            } catch let CommandArgumentParserError.incorrectUsage(message) {
+                printError(message)
+                printError(command.usage)
+                throw CLIError.emptyError
+            } catch {
+                throw error
+            }
+            
             try command.execute(arguments: commandArguments)
             
             return CLIResult.success
