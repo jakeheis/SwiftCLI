@@ -11,7 +11,6 @@ public class VersionCommand: Command {
     public let name = "version"
     public let signature = ""
     public let shortDescription = "Prints the current version of this app"
-    public let shortcut = "-v"
     
     public func execute(arguments: CommandArguments) throws  {
         print("Version: \(CLI.version)")

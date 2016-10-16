@@ -11,7 +11,6 @@ public class HelpCommand: OptionCommand {
     public let name = "help"
     public let signature = "[<opt>] ..."
     public let shortDescription = "Prints this help information"
-    public let shortcut = "-h"
     
     public let failOnUnrecognizedOptions = false
     public let unrecognizedOptionsPrintingBehavior = UnrecognizedOptionsPrintingBehavior.printNone

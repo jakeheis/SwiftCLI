@@ -13,7 +13,6 @@ public class LightweightCommand: OptionCommand {
     public var name: String = ""
     public var signature: String = ""
     public var shortDescription: String = ""
-    public var shortcut: String? = nil
     
     public var failOnUnrecognizedOptions = true
     public var unrecognizedOptionsPrintingBehavior: UnrecognizedOptionsPrintingBehavior = .printAll

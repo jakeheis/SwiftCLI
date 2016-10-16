@@ -17,9 +17,10 @@ public class CLI {
     public static var description = ""
     
     private static var commands: [Command] = []
+    private static var aliases: [String: String] = [:]
     
     public static var helpCommand: HelpCommand = HelpCommand()
-    public static var versionComand: Command? = VersionCommand()
+    public static var versionCommand: Command = VersionCommand()
     
     // MARK: - Advanced customization
     
@@ -50,6 +51,9 @@ public class CLI {
         if let description = description {
             self.description = description
         }
+        
+        alias(from: "-h", to: "help")
+        alias(from: "-v", to: "version")
         
         Input.checkForPipedData()
     }
@@ -95,6 +99,15 @@ public class CLI {
     @available(*, unavailable, renamed: "registerChainableCommand(name:)")
     public static func registerChainableCommand(commandName: String) -> ChainableCommand {
         return registerChainableCommand(name: commandName)
+    }
+    
+    /**
+        Aliases from one command name to another (e.g. from "-h" to "help" or from "co" to "checkout")
+        - Parameter from: Command name from which the alias should be made (e.g. "-h")
+        - Parameter to: Command name to which the alias should be made (e.g. "help")
+    */
+    public static func alias(from: String, to: String) {
+        aliases[from] = to
     }
     
     // MARK: - Go
@@ -161,16 +174,15 @@ public class CLI {
     private static func routeCommand(arguments: RawArguments) throws -> Command {
         var allCommands = commands
         allCommands.append(helpCommand)
-        if let vc = versionComand {
-            allCommands.append(vc)
-        }
-        
+        allCommands.append(versionCommand)
         helpCommand.allCommands = allCommands
         
-        guard let command = router.route(commands: allCommands, arguments: arguments) else {
+        guard let command = router.route(commands: allCommands, aliases: aliases, arguments: arguments) else {
             if let attemptedCommandName = arguments.unclassifiedArguments.first?.value {
                 printError("Command \"\(attemptedCommandName)\" not found\n")
-                helpCommand.printCLIDescription = false // Only print available commands if passed an unavailable command
+                
+                // Only print available commands if passed an unavailable command
+                helpCommand.printCLIDescription = false
             }
             
             try helpCommand.execute(arguments: CommandArguments())

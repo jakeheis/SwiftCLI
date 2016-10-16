@@ -21,9 +21,6 @@ public protocol Command {
     /// A short description of the command; printed in the command's usage statement
     var shortDescription: String { get }
     
-    /// An optional flag shorcut for the command; e.g. "-h" for the HelpCommand. Default's to nil.
-    var shortcut: String? { get }
-    
     /**
         The actual execution block of the command
     
@@ -61,12 +58,6 @@ public protocol OptionCommand: Command {
 public typealias OptionCommandType = OptionCommand
 
 // MARK: Default implementations
-
-extension Command {
-    
-    public var shortcut: String? { return nil }
-    
-}
 
 extension OptionCommand {
     

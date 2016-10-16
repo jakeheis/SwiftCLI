@@ -20,7 +20,7 @@ class RouterTests: XCTestCase {
         super.setUp()
         
         alphaCommand = LightweightCommand(name: "alpha")
-        betaCommand = ChainableCommand(name: "beta").withShortcut("-b")
+        betaCommand = ChainableCommand(name: "beta")
         fallbackCommand = LightweightCommand(name: "fallback")
     }
     
@@ -44,7 +44,7 @@ class RouterTests: XCTestCase {
         XCTAssert(args.unclassifiedArguments.isEmpty, "Router should leave no arguments for the command")
     }
     
-    func testShortcutRoute() {
+    func testAliasRoute() {
         let args = RawArguments(argumentString: "tester -b")
         
         guard let command = route(args) else {
@@ -80,8 +80,12 @@ class RouterTests: XCTestCase {
     
     private func route(_ arguments: RawArguments, router: Router? = nil) -> Command? {
         let commands = [alphaCommand, betaCommand, fallbackCommand] as [Command]
+        
+        let aliases = [
+            "-b": "beta"
+        ]
         let router = router ?? DefaultRouter()
-        return router.route(commands: commands, arguments: arguments)
+        return router.route(commands: commands, aliases: aliases, arguments: arguments)
     }
     
 }

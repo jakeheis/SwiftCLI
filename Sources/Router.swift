@@ -7,7 +7,7 @@
 //
 
 public protocol Router {
-    func route(commands: [Command], arguments: RawArguments) -> Command?
+    func route(commands: [Command], aliases: [String: String], arguments: RawArguments) -> Command?
 }
 
 // MARK: - DefaultRouter
@@ -20,21 +20,15 @@ public class DefaultRouter: Router {
         self.fallbackCommand = fallbackCommand
     }
     
-    public func route(commands: [Command], arguments: RawArguments) -> Command? {
+    public func route(commands: [Command], aliases: [String: String], arguments: RawArguments) -> Command? {
         guard let commandNameArgument = arguments.unclassifiedArguments.first else {
             return fallbackCommand
         }
         
-        if let command = commands.first(where: { $0.name == commandNameArgument.value }) {
+        let matchingName = aliases[commandNameArgument.value] ?? commandNameArgument.value
+        if let command = commands.first(where: { $0.name == matchingName }) {
             commandNameArgument.classification = .commandName
             return command
-        }
-        
-        if commandNameArgument.value.hasPrefix("-") {
-            if let shortcutCommand = commands.first(where: { $0.shortcut == commandNameArgument.value }) {
-                commandNameArgument.classification = .commandName
-                return shortcutCommand
-            }
         }
         
         return fallbackCommand

@@ -20,11 +20,6 @@ public class ChainableCommand: LightweightCommand {
         return self
     }
     
-    public func withShortcut(_ shortcut: String) -> ChainableCommand {
-        self.shortcut = shortcut
-        return self
-    }
-    
     public func withOptionsSetup(_ optionsSetup: @escaping OptionsSetupBlock) -> ChainableCommand {
         optionsSetupBlock = optionsSetup
         return self
