@@ -249,3 +249,13 @@ extension CLIResult {
     }
     
 }
+
+// MARK: - Compatibility
+
+#if os(Linux)
+typealias Regex = RegularExpression
+
+#else
+typealias Regex = NSRegularExpression
+
+#endif

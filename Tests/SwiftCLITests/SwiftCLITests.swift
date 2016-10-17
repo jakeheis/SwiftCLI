@@ -46,5 +46,12 @@ class SwiftCLITests: XCTestCase {
         
         executionString = ""
     }
+
+    static var allTests : [(String, (SwiftCLITests) -> () throws -> Void)] {
+        return [
+            ("testCLIGo", testCLIGo),
+            ("testCLIHelp", testCLIHelp)
+        ]
+    }
     
 }

@@ -93,11 +93,13 @@ public class Input {
     // MARK: - Internal
     
     static func checkForPipedData() {
+		#if !os(Linux) // Temporary until readabilityHandler is implemented in Swift Foundation
         inputHandle.readabilityHandler = {(inputHandle) in
             pipedData = String(data: inputHandle.availableData, encoding: String.Encoding.utf8)
             inputHandle.readabilityHandler = nil
         }
         let _ = ProcessInfo.processInfo.arguments // For whatever reason, this triggers readabilityHandler for the pipe data
+		#endif
     }
     
 }
