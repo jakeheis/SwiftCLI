@@ -206,15 +206,15 @@ To configure a command for flag options:
 - **Implement OptionCommandType**: 
 ```swift
 func setupOptions(options: OptionRegistry) {
-    options.add(flags: [], usage: "") { (flag) in
-        
+    options.add(flags: [], usage: "") {
+    
     }
 }
 ```
 - **ChainableCommand**: 
 ```swift
 .withOptionsSetup ({ (options) in
-    options.add(flags: [], usage: "") { (flag) in
+    options.add(flags: [], usage: "") {
     
     }
 })
@@ -222,7 +222,7 @@ func setupOptions(options: OptionRegistry) {
 - **LightweightCommand**: 
 ```swift
 cmd.optionsSetupBlock = { (options) in
-    options.add(flags: [], usage: "") { (flag) in
+    options.add(flags: [], usage: "") {
         
     }
 }
@@ -237,7 +237,7 @@ class GreetCommand: OptionCommand {
     ...
 
     func setupOptions(options: OptionRegistry) {
-        options.add(flags: ["-l", "--loudly"], usage: "Makes the the greeting be said loudly") { (flag) in
+        options.add(flags: ["-l", "--loudly"], usage: "Makes the the greeting be said loudly") {
             self.loudly = true
         }
     }
@@ -253,7 +253,7 @@ To configure a command for keyed options:
 - **Implement OptionCommandType**: 
 ```
 func setupOptions(options: OptionRegistry) {
-    options.add(keys: [], usage: "", valueSignature: "") { (key, value) in
+    options.add(keys: [], usage: "", valueSignature: "") { (value) in
     
     }
 }
@@ -261,7 +261,7 @@ func setupOptions(options: OptionRegistry) {
 - **ChainableCommand**:
 ```swift
 .withOptionsSetup ({ (options) in
-    options.add(keys: [], usage: "", valueSignature: "") { (key, value) in
+    options.add(keys: [], usage: "", valueSignature: "") { (value) in
     
     }
 })
@@ -269,7 +269,7 @@ func setupOptions(options: OptionRegistry) {
 - **LightweightCommand**: 
 ```swift
 cmd.optionsSetupBlock = { (options) in
-    options.add(keys: [], usage: "", valueSignature: "") { (key, value) in
+    options.add(keys: [], usage: "", valueSignature: "") { (value) in
     
     }
 }
@@ -284,7 +284,7 @@ class GreetCommand: OptionCommand {
     ...
     
     func setupOptions(options: OptionRegistry) {
-        options.add(keys: ["-n", "--number-of-times"], usage: "Makes the greeter greet a certain number of times", valueSignature: "times") {(key, value) in
+        options.add(keys: ["-n", "--number-of-times"], usage: "Makes the greeter greet a certain number of times", valueSignature: "times") { (value) in
             if let times = Int(value) {
                 self.numberOfTimes = times
             }
