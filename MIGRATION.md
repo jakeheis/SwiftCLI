@@ -33,7 +33,23 @@ public func onKeys(_ keys: [String], usage: String, valueSignature: String, bloc
 public func add(flags: [String], usage: String = "", block: @escaping FlagBlock)
 public func add(keys: [String], usage: String = "", valueSignature: String = "value", block: @escaping KeyBlock)
 ```
+Also worth noting is that a `FlagBlock` has no parameters, and a `KeyBlock` only has a value parameter.
+```
+// Before
+onFlags(["-a"]) { (flag) in
 
+}
+onKeys(["-m"]) { (key, value) in
+
+}
+
+// Now
+add(flags: ["-a"]) {
+    // Notice that you no longer should type "{ (flag) in"
+}
+add(keys: ["-m"]) { (value) in
+    // just (value), not (key, value)
+}
 Command Aliases
 ===
 Command shortcuts have been generalized to allow for the mapping from any name to another name. Where before you might have done:
@@ -59,4 +75,4 @@ public protocol RawArgumentParser
 public protocol CommandArgumentParser
 public protocol OptionParser
 ```
-If you wish to replace the default implementations of any of these, just implement their respective functions on your own type and update CLI with your custom implementations.
+If you wish to replace the default implementations of any of these, just implement their respective functions on your own type and update CLI with your custom implementations. See https://github.com/jakeheis/SwiftCLI/blob/master/README.md#customization for more information.
