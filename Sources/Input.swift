@@ -21,11 +21,7 @@ public class Input {
         - Parameter message: message to be printed before accepting input (e.g. "Name: ")
         - Throws: Input.PipeUserInputOverlapError if the user piped data and this method was called
     */
-    public class func awaitInput(message: String?) throws -> String {
-        if pipedData != nil {
-            throw CLIError.error("Data should not be both piped and input")
-        }
-        
+    public static func awaitInput(message: String?) -> String {
         if let message = message {
             print(message)
         }
@@ -42,9 +38,9 @@ public class Input {
         - Parameter validation: closure evaluating whether the given input was valid
         - Throws: Input.PipeUserInputOverlapError if the user piped data and this method was called
     */
-    public class func awaitInputWithValidation(message: String?, validation: (_ input: String) -> Bool) throws -> String {
+    public static func awaitInputWithValidation(message: String?, validation: (_ input: String) -> Bool) -> String {
         while (true) {
-            let str = try awaitInput(message: message)
+            let str = awaitInput(message: message)
             
             if validation(str) {
                 return str
@@ -60,8 +56,8 @@ public class Input {
         - Parameter conversion: closure attempting to convert the input to the desired output
         - Throws: Input.PipeUserInputOverlapError if the user piped data and this method was called
     */
-    public class func awaitInputWithConversion<T>(message: String?, conversion: (_ input: String) -> T?) throws -> T {
-        let input = try awaitInputWithValidation(message: message) {(input) in
+    public static func awaitInputWithConversion<T>(message: String?, conversion: (_ input: String) -> T?) -> T {
+        let input = awaitInputWithValidation(message: message) { (input) in
             return conversion(input) != nil
         }
         
@@ -73,8 +69,8 @@ public class Input {
         - Parameter message: message to be printed before accepting input (e.g. "Name: ")
         - Throws: Input.PipeUserInputOverlapError if the user piped data and this method was called
     */
-    public class func awaitInt(message: String?) throws -> Int {
-        return try awaitInputWithConversion(message: message) { Int($0) }
+    public static func awaitInt(message: String?) -> Int {
+        return awaitInputWithConversion(message: message) { Int($0) }
     }
     
     /**
@@ -82,8 +78,8 @@ public class Input {
         - Parameter message: message to be printed before accepting input (e.g. "Name: ")
         - Throws: Input.PipeUserInputOverlapError if the user piped data and this method was called
     */
-    public class func awaitYesNoInput(message: String = "Confirm?") throws -> Bool {
-        return try awaitInputWithConversion(message: "\(message) [y/N]: ") {(input) in
+    public static func awaitYesNoInput(message: String = "Confirm?") -> Bool {
+        return awaitInputWithConversion(message: "\(message) [y/N]: ") {(input) in
             if input.lowercased() == "y" || input.lowercased() == "yes" {
                 return true
             } else if input.lowercased() == "n" || input.lowercased() == "no" {
@@ -96,7 +92,7 @@ public class Input {
     
     // MARK: - Internal
     
-    class func checkForPipedData() {
+    static func checkForPipedData() {
         inputHandle.readabilityHandler = {(inputHandle) in
             pipedData = String(data: inputHandle.availableData, encoding: String.Encoding.utf8)
             inputHandle.readabilityHandler = nil
