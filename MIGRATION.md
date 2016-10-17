@@ -3,112 +3,60 @@ SwiftCLI 2.0
 
 In SwiftCLI 2.0, the library has been updated for Swift 3 as well as had a number of customization options made available.
 
-
-
-SwiftCLI 1.1
-==
-
-SwiftCLI has been updated in version 1.1 to take advantage of new features in Swift 2.0. This includes a new protocol oriented design (which is much more elegant than the class inheritance based structure of SwiftCLI 1.0) and the usage of Swift 2's new error handling functionality.
-
-CommandType
+Command
 ===
-
-Instead of subclassing `Command`, custom commands should now implement `CommandType` or `OptionCommandType`, depending on what functionality is needed.
-
+Small changes were made in the Command protocol (formerly CommandType protocol)
 ```swift
-// Old Command Sublcass:
-
-public func commandName() -> String
-public func commandSignature() -> String
-public func commandShortDescription() -> String
-public func commandShortcut() -> String?
-
-// New CommandType Implementation:
+// Old CommandType Implementation:
 
 var commandName: String { get }
 var commandSignature: String { get }
 var commandShortDescription: String { get }
 var commandShortcut: String? { get }
+
+// New Command Implementation:
+var name: String { get }
+var signature: String { get }
+var shortDescription: String { get }
 ```
+Notably, `commandShortcut` is missing from the new protocol. In order to implement command shortcuts, check out the section on command aliases below.
 
-If option handling functionality is now needed, `OptionCommandType` (which inherits from `CommandType`) should be implemented :
-
-```swift
-// Old Command Sublcass:
-
-public func handleOptions()
-public func showHelpOnHFlag() -> Bool // Default true
-public func unrecognizedOptionsPrintingBehavior() -> UnrecognizedOptionsPrintingBehavior // Default .PrintAll
-public func failOnUnrecognizedOptions() -> Bool // Default true 
-
-// New OptionCommandType Implementation:
-
-func setupOptions(options: Options)
-var helpOnHFlag: Bool { get } // Default still true
-var unrecognizedOptionsPrintingBehavior: UnrecognizedOptionsPrintingBehavior { get } // Default still .PrintAll
-var failOnUnrecognizedOptions: Bool { get } // Default still true
-```
-
-Error handling
+OptionRegistry
 ===
-
-In SwiftCLI 1.1, the `Result` type has been removed. This means that to indicate a command's success or failure, you no longer return `success()` or `failure()`. Instead, Swift 2's error handling functionality is utilized.
-
-To indicate a command's failure, you throw an error from the command's execution block. Simply replacing `return failure("Command failed for a reason")` with `throw CLIError.Error("Command failed for a reason")` should be sufficient in most cases.
-
-Errors that are thrown multiples times can be cleaned up as such:
-
+Option methods have been renamed, but Xcode should automatically rename these for you. Just in case it doesn't:
 ```swift
+// Old
+public func onFlags(_ flags: [String], usage: String, block: FlagBlock?)
+public func onKeys(_ keys: [String], usage: String, valueSignature: String, block: KeyBlock?)
 
-class ReadCommand: CommandType {
-
-	static let ReadingError = CLIError.Error("The file could not be read")
-	
-	...
-
-
-	func execute(arguments: CommandArguments) throws {
-		if something {
-			throw ReadCommand.ReadingError
-		}
-
-		if somethingElse {
-			throw ReadCommand.ReadingError	
-		}
-	}
-
-	...
-
-}
+// New
+public func add(flags: [String], usage: String = "", block: @escaping FlagBlock)
+public func add(keys: [String], usage: String = "", valueSignature: String = "value", block: @escaping KeyBlock)
 ```
 
-If no errors are thrown in the duration of the command, the command is assumed to have succeeded.
+Command Aliases
+===
+Command shortcuts have been generalized to allow for the mapping from any name to another name. Where before you might have done:
+```swift
+let cmd = ChainableCommand(name: "cmd").withShortcut("-c")
+CLI.registerCommand(name: "cmd")
+```
+you now do:
+```swift
+let cmd = ChainableCommand(name: "cmd")
+CLI.registerCommand(name: "cmd")
+CLI.alias(from: "-c", to: cmd.name)
+```
+This means you're no longer limited to only having one shortcut per command, nor must you prefix the shortcut with "-".
 
-Small changes
-=====
-
-- Option setup calls should now be called on the `options` objected passed in rather on the command itself. For example, where you used to call:
+Advanced Customization
+===
+There are now a number of protocols which may be implemented to customize CLI functionality further:
 ```swift
-public func handleOptions() {
-	onFlags(...)
-}
+public protocol UsageStatementGenerator
+public protocol MisusedOptionsMessageGenerator
+public protocol RawArgumentParser
+public protocol CommandArgumentParser
+public protocol OptionParser
 ```
-you now call:
-```swift
-func setupOptions(options: Options) {
-	options.onFlags(...)
-}
-```
-- `LightweightCommand` properties no longer have the prefix `lightweight`. For example, `command.lightweightCommandName = "greet"` had become `command.commandName = "greet"`.
-- Options setup for `LightweightCommands` and `ChainableCommands` is no longer done in specialized methods such as `handleFlags(...)` and `withFlagsHandled()`. Instead, a single closure should be passed with either `optionsSetupBlock = {(options) in }` or `withOptionsSetup {(options) in }`.
-- `CLI` now has severable top level variables that can be directly set:
-```swift
-CLI.appName = "greeter"
-CLI.appVersion = "1.0"
-CLI.appDescription = "My description"
-    
-CLI.helpCommand: HelpCommand? = customHelpCommand
-CLI.versionComand: CommandType? = customVersionCommand
-CLI.defaultCommand: CommandType = otherDefaultCommand
-```
-- Documentation on most public methods is now available! Just option click as you usually do.
+If you wish to replace the default implementations of any of these, just implement their respective functions on your own type and update CLI with your custom implementations.
