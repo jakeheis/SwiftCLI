@@ -39,6 +39,7 @@ Check out the [migration guide](MIGRATION.md)!
 * [Routing commands](#routing-commands)
 * [Special Commands](#special-commands)
 * [Input](#input)
+* [Customization](#customization)
 * [Running your CLI](#running-your-cli)
 * [Xcode Installation](#xcode-installation)
 * [Example](#example)
