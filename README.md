@@ -26,7 +26,7 @@ CLI.go()
 Hey there!
 ```
 
-## Upgrading from SwiftCLI 1.0?
+## Upgrading to SwiftCLI 2.0?
 
 Check out the [migration guide](MIGRATION.md)!
 
@@ -48,7 +48,7 @@ Check out the [migration guide](MIGRATION.md)!
 Add SwiftCLI as a dependency to your project:
 ```swift
 dependencies: [
-    .Package(url: "https://github.com/jakeheis/SwiftCLI", majorVersion: 1, minor: 2)
+    .Package(url: "https://github.com/jakeheis/SwiftCLI", majorVersion: 2, minor: 0)
 ]
 ```
 #### With Xcode
@@ -71,7 +71,7 @@ CLI.go()
 ```
 When you are creating and debugging your app, ```debugGo(with:)``` is the better choice. Xcode does make it possible to pass arguments to a command line app on launch by editing the app's scheme, but this can be a pain. ```debugGo(with:)``` makes it easier to pass an argument string to your app during development.
 ```swift
-CLI.debugGoWithArgumentString("greeter greet")
+CLI.debugGo(with: "greeter greet")
 ```
 
 ## Commands
@@ -213,7 +213,7 @@ func setupOptions(options: OptionRegistry) {
 ```
 - **ChainableCommand**: 
 ```swift
-.withOptionsSetup ({(options) in
+.withOptionsSetup ({ (options) in
     options.add(flags: [], usage: "") { (flag) in
     
     }
@@ -221,7 +221,7 @@ func setupOptions(options: OptionRegistry) {
 ```
 - **LightweightCommand**: 
 ```swift
-cmd.optionsSetupBlock = {(options) in
+cmd.optionsSetupBlock = { (options) in
     options.add(flags: [], usage: "") { (flag) in
         
     }
@@ -230,7 +230,7 @@ cmd.optionsSetupBlock = {(options) in
 
 The ```GreetCommand``` could be modified to take a "loudly" flag:
 ```swift
-class GreetCommand: OptionCommandType {
+class GreetCommand: OptionCommand {
     
     private var loudly = false
     
@@ -260,7 +260,7 @@ func setupOptions(options: OptionRegistry) {
 ```
 - **ChainableCommand**:
 ```swift
-.withOptionsSetup ({(options) in
+.withOptionsSetup ({ (options) in
     options.add(keys: [], usage: "", valueSignature: "") { (key, value) in
     
     }
@@ -268,7 +268,7 @@ func setupOptions(options: OptionRegistry) {
 ```
 - **LightweightCommand**: 
 ```swift
-cmd.optionsSetupBlock = {(options) in
+cmd.optionsSetupBlock = { (options) in
     options.add(keys: [], usage: "", valueSignature: "") { (key, value) in
     
     }
@@ -277,7 +277,7 @@ cmd.optionsSetupBlock = {(options) in
 
 The ```GreetCommand``` could be modified to take a "number of times" option:
 ```swift
-class GreetCommand: OptionCommandType {
+class GreetCommand: OptionCommand {
     
     private var numberOfTimes = 1
     
@@ -321,11 +321,11 @@ The ```valueSignature``` argument in the ```add(keys:)``` family of methods is d
 ## Routing commands
 Command routing is done by an object implementing `Router`, which is just one simple method:
 ```swift
-func route(commands: [Command], arguments: RawArguments) throws -> Command
+func route(commands: [Command], aliases: [String: String], arguments: RawArguments) -> Command?
 ```
-SwiftCLI supplies a default implementation of `Router` with `DefaultRouter`. `DefaultRouter` finds commands based on the first passed argument. So, `greeter greet` would search for commmands with the `commandName` of "greet" and `greeter -g` would search for commands with the `commandShortcut` of "-g". 
+SwiftCLI supplies a default implementation of `Router` with `DefaultRouter`. `DefaultRouter` finds commands based on the first passed argument. For example, `greeter greet` would search for commmands with the `commandName` of "greet". `DefaultRouter` also respected aliases set using `CLI.alias(from:to:)`. As such, if `CLI.alias(from: "-c", to: "command")` is run, the router will search for a command with the name "command", not "-c".
 
-If a command is not found, `DefaultRouter` falls back to its `defaultCommand`. The `defaultCommand` is usually the help command:
+If a command is not found, `DefaultRouter` falls back to its `fallbackCommand` if given one. Otherwise, it outputs a help message.
 ```bash
 ~ > greeter
 Greeter - your own personal greeter
@@ -334,7 +334,7 @@ Available commands:
 - greet                Greets the given person
 - help                 Prints this help information
 ```
-A custom default command can be specified by calling ```CLI.router = DefaultRouter(defaultCommand: customDefault)```.
+A custom fallback command can be specified by calling ```CLI.router = DefaultRouter(fallbackCommand: customDefault)```.
 
 ## Special commands
 ```CLI``` has two special commands: ```helpCommand``` and ```versionCommand```.
@@ -369,13 +369,13 @@ The `Input` class wraps the handling of input from stdin. Several methods are av
 
 ```swift
 // Simple input:
-public class func awaitInput(message: String?) throws -> String {}
-public class func awaitInt(message: String?) throws -> Int {}
-public class func awaitYesNoInput(message: String = "Confirm?") throws -> Bool {}
+public static func awaitInput(message: String?) -> String {}
+public static func awaitInt(message: String?) -> Int {}
+public static func awaitYesNoInput(message: String = "Confirm?") -> Bool {}
 
 // Complex input (if the simple input methods are not sufficient):
-public class func awaitInputWithValidation(message: String?, validation: (input: String) -> Bool) throws -> String {}
-public class func awaitInputWithConversion<T>(message: String?, conversion: (input: String) -> T?) throws -> T {}
+public static func awaitInputWithValidation(message: String?, validation: (input: String) -> Bool) -> String {}
+public static func awaitInputWithConversion<T>(message: String?, conversion: (input: String) -> T?) -> T {}
 ```
 
 Additionally, the `Input` class makes data piped to the CLI (`echo "piped string" | myCLI command"`) easily available:
@@ -444,11 +444,7 @@ In your project directory, run:
 git submodule add https://github.com/jakeheis/SwiftCLI.git
 git submodule update --init
 ```
-Then drag the SwiftCLI/Sources folder into your Xcode project:
-
-![alt tag](https://github.com/jakeheis/SwiftCLI/blob/master/Support/DragScreenshot.png)
-
-![alt tag](https://github.com/jakeheis/SwiftCLI/blob/master/Support/AddFiles.png)
+Then drag the SwiftCLI/Sources folder into your Xcode project.
 
 ## Example
 An example of a CLI developed with SwfitCLI can be found at https://github.com/jakeheis/Baker.
