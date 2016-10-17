@@ -1,7 +1,7 @@
 SwiftCLI 2.0
 ==
 
-In SwiftCLI 2.0, the library has been updated for Swift 3 as well as had a number of customization options made available.
+In SwiftCLI 2.0, the library has been updated for Swift 3 as well as had a number of customization options made available. If you don't want the updated functionality but instead just code that works with Swift 3, use Version 1.3.0 instead of 2.0.0.
 
 Command
 ===
