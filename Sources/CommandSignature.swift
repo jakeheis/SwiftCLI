@@ -17,8 +17,8 @@ public class CommandSignature {
     init(_ string: String) {
         let parameters = string.components(separatedBy: " ").filter { !$0.isEmpty }
         
-        let requiredRegex = try! NSRegularExpression(pattern: "^<.*>$", options: [])
-        let optionalRegex = try! NSRegularExpression(pattern: "^\\[<.*>\\]$", options: [])
+        let requiredRegex = try! Regex(pattern: "^<.*>$", options: [])
+        let optionalRegex = try! Regex(pattern: "^\\[<.*>\\]$", options: [])
         
         for parameter in parameters {
             if parameter == "..." {
