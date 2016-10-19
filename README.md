@@ -324,7 +324,7 @@ Command routing is done by an object implementing `Router`, which is just one si
 ```swift
 func route(commands: [Command], aliases: [String: String], arguments: RawArguments) -> Command?
 ```
-SwiftCLI supplies a default implementation of `Router` with `DefaultRouter`. `DefaultRouter` finds commands based on the first passed argument. For example, `greeter greet` would search for commmands with the `commandName` of "greet". `DefaultRouter` also respected aliases set using `CLI.alias(from:to:)`. As such, if `CLI.alias(from: "-c", to: "command")` is run, the router will search for a command with the name "command", not "-c".
+SwiftCLI supplies a default implementation of `Router` with `DefaultRouter`. `DefaultRouter` finds commands based on the first passed argument. For example, `greeter greet` would search for commmands with the `commandName` of "greet". 
 
 If a command is not found, `DefaultRouter` falls back to its `fallbackCommand` if given one. Otherwise, it outputs a help message.
 ```bash
@@ -336,6 +336,13 @@ Available commands:
 - help                 Prints this help information
 ```
 A custom fallback command can be specified by calling ```CLI.router = DefaultRouter(fallbackCommand: customDefault)```.
+
+### Aliases
+Aliases can be made through the call `CLI.alias(from:to:)`. `Router` will take these aliases into account while routing to the matching command. For example, if this call is made:
+```swift
+CLI.alias(from: "-c", to: "command")
+```
+And the user makes the call ```myapp -c```, the router will search for a command with the name "command" because of the alias, not a command with the name "-c".
 
 ## Special commands
 ```CLI``` has two special commands: ```helpCommand``` and ```versionCommand```.
