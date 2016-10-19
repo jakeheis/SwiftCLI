@@ -12,6 +12,16 @@ import XCTest
 
 class RouterTests: XCTestCase {
     
+    static var allTests : [(String, (RouterTests) -> () throws -> Void)] {
+        return [
+            ("testNoRoute", testNoRoute),
+            ("testNameRoute", testNameRoute),
+            ("testAliasRoute", testAliasRoute),
+            ("testFallbackCommandFlag", testFallbackCommandFlag),
+            ("testFailedRoute", testFailedRoute)
+        ]
+    }
+    
     var alphaCommand: Command!
     var betaCommand: Command!
     var fallbackCommand: Command!

@@ -11,6 +11,13 @@ import XCTest
 
 class CommandMessageGeneratorTests: XCTestCase {
     
+    static var allTests : [(String, (CommandMessageGeneratorTests) -> () throws -> Void)] {
+        return [
+            ("testUsageStatementGeneration", testUsageStatementGeneration),
+            ("testMisusedOptionsStatementGeneration", testMisusedOptionsStatementGeneration)
+        ]
+    }
+    
     let command = TestCommand()
 
     override func setUp() {

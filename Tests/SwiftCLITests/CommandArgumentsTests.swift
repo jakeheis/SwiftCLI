@@ -12,6 +12,21 @@ import XCTest
 
 class CommandArgumentsTests: XCTestCase {
     
+    static var allTests : [(String, (CommandArgumentsTests) -> () throws -> Void)] {
+        return [
+            ("testEmptySignature", testEmptySignature),
+            ("testRequiredArguments", testRequiredArguments),
+            ("testOptionalArguments", testOptionalArguments),
+            ("testExtraneousArguments", testExtraneousArguments),
+            ("testNonTerminalWithRequiredArguments", testNonTerminalWithRequiredArguments),
+            ("testNonTerminalWithOptionalArguments", testNonTerminalWithOptionalArguments),
+            ("testParameterPlacement", testParameterPlacement),
+            ("testCombinedRequiredAndOptionalArguments", testCombinedRequiredAndOptionalArguments),
+            ("testEmptyOptionalCollectedParameter", testEmptyOptionalCollectedParameter),
+            ("testQuotedArguments", testQuotedArguments)
+        ]
+    }
+    
     var signature: String = ""
     var arguments: [String] = []
     

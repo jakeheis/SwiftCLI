@@ -12,6 +12,13 @@ import XCTest
 
 class SwiftCLITests: XCTestCase {
     
+    static var allTests : [(String, (SwiftCLITests) -> () throws -> Void)] {
+        return [
+            ("testCLIGo", testCLIGo),
+            ("testCLIHelp", testCLIHelp)
+        ]
+    }
+    
     var executionString = ""
     
     override func setUp() {
@@ -45,13 +52,6 @@ class SwiftCLITests: XCTestCase {
         super.tearDown()
         
         executionString = ""
-    }
-
-    static var allTests : [(String, (SwiftCLITests) -> () throws -> Void)] {
-        return [
-            ("testCLIGo", testCLIGo),
-            ("testCLIHelp", testCLIHelp)
-        ]
     }
     
 }

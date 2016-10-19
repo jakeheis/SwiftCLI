@@ -12,6 +12,21 @@ import XCTest
 
 class OptionsTests: XCTestCase {
     
+    static var allTests : [(String, (OptionsTests) -> () throws -> Void)] {
+        return [
+            ("testOnFlags", testOnFlags),
+            ("testOnKeys", testOnKeys),
+            ("testSimpleFlagParsing", testSimpleFlagParsing),
+            ("testSimpleKeyParsing", testSimpleKeyParsing),
+            ("testCombinedFlagsAndKeysParsing", testCombinedFlagsAndKeysParsing),
+            ("testCombinedFlagsAndKeysAndArgumentsParsing", testCombinedFlagsAndKeysAndArgumentsParsing),
+            ("testUnrecognizedOptions", testUnrecognizedOptions),
+            ("testKeysNotGivenValues", testKeysNotGivenValues),
+            ("testFlagSplitting", testFlagSplitting),
+            ("testExitEarlyFlags", testExitEarlyFlags)
+        ]
+    }
+    
     var options = OptionRegistry()
     
     override func setUp() {
