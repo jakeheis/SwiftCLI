@@ -19,7 +19,6 @@ public class Input {
     /**
         Awaits a string of input
         - Parameter message: message to be printed before accepting input (e.g. "Name: ")
-        - Throws: Input.PipeUserInputOverlapError if the user piped data and this method was called
     */
     public static func awaitInput(message: String?) -> String {
         if let message = message {
@@ -36,7 +35,6 @@ public class Input {
         Awaits a string of valid input; continues accepting input until the given input is determined to be valid
         - Parameter message: message to be printed before accepting input (e.g. "Name: ")
         - Parameter validation: closure evaluating whether the given input was valid
-        - Throws: Input.PipeUserInputOverlapError if the user piped data and this method was called
     */
     public static func awaitInputWithValidation(message: String?, validation: (_ input: String) -> Bool) -> String {
         while (true) {
@@ -54,7 +52,6 @@ public class Input {
         Awaits a string of convertible input; continues accepting input until the given input is successfully converted
         - Parameter message: message to be printed before accepting input (e.g. "Name: ")
         - Parameter conversion: closure attempting to convert the input to the desired output
-        - Throws: Input.PipeUserInputOverlapError if the user piped data and this method was called
     */
     public static func awaitInputWithConversion<T>(message: String?, conversion: (_ input: String) -> T?) -> T {
         let input = awaitInputWithValidation(message: message) { (input) in
@@ -67,7 +64,6 @@ public class Input {
     /**
         Awaits the input of an Int
         - Parameter message: message to be printed before accepting input (e.g. "Name: ")
-        - Throws: Input.PipeUserInputOverlapError if the user piped data and this method was called
     */
     public static func awaitInt(message: String?) -> Int {
         return awaitInputWithConversion(message: message) { Int($0) }
@@ -76,7 +72,6 @@ public class Input {
     /**
         Awaits yes/no input; "y" and "yes" are accepted as yes and "n" and "no" are accepted as no (case insensitive)
         - Parameter message: message to be printed before accepting input (e.g. "Name: ")
-        - Throws: Input.PipeUserInputOverlapError if the user piped data and this method was called
     */
     public static func awaitYesNoInput(message: String = "Confirm?") -> Bool {
         return awaitInputWithConversion(message: "\(message) [y/N]: ") {(input) in
