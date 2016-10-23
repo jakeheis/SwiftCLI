@@ -14,9 +14,9 @@ public protocol Router {
 
 public class DefaultRouter: Router {
     
-    let fallbackCommand: Command?
+    public let fallbackCommand: Command?
     
-    init(fallbackCommand: Command? = nil) {
+    public init(fallbackCommand: Command? = nil) {
         self.fallbackCommand = fallbackCommand
     }
     

@@ -73,7 +73,7 @@ extension OptionCommand {
 
 extension Command {
     
-    var usage: String {
+    public var usage: String {
         var message = "Usage: \(CLI.name)"
         
         if !name.isEmpty {

@@ -11,12 +11,12 @@ public class OptionRegistry {
     public typealias FlagBlock = () -> ()
     public typealias KeyBlock = (_ value: String) -> ()
     
-    public var options: [Option] = []
+    private(set) public var options: [Option] = []
     
-    public var flagBlocks: [String: FlagBlock] = [:]
-    public var keyBlocks: [String: KeyBlock] = [:]
+    private(set) public var flagBlocks: [String: FlagBlock] = [:]
+    private(set) public var keyBlocks: [String: KeyBlock] = [:]
     
-    public var exitEarlyOptions: [String] = []
+    internal(set) public var exitEarlyOptions: [String] = []
     
     // MARK: - Adding options
     

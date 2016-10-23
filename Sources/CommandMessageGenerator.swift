@@ -14,9 +14,9 @@ public protocol MisusedOptionsMessageGenerator {
     func generateMisusedOptionsStatement(for command: Command, incorrectOptionUsage: IncorrectOptionUsage) -> String?
 }
 
-class DefaultUsageStatementGenerator: UsageStatementGenerator {
+public class DefaultUsageStatementGenerator: UsageStatementGenerator {
     
-    func generateUsageStatement(for command: Command, optionRegistry: OptionRegistry?) -> String {
+    public func generateUsageStatement(for command: Command, optionRegistry: OptionRegistry?) -> String {
         var message = command.usage
         
         if let options = optionRegistry?.options, !options.isEmpty {
@@ -40,9 +40,9 @@ class DefaultUsageStatementGenerator: UsageStatementGenerator {
     
 }
 
-class DefaultMisusedOptionsMessageGenerator: MisusedOptionsMessageGenerator {
+public class DefaultMisusedOptionsMessageGenerator: MisusedOptionsMessageGenerator {
 
-    func generateMisusedOptionsStatement(for command: Command, incorrectOptionUsage: IncorrectOptionUsage) -> String? {
+    public func generateMisusedOptionsStatement(for command: Command, incorrectOptionUsage: IncorrectOptionUsage) -> String? {
         guard let optionsCommand = command as? OptionCommand else {
             return nil
         }
