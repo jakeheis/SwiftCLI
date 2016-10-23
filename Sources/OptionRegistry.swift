@@ -11,12 +11,12 @@ public class OptionRegistry {
     public typealias FlagBlock = () -> ()
     public typealias KeyBlock = (_ value: String) -> ()
     
-    var options: [Option] = []
+    public var options: [Option] = []
     
-    var flagBlocks: [String: FlagBlock] = [:]
-    var keyBlocks: [String: KeyBlock] = [:]
+    public var flagBlocks: [String: FlagBlock] = [:]
+    public var keyBlocks: [String: KeyBlock] = [:]
     
-    var exitEarlyOptions: [String] = []
+    public var exitEarlyOptions: [String] = []
     
     // MARK: - Adding options
     
@@ -82,8 +82,8 @@ public typealias Options = OptionRegistry
 
 public class Option {
     
-    let options: [String]
-    let usage: String
+    public let options: [String]
+    public let usage: String
     
     init(options: [String], usage: String, preusage: String? = nil) {
         self.options = options

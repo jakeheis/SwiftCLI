@@ -8,11 +8,11 @@
 
 import Foundation
 
-func printError(_ error: String) {
+public func printError(_ error: String) {
     printError(error, terminator: "\n")
 }
 
-func printError(_ error: String, terminator: String) {
+public func printError(_ error: String, terminator: String) {
     let handle = FileHandle.standardError
     let fullString = error + terminator
     if let errorData = fullString.data(using: String.Encoding.utf8, allowLossyConversion: false) {

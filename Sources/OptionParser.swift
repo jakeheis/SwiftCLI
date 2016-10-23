@@ -67,15 +67,15 @@ public class DefaultOptionParser: OptionParser {
 
 public struct IncorrectOptionUsage {
     
-    let optionRegistry: OptionRegistry
-    let unrecognizedOptions: [String]
-    let keysNotGivenValue: [String]
+    public let optionRegistry: OptionRegistry
+    public let unrecognizedOptions: [String]
+    public let keysNotGivenValue: [String]
     
-    func misusedOptionsPresent() -> Bool {
+    public func misusedOptionsPresent() -> Bool {
         return unrecognizedOptions.count > 0 || keysNotGivenValue.count > 0
     }
     
-    func misusedOptionsMessage() -> String {
+    public func misusedOptionsMessage() -> String {
         var message = ""
         
         if unrecognizedOptions.count > 0 {

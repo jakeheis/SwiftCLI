@@ -17,17 +17,17 @@ public class RawArgument {
         case unclassified
     }
     
-    let value: String
-    let index: Int
+    public let value: String
+    public let index: Int
     
-    var next: RawArgument? = nil
-    var classification: Classification = .unclassified
+    public var next: RawArgument? = nil
+    public var classification: Classification = .unclassified
     
-    var isUnclassified: Bool {
+    public var isUnclassified: Bool {
         return classification == .unclassified
     }
     
-    init(value: String, index: Int) {
+    public init(value: String, index: Int) {
         self.value = value
         self.index = index
     }
@@ -38,7 +38,7 @@ public class RawArguments {
     
     private let arguments: [RawArgument]
     
-    var unclassifiedArguments: [RawArgument] {
+    public var unclassifiedArguments: [RawArgument] {
         return arguments.filter { $0.isUnclassified }
     }
     
