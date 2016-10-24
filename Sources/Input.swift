@@ -22,7 +22,11 @@ public class Input {
     */
     public static func awaitInput(message: String?) -> String {
         if let message = message {
-            print(message)
+            var printMessage = message
+            if !printMessage.hasSuffix(" ") && !printMessage.hasSuffix("\n") {
+                printMessage += " "
+            }
+            print(printMessage, terminator: "")
         }
         
         var input = String(data: inputHandle.availableData, encoding: String.Encoding.utf8)!
