@@ -21,18 +21,19 @@ public class Input {
         - Parameter message: message to be printed before accepting input (e.g. "Name: ")
     */
     public static func awaitInput(message: String?) -> String {
-        if let message = message {
-            var printMessage = message
-            if !printMessage.hasSuffix(" ") && !printMessage.hasSuffix("\n") {
-                printMessage += " "
+        var input: String? = nil
+        while input == nil {
+            if let message = message {
+                var printMessage = message
+                if !printMessage.hasSuffix(" ") && !printMessage.hasSuffix("\n") {
+                    printMessage += " "
+                }
+                print(printMessage, terminator: "")
             }
-            print(printMessage, terminator: "")
+            input = readLine()
         }
         
-        var input = String(data: inputHandle.availableData, encoding: String.Encoding.utf8)!
-        input = input.substring(to: input.index(input.endIndex, offsetBy: -1))
-        
-        return input
+        return input!
     }
     
     /**
