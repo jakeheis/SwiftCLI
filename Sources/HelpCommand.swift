@@ -6,7 +6,12 @@
 //  Copyright (c) 2014 jakeheis. All rights reserved.
 //
 
-public class HelpCommand: OptionCommand {
+public protocol HelpCommand: OptionCommand {
+    var allCommands: [Command] { get set }
+    var printCLIDescription: Bool { get set }
+}
+
+public class DefaultHelpCommand: HelpCommand {
     
     public let name = "help"
     public let signature = "[<opt>] ..."

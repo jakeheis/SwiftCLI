@@ -19,7 +19,7 @@ public class CLI {
     private static var commands: [Command] = []
     private static var aliases: [String: String] = [:]
     
-    public static var helpCommand: HelpCommand = HelpCommand()
+    public static var helpCommand: HelpCommand = DefaultHelpCommand()
     public static var versionCommand: Command = VersionCommand()
     
     // MARK: - Advanced customization
