@@ -108,6 +108,14 @@ public class CLI {
         aliases[from] = to
     }
     
+    /**
+        Removes an alias from one command name to another
+        - Parameter from: Alias source which should be removed
+     */
+    public static func removeAlias(from: String) {
+        aliases.removeValue(forKey: from)
+    }
+    
     // MARK: - Go
     
     /**
