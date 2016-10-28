@@ -54,8 +54,6 @@ public class CLI {
         
         alias(from: "-h", to: "help")
         alias(from: "-v", to: "version")
-        
-        Input.checkForPipedData()
     }
     
     /**
