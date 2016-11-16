@@ -6,6 +6,8 @@
 //  Copyright (c) 2014 jakeheis. All rights reserved.
 //
 
+import Foundation
+
 public class Input {
     
     //  MARK: - Public
@@ -13,8 +15,9 @@ public class Input {
     /**
         Awaits a string of input
         - Parameter message: message to be printed before accepting input (e.g. "Name: ")
+        - Parameter secure: boolean defining that input should be hidden
     */
-    public static func awaitInput(message: String?) -> String {
+    public static func awaitInput(message: String?, secure: Bool = false) -> String {
         var input: String? = nil
         while input == nil {
             if let message = message {
@@ -23,22 +26,31 @@ public class Input {
                     printMessage += " "
                 }
                 print(printMessage, terminator: "")
+                fflush(stdout)
             }
-            input = readLine()
+
+            if secure {
+                if let chars = UnsafePointer<CChar>(getpass("")) {
+                    input = String(cString: chars, encoding: .utf8)
+                }
+            } else {
+                input = readLine()
+            }
         }
-        
+
         return input!
     }
     
     /**
         Awaits a string of valid input; continues accepting input until the given input is determined to be valid
         - Parameter message: message to be printed before accepting input (e.g. "Name: ")
+        - Parameter secure: boolean defining that input should be hidden
         - Parameter validation: closure evaluating whether the given input was valid
     */
-    public static func awaitInputWithValidation(message: String?, validation: (_ input: String) -> Bool) -> String {
+    public static func awaitInputWithValidation(message: String?, secure: Bool = false, validation: (_ input: String) -> Bool) -> String {
         while (true) {
-            let str = awaitInput(message: message)
-            
+            let str = awaitInput(message: message, secure: secure)
+
             if validation(str) {
                 return str
             } else {
@@ -50,10 +62,11 @@ public class Input {
     /**
         Awaits a string of convertible input; continues accepting input until the given input is successfully converted
         - Parameter message: message to be printed before accepting input (e.g. "Name: ")
+        - Parameter secure: boolean defining that input should be hidden
         - Parameter conversion: closure attempting to convert the input to the desired output
     */
-    public static func awaitInputWithConversion<T>(message: String?, conversion: (_ input: String) -> T?) -> T {
-        let input = awaitInputWithValidation(message: message) { (input) in
+    public static func awaitInputWithConversion<T>(message: String?, secure: Bool = false, conversion: (_ input: String) -> T?) -> T {
+        let input = awaitInputWithValidation(message: message, secure: secure) { (input) in
             return conversion(input) != nil
         }
         
