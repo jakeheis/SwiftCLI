@@ -184,16 +184,24 @@ public class CLI {
             printError("An error occurred: \(error.localizedDescription)")
         }
         
+        if helpCommand.executeOnCommandFailure {
+            do {
+                try helpCommand.execute(arguments: CommandArguments())
+            } catch let error as NSError {
+                printError("An error occurred: \(error.localizedDescription)")
+            }
+        }
+        
         return CLIResult.error
     }
     
     private static func routeCommand(arguments: RawArguments) throws -> Command {
-        var allCommands = commands
-        allCommands.append(helpCommand)
-        allCommands.append(versionCommand)
-        helpCommand.allCommands = allCommands
+        var availableCommands = commands
+        availableCommands.append(helpCommand)
+        availableCommands.append(versionCommand)
+        helpCommand.availableCommands = availableCommands
         
-        guard let command = router.route(commands: allCommands, aliases: aliases, arguments: arguments) else {
+        guard let command = router.route(commands: availableCommands, aliases: aliases, arguments: arguments) else {
             if let attemptedCommandName = arguments.unclassifiedArguments.first?.value {
                 printError("Command \"\(attemptedCommandName)\" not found\n")
                 

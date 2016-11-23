@@ -7,8 +7,21 @@
 //
 
 public protocol HelpCommand: OptionCommand {
-    var allCommands: [Command] { get set }
+    /// Set by CLI to an array of all commands which have been registered
+    var availableCommands: [Command] { get set }
+    
+    /// Set by CLI to boolean representing whether the CLI description should be printed.
+    /// False if router failed, true in all other situations
     var printCLIDescription: Bool { get set }
+    
+    /// Whether this command should be executed when another commands fails; defaults to false
+    var executeOnCommandFailure: Bool { get }
+}
+
+extension HelpCommand {
+    public var executeOnCommandFailure: Bool {
+        return false
+    }
 }
 
 public class DefaultHelpCommand: HelpCommand {
@@ -21,7 +34,7 @@ public class DefaultHelpCommand: HelpCommand {
     public let unrecognizedOptionsPrintingBehavior = UnrecognizedOptionsPrintingBehavior.printNone
     public let helpOnHFlag = false
     
-    public var allCommands: [Command] = []
+    public var availableCommands: [Command] = []
     public var printCLIDescription = true
     
     public func setupOptions(options: OptionRegistry) {} // Don't actually do anything with any options
@@ -34,7 +47,7 @@ public class DefaultHelpCommand: HelpCommand {
         
         print("Available commands: ")
 
-        for command in allCommands {
+        for command in availableCommands {
             printCommand(command)
         }
     }
