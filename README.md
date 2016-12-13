@@ -13,6 +13,7 @@ A powerful framework that can be used to develop a CLI, from the simplest to the
 //
 
 import Foundation
+import SwiftCLI
 
 CLI.setup(name: "greeter")
 CLI.registerChainableCommand(name: "greet")
