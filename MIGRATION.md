@@ -34,7 +34,7 @@ public func add(flags: [String], usage: String = "", block: @escaping FlagBlock)
 public func add(keys: [String], usage: String = "", valueSignature: String = "value", block: @escaping KeyBlock)
 ```
 Also worth noting is that a `FlagBlock` has no parameters, and a `KeyBlock` only has a value parameter.
-```
+```swift
 // Before
 onFlags(["-a"]) { (flag) in
 
@@ -50,6 +50,7 @@ add(flags: ["-a"]) {
 add(keys: ["-m"]) { (value) in
     // just (value), not (key, value)
 }
+```
 Command Aliases
 ===
 Command shortcuts have been generalized to allow for the mapping from any name to another name. Where before you might have done:
@@ -69,10 +70,10 @@ Advanced Customization
 ===
 There are now a number of protocols which may be implemented to customize CLI functionality further:
 ```swift
-public protocol UsageStatementGenerator
-public protocol MisusedOptionsMessageGenerator
-public protocol RawArgumentParser
-public protocol CommandArgumentParser
-public protocol OptionParser
+public protocol UsageStatementGenerator {}
+public protocol MisusedOptionsMessageGenerator {}
+public protocol RawArgumentParser {}
+public protocol CommandArgumentParser {}
+public protocol OptionParser {}
 ```
 If you wish to replace the default implementations of any of these, just implement their respective functions on your own type and update CLI with your custom implementations. See https://github.com/jakeheis/SwiftCLI/blob/master/README.md#customization for more information.
