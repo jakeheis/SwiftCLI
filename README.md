@@ -4,15 +4,6 @@ SwiftCLI
 A powerful framework that can be used to develop a CLI, from the simplest to the most complex, in Swift.
 
 ```swift
-//
-//  main.swift
-//  Example
-//
-//  Created by Jake Heiser on 7/31/14.
-//  Copyright (c) 2014 jakeheis. All rights reserved.
-//
-
-import Foundation
 import SwiftCLI
 
 CLI.setup(name: "greeter")
