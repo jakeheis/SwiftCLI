@@ -266,10 +266,10 @@ extension CLIResult {
 
 // MARK: - Compatibility
 
-#if os(Linux)
-typealias Regex = RegularExpression
+//#if os(Linux)
+//typealias Regex = RegularExpression
 
-#else
+//#else
 typealias Regex = NSRegularExpression
 
-#endif
+//#endif
