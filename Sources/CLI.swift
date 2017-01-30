@@ -31,8 +31,7 @@ public class CLI {
     public static var rawArgumentParser: RawArgumentParser = DefaultRawArgumentParser()
     public static var commandArgumentParser: CommandArgumentParser = DefaultCommandArgumentParser()
     public static var optionParser: OptionParser = DefaultOptionParser()
-    internal static var placeholder: String? = nil
-    public static var commandSignature: CommandSignature = DefaultCommandSignature(placeholder)
+    public static var commandSignature: CommandSignature.Type = DefaultCommandSignature.self
     // MARK: - Setup
     
     /**
@@ -240,8 +239,7 @@ public class CLI {
     }
     
     private static func parseArguments(command: Command, arguments: RawArguments) throws -> CommandArguments {
-        self.placeholder = command.signature
-        let commandSignature = self.commandSignature
+        let commandSignature = self.commandSignature.init(command.signature)
         return try CommandArguments(rawArguments: arguments, signature: commandSignature)
     }
     
