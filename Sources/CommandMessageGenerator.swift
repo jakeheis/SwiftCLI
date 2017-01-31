@@ -20,18 +20,51 @@ public class DefaultUsageStatementGenerator: UsageStatementGenerator {
         var message = command.usage
         
         if let options = optionRegistry?.options, !options.isEmpty {
-            message += " [options]\n"
             
-            let sortedOptions = options.sorted { (lhs, rhs) in
-                return lhs.options.first! < rhs.options.first!
+            if let groups = optionRegistry?.groups, !groups.isEmpty {
+                
+                var sortedGroups: Array<OptionGroup> = []
+                for group in (groups.sorted { $0.name < $1.name }) where (group.name != "options" && group.required == true) {
+                    sortedGroups.append(group)
+                }
+                for group in (groups.sorted { $0.name < $1.name }) where (group.name != "options" && group.required == false) {
+                    sortedGroups.append(group)
+                }
+                sortedGroups.append(OptionGroup(name:"options",required:false,conflicting:false))
+                
+                let groupStrings = (sortedGroups.flatMap {
+                    
+                    (group) -> [String] in
+                    let name = group.name
+                    return [((group.required == true) ? " <\(group.name)>" : " [\(group.name)]")]
+                    
+                }).joined(separator: "")
+                
+                message += "\(groupStrings)\n"
+                
+                for group in sortedGroups {
+                    
+                    message += ((group.required == true) ? "\n<\(group.name)>" : "\n[\(group.name)]")
+    
+                    let groupOptions = options.filter() { $0.group == group.name }
+                    
+                    let sortedOptions = groupOptions.sorted { (lhs, rhs) in
+                        return lhs.options.first! < rhs.options.first!
+                    }
+                    
+                    for option in sortedOptions {
+                        let usage = option.usage
+                        message += "\n\(usage)"
+                    }
+                    message += "\n"
+                }
+                
             }
-            for option in sortedOptions {
-                let usage = option.usage
-                message += "\n\(usage)"
+            else {
+                assert(optionRegistry!.groups.contains(OptionGroup(name:"options")),"You can't delete the default options group.")
             }
-            
-            message += "\n"
-        } else {
+        }
+        else {
             message += "     (no options)\n"
         }
         
