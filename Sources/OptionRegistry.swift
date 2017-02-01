@@ -64,6 +64,20 @@ public class OptionRegistry {
         }
         return groupedRequiredOptions
     }
+    internal var maxSpacing: Int {
+        var tempMaxLength: Int = 40
+        for group in groups {
+            let groupName: String = group.name
+            let groupOptions = options.filter() { $0.group == groupName }
+            for groupOption in groupOptions {
+            
+                let length = (groupOption.usage.components(separatedBy: "__SPACING_PLACEHOLDER__")[0]).characters.count
+                if (length > tempMaxLength) { tempMaxLength = length }
+            
+            }
+        }
+        return tempMaxLength
+    }
     internal var conflictingOptionGroups: [Option] {
         var groupedConflictingOptions: [Option] = []
         var groupedOptionStrings: [String] = []
@@ -187,8 +201,7 @@ public class Option {
         if let preusage = preusage {
             optionsString += " \(preusage)"
         }
-        let spacing = String(repeating: " ", count: 60 - optionsString.characters.count)
-        self.usage = "\(optionsString)\(spacing)\(usage)"
+        self.usage = "\(optionsString)__SPACING_PLACEHOLDER__\(usage)"
     }
     
 }

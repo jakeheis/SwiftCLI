@@ -133,12 +133,15 @@ public struct IncorrectOptionUsage {
     
     public func misusedOptionsMessage() -> String {
         var message = ""
+        let maxSpacing = optionRegistry.maxSpacing
         
         if requiredOptionsMissing.count > 0 {
-            
             message += "Missing options:"
             for option in requiredOptionsMissing.sorted(by:{$0.key < $1.key}) {
-                message += "\n\t\(option.key):\t\(option.value)".replacingOccurrences(of:"|", with:", ", options: [])
+                let temp = (option.value).replacingOccurrences(of:"|", with:", ", options: [])
+                let length = temp.characters.count
+                let spacing = String(repeating: " ", count: maxSpacing - length)
+                message += "\n<\(option.key)>:\(spacing)\(temp)"
             }
             
             message += "\n"
@@ -147,21 +150,35 @@ public struct IncorrectOptionUsage {
         if unrecognizedOptions.count > 0 {
             message += "Unrecognized options:"
             for option in unrecognizedOptions {
-                message += "\n\t\(option)"
+                let length = option.characters.count
+                let spacing = String(repeating: " ", count: maxSpacing - length)
+                message += "\n\(spacing)\(option)"
             }
             
             message += "\n"
         }
         
         if conflictingOptions.count > 0 {
-        
+            
             message+="Conflicting options:"
             for group in conflictingOptions {
                 let groupKeys = group.value.joined(separator: ", ")
-                message += "\n\t\(group.key):\t\(groupKeys)"
-            
+                let length = groupKeys.characters.count
+                let isRequired: Bool = (optionRegistry.groups.first { $0.name == group.key })!.required
+                let spacing = String(repeating: " ", count: maxSpacing - length)
+                let groupKey: String
+                if (isRequired == true) {
+                
+                    groupKey = "<\(group.key)>"
+                }
+                else {
+                    groupKey = "[\(group.key)]"
+                
+                }
+                message += "\n\(groupKey):\(spacing)\(groupKeys)"
+                
             }
-        
+            
         }
         
         if keysNotGivenValue.count > 0 {
