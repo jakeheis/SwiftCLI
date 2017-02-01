@@ -47,7 +47,7 @@ public class OptionRegistry {
     private(set) public var options: [Option] = []
     internal var groups: Set<OptionGroup> = [OptionGroup(name:"options",required:false,conflicting:false)]
 
-    internal var requiredOptions: [Option] {
+    internal var requiredOptionGroups: [Option] {
         var groupedRequiredOptions: [Option] = []
         var groupedOptionStrings: [String] = []
         var requiredOptions = options.filter() { $0.required == true }
@@ -63,6 +63,23 @@ public class OptionRegistry {
             groupedRequiredOptions.append(Option(options:groupedOptionStrings,usage:"",required:true,group:groupName))
         }
         return groupedRequiredOptions
+    }
+    internal var conflictingOptionGroups: [Option] {
+        var groupedConflictingOptions: [Option] = []
+        var groupedOptionStrings: [String] = []
+        var conflictingOptions = options.filter() { $0.conflicting == true }
+        
+        for group in (groups.filter() {$0.conflicting == true}) {
+            let groupName: String = group.name
+            let groupOptions = conflictingOptions.filter() { $0.group == groupName }
+            groupedOptionStrings = groupOptions.flatMap {
+                (optionValue) -> [String] in
+                let value = optionValue.options
+                return value
+            }
+            groupedConflictingOptions.append(Option(options:groupedOptionStrings,usage:"",conflicting:true,group:groupName))
+        }
+        return groupedConflictingOptions
     }
     private(set) public var flagBlocks: [String: FlagBlock] = [:]
     private(set) public var keyBlocks: [String: KeyBlock] = [:]
@@ -85,13 +102,15 @@ public class OptionRegistry {
     }
     public func add(flags: [String], usage: String = "", group: String = "options", block: @escaping FlagBlock) {
         var required:Bool
+        var conflicting: Bool
         precondition(!flags.isEmpty, "At least one flag must be added")
             precondition(groups.contains(OptionGroup(name:group)),"Undefined Group: \(group)")
             if let temp = (groups.first { $0.name == group }) {
                 required = temp.required
+                conflicting = temp.conflicting
             }
-            else { required = false }
-        options.append(Option(options: flags, usage: usage, required:required,group:group))
+            else { required = false; conflicting = false }
+        options.append(Option(options: flags, usage: usage, required:required, conflicting:conflicting, group:group))
         for flag in flags {
             flagBlocks[flag] = block
         }
@@ -117,12 +136,14 @@ public class OptionRegistry {
     public func add(keys: [String], usage: String = "", valueSignature: String = "value", group: String = "options", block: @escaping KeyBlock) {
         precondition(!keys.isEmpty, "At least one key must be added")
         var required:Bool
+        var conflicting: Bool
         precondition(groups.contains(OptionGroup(name:group)),"Undefined Group: \(group)")
             if let temp = (groups.first { $0.name == group }) {
                 required = temp.required
+                conflicting = temp.conflicting
             }
-            else { required = false }
-        options.append(Option(options: keys, usage: usage, preusage: "<\(valueSignature)>",required:required,group:group))
+            else { required = false; conflicting = false }
+        options.append(Option(options: keys, usage: usage, preusage: "<\(valueSignature)>",required:required, conflicting:conflicting, group:group))
         for key in keys {
             keyBlocks[key] = block
         }
@@ -150,14 +171,16 @@ public typealias Options = OptionRegistry
 public class Option {
     
     public let required: Bool
+    public let conflicting: Bool
     public let group: String
     public let options: [String]
     public let usage: String
     
-    init(options: [String], usage: String, preusage: String? = nil, required: Bool = false, group: String = "options") {
+    init(options: [String], usage: String, preusage: String? = nil, required: Bool = false, conflicting: Bool = false, group: String = "options") {
         self.options = options
         self.required = required
         self.group = group
+        self.conflicting = conflicting
         
         var optionsString = options.joined(separator:", ")
         

@@ -35,19 +35,19 @@ public class DefaultOptionParser: OptionParser {
         var requiredOptionsMissing: [String:String] = [:]
         var conflictingOptions: [String:[String]] = [:]
         
-        let requiredGroups = optionRegistry.requiredOptions
+        let requiredGroups = optionRegistry.requiredOptionGroups
+        let conflictingGroups = optionRegistry.conflictingOptionGroups
         
         let optionsString = (optionArguments.flatMap { (option) -> [String] in
             let value = option.value
             return [value]
         }).joined(separator: " ")
         let optionsRange = NSRange(location: 0, length: optionsString.characters.count)
+        
         for requiredGroup in requiredGroups {
-            var isCurrentGroupConflicting: Bool = true
             var groupName: String = ""
             
             if let currentGroup = (optionRegistry.groups.first { $0.name == requiredGroup.group }) {
-                isCurrentGroupConflicting = currentGroup.conflicting
                 groupName = currentGroup.name
             }
             
@@ -58,29 +58,33 @@ public class DefaultOptionParser: OptionParser {
             if requiredRegex.numberOfMatches(in: optionsString.replacingOccurrences(of: " ", with: "  "), options: [], range: optionsRange) < 1 {
                 requiredOptionsMissing[groupName] = value
             }
-            
-
-            if (isCurrentGroupConflicting == true) {
-                
-                let matches = requiredRegex.matches(in: optionsString.replacingOccurrences(of: " ", with: "  "), options: [], range: optionsRange)
-                
-                if (matches.count > 1) {
-                    var groupConflicts: [String] = []
-                    
-                    for match in matches {
-                        let range = match.range
-                        
-                        let text =  (optionsString.replacingOccurrences(of: " ", with: "  ").substring(from:range.location,length:((range.length) - 1))).replacingOccurrences(of: " ", with: "")
-                        groupConflicts.append(text)
-                    }
-                    
-                    conflictingOptions[groupName] = groupConflicts
-                    
-                }
-            
-            }
-            
         }
+        
+        for conflictingGroup in conflictingGroups {
+            var groupName: String = ""
+            if let currentGroup = (optionRegistry.groups.first { $0.name == conflictingGroup.group }) {
+                groupName = currentGroup.name
+            }
+            let value = (conflictingGroup.options).joined(separator:"|")
+            let patternString = "((\\s(\(value))\\s)|(^(\(value))\\s)|(\\s(\(value))$))"
+            let requiredRegex = try! Regex(pattern: patternString, options: [.caseInsensitive])
+            let matches = requiredRegex.matches(in: optionsString.replacingOccurrences(of: " ", with: "  "), options: [], range: optionsRange)
+            
+            if (matches.count > 1) {
+                var groupConflicts: [String] = []
+                
+                for match in matches {
+                    let range = match.range
+                    
+                    let text =  (optionsString.replacingOccurrences(of: " ", with: "  ").substring(from:range.location,length:((range.length) - 1))).replacingOccurrences(of: " ", with: "")
+                    groupConflicts.append(text)
+                }
+                
+                conflictingOptions[groupName] = groupConflicts
+                
+            }
+        }
+        
         for optionArgument in optionArguments {
             optionArgument.classification = .option
             if let flagBlock = optionRegistry.flagBlocks[optionArgument.value] {
