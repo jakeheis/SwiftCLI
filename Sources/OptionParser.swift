@@ -141,7 +141,7 @@ public struct IncorrectOptionUsage {
             message += "Missing options:"
             for option in requiredOptionsMissing.sorted(by:{$0.key < $1.key}) {
                 let temp = (option.value).replacingOccurrences(of:"|", with:", ", options: [])
-                let length = temp.characters.count
+                let length = (option.key.characters.count + 3)
                 let spacing = String(repeating: " ", count: maxSpacing - length)
                 message += "\n<\(option.key)>:\(spacing)\(temp)"
             }
@@ -165,9 +165,7 @@ public struct IncorrectOptionUsage {
             message+="Conflicting options:"
             for group in conflictingOptions {
                 let groupKeys = group.value.joined(separator: ", ")
-                let length = groupKeys.characters.count
                 let isRequired: Bool = (optionRegistry.groups.first { $0.name == group.key })!.required
-                let spacing = String(repeating: " ", count: maxSpacing - length)
                 let groupKey: String
                 if (isRequired == true) {
                 
@@ -177,6 +175,8 @@ public struct IncorrectOptionUsage {
                     groupKey = "[\(group.key)]"
                 
                 }
+                let length = (groupKey.characters.count + 1)
+                let spacing = String(repeating: " ", count: maxSpacing - length)
                 message += "\n\(groupKey):\(spacing)\(groupKeys)"
                 
             }

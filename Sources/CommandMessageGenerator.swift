@@ -55,7 +55,7 @@ public class DefaultUsageStatementGenerator: UsageStatementGenerator {
                     for option in sortedOptions {
                         let maxSpacing = optionRegistry!.maxSpacing
                         let tempSpacing = (option.usage.components(separatedBy: "__SPACING_PLACEHOLDER__")[0]).characters.count
-                        let spacing = String(repeating: " ", count: maxSpacing - tempSpacing)
+                        let spacing = String(repeating: " ", count: (maxSpacing - tempSpacing))
                         let usage = option.usage.replacingOccurrences(of: "__SPACING_PLACEHOLDER__", with: spacing)
                         message += "\n\(usage)"
                     }
