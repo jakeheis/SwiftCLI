@@ -52,7 +52,7 @@ public class OptionRegistry {
         var groupedOptionStrings: [String] = []
         var requiredOptions = options.filter() { $0.required == true }
 
-        for group in (groups.filter() {$0.required == true}) {
+        for group in (groups.filter() { $0.required == true }) {
             let groupName: String = group.name
             let groupOptions = requiredOptions.filter() { $0.group == groupName }
             groupedOptionStrings = groupOptions.flatMap {
@@ -91,7 +91,7 @@ public class OptionRegistry {
                 let value = optionValue.options
                 return value
             }
-            groupedConflictingOptions.append(Option(options:groupedOptionStrings,usage:"",conflicting:true,group:groupName))
+            groupedConflictingOptions.append(Option(options:groupedOptionStrings,usage:"",required:group.required, conflicting:group.conflicting,group:groupName))
         }
         return groupedConflictingOptions
     }
@@ -112,7 +112,7 @@ public class OptionRegistry {
     public func addGroup(name: String, required: Bool = false, conflicting: Bool = true) {
         precondition(name != "", "Must specify a group name.")
         precondition(!groups.contains(OptionGroup(name:name)),"Cannot declare a group twice.")
-        groups.insert(OptionGroup(name:name, required:required))
+        groups.insert(OptionGroup(name:name, required:required, conflicting:conflicting))
     }
     public func add(flags: [String], usage: String = "", group: String = "options", block: @escaping FlagBlock) {
         var required:Bool

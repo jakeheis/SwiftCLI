@@ -65,23 +65,25 @@ public class DefaultOptionParser: OptionParser {
             if let currentGroup = (optionRegistry.groups.first { $0.name == conflictingGroup.group }) {
                 groupName = currentGroup.name
             }
-            let value = (conflictingGroup.options).joined(separator:"|")
-            let patternString = "((\\s(\(value))\\s)|(^(\(value))\\s)|(\\s(\(value))$))"
-            let requiredRegex = try! Regex(pattern: patternString, options: [.caseInsensitive])
-            let matches = requiredRegex.matches(in: optionsString.replacingOccurrences(of: " ", with: "  "), options: [], range: optionsRange)
-            
-            if (matches.count > 1) {
-                var groupConflicts: [String] = []
+            if (!conflictingGroup.options.isEmpty) {
+                let value = (conflictingGroup.options).joined(separator:"|")
+                let patternString = "((\\s(\(value))\\s)|(^(\(value))\\s)|(\\s(\(value))$))"
+                let requiredRegex = try! Regex(pattern: patternString, options: [.caseInsensitive])
+                let matches = requiredRegex.matches(in: optionsString.replacingOccurrences(of: " ", with: "  "), options: [], range: optionsRange)
                 
-                for match in matches {
-                    let range = match.range
+                if (matches.count > 1) {
+                    var groupConflicts: [String] = []
                     
-                    let text =  (optionsString.replacingOccurrences(of: " ", with: "  ").substring(from:range.location,length:((range.length) - 1))).replacingOccurrences(of: " ", with: "")
-                    groupConflicts.append(text)
+                    for match in matches {
+                        let range = match.range
+                        
+                        let text =  (optionsString.replacingOccurrences(of: " ", with: "  ").substring(from:range.location,length:((range.length) - 1))).replacingOccurrences(of: " ", with: "")
+                        groupConflicts.append(text)
+                    }
+                    
+                    conflictingOptions[groupName] = groupConflicts
+                    
                 }
-                
-                conflictingOptions[groupName] = groupConflicts
-                
             }
         }
         
