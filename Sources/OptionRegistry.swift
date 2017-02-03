@@ -60,7 +60,7 @@ public class OptionRegistry {
                 let value = optionValue.options
                 return value
             }
-            groupedRequiredOptions.append(Option(options:groupedOptionStrings,usage:"",required:true,group:groupName))
+            groupedRequiredOptions.append(Option(options:groupedOptionStrings,usage:"",required:group.required, conflicting:group.conflicting, group:groupName))
         }
         return groupedRequiredOptions
     }
