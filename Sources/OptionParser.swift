@@ -52,7 +52,7 @@ public class DefaultOptionParser: OptionParser {
             }
             
             let value = (requiredGroup.options).joined(separator:"|")
-            let patternString = "((\\s(\(value))\\s)|(^(\(value))\\s)|(\\s(\(value))$))"
+            let patternString = "(^\(value)\\s|\\s\(value)\\s|\\s\(value)$)"
             let requiredRegex = try! Regex(pattern: patternString, options: [.caseInsensitive])
             
             if requiredRegex.numberOfMatches(in: optionsString.replacingOccurrences(of: " ", with: "  "), options: [], range: optionsRange) < 1 {
@@ -62,14 +62,17 @@ public class DefaultOptionParser: OptionParser {
         
         for conflictingGroup in conflictingGroups {
             var groupName: String = ""
+            
             if let currentGroup = (optionRegistry.groups.first { $0.name == conflictingGroup.group }) {
                 groupName = currentGroup.name
             }
+            
             if (!conflictingGroup.options.isEmpty) {
+                
                 let value = (conflictingGroup.options).joined(separator:"|")
-                let patternString = "((\\s(\(value))\\s)|(^(\(value))\\s)|(\\s(\(value))$))"
                 let requiredRegex = try! Regex(pattern: patternString, options: [.caseInsensitive])
                 let matches = requiredRegex.matches(in: optionsString.replacingOccurrences(of: " ", with: "  "), options: [], range: optionsRange)
+                let patternString = "(^\(value)\\s|\\s\(value)\\s|\\s\(value)$)"
                 
                 if (matches.count > 1) {
                     var groupConflicts: [String] = []
@@ -194,5 +197,4 @@ public struct IncorrectOptionUsage {
         
         return message
     }
-    
 }
