@@ -36,14 +36,16 @@ public class RawArgument {
 
 public class RawArguments {
     
-    private let arguments: [RawArgument]
+    internal var arguments: [RawArgument]
+    
+    internal var originalString: String
     
     public var unclassifiedArguments: [RawArgument] {
         return arguments.filter { $0.isUnclassified }
     }
     
     convenience init() {
-        self.init(arguments: ProcessInfo.processInfo.arguments)
+        self.init(arguments: ProcessInfo.processInfo.arguments, with:ProcessInfo.processInfo.arguments.joined(separator:" "))
     }
     
     convenience init(argumentString: String) {
@@ -51,7 +53,7 @@ public class RawArguments {
         
         let argumentMatches = regex.matches(in: argumentString, options: [], range: NSRange(location: 0, length: argumentString.utf8.count))
         
-        let arguments: [String] = argumentMatches.map {(match) in
+        var arguments: [String] = argumentMatches.map {(match) in
             let matchRange = match.range
             var argument = argumentString.substring(from: argumentString.index(argumentString.startIndex, offsetBy: matchRange.location))
             argument = argument.substring(to: argument.index(argument.startIndex, offsetBy: matchRange.length))
@@ -62,12 +64,12 @@ public class RawArguments {
             return argument
         }
 
-        self.init(arguments: arguments)
+        self.init(arguments: arguments, with: argumentString)
     }
     
-    init(arguments stringArguments: [String]) {
+    init(arguments stringArguments: [String], with originalString: String) {
+        self.originalString = originalString
         arguments = CLI.rawArgumentParser.parse(stringArguments: stringArguments)
-        
         arguments.first?.classification = .appName
     }
     

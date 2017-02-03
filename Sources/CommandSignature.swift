@@ -8,14 +8,27 @@
 
 import Foundation
 
-public class CommandSignature {
+public protocol CommandSignature {
+
+    var requiredParameters: [String] { get set }
+    var optionalParameters: [String] { get set }
+    var collectRemainingArguments: Bool { get set }
+    
+    func required(parameter: String)
+    func optional(parameter: String)
+    var isEmpty: Bool { get }
+    init(_ signature: String)
+}
+
+
+public class DefaultCommandSignature: CommandSignature {
     
     public var requiredParameters: [String] = []
     public var optionalParameters: [String] = []
     public var collectRemainingArguments = false
     
-    init(_ string: String) {
-        let parameters = string.components(separatedBy: " ").filter { !$0.isEmpty }
+    required public init (_ signature: String) {
+        let parameters = signature.components(separatedBy: " ").filter { !$0.isEmpty }
         
         let requiredRegex = try! Regex(pattern: "^<.*>$", options: [])
         let optionalRegex = try! Regex(pattern: "^\\[<.*>\\]$", options: [])
@@ -40,15 +53,15 @@ public class CommandSignature {
         }
     }
     
-    func required(parameter: String) {
+    public func required(parameter: String) {
         requiredParameters.append(parameter)
     }
     
-    func optional(parameter: String) {
+    public func optional(parameter: String) {
         optionalParameters.append(parameter)
     }
     
-    var isEmpty: Bool {
+    public var isEmpty: Bool {
         return requiredParameters.isEmpty && optionalParameters.isEmpty
     }
 

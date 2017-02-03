@@ -31,7 +31,7 @@ public class CLI {
     public static var rawArgumentParser: RawArgumentParser = DefaultRawArgumentParser()
     public static var commandArgumentParser: CommandArgumentParser = DefaultCommandArgumentParser()
     public static var optionParser: OptionParser = DefaultOptionParser()
-    
+    public static var commandSignature: CommandSignature.Type = DefaultCommandSignature.self
     // MARK: - Setup
     
     /**
@@ -127,7 +127,8 @@ public class CLI {
                     command. Usually should be passed to `exit(result)`
     */
     public static func go() -> CLIResult {
-       return go(with: RawArguments())
+        var args = RawArguments()
+       return go(with: &args)
     }
     
     /**
@@ -141,7 +142,8 @@ public class CLI {
     */
     public static func debugGo(with argumentString: String) -> CLIResult {
         print("[Debug Mode]")
-        return go(with: RawArguments(argumentString: argumentString))
+        var args = RawArguments(argumentString: argumentString)
+        return go(with: &args)
     }
     
     @available(*, unavailable, renamed: "debugGo(with:)")
@@ -151,9 +153,9 @@ public class CLI {
     
     // MARK: - Privates
     
-    private static func go(with arguments: RawArguments) -> CLIResult {
+    private static func go(with arguments: inout RawArguments) -> CLIResult {
         do {
-            let command = try routeCommand(arguments: arguments)
+            let command = try routeCommand(arguments: &arguments)
             
             if let optionCommand = command as? OptionCommand {
                 let result = try parseOptions(command: optionCommand, arguments: arguments)
@@ -195,13 +197,13 @@ public class CLI {
         return CLIResult.error
     }
     
-    private static func routeCommand(arguments: RawArguments) throws -> Command {
+    private static func routeCommand(arguments: inout RawArguments) throws -> Command {
         var availableCommands = commands
         availableCommands.append(helpCommand)
         availableCommands.append(versionCommand)
         helpCommand.availableCommands = availableCommands
         
-        guard let command = router.route(commands: availableCommands, aliases: aliases, arguments: arguments) else {
+        guard let command = router.route(commands: availableCommands, aliases: aliases, arguments: &arguments) else {
             if let attemptedCommandName = arguments.unclassifiedArguments.first?.value {
                 printError("Command \"\(attemptedCommandName)\" not found\n")
                 
@@ -237,7 +239,7 @@ public class CLI {
     }
     
     private static func parseArguments(command: Command, arguments: RawArguments) throws -> CommandArguments {
-        let commandSignature = CommandSignature(command.signature)
+        let commandSignature = self.commandSignature.init(command.signature)
         return try CommandArguments(rawArguments: arguments, signature: commandSignature)
     }
     
