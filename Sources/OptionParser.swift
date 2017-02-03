@@ -42,7 +42,7 @@ public class DefaultOptionParser: OptionParser {
             let value = option.value
             return [value]
         }).joined(separator: " ")
-        let optionsRange = NSRange(location: 0, length: optionsString.characters.count)
+        let optionsRange = NSRange(location: 0, length: optionsString.replacingOccurrences(of: " ", with: "  ").characters.count )
         
         for requiredGroup in requiredGroups {
             var groupName: String = ""
