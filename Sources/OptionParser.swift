@@ -55,7 +55,8 @@ public class DefaultOptionParser: OptionParser {
             let patternString = "(^\(value)\\s|\\s\(value)\\s|\\s\(value)$)"
             let requiredRegex = try! Regex(pattern: patternString, options: [.caseInsensitive])
             
-            if requiredRegex.numberOfMatches(in: optionsString.replacingOccurrences(of: " ", with: "  "), options: [], range: optionsRange) < 1 {
+            let matches = requiredRegex.numberOfMatches(in: optionsString.replacingOccurrences(of: " ", with: "  "), options: [], range: optionsRange)
+            if  (matches < 1) {
                 requiredOptionsMissing[groupName] = value
             }
         }
@@ -70,9 +71,10 @@ public class DefaultOptionParser: OptionParser {
             if (!conflictingGroup.options.isEmpty) {
                 
                 let value = (conflictingGroup.options).joined(separator:"|")
-                let requiredRegex = try! Regex(pattern: patternString, options: [.caseInsensitive])
-                let matches = requiredRegex.matches(in: optionsString.replacingOccurrences(of: " ", with: "  "), options: [], range: optionsRange)
                 let patternString = "(^\(value)\\s|\\s\(value)\\s|\\s\(value)$)"
+                let conflictingRegex = try! Regex(pattern: patternString, options: [.caseInsensitive])
+                
+                let matches = conflictingRegex.matches(in: optionsString.replacingOccurrences(of: " ", with: "  "), options: [], range: optionsRange)
                 
                 if (matches.count > 1) {
                     var groupConflicts: [String] = []
