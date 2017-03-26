@@ -37,7 +37,7 @@ class TestCommand: OptionCommand {
     }
 
     func execute() throws {
-        executionString = "\(testerName.value) will test \(testName.value), \(times) times"
+        executionString = "\(testerName.value!) will test \(testName.value), \(times) times"
         if silentFlag {
             executionString += ", silently"
         }

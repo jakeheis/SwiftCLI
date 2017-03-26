@@ -17,35 +17,30 @@ public protocol CommandArgumentParser {
 public class DefaultCommandArgumentParser: CommandArgumentParser {
     
     public func parse(rawArguments: RawArguments, with signature: CommandSignature) throws {
-        for arg in signature.required {
+        for argument in signature.required {
             guard let next = rawArguments.unclassifiedArguments.first else {
                 throw CommandArgumentParserError.incorrectUsage("Insufficient number of argument")
             }
-            if let argument = arg as? Argument {
-                argument.update(value: next.value)
-            }
+            argument.update(value: next.value)
+            next.classification = .commandArgument
         }
         
-        for arg in signature.optional {
+        for argument in signature.optional {
             guard let next = rawArguments.unclassifiedArguments.first else {
                 break
             }
-            if let argument = arg as? OptionalArgument {
-                argument.update(value: next.value)
-            }
+            argument.update(value: next.value)
+            next.classification = .commandArgument
         }
         
         if let collected = signature.collected {
             let last: [String] = rawArguments.unclassifiedArguments.map { $0.value }
-            if let argument = collected as? CollectedArgument {
-                guard !last.isEmpty else {
-                    throw CommandArgumentParserError.incorrectUsage("Insufficient number of argument")
-                }
-                argument.update(value: last)
-            } else if let argument = collected as? OptionalCollectedArgument {
-                argument.update(value: last)
+            if collected.required && last.isEmpty {
+                throw CommandArgumentParserError.incorrectUsage("Insufficient number of argument")
             }
+            collected.update(value: last)
         } else if !rawArguments.unclassifiedArguments.isEmpty {
+            print(rawArguments.unclassifiedArguments.map { $0.value })
             throw CommandArgumentParserError.incorrectUsage("Too many arguments")
         }
     }

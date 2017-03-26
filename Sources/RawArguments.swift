@@ -14,6 +14,7 @@ public class RawArgument {
         case appName
         case commandName
         case option
+        case commandArgument
         case unclassified
     }
     
