@@ -28,9 +28,9 @@ public class CLI {
     public static var usageStatementGenerator: UsageStatementGenerator = DefaultUsageStatementGenerator()
     public static var misusedOptionsMessageGenerator: MisusedOptionsMessageGenerator = DefaultMisusedOptionsMessageGenerator()
 
-    public static var rawArgumentParser: RawArgumentParser = DefaultRawArgumentParser()
-    public static var commandArgumentParser: CommandArgumentParser = DefaultCommandArgumentParser()
+    public static var argumentNodeParser: ArgumentNodeParser = DefaultArgumentNodeParser()
     public static var optionParser: OptionParser = DefaultOptionParser()
+    public static var commandArgumentParser: CommandArgumentParser = DefaultCommandArgumentParser()
 
     // MARK: - Setup
 
@@ -127,7 +127,7 @@ public class CLI {
                     command. Usually should be passed to `exit(result)`
     */
     public static func go() -> CLIResult {
-       return go(with: RawArguments())
+       return go(with: ArgumentList())
     }
 
     /**
@@ -141,7 +141,7 @@ public class CLI {
     */
     public static func debugGo(with argumentString: String) -> CLIResult {
         print("[Debug Mode]")
-        return go(with: RawArguments(argumentString: argumentString))
+        return go(with: ArgumentList(argumentString: argumentString))
     }
 
     @available(*, unavailable, renamed: "debugGo(with:)")
@@ -151,7 +151,7 @@ public class CLI {
 
     // MARK: - Privates
 
-    private static func go(with arguments: RawArguments) -> CLIResult {
+    private static func go(with arguments: ArgumentList) -> CLIResult {
         do {
             let command = try routeCommand(arguments: arguments)
 
@@ -163,7 +163,7 @@ public class CLI {
             }
 
             do {
-                try parseArguments(command: command, arguments: arguments)
+                try commandArgumentParser.parse(arguments: arguments, for: command)
             } catch let CommandArgumentParserError.incorrectUsage(message) {
                 printError(message)
                 printError(command.usage)
@@ -194,14 +194,14 @@ public class CLI {
         return CLIResult.error
     }
 
-    private static func routeCommand(arguments: RawArguments) throws -> Command {
+    private static func routeCommand(arguments: ArgumentList) throws -> Command {
         var availableCommands = commands
         availableCommands.append(helpCommand)
         availableCommands.append(versionCommand)
         helpCommand.availableCommands = availableCommands
 
         guard let command = router.route(commands: availableCommands, aliases: aliases, arguments: arguments) else {
-            if let attemptedCommandName = arguments.unclassifiedArguments.first?.value {
+            if let attemptedCommandName = arguments.head {
                 printError("Command \"\(attemptedCommandName)\" not found\n")
 
                 // Only print available commands if passed an unavailable command
@@ -216,7 +216,7 @@ public class CLI {
         return command
     }
 
-    private static func parseOptions(command: OptionCommand, arguments: RawArguments) throws -> OptionParserResult {
+    private static func parseOptions(command: OptionCommand, arguments: ArgumentList) throws -> OptionParserResult {
         let optionRegistry = OptionRegistry()
 
         command.internalSetupOptions(options: optionRegistry)
@@ -234,12 +234,6 @@ public class CLI {
 
         return result
     }
-
-    private static func parseArguments(command: Command, arguments: RawArguments) throws {
-        let commandSignature = CommandSignature(command: command)
-        try commandArgumentParser.parse(rawArguments: arguments, with: commandSignature)
-    }
-
 }
 
 // MARK: -

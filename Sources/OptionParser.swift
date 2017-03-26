@@ -9,7 +9,7 @@
 // MARK: - OptionParser
 
 public protocol OptionParser {
-    func recognizeOptions(in rawArguments: RawArguments, from optionRegistry: OptionRegistry) -> OptionParserResult
+    func recognizeOptions(in arguments: ArgumentList, from optionRegistry: OptionRegistry) -> OptionParserResult
 }
 
 // MARK: - OptionParserResult
@@ -24,31 +24,33 @@ public enum OptionParserResult {
 
 public class DefaultOptionParser: OptionParser {
     
-    public func recognizeOptions(in rawArguments: RawArguments, from optionRegistry: OptionRegistry) -> OptionParserResult {
-        let optionArguments = rawArguments.unclassifiedArguments.filter { $0.value.hasPrefix("-") }
-        
+    public func recognizeOptions(in arguments: ArgumentList, from optionRegistry: OptionRegistry) -> OptionParserResult {
         var unrecognizedOptions: [String] = []
         var keysNotGivenValue: [String] = []
         var exitEarly: Bool = false
         
-        for optionArgument in optionArguments {
-            optionArgument.classification = .option
-            if let flagBlock = optionRegistry.flagBlocks[optionArgument.value] {
-                flagBlock()
-            } else if let keyBlock = optionRegistry.keyBlocks[optionArgument.value] {
-                if let nextArgument = optionArgument.next, nextArgument.isUnclassified && !nextArgument.value.hasPrefix("-") {
-                    nextArgument.classification = .option
-                    keyBlock(nextArgument.value)
+        var current = arguments.head
+        while let node = current {
+            if node.value.hasPrefix("-") {
+                if let flagBlock = optionRegistry.flagBlocks[node.value] {
+                    flagBlock()
+                } else if let keyBlock = optionRegistry.keyBlocks[node.value] {
+                    if let next = node.next, !next.value.hasPrefix("-") {
+                        keyBlock(next.value)
+                        arguments.remove(node: next)
+                    } else {
+                        keysNotGivenValue.append(node.value)
+                    }
                 } else {
-                    keysNotGivenValue.append(optionArgument.value)
+                    unrecognizedOptions.append(node.value)
                 }
-            } else {
-                unrecognizedOptions.append(optionArgument.value)
+                arguments.remove(node: node)
+                
+                if optionRegistry.exitEarlyOptions.contains(node.value) {
+                    exitEarly = true
+                }
             }
-            
-            if optionRegistry.exitEarlyOptions.contains(optionArgument.value) {
-                exitEarly = true
-            }
+            current = node.next
         }
         
         if exitEarly {

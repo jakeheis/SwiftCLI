@@ -7,14 +7,11 @@
 //
 
 public protocol Arg {
-    var required: Bool { get }
-    
     func signature(for name: String) -> String
 }
 
 public class Argument: Arg {
     
-    public let required = true
     private var privateValue: String? = nil
     
     public var value: String {
@@ -35,7 +32,6 @@ public class Argument: Arg {
 
 public class OptionalArgument: Arg {
     
-    public let required = false
     public var value: String? = nil
     
     public init() {}
@@ -51,6 +47,8 @@ public class OptionalArgument: Arg {
 }
 
 public protocol CollectedArg: Arg {
+    var required: Bool { get }
+
     func update(value: [String])
 }
 

@@ -8,15 +8,15 @@
 
 // MARK: - RawArgumentParser
 
-public protocol RawArgumentParser {
-    func parse(stringArguments: [String]) -> [RawArgument]
+public protocol ArgumentNodeParser {
+    func parse(stringArguments: [String]) -> ArgumentNode?
 }
 
 // MARK: - DefaultRawArgumentParser
 
-public class DefaultRawArgumentParser: RawArgumentParser {
+public class DefaultArgumentNodeParser: ArgumentNodeParser {
     
-    public func parse(stringArguments: [String]) -> [RawArgument] {
+    public func parse(stringArguments: [String]) -> ArgumentNode? {
         let adjustedArguments = stringArguments.flatMap { (argument) -> [String] in
             if argument.hasPrefix("-") && !argument.hasPrefix("--") {
                 return argument.characters.dropFirst().map { "-\($0)" } // Turn -am into -a -m
@@ -24,18 +24,19 @@ public class DefaultRawArgumentParser: RawArgumentParser {
             return [argument]
         }
         
-        var convertedArguments: [RawArgument] = []
-        var lastArgument: RawArgument? = nil
-        for (index, value) in adjustedArguments.enumerated() {
-            let argument = RawArgument(value: value, index: index)
-            convertedArguments.append(argument)
-            if let lastArgument = lastArgument {
-                lastArgument.next = argument
+        var head: ArgumentNode?
+        var current: ArgumentNode?
+        for value in adjustedArguments {
+            let argument = ArgumentNode(value: value)
+            current?.next = argument
+            argument.previous = current
+            current = argument
+            if head == nil {
+                head = current
             }
-            lastArgument = argument
         }
         
-        return convertedArguments
+        return head
     }
     
 }

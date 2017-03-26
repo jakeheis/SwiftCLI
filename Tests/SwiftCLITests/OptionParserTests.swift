@@ -12,7 +12,7 @@ import XCTest
 
 class OptionsTests: XCTestCase {
     
-    static var allTests : [(String, (OptionsTests) -> () throws -> Void)] {
+   static var allTests : [(String, (OptionsTests) -> () throws -> Void)] {
         return [
             ("testOnFlags", testOnFlags),
             ("testOnKeys", testOnKeys),
@@ -56,11 +56,11 @@ class OptionsTests: XCTestCase {
         options.add(flags: ["-a"]) { aBlockCalled = true }
         options.add(flags: ["-b"]) { bBlockCalled = true }
         
-        let arguments = RawArguments(argumentString: "tester -a -b")
+        let arguments = ArgumentList(argumentString: "tester -a -b")
         
         let result = parse(arguments: arguments, with: options)
 
-        XCTAssert(arguments.unclassifiedArguments.isEmpty, "Options should classify all option arguments as options")
+        XCTAssert(arguments.head == nil, "Options should classify all option arguments as options")
         
         XCTAssert(result == .success, "Option parse should succeed when all flags are added with add(flags:)")
         
@@ -74,11 +74,11 @@ class OptionsTests: XCTestCase {
         options.add(keys: ["-a"]) { (value) in aValue = value }
         options.add(keys: ["-b"]) { (value) in bValue = value }
         
-        let arguments = RawArguments(argumentString: "tester -a apple -b banana")
+        let arguments = ArgumentList(argumentString: "tester -a apple -b banana")
         
         let result = parse(arguments: arguments, with: options)
         
-        XCTAssert(arguments.unclassifiedArguments.isEmpty, "Options should classify all option arguments as options")
+        XCTAssert(arguments.head == nil, "Options should classify all option arguments as options")
         
         XCTAssert(result == .success, "Option parse should succeed when all keys are added with add(keys:)")
         
@@ -93,11 +93,11 @@ class OptionsTests: XCTestCase {
         options.add(flags: ["-a"]) { aBlockCalled = true }
         options.add(keys: ["-b"]) { (value) in bValue = value }
         
-        let arguments = RawArguments(argumentString: "tester -a -b banana")
+        let arguments = ArgumentList(argumentString: "tester -a -b banana")
         
         let result = parse(arguments: arguments, with: options)
         
-        XCTAssert(arguments.unclassifiedArguments.isEmpty, "Options should classify all option arguments as options")
+        XCTAssert(arguments.head == nil, "Options should classify all option arguments as options")
 
         XCTAssert(result == .success, "Option parse should succeed when all flags/keys are added with add(flags/keys:)")
         
@@ -112,11 +112,11 @@ class OptionsTests: XCTestCase {
         options.add(flags: ["-a"]) { aBlockCalled = true }
         options.add(keys: ["-b"]) { (value) in bValue = value }
         
-        let arguments = RawArguments(argumentString: "tester -a argument -b banana")
+        let arguments = ArgumentList(argumentString: "tester -a argument -b banana")
         
         let result = parse(arguments: arguments, with: options)
         
-        XCTAssertEqual(arguments.unclassifiedArguments.map { $0.value }, ["argument"], "Options should classify all option arguments as options")
+        XCTAssert(arguments.head?.value ==  "argument" && arguments.head?.next == nil, "Options should classify all option arguments as options")
         
         XCTAssert(result == .success, "Option parse should succeed when all flags/keys are added with add(flags/keys:)")
         
@@ -127,11 +127,11 @@ class OptionsTests: XCTestCase {
     func testUnrecognizedOptions() {
         options.add(flags: ["-a"]) {}
         
-        let arguments = RawArguments(argumentString: "tester -a -b")
+        let arguments = ArgumentList(argumentString: "tester -a -b")
         
         let result = parse(arguments: arguments, with: options)
         
-        XCTAssert(arguments.unclassifiedArguments.isEmpty, "Options should classify all option arguments as options")
+        XCTAssert(arguments.head == nil, "Options should classify all option arguments as options")
         
         if case let .incorrectOptionUsage(incorrectOptionUsage) = result {
             XCTAssertEqual(incorrectOptionUsage.unrecognizedOptions.first ?? "", "-b", "Options should identify when unrecognized options are used")
@@ -144,11 +144,11 @@ class OptionsTests: XCTestCase {
         options.add(keys: ["-a"])  {_ in}
         options.add(flags: ["-b"]) {}
         
-        let arguments = RawArguments(argumentString: "tester -a -b")
+        let arguments = ArgumentList(argumentString: "tester -a -b")
         
         let result = parse(arguments: arguments, with: options)
         
-        XCTAssert(arguments.unclassifiedArguments.isEmpty, "Options should classify all option arguments as options")
+        XCTAssert(arguments.head == nil, "Options should classify all option arguments as options")
         
         if case let .incorrectOptionUsage(incorrectOptionUsage) = result {
             XCTAssertEqual(incorrectOptionUsage.keysNotGivenValue.first ?? "", "-a", "Options should identify when keys are not given values")
@@ -164,11 +164,11 @@ class OptionsTests: XCTestCase {
         options.add(flags: ["-a"]) { aBlockCalled = true }
         options.add(flags: ["-b"]) { bBlockCalled = true }
         
-        let arguments = RawArguments(argumentString: "tester -ab")
+        let arguments = ArgumentList(argumentString: "tester -ab")
         
         let result = parse(arguments: arguments, with: options)
         
-        XCTAssert(arguments.unclassifiedArguments.isEmpty, "Options should classify all option arguments as options")
+        XCTAssert(arguments.head == nil, "Options should classify all option arguments as options")
         
         XCTAssert(result == .success, "Options should recognize all flags added with onFlags")
         
@@ -180,18 +180,18 @@ class OptionsTests: XCTestCase {
         options.add(flags: ["-b"]) {}
         options.exitEarlyOptions = ["-a"]
         
-        var arguments = RawArguments(argumentString: "tester -a")
+        var arguments = ArgumentList(argumentString: "tester -a")
         let result1 = parse(arguments: arguments, with: options)
         XCTAssert(result1 == .exitEarly, "Options should exitEarly when exit early flag is given")
         
-        arguments = RawArguments(argumentString: "tester -b")
+        arguments = ArgumentList(argumentString: "tester -b")
         let result2 = parse(arguments: arguments, with: options)
         XCTAssert(result2 == .success, "Options should not exitEarly when no exit early flag is given")
     }
     
     // MARK: - Helpers
     
-    private func parse(arguments: RawArguments, with optionRegistry: OptionRegistry) -> OptionParserResult {
+    private func parse(arguments: ArgumentList, with optionRegistry: OptionRegistry) -> OptionParserResult {
         return DefaultOptionParser().recognizeOptions(in: arguments, from: optionRegistry)
     }
     

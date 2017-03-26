@@ -8,40 +8,9 @@
 
 import Foundation
 
-public class RawArgument {
+public class ArgumentList {
     
-    public enum Classification {
-        case appName
-        case commandName
-        case option
-        case commandArgument
-        case unclassified
-    }
-    
-    public let value: String
-    public let index: Int
-    
-    public var next: RawArgument? = nil
-    public var classification: Classification = .unclassified
-    
-    public var isUnclassified: Bool {
-        return classification == .unclassified
-    }
-    
-    public init(value: String, index: Int) {
-        self.value = value
-        self.index = index
-    }
-    
-}
-
-public class RawArguments {
-    
-    private let arguments: [RawArgument]
-    
-    public var unclassifiedArguments: [RawArgument] {
-        return arguments.filter { $0.isUnclassified }
-    }
+    var head: ArgumentNode?
     
     convenience init() {
         self.init(arguments: ProcessInfo.processInfo.arguments)
@@ -56,20 +25,43 @@ public class RawArguments {
             let matchRange = match.range
             var argument = argumentString.substring(from: argumentString.index(argumentString.startIndex, offsetBy: matchRange.location))
             argument = argument.substring(to: argument.index(argument.startIndex, offsetBy: matchRange.length))
-
+            
             if argument.hasPrefix("\"") {
                 argument = argument.substring(with: Range(uncheckedBounds: (lower: argument.index(argument.startIndex, offsetBy: 1), upper: argument.index(argument.endIndex, offsetBy: -1))))
             }
             return argument
         }
-
+        
         self.init(arguments: arguments)
     }
     
     init(arguments stringArguments: [String]) {
-        arguments = CLI.rawArgumentParser.parse(stringArguments: stringArguments)
+        head = CLI.argumentNodeParser.parse(stringArguments: stringArguments)
         
-        arguments.first?.classification = .appName
+        if let head = head {
+            remove(node: head)
+        }
+    }
+    
+    func remove(node: ArgumentNode) {
+        node.previous?.next = node.next
+        node.next?.previous = node.previous
+        if node.previous == nil { // Is head
+            head = node.next
+        }
+    }
+    
+}
+
+public class ArgumentNode {
+    
+    public let value: String
+    
+    public var next: ArgumentNode? = nil
+    weak public var previous: ArgumentNode? = nil
+    
+    public init(value: String) {
+        self.value = value
     }
     
 }

@@ -9,38 +9,46 @@
 // MARK: - CommandArgumentParser
 
 public protocol CommandArgumentParser {
-    func parse(rawArguments: RawArguments, with signature: CommandSignature) throws
+    func parse(arguments: ArgumentList, for command: Command) throws
 }
 
 // MARK: - DefaultCommandArgumentParser
 
 public class DefaultCommandArgumentParser: CommandArgumentParser {
     
-    public func parse(rawArguments: RawArguments, with signature: CommandSignature) throws {
+    public func parse(arguments: ArgumentList, for command: Command) throws {
+        let signature = CommandSignature(command: command)
+        
         for argument in signature.required {
-            guard let next = rawArguments.unclassifiedArguments.first else {
+            guard let next = arguments.head else {
                 throw CommandArgumentParserError.incorrectUsage("Insufficient number of argument")
             }
             argument.update(value: next.value)
-            next.classification = .commandArgument
+            arguments.remove(node: next)
         }
         
         for argument in signature.optional {
-            guard let next = rawArguments.unclassifiedArguments.first else {
+            guard let next = arguments.head else {
                 break
             }
             argument.update(value: next.value)
-            next.classification = .commandArgument
+            arguments.remove(node: next)
         }
         
         if let collected = signature.collected {
-            let last: [String] = rawArguments.unclassifiedArguments.map { $0.value }
-            if collected.required && last.isEmpty {
-                throw CommandArgumentParserError.incorrectUsage("Insufficient number of argument")
+            var last: [String] = []
+            while let node = arguments.head {
+                last.append(node.value)
+                arguments.remove(node: node)
             }
-            collected.update(value: last)
-        } else if !rawArguments.unclassifiedArguments.isEmpty {
-            print(rawArguments.unclassifiedArguments.map { $0.value })
+            if last.isEmpty {
+                if collected.required {
+                    throw CommandArgumentParserError.incorrectUsage("Insufficient number of argument")
+                }
+            } else {
+                collected.update(value: last)
+            }
+        } else if arguments.head != nil {
             throw CommandArgumentParserError.incorrectUsage("Too many arguments")
         }
     }

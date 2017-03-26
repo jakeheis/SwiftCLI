@@ -48,9 +48,9 @@ class CommandMessageGeneratorTests: XCTestCase {
         let optionRegistry = OptionRegistry()
         command.internalSetupOptions(options: optionRegistry)
         
-        let arguments = RawArguments(argumentString: "tester test -s -a --times")
-        arguments.unclassifiedArguments.first?.classification = .appName
-        arguments.unclassifiedArguments.first?.classification = .commandName
+        let arguments = ArgumentList(argumentString: "tester test -s -a --times")
+        arguments.remove(node: arguments.head!)
+        arguments.remove(node: arguments.head!)
         
         let result = DefaultOptionParser().recognizeOptions(in: arguments, from: optionRegistry)
         
