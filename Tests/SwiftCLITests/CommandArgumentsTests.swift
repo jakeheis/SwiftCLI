@@ -12,7 +12,7 @@ import XCTest
 
 class CommandArgumentsTests: XCTestCase {
     
-    static var allTests : [(String, (CommandArgumentsTests) -> () throws -> Void)] {
+    /*static var allTests : [(String, (CommandArgumentsTests) -> () throws -> Void)] {
         return [
             ("testEmptySignature", testEmptySignature),
             ("testRequiredArguments", testRequiredArguments),
@@ -175,6 +175,6 @@ class CommandArgumentsTests: XCTestCase {
             let _ = try createCommandArguments()
             XCTFail("\(assertMessage); mistakenly passed and returned \(arguments)")
         } catch {}
-    }
+    }*/
     
 }

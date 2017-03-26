@@ -12,7 +12,7 @@ public class VersionCommand: Command {
     public let signature = ""
     public let shortDescription = "Prints the current version of this app"
     
-    public func execute(arguments: CommandArguments) throws  {
+    public func execute() throws  {
         print("Version: \(CLI.version)")
     }
     

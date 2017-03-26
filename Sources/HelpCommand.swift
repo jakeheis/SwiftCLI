@@ -27,7 +27,7 @@ extension HelpCommand {
 public class DefaultHelpCommand: HelpCommand {
     
     public let name = "help"
-    public let signature = "[<opt>] ..."
+    private let any = OptionalCollectedArgument()
     public let shortDescription = "Prints this help information"
     
     public let failOnUnrecognizedOptions = false
@@ -39,7 +39,7 @@ public class DefaultHelpCommand: HelpCommand {
     
     public func setupOptions(options: OptionRegistry) {} // Don't actually do anything with any options
     
-    public func execute(arguments: CommandArguments) throws {
+    public func execute() throws {
         if printCLIDescription && !CLI.description.isEmpty {
             print("\(CLI.description)")
             print()
