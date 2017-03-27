@@ -11,8 +11,26 @@
 public class ChainableCommand: LightweightCommand {
     
     @discardableResult
-    public func withSignature(_ signature: String) -> ChainableCommand {
-        self.signature = signature
+    public func withArgument(named name: String) -> ChainableCommand {
+        arguments.append((name, Argument()))
+        return self
+    }
+    
+    @discardableResult
+    public func withOptionalArgument(named name: String) -> ChainableCommand {
+        arguments.append((name, OptionalArgument()))
+        return self
+    }
+    
+    @discardableResult
+    public func withCollectedArgument(named name: String) -> ChainableCommand {
+        arguments.append((name, CollectedArgument()))
+        return self
+    }
+    
+    @discardableResult
+    public func withCollectedOptionalArgument(named name: String) -> ChainableCommand {
+        arguments.append((name, OptionalCollectedArgument()))
         return self
     }
     
@@ -41,7 +59,7 @@ public class ChainableCommand: LightweightCommand {
     }
     
     @discardableResult
-    public func withExecutionBlock(_ execution: @escaping ExecutionBlock) -> ChainableCommand {
+    public func withExecution(_ execution: @escaping ExecutionBlock) -> ChainableCommand {
         executionBlock = execution
         return self
     }

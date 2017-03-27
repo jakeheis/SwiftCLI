@@ -11,13 +11,13 @@
 public class LightweightCommand: OptionCommand {
     
     public var name: String = ""
-    public var signature: String = ""
     public var shortDescription: String = ""
+    public var arguments: [(String, Arg)] = []
     
     public var failOnUnrecognizedOptions = true
     public var unrecognizedOptionsPrintingBehavior: UnrecognizedOptionsPrintingBehavior = .printAll
     
-    public typealias ExecutionBlock = () throws -> ()
+    public typealias ExecutionBlock = (_ arguments: [String: Arg]) throws -> ()
     public typealias OptionsSetupBlock = (_ options: OptionRegistry) -> ()
     
     public var executionBlock: ExecutionBlock? = nil
@@ -32,7 +32,11 @@ public class LightweightCommand: OptionCommand {
     }
     
     public func execute() throws {
-        try executionBlock?()
+        var dict: [String: Arg] = [:]
+        for arg in arguments {
+            dict[arg.0] = arg.1
+        }
+        try executionBlock?(dict)
     }
     
 }

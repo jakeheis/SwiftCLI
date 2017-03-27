@@ -14,12 +14,11 @@ public protocol Command {
     /// The name of the command; used to route arguments to commands
     var name: String { get }
 
-    // The argument signature of the command; used to map RawArguments to CommandArguments
-    /// See the README for details on this
-    //var signature: String { get }
-
     /// A short description of the command; printed in the command's usage statement
     var shortDescription: String { get }
+    
+    /// The arguments this command accepts - dervied automatically, don't implement
+    var arguments: [(String, Arg)] { get }
     
     /**
         The actual execution block of the command
@@ -72,9 +71,14 @@ extension OptionCommand {
 // MARK: Additional functionality
 
 extension Command {
+    
+    public var arguments: [(String, Arg)] {
+        let mirror = Mirror(reflecting: self)
+        return mirror.children.filter({ $0.label != nil && $0.value is Arg }).map { ($0.label!, $0.value as! Arg) }
+    }
 
-    var signature: String {
-        return CommandSignature(command: self).signature
+    public var signature: String {
+        return arguments.map({ $0.1.signature(for: $0.0) }).joined(separator: " ")
     }
 
     public var usage: String {
