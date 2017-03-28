@@ -24,6 +24,7 @@ class SwiftCLITests: XCTestCase {
     override func setUp() {
         super.setUp()
         
+        CLI.clearCommands()
         CLI.setup(name: "tester")
         CLI.register(command: TestCommand {(executionString) in
             self.executionString = executionString

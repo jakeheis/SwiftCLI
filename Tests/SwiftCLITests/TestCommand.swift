@@ -13,13 +13,14 @@ class TestCommand: OptionCommand {
 
     let name = "test"
     let shortDescription = "A command to test stuff"
-
-    var silentFlag = false
-    var times: Int = 1
+    
     var executionString = ""
 
     let testName = Argument()
     let testerName = OptionalArgument()
+    
+    let silent = Flag("-s", "--silent", usage: "Silence all test output")
+    let times = Key<Int>("-t", "--times", usage: "Number of times to run the test")
 
     let completion: ((_ executionString: String) -> ())?
 
@@ -27,18 +28,9 @@ class TestCommand: OptionCommand {
         self.completion = completion
     }
 
-    func setupOptions(options: OptionRegistry) {
-        options.add(flags: ["-s", "--silent"], usage: "Silence all test output") {
-            self.silentFlag = true
-        }
-        options.add(keys: ["-t", "--times"], usage: "Number of times to run the test", valueSignature: "times") { (value) in
-            self.times = Int(value)!
-        }
-    }
-
     func execute() throws {
-        executionString = "\(testerName.value!) will test \(testName.value), \(times) times"
-        if silentFlag {
+        executionString = "\(testerName.value!) will test \(testName.value), \(times.value ?? 1) times"
+        if silent.value {
             executionString += ", silently"
         }
 

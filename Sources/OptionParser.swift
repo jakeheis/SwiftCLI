@@ -9,96 +9,55 @@
 // MARK: - OptionParser
 
 public protocol OptionParser {
-    func recognizeOptions(in arguments: ArgumentList, from optionRegistry: OptionRegistry) -> OptionParserResult
-}
-
-// MARK: - OptionParserResult
-
-public enum OptionParserResult {
-    case success
-    case exitEarly
-    case incorrectOptionUsage(IncorrectOptionUsage)
+    func recognizeOptions(in arguments: ArgumentList, from optionRegistry: OptionRegistry) throws
 }
 
 // MARK: - DefaultOptionParser
 
+public enum OptionParserError: Swift.Error {
+    case unrecognizedOption(String)
+    case illegalKeyValue(String, String)
+    case noValueForKey(String)
+    
+    var message: String {
+        switch self {
+        case .unrecognizedOption(let option):
+            return "Unrecognized option: \(option)"
+        case .illegalKeyValue(let key, let value):
+            return "Illegal type passed to \(key): \(value)"
+        case .noValueForKey(let key):
+            return "Expected a value to follow: \(key)"
+        }
+    }
+}
+
 public class DefaultOptionParser: OptionParser {
     
-    public func recognizeOptions(in arguments: ArgumentList, from optionRegistry: OptionRegistry) -> OptionParserResult {
-        var unrecognizedOptions: [String] = []
-        var keysNotGivenValue: [String] = []
-        var exitEarly: Bool = false
-        
+    public func recognizeOptions(in arguments: ArgumentList, from optionRegistry: OptionRegistry) throws {
         var current = arguments.head
         while let node = current {
             if node.value.hasPrefix("-") {
-                if let flagBlock = optionRegistry.flagBlocks[node.value] {
-                    flagBlock()
-                } else if let keyBlock = optionRegistry.keyBlocks[node.value] {
+                if let flag = optionRegistry.flags[node.value] {
+                    flag.setOn()
+                } else if let key = optionRegistry.keys[node.value]{
                     if let next = node.next, !next.value.hasPrefix("-") {
-                        keyBlock(next.value)
+                        do {
+                            try key.setValue(next.value)
+                        } catch {
+                            throw OptionParserError.illegalKeyValue(node.value, next.value)
+                        }
                         arguments.remove(node: next)
                     } else {
-                        keysNotGivenValue.append(node.value)
+                        throw OptionParserError.noValueForKey(node.value)
                     }
                 } else {
-                    unrecognizedOptions.append(node.value)
+                    throw OptionParserError.unrecognizedOption(node.value)
                 }
                 arguments.remove(node: node)
-                
-                if optionRegistry.exitEarlyOptions.contains(node.value) {
-                    exitEarly = true
-                }
             }
             current = node.next
         }
-        
-        if exitEarly {
-            return .exitEarly
-        }
-        
-        if !unrecognizedOptions.isEmpty || !keysNotGivenValue.isEmpty {
-            let incorrect = IncorrectOptionUsage(optionRegistry: optionRegistry, unrecognizedOptions: unrecognizedOptions, keysNotGivenValue: keysNotGivenValue)
-            return .incorrectOptionUsage(incorrect)
-        }
-        
-        return .success
     }
     
 }
 
-public struct IncorrectOptionUsage {
-    
-    public let optionRegistry: OptionRegistry
-    public let unrecognizedOptions: [String]
-    public let keysNotGivenValue: [String]
-    
-    public func misusedOptionsPresent() -> Bool {
-        return unrecognizedOptions.count > 0 || keysNotGivenValue.count > 0
-    }
-    
-    public func misusedOptionsMessage() -> String {
-        var message = ""
-        
-        if unrecognizedOptions.count > 0 {
-            message += "Unrecognized options:"
-            for option in unrecognizedOptions {
-                message += "\n\t\(option)"
-            }
-            
-            message += "\n"
-        }
-        
-        if keysNotGivenValue.count > 0 {
-            message += "Required values for options but given none:"
-            for option in keysNotGivenValue {
-                message += "\n\t\(option)"
-            }
-            
-            message += "\n"
-        }
-        
-        return message
-    }
-    
-}

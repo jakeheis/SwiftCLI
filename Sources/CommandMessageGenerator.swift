@@ -7,23 +7,23 @@
 //
 
 public protocol UsageStatementGenerator {
-    func generateUsageStatement(for command: Command, optionRegistry: OptionRegistry?) -> String
+    func generateUsageStatement(for command: Command) -> String
 }
 
 public protocol MisusedOptionsMessageGenerator {
-    func generateMisusedOptionsStatement(for command: Command, incorrectOptionUsage: IncorrectOptionUsage) -> String?
+    func generateMisusedOptionsStatement(for command: OptionCommand, error: OptionParserError) -> String?
 }
 
 public class DefaultUsageStatementGenerator: UsageStatementGenerator {
     
-    public func generateUsageStatement(for command: Command, optionRegistry: OptionRegistry?) -> String {
+    public func generateUsageStatement(for command: Command) -> String {
         var message = command.usage
         
-        if let options = optionRegistry?.options, !options.isEmpty {
+        if let optionCommand = command as? OptionCommand, !optionCommand.options.isEmpty {
             message += " [options]\n"
             
-            let sortedOptions = options.sorted { (lhs, rhs) in
-                return lhs.options.first! < rhs.options.first!
+            let sortedOptions = optionCommand.options.map({ $0.1 }).sorted { (lhs, rhs) in
+                return lhs.names.first! < rhs.names.first!
             }
             for option in sortedOptions {
                 let usage = option.usage
@@ -42,20 +42,16 @@ public class DefaultUsageStatementGenerator: UsageStatementGenerator {
 
 public class DefaultMisusedOptionsMessageGenerator: MisusedOptionsMessageGenerator {
 
-    public func generateMisusedOptionsStatement(for command: Command, incorrectOptionUsage: IncorrectOptionUsage) -> String? {
-        guard let optionsCommand = command as? OptionCommand else {
-            return nil
-        }
-        
-        switch optionsCommand.unrecognizedOptionsPrintingBehavior {
+    public func generateMisusedOptionsStatement(for command: OptionCommand, error: OptionParserError) -> String? {
+        switch command.unrecognizedOptionsPrintingBehavior {
         case .printNone:
             return nil
         case .printOnlyUsage:
-            return CLI.usageStatementGenerator.generateUsageStatement(for: command, optionRegistry: incorrectOptionUsage.optionRegistry)
+            return CLI.usageStatementGenerator.generateUsageStatement(for: command)
         case .printOnlyUnrecognizedOptions:
-            return incorrectOptionUsage.misusedOptionsMessage()
+            return error.message
         case .printAll:
-            return CLI.usageStatementGenerator.generateUsageStatement(for: command, optionRegistry: incorrectOptionUsage.optionRegistry) + "\n" + incorrectOptionUsage.misusedOptionsMessage()
+            return CLI.usageStatementGenerator.generateUsageStatement(for: command) + "\n" + error.message
         }
     }
     

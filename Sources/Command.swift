@@ -42,14 +42,7 @@ public protocol OptionCommand: Command {
     var unrecognizedOptionsPrintingBehavior: UnrecognizedOptionsPrintingBehavior { get }
 
     /// Whether help for the command should be shown when -h is passed. Default is true.
-    var helpOnHFlag: Bool { get }
-
-    /**
-        Where the command should configure all possible Options for the command
-
-        - Parameter options: the instance of Options which should be set up
-    */
-    func setupOptions(options: OptionRegistry)
+    var helpFlag: Flag? { get }
 
 }
 
@@ -94,23 +87,22 @@ extension Command {
 
         return message
     }
+    
+    public var helpFlag: Flag? {
+        return Flag("-h", "--help", usage: "Show help information for this command")
+    }
 
 }
 
 extension OptionCommand {
-
-    func internalSetupOptions(options: OptionRegistry) {
-        setupOptions(options: options)
-
-        if helpOnHFlag {
-            let helpFlags = ["-h", "--help"]
-
-            options.add(flags: helpFlags, usage: "Show help information for this command") {(flag) in
-                print(CLI.usageStatementGenerator.generateUsageStatement(for: self, optionRegistry: options))
-            }
-
-            options.exitEarlyOptions += helpFlags
+    
+    public var options: [(String, Option)] {
+        let mirror = Mirror(reflecting: self)
+        var options = mirror.children.filter({ $0.label != nil && $0.value is Option }).map { ($0.label!, $0.value as! Option) }
+        if let helpFlag = helpFlag {
+            options.append(("helpFlag", helpFlag))
         }
+        return options
     }
 
 }

@@ -98,6 +98,11 @@ public class CLI {
     public static func registerChainableCommand(commandName: String) -> ChainableCommand {
         return registerChainableCommand(name: commandName)
     }
+    
+    /// For testing
+    internal static func clearCommands() {
+        commands = []
+    }
 
     /**
         Aliases from one command name to another (e.g. from "-h" to "help" or from "co" to "checkout")
@@ -156,8 +161,8 @@ public class CLI {
             let command = try routeCommand(arguments: arguments)
 
             if let optionCommand = command as? OptionCommand {
-                let result = try parseOptions(command: optionCommand, arguments: arguments)
-                if case .exitEarly = result {
+                try parseOptions(command: optionCommand, arguments: arguments)
+                if optionCommand.helpFlag?.value == true {
                     return CLIResult.success
                 }
             }
@@ -216,23 +221,19 @@ public class CLI {
         return command
     }
 
-    private static func parseOptions(command: OptionCommand, arguments: ArgumentList) throws -> OptionParserResult {
-        let optionRegistry = OptionRegistry()
+    private static func parseOptions(command: OptionCommand, arguments: ArgumentList) throws {
+        let optionRegistry = OptionRegistry(command: command)
 
-        command.internalSetupOptions(options: optionRegistry)
-
-        let result = optionParser.recognizeOptions(in: arguments, from: optionRegistry)
-
-        if case .incorrectOptionUsage(let incorrectOptionUsage) = result {
-            if let message = misusedOptionsMessageGenerator.generateMisusedOptionsStatement(for: command, incorrectOptionUsage: incorrectOptionUsage) {
+        do {
+            try optionParser.recognizeOptions(in: arguments, from: optionRegistry)
+        } catch let error as OptionParserError {
+            if let message = misusedOptionsMessageGenerator.generateMisusedOptionsStatement(for: command, error: error) {
                 printError(message)
             }
             if command.failOnUnrecognizedOptions {
                 throw CLIError.emptyError
             }
         }
-
-        return result
     }
 }
 
