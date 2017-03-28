@@ -8,14 +8,13 @@
 
 /// Can be instantiated and configured as a fully functional command rather
 /// than manually implementing CommandType. Should only be used for simple commands
-public class LightweightCommand: OptionCommand {
+public class LightweightCommand: Command {
     
     public var name: String = ""
     public var shortDescription: String = ""
     public var arguments: [(String, Arg)] = []
     
     public var failOnUnrecognizedOptions = true
-    public var unrecognizedOptionsPrintingBehavior: UnrecognizedOptionsPrintingBehavior = .printAll
     
     public typealias ExecutionBlock = (_ arguments: [String: Arg]) throws -> ()
     public typealias OptionsSetupBlock = (_ options: OptionRegistry) -> ()

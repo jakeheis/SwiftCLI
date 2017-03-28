@@ -11,7 +11,7 @@ public protocol UsageStatementGenerator {
 }
 
 public protocol MisusedOptionsMessageGenerator {
-    func generateMisusedOptionsStatement(for command: OptionCommand, error: OptionParserError) -> String?
+    func generateMisusedOptionsStatement(for command: Command, error: OptionParserError) -> String
 }
 
 public class DefaultUsageStatementGenerator: UsageStatementGenerator {
@@ -19,10 +19,10 @@ public class DefaultUsageStatementGenerator: UsageStatementGenerator {
     public func generateUsageStatement(for command: Command) -> String {
         var message = command.usage
         
-        if let optionCommand = command as? OptionCommand, !optionCommand.options.isEmpty {
+        if !command.options.isEmpty {
             message += " [options]\n"
             
-            let sortedOptions = optionCommand.options.map({ $0.1 }).sorted { (lhs, rhs) in
+            let sortedOptions = command.options.map({ $0.1 }).sorted { (lhs, rhs) in
                 return lhs.names.first! < rhs.names.first!
             }
             for option in sortedOptions {
@@ -42,17 +42,8 @@ public class DefaultUsageStatementGenerator: UsageStatementGenerator {
 
 public class DefaultMisusedOptionsMessageGenerator: MisusedOptionsMessageGenerator {
 
-    public func generateMisusedOptionsStatement(for command: OptionCommand, error: OptionParserError) -> String? {
-        switch command.unrecognizedOptionsPrintingBehavior {
-        case .printNone:
-            return nil
-        case .printOnlyUsage:
-            return CLI.usageStatementGenerator.generateUsageStatement(for: command)
-        case .printOnlyUnrecognizedOptions:
-            return error.message
-        case .printAll:
-            return CLI.usageStatementGenerator.generateUsageStatement(for: command) + "\n" + error.message
-        }
+    public func generateMisusedOptionsStatement(for command: Command, error: OptionParserError) -> String {
+        return CLI.usageStatementGenerator.generateUsageStatement(for: command) + "\n" + error.message
     }
     
 }

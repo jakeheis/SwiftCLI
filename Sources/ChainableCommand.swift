@@ -47,12 +47,6 @@ public class ChainableCommand: LightweightCommand {
     }
     
     @discardableResult
-    public func withUnrecognizedOptionsPrintingBehavior(_ behavior: UnrecognizedOptionsPrintingBehavior) -> ChainableCommand {
-        unrecognizedOptionsPrintingBehavior = behavior
-        return self
-    }
-    
-    @discardableResult
     public func withFailOnUnrecognizedOptions(_ shouldFail: Bool) -> ChainableCommand {
         failOnUnrecognizedOptions = shouldFail
         return self

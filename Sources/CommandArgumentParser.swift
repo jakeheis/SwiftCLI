@@ -48,7 +48,9 @@ public class DefaultCommandArgumentParser: CommandArgumentParser {
             } else {
                 collected.update(value: last)
             }
-        } else if arguments.head != nil {
+        }
+        
+        if arguments.head != nil {
             throw CommandArgumentParserError.incorrectUsage("Too many arguments")
         }
     }

@@ -9,7 +9,7 @@
 
 import SwiftCLI
 
-class TestCommand: OptionCommand {
+class TestCommand: Command {
 
     let name = "test"
     let shortDescription = "A command to test stuff"

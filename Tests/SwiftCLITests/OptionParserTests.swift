@@ -163,7 +163,7 @@ class OptionsTests: XCTestCase {
     
 }
 
-class OptionCmd: OptionCommand {
+class OptionCmd: Command {
     let name = "cmd"
     let shortDescription = ""
     var helpFlag: Flag? = nil

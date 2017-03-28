@@ -12,7 +12,7 @@ public class OptionRegistry {
     let keys: [String: AnyKey]
     let all: [Option]
     
-    init(command: OptionCommand) {
+    init(command: Command) {
         var flags: [String: Flag] = [:]
         var keys: [String: AnyKey] = [:]
         var all: [Option] = []

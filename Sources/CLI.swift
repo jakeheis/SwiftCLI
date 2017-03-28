@@ -158,15 +158,16 @@ public class CLI {
 
     private static func go(with arguments: ArgumentList) -> CLIResult {
         do {
+            // Step 1: route
             let command = try routeCommand(arguments: arguments)
 
-            if let optionCommand = command as? OptionCommand {
-                try parseOptions(command: optionCommand, arguments: arguments)
-                if optionCommand.helpFlag?.value == true {
-                    return CLIResult.success
-                }
+            // Step 2: parse options
+            try parseOptions(command: command, arguments: arguments)
+            if command.helpFlag?.value == true {
+                return CLIResult.success
             }
 
+            // Step 3: parse arguments
             do {
                 try commandArgumentParser.parse(arguments: arguments, for: command)
             } catch let CommandArgumentParserError.incorrectUsage(message) {
@@ -177,6 +178,7 @@ public class CLI {
                 throw error
             }
 
+            // Step 4: execute
             try command.execute()
 
             return CLIResult.success
@@ -221,18 +223,18 @@ public class CLI {
         return command
     }
 
-    private static func parseOptions(command: OptionCommand, arguments: ArgumentList) throws {
+    private static func parseOptions(command: Command, arguments: ArgumentList) throws {
+        if command is HelpCommand {
+            return
+        }
+        
         let optionRegistry = OptionRegistry(command: command)
 
         do {
             try optionParser.recognizeOptions(in: arguments, from: optionRegistry)
         } catch let error as OptionParserError {
-            if let message = misusedOptionsMessageGenerator.generateMisusedOptionsStatement(for: command, error: error) {
-                printError(message)
-            }
-            if command.failOnUnrecognizedOptions {
-                throw CLIError.emptyError
-            }
+            let message = misusedOptionsMessageGenerator.generateMisusedOptionsStatement(for: command, error: error)
+            throw CLIError.error(message)
         }
     }
 }
