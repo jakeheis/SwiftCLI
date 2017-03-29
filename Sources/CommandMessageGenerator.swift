@@ -11,7 +11,7 @@ public protocol UsageStatementGenerator {
 }
 
 public protocol MisusedOptionsMessageGenerator {
-    func generateMisusedOptionsStatement(for command: Command, error: OptionParserError) -> String
+    func generateMisusedOptionsStatement(for command: Command, error: OptionRecognizerError) -> String
 }
 
 public class DefaultUsageStatementGenerator: UsageStatementGenerator {
@@ -42,7 +42,7 @@ public class DefaultUsageStatementGenerator: UsageStatementGenerator {
 
 public class DefaultMisusedOptionsMessageGenerator: MisusedOptionsMessageGenerator {
 
-    public func generateMisusedOptionsStatement(for command: Command, error: OptionParserError) -> String {
+    public func generateMisusedOptionsStatement(for command: Command, error: OptionRecognizerError) -> String {
         return CLI.usageStatementGenerator.generateUsageStatement(for: command) + "\n" + error.message
     }
     

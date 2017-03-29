@@ -59,7 +59,7 @@ class RouterTests: XCTestCase {
     // Node(bake) -> Node(cake) -> Node(-q) -> Node(-t) -> Node(frosting)
     // Router()
     // Command: bake -- Node(cake) -> Node(--with-topping) -> Node(frosting)
-    // OptionParser()
+    // OptionRecognizer()
     // Command: bake, Options: topped with frosting -- Node(cake)
     // CommandArgumentParser()
     // Command: bake, Arguments: cake, Options: topped with frosting

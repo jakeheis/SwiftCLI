@@ -6,17 +6,17 @@
 //  Copyright (c) 2016 jakeheis. All rights reserved.
 //
 
-// MARK: - OptionParser
+// MARK: - OptionRecognizer
 
-public protocol OptionParser {
-    func recognizeOptions(in arguments: ArgumentList, for command: Command) throws
+public protocol OptionRecognizer {
+    func recognizeOptions(of command: Command, in arguments: ArgumentList) throws
 }
 
-// MARK: - DefaultOptionParser
+// MARK: - DefaultOptionRecognizer
 
-public class DefaultOptionParser: OptionParser {
+public class DefaultOptionRecognizer: OptionRecognizer {
     
-    public func recognizeOptions(in arguments: ArgumentList, for command: Command) throws {
+    public func recognizeOptions(of command: Command, in arguments: ArgumentList) throws {
         let optionRegistry = OptionRegistry(command: command)
         
         let iterator = arguments.iterator()
@@ -26,7 +26,7 @@ public class DefaultOptionParser: OptionParser {
             }
         }
         if let failingGroup = optionRegistry.failingGroup() {
-            throw OptionParserError.groupRestrictionFailed(failingGroup)
+            throw OptionRecognizerError.groupRestrictionFailed(failingGroup)
         }
     }
     
@@ -35,23 +35,23 @@ public class DefaultOptionParser: OptionParser {
             flag.setOn()
         } else if let key = optionRegistry.key(for: node.value) {
             guard let next = node.next, !next.value.hasPrefix("-") else {
-                throw OptionParserError.noValueForKey(node.value)
+                throw OptionRecognizerError.noValueForKey(node.value)
             }
             guard key.setValue(next.value) else {
-                throw OptionParserError.illegalKeyValue(node.value, next.value)
+                throw OptionRecognizerError.illegalKeyValue(node.value, next.value)
             }
             arguments.remove(node: next)
         } else {
-            throw OptionParserError.unrecognizedOption(node.value)
+            throw OptionRecognizerError.unrecognizedOption(node.value)
         }
         arguments.remove(node: node)
     }
     
 }
 
-// MARK: - OptionParserError
+// MARK: - OptionRecognizerError
 
-public enum OptionParserError: Swift.Error {
+public enum OptionRecognizerError: Swift.Error {
     case unrecognizedOption(String)
     case illegalKeyValue(String, String)
     case noValueForKey(String)

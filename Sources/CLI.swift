@@ -27,7 +27,7 @@ public class CLI {
     
     public static var argumentListManipulators: [ArgumentListManipulator] = [commandAliaser, OptionSplitter()]
     public static var router: Router = DefaultRouter()
-    public static var optionParser: OptionParser = DefaultOptionParser()
+    public static var optionRecognizer: OptionRecognizer = DefaultOptionRecognizer()
     public static var parameterFiller: ParameterFiller = DefaultParameterFiller()
     
     // MARK: - Private
@@ -180,8 +180,8 @@ public class CLI {
         }
         
         do {
-            try optionParser.recognizeOptions(in: arguments, for: command)
-        } catch let error as OptionParserError {
+            try optionRecognizer.recognizeOptions(of: command, in: arguments)
+        } catch let error as OptionRecognizerError {
             let message = misusedOptionsMessageGenerator.generateMisusedOptionsStatement(for: command, error: error)
             throw CLIError.error(message)
         }

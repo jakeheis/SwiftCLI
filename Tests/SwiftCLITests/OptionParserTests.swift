@@ -1,5 +1,5 @@
 //
-//  OptionsSpec.swift
+//  OptionRecognizerTests.swift
 //  SwiftCLI
 //
 //  Created by Jake Heiser on 8/10/14.
@@ -9,9 +9,9 @@
 import XCTest
 @testable import SwiftCLI
 
-class OptionParserTests: XCTestCase {
+class OptionRecognizerTests: XCTestCase {
     
-   static var allTests : [(String, (OptionParserTests) -> () throws -> Void)] {
+   static var allTests : [(String, (OptionRecognizerTests) -> () throws -> Void)] {
         return [
             ("testSimpleFlagParsing", testSimpleFlagParsing),
             ("testSimpleKeyParsing", testSimpleKeyParsing),
@@ -140,18 +140,18 @@ class OptionParserTests: XCTestCase {
     
     private func assertParseSuccess(arguments: ArgumentList, with cmd: Command) {
         do {
-            try DefaultOptionParser().recognizeOptions(in: arguments, for: cmd)
+            try DefaultOptionRecognizer().recognizeOptions(of: cmd, in: arguments)
         } catch {
             XCTFail()
         }
     }
     
-    private func assertParseFailure(arguments: ArgumentList, with cmd: Command, error expectedError: OptionParserError) {
+    private func assertParseFailure(arguments: ArgumentList, with cmd: Command, error expectedError: OptionRecognizerError) {
         do {
             print(cmd.optionGroups)
-            try DefaultOptionParser().recognizeOptions(in: arguments, for: cmd)
+            try DefaultOptionRecognizer().recognizeOptions(of: cmd, in: arguments)
             XCTFail()
-        } catch let error as OptionParserError {
+        } catch let error as OptionRecognizerError {
             switch (error, expectedError) {
             case (.unrecognizedOption(let option1), .unrecognizedOption(let option2)) where option1 == option2:
                 break

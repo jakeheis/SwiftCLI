@@ -47,9 +47,9 @@ class CommandMessageGeneratorTests: XCTestCase {
         arguments.remove(node: arguments.head!)
         
         do {
-            try DefaultOptionParser().recognizeOptions(in: arguments, for: command)
+            try DefaultOptionRecognizer().recognizeOptions(of: command, in: arguments)
             XCTFail("Option parser should fail on incorrectly used options")
-        } catch let error as OptionParserError {
+        } catch let error as OptionRecognizerError {
             let message = DefaultMisusedOptionsMessageGenerator().generateMisusedOptionsStatement(for: command, error: error)
             
             let expectedMessage = ([
