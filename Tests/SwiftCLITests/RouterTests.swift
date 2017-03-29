@@ -57,6 +57,10 @@ class RouterTests: XCTestCase {
     func testAliasRoute() {
         let args = ArgumentList(argumentString: "tester -b")
         
+        let aliaser = CommandAliaser()
+        aliaser.alias(from: "-b", to: "beta")
+        aliaser.manipulate(arguments: args)
+        
         guard let command = route(args) else {
             XCTFail()
             return
@@ -91,11 +95,8 @@ class RouterTests: XCTestCase {
     private func route(_ arguments: ArgumentList, router: Router? = nil) -> Command? {
         let commands = [alphaCommand, betaCommand, fallbackCommand] as [Command]
         
-        let aliases = [
-            "-b": "beta"
-        ]
         let router = router ?? DefaultRouter()
-        return router.route(commands: commands, aliases: aliases, arguments: arguments)
+        return router.route(commands: commands, arguments: arguments)
     }
     
 }

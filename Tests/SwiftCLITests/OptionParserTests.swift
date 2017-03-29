@@ -123,6 +123,7 @@ class OptionsTests: XCTestCase {
     func testFlagSplitting() {
         let cmd = DoubleFlagCmd()
         let arguments = ArgumentList(argumentString: "tester -ab")
+        OptionSplitter().manipulate(arguments: arguments)
         
         assertParseSuccess(arguments: arguments, with: cmd)
         

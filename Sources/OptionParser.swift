@@ -19,12 +19,11 @@ public class DefaultOptionParser: OptionParser {
     public func recognizeOptions(in arguments: ArgumentList, for command: Command) throws {
         let optionRegistry = OptionRegistry(command: command)
         
-        var current = arguments.head
-        while let node = current {
+        let iterator = arguments.iterator()
+        while let node = iterator.next() {
             if node.value.hasPrefix("-") {
                 try handleOption(node: node, arguments: arguments, optionRegistry: optionRegistry)
             }
-            current = node.next
         }
         if let failingGroup = optionRegistry.failingGroup() {
             throw OptionParserError.groupRestrictionFailed(failingGroup)

@@ -16,21 +16,24 @@ public class CLI {
     public static var version = "1.0"
     public static var description = ""
     
-    private static var commands: [Command] = []
-    private static var aliases: [String: String] = [:]
-    
     public static var helpCommand: HelpCommand = DefaultHelpCommand()
     public static var versionCommand: Command = VersionCommand()
     
+    public static let commandAliaser = CommandAliaser()
+    
     // MARK: - Advanced customization
     
-    public static var router: Router = DefaultRouter()
     public static var usageStatementGenerator: UsageStatementGenerator = DefaultUsageStatementGenerator()
     public static var misusedOptionsMessageGenerator: MisusedOptionsMessageGenerator = DefaultMisusedOptionsMessageGenerator()
     
-    public static var argumentNodeParser: ArgumentNodeParser = DefaultArgumentNodeParser()
+    public static var argumentListManipulators: [ArgumentListManipulator] = [commandAliaser, OptionSplitter()]
+    public static var router: Router = DefaultRouter()
     public static var optionParser: OptionParser = DefaultOptionParser()
     public static var commandArgumentParser: CommandArgumentParser = DefaultCommandArgumentParser()
+    
+    // MARK: - Private
+    
+    private static var commands: [Command] = []
     
     // MARK: - Setup
     
@@ -51,9 +54,6 @@ public class CLI {
         if let description = description {
             self.description = description
         }
-        
-        alias(from: "-h", to: "help")
-        alias(from: "-v", to: "version")
     }
     
     /**
@@ -104,23 +104,6 @@ public class CLI {
         commands = []
     }
     
-    /**
-     Aliases from one command name to another (e.g. from "-h" to "help" or from "co" to "checkout")
-     - Parameter from: Command name from which the alias should be made (e.g. "-h")
-     - Parameter to: Command name to which the alias should be made (e.g. "help")
-     */
-    public static func alias(from: String, to: String) {
-        aliases[from] = to
-    }
-    
-    /**
-     Removes an alias from one command name to another
-     - Parameter from: Alias source which should be removed
-     */
-    public static func removeAlias(from: String) {
-        aliases.removeValue(forKey: from)
-    }
-    
     // MARK: - Go
     
     /**
@@ -157,6 +140,8 @@ public class CLI {
     // MARK: - Privates
     
     private static func go(with arguments: ArgumentList) -> CLIResult {
+        argumentListManipulators.forEach { $0.manipulate(arguments: arguments) }
+        
         do {
             // Step 1: route
             let command = try routeCommand(arguments: arguments)
@@ -199,7 +184,7 @@ public class CLI {
         availableCommands.append(versionCommand)
         helpCommand.availableCommands = availableCommands
         
-        guard let command = router.route(commands: availableCommands, aliases: aliases, arguments: arguments) else {
+        guard let command = router.route(commands: availableCommands, arguments: arguments) else {
             if let attemptedCommandName = arguments.head {
                 printError("Command \"\(attemptedCommandName)\" not found\n")
                 
