@@ -11,7 +11,7 @@ import Foundation
 /// A linked list of the arguments passed by the user
 public class ArgumentList {
     
-    var head: ArgumentNode?
+    public var head: ArgumentNode?
     
     /// Creates a list of the arguments passed from the command line
     public convenience init() {

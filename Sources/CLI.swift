@@ -188,6 +188,10 @@ public class CLI {
     }
     
     private static func parseArguments(command: Command, arguments: ArgumentList) throws {
+        if command is HelpCommand {
+            return
+        }
+        
         do {
             try parameterFiller.fillParameters(of: command, with: arguments)
         } catch let error as ParameterFillerError {
