@@ -42,14 +42,12 @@ class CommandMessageGeneratorTests: XCTestCase {
     }
     
     func testMisusedOptionsStatementGeneration() {
-        let optionRegistry = OptionRegistry(command: command)
-        
         let arguments = ArgumentList(argumentString: "tester test -s -a --times")
         arguments.remove(node: arguments.head!)
         arguments.remove(node: arguments.head!)
         
         do {
-            try DefaultOptionParser().recognizeOptions(in: arguments, from: optionRegistry)
+            try DefaultOptionParser().recognizeOptions(in: arguments, for: command)
             XCTFail("Option parser should fail on incorrectly used options")
         } catch let error as OptionParserError {
             let message = DefaultMisusedOptionsMessageGenerator().generateMisusedOptionsStatement(for: command, error: error)

@@ -8,9 +8,10 @@
 
 public class OptionRegistry {
     
-    let flags: [String: Flag]
-    let keys: [String: AnyKey]
-    let all: [Option]
+    private let flags: [String: Flag]
+    private let keys: [String: AnyKey]
+    private let all: [Option]
+    private let groups: [OptionGroup]
     
     init(command: Command) {
         var flags: [String: Flag] = [:]
@@ -31,6 +32,86 @@ public class OptionRegistry {
         self.flags = flags
         self.keys = keys
         self.all = all
+        self.groups = command.optionGroups
+    }
+    
+    func flag(for key: String) -> Flag? {
+        if let flag = flags[key] {
+            incrementCount(for: flag)
+            return flag
+        }
+        return nil
+    }
+    
+    func key(for key: String) -> AnyKey? {
+        if let key = keys[key] {
+            incrementCount(for: key)
+            return key
+        }
+        return nil
+    }
+    
+    func incrementCount(for option: Option) {
+        for group in groups {
+            if group.options.contains(where: { $0.names == option.names }) {
+                group.count += 1
+                break
+            }
+        }
+    }
+    
+    func failingGroup() -> OptionGroup? {
+        for group in groups {
+            if !group.check() {
+                return group
+            }
+        }
+        return nil
+    }
+    
+}
+
+public class OptionGroup {
+    
+    enum Restriction {
+        case atMostOne // 0 or 1
+        case exactlyOne // 1
+        case atLeastOne // 1 or more
+    }
+    
+    let options: [Option]
+    let restriction: Restriction
+    
+    var message: String {
+        let names = options.flatMap({ $0.names.first }).joined(separator: " ")
+        var str = "Must pass "
+        switch restriction {
+        case .exactlyOne:
+            str += "exactly one of"
+        case .atLeastOne:
+            str += "at least one of"
+        case .atMostOne:
+            str += "at most one of"
+        }
+        str += ": \(names)"
+        return str
+    }
+    
+    fileprivate var count: Int = 0
+    
+    init(options: [Option], restriction: Restriction) {
+        self.options = options
+        self.restriction = restriction
+    }
+    
+    func check() -> Bool  {
+        if count == 0 && restriction != .atMostOne {
+            return false
+        }
+        if count > 1 && restriction != .atLeastOne {
+            return false
+        }
+        return true
     }
     
 }

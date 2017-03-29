@@ -228,10 +228,8 @@ public class CLI {
             return
         }
         
-        let optionRegistry = OptionRegistry(command: command)
-
         do {
-            try optionParser.recognizeOptions(in: arguments, from: optionRegistry)
+            try optionParser.recognizeOptions(in: arguments, for: command)
         } catch let error as OptionParserError {
             let message = misusedOptionsMessageGenerator.generateMisusedOptionsStatement(for: command, error: error)
             throw CLIError.error(message)
