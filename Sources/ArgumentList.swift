@@ -61,6 +61,7 @@ public class ArgumentList {
     ///   - value: the value of the new node
     ///   - previous: the node which the new should should be inserted after
     /// - Returns: the newly inserted node
+    @discardableResult
     public func insert(value: String, after previous: ArgumentNode) -> ArgumentNode {
         let newNode = ArgumentNode(value: value)
         newNode.previous = previous

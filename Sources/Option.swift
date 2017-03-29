@@ -25,7 +25,7 @@ public class Flag: Option {
         self.usage = "\(optionsString)\(spacing)\(usage)"
     }
     
-    func setOn() {
+    public func setOn() {
         value = true
     }
     
@@ -60,16 +60,16 @@ public class Key<T: Keyable>: Option {
 
 public class OptionGroup {
     
-    enum Restriction {
+    public enum Restriction {
         case atMostOne // 0 or 1
         case exactlyOne // 1
         case atLeastOne // 1 or more
     }
     
-    let options: [Option]
-    let restriction: Restriction
+    public let options: [Option]
+    public let restriction: Restriction
     
-    var message: String {
+    public var message: String {
         let names = options.flatMap({ $0.names.first }).joined(separator: " ")
         var str = "Must pass "
         switch restriction {
@@ -84,14 +84,14 @@ public class OptionGroup {
         return str
     }
     
-    var count: Int = 0
+    public var count: Int = 0
     
-    init(options: [Option], restriction: Restriction) {
+    public init(options: [Option], restriction: Restriction) {
         self.options = options
         self.restriction = restriction
     }
     
-    func check() -> Bool  {
+    public func check() -> Bool  {
         if count == 0 && restriction != .atMostOne {
             return false
         }

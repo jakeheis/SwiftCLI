@@ -9,19 +9,20 @@
 import XCTest
 @testable import SwiftCLI
 
-class OptionsTests: XCTestCase {
+class OptionParserTests: XCTestCase {
     
-   static var allTests : [(String, (OptionsTests) -> () throws -> Void)] {
+   static var allTests : [(String, (OptionParserTests) -> () throws -> Void)] {
         return [
-            ("testFlagDetection", testFlagDetection),
-            ("testKeyDetection", testKeyDetection),
             ("testSimpleFlagParsing", testSimpleFlagParsing),
             ("testSimpleKeyParsing", testSimpleKeyParsing),
+            ("testKeyValueParsing", testKeyValueParsing),
             ("testCombinedFlagsAndKeysParsing", testCombinedFlagsAndKeysParsing),
             ("testCombinedFlagsAndKeysAndArgumentsParsing", testCombinedFlagsAndKeysAndArgumentsParsing),
             ("testUnrecognizedOptions", testUnrecognizedOptions),
             ("testKeysNotGivenValues", testKeysNotGivenValues),
-            ("testFlagSplitting", testFlagSplitting)
+            ("testIllegalOptionFormat", testIllegalOptionFormat),
+            ("testFlagSplitting", testFlagSplitting),
+            ("testGroupRestriction", testGroupRestriction)
         ]
     }
     
@@ -30,20 +31,6 @@ class OptionsTests: XCTestCase {
     }
     
     // MARK: - Tests
-    
-    func testFlagDetection() {
-        let options = OptionRegistry(command: FlagCmd())
-        XCTAssert(options.flag(for: "-a") != nil, "Options should expect flags after a call to onFlags")
-        XCTAssert(options.flag(for: "--alpha") != nil, "Options should expect flags after a call to onFlags")
-        XCTAssert(options.key(for: "-a") == nil, "Options should parse no keys from only flags")
-    }
-    
-    func testKeyDetection() {
-        let options = OptionRegistry(command: KeyCmd())
-        XCTAssert(options.key(for: "-a") != nil, "Options should expect keys after a call to onKeys")
-        XCTAssert(options.key(for: "--alpha") != nil, "Options should expect keys after a call to onKeys")
-        XCTAssert(options.flag(for: "-a") == nil, "Options should parse no flags from only keys")
-    }
     
     func testSimpleFlagParsing() {
         let cmd = DoubleFlagCmd()
@@ -181,57 +168,6 @@ class OptionsTests: XCTestCase {
         } catch {
             XCTFail()
         }
-    }
-    
-}
-
-class OptionCmd: Command {
-    let name = "cmd"
-    let shortDescription = ""
-    var helpFlag: Flag? = nil
-    func execute() throws {}
-}
-
-class FlagCmd: OptionCmd {
-    let flag = Flag("-a", "--alpha")
-}
-
-class KeyCmd: OptionCmd {
-    let key = Key<String>("-a", "--alpha")
-}
-
-class DoubleFlagCmd: OptionCmd {
-    let alpha = Flag("-a", "--alpha")
-    let beta = Flag("-b", "--beta")
-}
-
-class DoubleKeyCmd: OptionCmd {
-    let alpha = Key<String>("-a", "--alpha")
-    let beta = Key<String>("-b", "--beta")
-}
-
-class FlagKeyCmd: OptionCmd {
-    let alpha = Flag("-a", "--alpha")
-    let beta = Key<String>("-b", "--beta")
-}
-
-class IntKeyCmd: OptionCmd {
-    let alpha = Key<Int>("-a", "--alpha")
-}
-
-class ExactlyOneCmd: Command {
-    let name = "cmd"
-    let shortDescription = ""
-    var helpFlag: Flag? = nil
-    func execute() throws {}
-    
-    let alpha = Flag("-a", "--alpha")
-    let beta = Flag("-b", "--beta")
-    
-    let optionGroups: [OptionGroup]
-    
-    init() {
-        optionGroups = [OptionGroup(options: [alpha, beta], restriction: .exactlyOne)]
     }
     
 }
