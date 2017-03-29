@@ -11,25 +11,25 @@ public class ChainableCommand: LightweightCommand {
     
     @discardableResult
     public func withArgument(named name: String) -> ChainableCommand {
-        arguments.append((name, Argument()))
+        parameters.append((name, Parameter()))
         return self
     }
     
     @discardableResult
     public func withOptionalArgument(named name: String) -> ChainableCommand {
-        arguments.append((name, OptionalArgument()))
+        parameters.append((name, OptionalParameter()))
         return self
     }
     
     @discardableResult
     public func withCollectedArgument(named name: String) -> ChainableCommand {
-        arguments.append((name, CollectedArgument()))
+        parameters.append((name, CollectedParameter()))
         return self
     }
     
     @discardableResult
     public func withOptionalCollectedArgument(named name: String) -> ChainableCommand {
-        arguments.append((name, OptionalCollectedArgument()))
+        parameters.append((name, OptionalCollectedParameter()))
         return self
     }
     

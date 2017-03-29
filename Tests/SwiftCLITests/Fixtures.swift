@@ -16,8 +16,8 @@ class TestCommand: Command {
     
     var executionString = ""
 
-    let testName = Argument()
-    let testerName = OptionalArgument()
+    let testName = Parameter()
+    let testerName = OptionalParameter()
     
     let silent = Flag("-s", "--silent", usage: "Silence all test output")
     let times = Key<Int>("-t", "--times", usage: "Number of times to run the test")
@@ -48,46 +48,46 @@ class EmptyCmd: Command {
 }
 
 class Req1Cmd: EmptyCmd {
-    let req1 = Argument()
+    let req1 = Parameter()
 }
 
 class Opt1Cmd: EmptyCmd {
-    let opt1 = OptionalArgument()
+    let opt1 = OptionalParameter()
 }
 
 class Req2Cmd: EmptyCmd {
-    let req1 = Argument()
-    let req2 = Argument()
+    let req1 = Parameter()
+    let req2 = Parameter()
 }
 
 class Opt2Cmd: EmptyCmd {
-    let opt1 = OptionalArgument()
-    let opt2 = OptionalArgument()
+    let opt1 = OptionalParameter()
+    let opt2 = OptionalParameter()
 }
 
 class ReqCollectedCmd: EmptyCmd {
-    let req1 = CollectedArgument()
+    let req1 = CollectedParameter()
 }
 
 class OptCollectedCmd: EmptyCmd {
-    let opt1 = OptionalCollectedArgument()
+    let opt1 = OptionalCollectedParameter()
 }
 
 class Req2CollectedCmd: EmptyCmd {
-    let req1 = Argument()
-    let req2 = CollectedArgument()
+    let req1 = Parameter()
+    let req2 = CollectedParameter()
 }
 
 class Opt2CollectedCmd: EmptyCmd {
-    let opt1 = OptionalArgument()
-    let opt2 = OptionalCollectedArgument()
+    let opt1 = OptionalParameter()
+    let opt2 = OptionalCollectedParameter()
 }
 
 class Req2Opt2Cmd: EmptyCmd {
-    let req1 = Argument()
-    let req2 = Argument()
-    let opt1 = OptionalArgument()
-    let opt2 = OptionalArgument()
+    let req1 = Parameter()
+    let req2 = Parameter()
+    let opt1 = OptionalParameter()
+    let opt2 = OptionalParameter()
 }
 
 // MARK: -

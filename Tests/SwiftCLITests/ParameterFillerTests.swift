@@ -14,12 +14,12 @@ class CommandArgumentParserTests: XCTestCase {
     static var allTests : [(String, (CommandArgumentParserTests) -> () throws -> Void)] {
         return [
             ("testEmptySignature", testEmptySignature),
-            ("testRequiredArguments", testRequiredArguments),
-            ("testOptionalArguments", testOptionalArguments),
+            ("testRequiredParameters", testRequiredParameters),
+            ("testOptionalParameters", testOptionalParameters),
             ("testExtraneousArguments", testExtraneousArguments),
-            ("testCollectedRequiredArguments", testCollectedRequiredArguments),
-            ("testCollectedOptionalArguments", testCollectedOptionalArguments),
-            ("testCombinedRequiredAndOptionalArguments", testCombinedRequiredAndOptionalArguments),
+            ("testCollectedRequiredParameters", testCollectedRequiredParameters),
+            ("testCollectedOptionalParameters", testCollectedOptionalParameters),
+            ("testCombinedRequiredAndOptionalParameters", testCombinedRequiredAndOptionalParameters),
             ("testEmptyOptionalCollectedParameter", testEmptyOptionalCollectedParameter)
         ]
     }
@@ -49,7 +49,7 @@ class CommandArgumentParserTests: XCTestCase {
         assertParseFails("Signature parser should fail for empty signature and some arguments")
     }
     
-    func testRequiredArguments() {
+    func testRequiredParameters() {
         current = Req2Cmd()
         arguments = ["arg1"]
         assertParseFails("Signature parser should fail for 2 required arguments and 1 passed argument")
@@ -60,7 +60,7 @@ class CommandArgumentParserTests: XCTestCase {
                     assertMessage: "Signature parser should succeed for 2 required arguments and 2 passed arguments")
     }
     
-    func testOptionalArguments() {
+    func testOptionalParameters() {
         current = Opt2Cmd()
         arguments = []
         assertParse(opt2.opt1.value == nil && opt2.opt2.value == nil,
@@ -87,7 +87,7 @@ class CommandArgumentParserTests: XCTestCase {
         assertParseFails("Signature parser should fail for 1 optional argument and 2 passed arguments")
     }
     
-    func testCollectedRequiredArguments() {
+    func testCollectedRequiredParameters() {
         current = Req2CollectedCmd()
         arguments = ["arg1"]
         assertParseFails("Signature parser should fail for 2 required argument and 1 passed arguments")
@@ -103,7 +103,7 @@ class CommandArgumentParserTests: XCTestCase {
                     assertMessage: "Signature parser should succeed for a non-terminal required argument and 3 passed arguments")
     }
     
-    func testCollectedOptionalArguments() {
+    func testCollectedOptionalParameters() {
         current = Opt2CollectedCmd()
         arguments = []
         assertParse(opt2Collected.opt1.value == nil && opt2Collected.opt2.value == nil,
@@ -125,7 +125,7 @@ class CommandArgumentParserTests: XCTestCase {
                     assertMessage: "Signature parser should succeed for a non-terminal optional argument and 3 passed arguments")
     }
     
-    func testCombinedRequiredAndOptionalArguments() {
+    func testCombinedRequiredAndOptionalParameters() {
         current = Req2Opt2Cmd()
         arguments = ["arg1", "arg2"]
         assertParse(
@@ -160,7 +160,7 @@ class CommandArgumentParserTests: XCTestCase {
         let stringArguments = arguments.joined(separator: " ")
         let argumentList = ArgumentList(argumentString: "tester \(stringArguments)")
         
-        try DefaultCommandArgumentParser().parse(arguments: argumentList, for: current!)
+        try DefaultParameterFiller().fillParameters(of: current!, with: argumentList)
     }
     
     private func assertParse(_ test: @autoclosure () -> Bool, assertMessage: String) {

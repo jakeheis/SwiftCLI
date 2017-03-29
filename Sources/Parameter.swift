@@ -1,16 +1,16 @@
 //
-//  CommandArguments.swift
+//  Parameter.swift
 //  SwiftCLI
 //
 //  Created by Jake Heiser on 3/7/15.
 //  Copyright (c) 2015 jakeheis. All rights reserved.
 //
 
-public protocol AnyArgument {
+public protocol AnyParameter {
     func signature(for name: String) -> String
 }
 
-public class Argument: AnyArgument {
+public class Parameter: AnyParameter {
     
     private var privateValue: String? = nil
     
@@ -30,7 +30,7 @@ public class Argument: AnyArgument {
 
 }
 
-public class OptionalArgument: AnyArgument {
+public class OptionalParameter: AnyParameter {
     
     public var value: String? = nil
     
@@ -46,15 +46,15 @@ public class OptionalArgument: AnyArgument {
     
 }
 
-// MARK: - Collected arguments
+// MARK: - Collected parameters
 
-public protocol AnyCollectedArgument: AnyArgument {
+public protocol AnyCollectedParameter: AnyParameter {
     var required: Bool { get }
 
     func update(value: [String])
 }
 
-public class CollectedArgument: AnyCollectedArgument {
+public class CollectedParameter: AnyCollectedParameter {
     
     public let required = true
     public var value: [String] = []
@@ -71,7 +71,7 @@ public class CollectedArgument: AnyCollectedArgument {
 
 }
 
-public class OptionalCollectedArgument: AnyCollectedArgument {
+public class OptionalCollectedParameter: AnyCollectedParameter {
     
     public let required = false
     public var value: [String]? = nil

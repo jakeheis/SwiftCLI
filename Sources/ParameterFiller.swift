@@ -1,40 +1,40 @@
 //
-//  CommandArgumentParser.swift
+//  ParameterFiller.swift
 //  SwiftCLI
 //
 //  Created by Jake Heiser on 6/28/16.
 //  Copyright (c) 2016 jakeheis. All rights reserved.
 //
 
-// MARK: - CommandArgumentParser
+// MARK: - ParameterFiller
 
 /// Protcol representing an object which parses the arguments for a command from an argument list
-public protocol CommandArgumentParser {
-    func parse(arguments: ArgumentList, for command: Command) throws
+public protocol ParameterFiller {
+    func fillParameters(of command: Command, with arguments: ArgumentList) throws
 }
 
-// MARK: - DefaultCommandArgumentParser
+// MARK: - DefaultParameterFiller
 
-public class DefaultCommandArgumentParser: CommandArgumentParser {
+public class DefaultParameterFiller: ParameterFiller {
     
-    public func parse(arguments: ArgumentList, for command: Command) throws {
+    public func fillParameters(of command: Command, with arguments: ArgumentList) throws {
         let signature = CommandSignature(command: command)
         
         // First satisfy required parameters
-        for argument in signature.required {
+        for parameter in signature.required {
             guard let next = arguments.head else {
-                throw CommandArgumentParserError.tooFewArguments
+                throw ParameterFillerError.tooFewArguments
             }
-            argument.update(value: next.value)
+            parameter.update(value: next.value)
             arguments.remove(node: next)
         }
         
         // Then optional parameters
-        for argument in signature.optional {
+        for parameter in signature.optional {
             guard let next = arguments.head else {
                 break
             }
-            argument.update(value: next.value)
+            parameter.update(value: next.value)
             arguments.remove(node: next)
         }
         
@@ -47,7 +47,7 @@ public class DefaultCommandArgumentParser: CommandArgumentParser {
             }
             if last.isEmpty {
                 if collected.required {
-                    throw CommandArgumentParserError.tooFewArguments
+                    throw ParameterFillerError.tooFewArguments
                 }
             } else {
                 collected.update(value: last)
@@ -56,15 +56,15 @@ public class DefaultCommandArgumentParser: CommandArgumentParser {
         
         // ArgumentList should be empty; if not, user passed too many arguments
         if arguments.head != nil {
-            throw CommandArgumentParserError.tooManyArguments
+            throw ParameterFillerError.tooManyArguments
         }
     }
     
 }
 
-// MARK: - CommandArgumentParserError
+// MARK: - ParameterFillerError
 
-enum CommandArgumentParserError: Error {
+enum ParameterFillerError: Error {
     case tooFewArguments
     case tooManyArguments
     

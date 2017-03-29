@@ -27,8 +27,8 @@ public protocol Command: class {
     // Optional:
     //
     
-    /// The arguments this command accepts; dervied automatically, don't implement unless custom functionality needed
-    var arguments: [(String, AnyArgument)] { get }
+    /// The paramters this command accepts; dervied automatically, don't implement unless custom functionality needed
+    var parameters: [(String, AnyParameter)] { get }
     
     /// The options this command accepts; dervied automatically, don't implement unless custom functionality needed
     var options: [(String, Option)] { get }
@@ -48,10 +48,10 @@ extension Command {
     
     // Defaults
     
-    public var arguments: [(String, AnyArgument)] {
+    public var parameters: [(String, AnyParameter)] {
         let mirror = Mirror(reflecting: self)
         return mirror.children.flatMap { (child) in
-            if let argument = child.value as? AnyArgument, let label = child.label {
+            if let argument = child.value as? AnyParameter, let label = child.label {
                 return (label, argument)
             }
             return nil
@@ -87,7 +87,7 @@ extension Command {
     // Extras
     
     public var signature: String {
-        return arguments.map({ $0.1.signature(for: $0.0) }).joined(separator: " ")
+        return parameters.map({ $0.1.signature(for: $0.0) }).joined(separator: " ")
     }
 
     public var usage: String {

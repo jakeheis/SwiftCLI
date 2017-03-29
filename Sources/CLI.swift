@@ -28,7 +28,7 @@ public class CLI {
     public static var argumentListManipulators: [ArgumentListManipulator] = [commandAliaser, OptionSplitter()]
     public static var router: Router = DefaultRouter()
     public static var optionParser: OptionParser = DefaultOptionParser()
-    public static var commandArgumentParser: CommandArgumentParser = DefaultCommandArgumentParser()
+    public static var parameterFiller: ParameterFiller = DefaultParameterFiller()
     
     // MARK: - Private
     
@@ -189,8 +189,8 @@ public class CLI {
     
     private static func parseArguments(command: Command, arguments: ArgumentList) throws {
         do {
-            try commandArgumentParser.parse(arguments: arguments, for: command)
-        } catch let error as CommandArgumentParserError {
+            try parameterFiller.fillParameters(of: command, with: arguments)
+        } catch let error as ParameterFillerError {
             printError(error.message)
             printError(command.usage)
             throw CLIError.emptyError
