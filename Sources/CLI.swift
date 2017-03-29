@@ -6,8 +6,6 @@
 //  Copyright (c) 2014 jakeheis. All rights reserved.
 //
 
-import Foundation
-
 public class CLI {
     
     // MARK: - Information
@@ -19,7 +17,7 @@ public class CLI {
     public static var helpCommand: HelpCommand = DefaultHelpCommand()
     public static var versionCommand: Command = VersionCommand()
     
-    public static let commandAliaser = CommandAliaser()
+    public static var commandAliaser = CommandAliaser()
     
     // MARK: - Advanced customization
     
@@ -100,8 +98,10 @@ public class CLI {
     }
     
     /// For testing
-    internal static func clearCommands() {
+    internal static func reset() {
         commands = []
+        commandAliaser = CommandAliaser()
+        argumentListManipulators = [commandAliaser, OptionSplitter()]
     }
     
     // MARK: - Go
@@ -163,14 +163,14 @@ public class CLI {
             printError(error)
         } catch CLIError.emptyError {
             // Do nothing
-        } catch let error as NSError {
+        } catch let error {
             printError("An error occurred: \(error.localizedDescription)")
         }
         
         if helpCommand.executeOnCommandFailure {
             do {
                 try helpCommand.execute()
-            } catch let error as NSError {
+            } catch let error {
                 printError("An error occurred: \(error.localizedDescription)")
             }
         }
@@ -245,13 +245,3 @@ extension CLIResult {
     }
     
 }
-
-// MARK: - Compatibility
-
-#if os(Linux)
-    typealias Regex = RegularExpression
-    
-#else
-    typealias Regex = NSRegularExpression
-    
-#endif

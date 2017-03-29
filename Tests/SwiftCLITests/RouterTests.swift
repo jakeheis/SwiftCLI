@@ -6,7 +6,6 @@
 //  Copyright (c) 2015 jakeheis. All rights reserved.
 //
 
-import Foundation
 import XCTest
 @testable import SwiftCLI
 

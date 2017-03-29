@@ -6,8 +6,6 @@
 //
 //
 
-import Foundation
-
 public class CommandSignature {
     
     public var required: [Argument] = []

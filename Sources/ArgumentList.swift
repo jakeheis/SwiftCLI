@@ -13,7 +13,7 @@ public class ArgumentList {
     var head: ArgumentNode?
     
     convenience init() {
-        self.init(arguments: ProcessInfo.processInfo.arguments)
+        self.init(arguments: CommandLine.arguments)
     }
     
     convenience init(argumentString: String) {
@@ -100,3 +100,16 @@ class ArgumentListIterator: IteratorProtocol {
     }
     
 }
+
+// MARK: - Regex
+
+#if os(Linux)
+#if swift(>=3.1)
+    typealias Regex = NSRegularExpression
+#else
+    typealias Regex = RegularExpression
+#endif
+#else
+    typealias Regex = NSRegularExpression
+    
+#endif

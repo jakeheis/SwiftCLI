@@ -45,7 +45,6 @@ public class OptionSplitter: ArgumentListManipulator {
             if node.value.hasPrefix("-") && !node.value.hasPrefix("--") {
                 var previous = node
                 node.value.characters.dropFirst().forEach {
-                    print($0)
                     previous = arguments.insert(node: "-\($0)", after: previous)
                 }
                 arguments.remove(node: node)
