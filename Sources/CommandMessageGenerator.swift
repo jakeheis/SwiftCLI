@@ -1,6 +1,6 @@
 //
 //  CommandMessageGenerator.swift
-//  Example
+//  SwiftCLI
 //
 //  Created by Jake Heiser on 6/13/15.
 //  Copyright © 2015 jakeheis. All rights reserved.

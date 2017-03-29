@@ -13,7 +13,7 @@ public class OptionRegistry {
     private let all: [Option]
     private let groups: [OptionGroup]
     
-    init(command: Command) {
+    public init(command: Command) {
         var flags: [String: Flag] = [:]
         var keys: [String: AnyKey] = [:]
         var all: [Option] = []
@@ -35,7 +35,7 @@ public class OptionRegistry {
         self.groups = command.optionGroups
     }
     
-    func flag(for key: String) -> Flag? {
+    public func flag(for key: String) -> Flag? {
         if let flag = flags[key] {
             incrementCount(for: flag)
             return flag
@@ -43,7 +43,7 @@ public class OptionRegistry {
         return nil
     }
     
-    func key(for key: String) -> AnyKey? {
+    public func key(for key: String) -> AnyKey? {
         if let key = keys[key] {
             incrementCount(for: key)
             return key
@@ -51,7 +51,7 @@ public class OptionRegistry {
         return nil
     }
     
-    func incrementCount(for option: Option) {
+    public func incrementCount(for option: Option) {
         for group in groups {
             if group.options.contains(where: { $0.names == option.names }) {
                 group.count += 1
@@ -60,7 +60,7 @@ public class OptionRegistry {
         }
     }
     
-    func failingGroup() -> OptionGroup? {
+    public func failingGroup() -> OptionGroup? {
         for group in groups {
             if !group.check() {
                 return group

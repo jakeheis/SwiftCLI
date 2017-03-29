@@ -22,7 +22,8 @@ public class CLI {
     // MARK: - Advanced customization
     
     public static var usageStatementGenerator: UsageStatementGenerator = DefaultUsageStatementGenerator()
-    public static var misusedOptionsMessageGenerator: MisusedOptionsMessageGenerator = DefaultMisusedOptionsMessageGenerator()
+    public static var misusedOptionsMessageGenerator: MisusedOptionsMessageGenerator
+        = DefaultMisusedOptionsMessageGenerator()
     
     public static var argumentListManipulators: [ArgumentListManipulator] = [commandAliaser, OptionSplitter()]
     public static var router: Router = DefaultRouter()
@@ -35,13 +36,12 @@ public class CLI {
     
     // MARK: - Setup
     
-    /**
-     Sets the CLI up with basic information
-     
-     - Parameter name: name of the app, printed in the help message and command usage statements
-     - Parameter version: version of the app, printed by the VersionCommand
-     - Parameter description: description of the app, printed in the help message
-     */
+    /// Sets the CLI up with basic information
+    ///
+    /// - Parameters:
+    ///   - name: name of the app, printed in the help message and command usage statements
+    ///   - version: version of the app, printed by the VersionCommand
+    ///   - description: description of the app, printed in the help message
     public static func setup(name: String, version: String? = nil, description: String? = nil) {
         self.name = name
         
@@ -54,50 +54,33 @@ public class CLI {
         }
     }
     
-    /**
-     Registers a command with the CLI for routing and execution. All commands must be registered
-     with this method or its siblings before calling `CLI.go()`
-     
-     - Parameter command: the command to be registered
-     */
+    /// Registers a command with the CLI for routing and execution. All commands must be registered
+    /// with this method or its siblings before calling `CLI.go()`
+    ///
+    /// - Parameter command: the command to be registered
     public static func register(command: Command) {
         commands.append(command)
     }
     
-    @available(*, unavailable, renamed: "register(command:)")
-    public static func registerCommand(_ command: Command) {}
-    
-    /**
-     Registers a group of commands with the CLI for routing and execution. All commands must be registered
-     with this method or its siblings before calling `CLI.go()`
-     
-     - Parameter commands: the commands to be registered
-     */
+    /// Registers a group of commands with the CLI for routing and execution. All commands must be registered
+    /// with this method or its siblings before calling `CLI.go()`
+    ///
+    /// - Parameter commands: the commands to be registered
     public static func register(commands: [Command]) {
         commands.forEach { self.register(command: $0) }
     }
     
-    @available(*, unavailable, renamed: "register(commands:)")
-    public static func registerCommands(_ commands: [Command]) {}
-    
-    /**
-     Registers a chainable command with the CLI for routing and execution.
-     
-     - Parameter commandName: the name of the new chainable command
-     - Returns: a new chainable command for immediate chaining
-     */
+    /// Registers a chainable command with the CLI for routing and execution.
+    ///
+    /// - Parameter name: the name of the new chainable command
+    /// - Returns: a new chainable command for immediate chaining
     public static func registerChainableCommand(name: String) -> ChainableCommand {
         let chainable = ChainableCommand(name: name)
         register(command: chainable)
         return chainable
     }
     
-    @available(*, unavailable, renamed: "registerChainableCommand(name:)")
-    public static func registerChainableCommand(commandName: String) -> ChainableCommand {
-        return registerChainableCommand(name: commandName)
-    }
-    
-    /// For testing
+    /// For testing; don't use
     internal static func reset() {
         commands = []
         commandAliaser = CommandAliaser()
@@ -106,35 +89,26 @@ public class CLI {
     
     // MARK: - Go
     
-    /**
-     Kicks off the entire CLI process, routing to and executing the command specified by the passed arguments.
-     Uses the arguments passed in the command line.
-     
-     - SeeAlso: `debugGoWithArgumentString()` when debugging
-     - Returns: a CLIResult (Int) representing the success of the CLI in routing to and executing the correct
-     command. Usually should be passed to `exit(result)`
-     */
+    /// Kicks off the entire CLI process, routing to and executing the command specified by the passed arguments.
+    /// Uses the arguments passed in the command line.
+    ///
+    /// - SeeAlso: `debugGoWithArgumentString()` when debugging
+    /// - Returns: a CLIResult (Int32) representing the success of the CLI in routing to and executing the correct
+    /// command. Usually should be passed to `exit(result)`
     public static func go() -> CLIResult {
         return go(with: ArgumentList())
     }
     
-    /**
-     Kicks off the entire CLI process, routing to and executing the command specified by the passed arguments.
-     Uses the arguments passed in as an argument.
-     
-     - Parameter argumentString: the arguments to use when running the CLI
-     - SeeAlso: `go()` when running from the command line
-     - Returns: a CLIResult (Int) representing the success of the CLI in routing to and executing the correct
-     command. Usually should be passed to `exit(result)`
-     */
+    /// Kicks off the entire CLI process, routing to and executing the command specified by the passed arguments.
+    /// Uses the argument string passed to this function.
+    ///
+    /// - SeeAlso: `go()` when running from the command line
+    /// - Parameter argumentString: the arguments to use when running the CLI
+    /// - Returns: a CLIResult (Int) representing the success of the CLI in routing to and executing the correct
+    /// command. Usually should be passed to `exit(result)`
     public static func debugGo(with argumentString: String) -> CLIResult {
         print("[Debug Mode]")
         return go(with: ArgumentList(argumentString: argumentString))
-    }
-    
-    @available(*, unavailable, renamed: "debugGo(with:)")
-    public static func debugGoWithArgumentString(_ argumentString: String) -> CLIResult {
-        return debugGo(with: argumentString)
     }
     
     // MARK: - Privates
@@ -216,8 +190,8 @@ public class CLI {
     private static func parseArguments(command: Command, arguments: ArgumentList) throws {
         do {
             try commandArgumentParser.parse(arguments: arguments, for: command)
-        } catch let CommandArgumentParserError.incorrectUsage(message) {
-            printError(message)
+        } catch let error as CommandArgumentParserError {
+            printError(error.message)
             printError(command.usage)
             throw CLIError.emptyError
         }

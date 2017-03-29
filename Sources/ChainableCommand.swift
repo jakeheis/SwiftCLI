@@ -6,8 +6,7 @@
 //  Copyright (c) 2014 jakeheis. All rights reserved.
 //
 
-/// A chainable interface to a CommandType; all functions return the object itself for easy chaining.
-/// Should only be used for simple commands.
+/// A chainable interface to a CommandType; all functions return the object itself for easy chaining
 public class ChainableCommand: LightweightCommand {
     
     @discardableResult
@@ -41,7 +40,7 @@ public class ChainableCommand: LightweightCommand {
     }
     
     @discardableResult
-    public func withOptionsSetup(_ optionsSetup: @escaping OptionsSetupBlock) -> ChainableCommand {
+    public func withOptionsSetup(_ optionsSetup: @escaping OptionsSetup) -> ChainableCommand {
         optionsSetupBlock = optionsSetup
         return self
     }
@@ -53,7 +52,7 @@ public class ChainableCommand: LightweightCommand {
     }
     
     @discardableResult
-    public func withExecution(_ execution: @escaping ExecutionBlock) -> ChainableCommand {
+    public func withExecution(_ execution: @escaping Execution) -> ChainableCommand {
         executionBlock = execution
         return self
     }

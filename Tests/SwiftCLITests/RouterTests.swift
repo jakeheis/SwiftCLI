@@ -1,6 +1,6 @@
 //
 //  RouterTests.swift
-//  Example
+//  SwiftCLI
 //
 //  Created by Jake Heiser on 1/7/15.
 //  Copyright (c) 2015 jakeheis. All rights reserved.

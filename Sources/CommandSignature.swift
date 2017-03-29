@@ -6,6 +6,7 @@
 //
 //
 
+/// The command signature of a command
 public class CommandSignature {
     
     public var required: [Argument] = []

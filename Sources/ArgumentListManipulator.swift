@@ -6,10 +6,13 @@
 //
 //
 
+/// Protocol representing an object which can manipulate an ArgumentList. After creating a class which conforms
+/// to this protocol, add it to CLI.argumentListManipulators
 public protocol ArgumentListManipulator {
     func manipulate(arguments: ArgumentList)
 }
 
+/// Replaces the value of the first node with the aliased value if possible; e.g. command -h -> command help
 public class CommandAliaser: ArgumentListManipulator {
     
     private var aliases: [String: String] = [
@@ -37,6 +40,7 @@ public class CommandAliaser: ArgumentListManipulator {
     
 }
 
+/// Splits options represented by a single node into multiple nodes; e.g. command -ab -> command -a -b
 public class OptionSplitter: ArgumentListManipulator {
     
     public func manipulate(arguments: ArgumentList) {
@@ -45,7 +49,7 @@ public class OptionSplitter: ArgumentListManipulator {
             if node.value.hasPrefix("-") && !node.value.hasPrefix("--") {
                 var previous = node
                 node.value.characters.dropFirst().forEach {
-                    previous = arguments.insert(node: "-\($0)", after: previous)
+                    previous = arguments.insert(value: "-\($0)", after: previous)
                 }
                 arguments.remove(node: node)
             }

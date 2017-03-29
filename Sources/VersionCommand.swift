@@ -1,6 +1,6 @@
 //
 //  VersionCommand.swift
-//  Example
+//  SwiftCLI
 //
 //  Created by Jake Heiser on 8/2/14.
 //  Copyright (c) 2014 jakeheis. All rights reserved.

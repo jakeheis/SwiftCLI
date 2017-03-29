@@ -10,31 +10,38 @@
 
 /// The base protocol for all commands
 public protocol Command: class {
+    
+    //
+    // Required:
+    //
 
     /// The name of the command; used to route arguments to commands
     var name: String { get }
-
-    /// A short description of the command; printed in the command's usage statement
-    var shortDescription: String { get }
     
-    /// The arguments this command accepts - dervied automatically, don't implement
-    var arguments: [(String, AnyArgument)] { get }
-    
-    /// The options this command accepts - dervied automatically, don't implement
-    var options: [(String, Option)] { get }
-    
-    /// The help flag for this command; defaults to -h
-    var helpFlag: Flag? { get }
-    
-    var optionGroups: [OptionGroup] { get }
-    
-    /**
-        The actual execution block of the command
-
-        - Parameter arguments: the parsed arguments
-    */
+    /// Executes the command
+    ///
+    /// - Throws: CLIError if command cannot execute successfully
     func execute() throws
 
+    //
+    // Optional:
+    //
+    
+    /// The arguments this command accepts; dervied automatically, don't implement unless custom functionality needed
+    var arguments: [(String, AnyArgument)] { get }
+    
+    /// The options this command accepts; dervied automatically, don't implement unless custom functionality needed
+    var options: [(String, Option)] { get }
+    
+    /// A short description of the command; printed in the command's usage statement; defaults to empty string
+    var shortDescription: String { get }
+    
+    /// The help flag for this command; defaults to Flag("-h")
+    var helpFlag: Flag? { get }
+    
+    /// The option groups of this command; defaults to empty array
+    var optionGroups: [OptionGroup] { get }
+    
 }
 
 extension Command {
@@ -63,6 +70,10 @@ extension Command {
             options.append(("helpFlag", helpFlag))
         }
         return options
+    }
+    
+    var shortDescription: String {
+        return ""
     }
     
     public var helpFlag: Flag? {

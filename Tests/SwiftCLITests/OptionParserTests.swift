@@ -1,6 +1,6 @@
 //
 //  OptionsSpec.swift
-//  Example
+//  SwiftCLI
 //
 //  Created by Jake Heiser on 8/10/14.
 //  Copyright (c) 2014 jakeheis. All rights reserved.
