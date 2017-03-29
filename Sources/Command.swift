@@ -9,7 +9,7 @@
 // MARK: Protocols
 
 /// The base protocol for all commands
-public protocol Command {
+public protocol Command: class {
 
     /// The name of the command; used to route arguments to commands
     var name: String { get }
@@ -25,6 +25,8 @@ public protocol Command {
     
     /// The help flag for this command; defaults to -h
     var helpFlag: Flag? { get }
+    
+    var optionGroups: [OptionGroup] { get }
     
     /**
         The actual execution block of the command
@@ -55,6 +57,10 @@ extension Command {
     
     public var helpFlag: Flag? {
         return Flag("-h", "--help", usage: "Show help information for this command")
+    }
+    
+    public var optionGroups: [OptionGroup] {
+        return []
     }
     
     // Extras

@@ -36,10 +36,7 @@ public class DefaultHelpCommand: HelpCommand {
     
     public let name = "help"
     public let shortDescription = "Prints this help information"
-    
-    private let any = OptionalCollectedArgument()
-    public let failOnUnrecognizedOptions = false
-    
+        
     public var availableCommands: [Command] = []
     public var printCLIDescription = true
     

@@ -9,7 +9,7 @@
 // MARK: - OptionParser
 
 public protocol OptionParser {
-    func recognizeOptions(in arguments: ArgumentList, from optionRegistry: OptionRegistry) throws
+    func recognizeOptions(in arguments: ArgumentList, for command: Command) throws
 }
 
 // MARK: - DefaultOptionParser
@@ -18,6 +18,7 @@ public enum OptionParserError: Swift.Error {
     case unrecognizedOption(String)
     case illegalKeyValue(String, String)
     case noValueForKey(String)
+    case groupRestrictionFailed(OptionGroup)
     
     var message: String {
         switch self {
@@ -27,19 +28,23 @@ public enum OptionParserError: Swift.Error {
             return "Illegal type passed to \(key): \(value)"
         case .noValueForKey(let key):
             return "Expected a value to follow: \(key)"
+        case .groupRestrictionFailed(let group):
+            return group.message
         }
     }
 }
 
 public class DefaultOptionParser: OptionParser {
     
-    public func recognizeOptions(in arguments: ArgumentList, from optionRegistry: OptionRegistry) throws {
+    public func recognizeOptions(in arguments: ArgumentList, for command: Command) throws {
+        let optionRegistry = OptionRegistry(command: command)
+        
         var current = arguments.head
         while let node = current {
             if node.value.hasPrefix("-") {
-                if let flag = optionRegistry.flags[node.value] {
+                if let flag = optionRegistry.flag(for: node.value) {
                     flag.setOn()
-                } else if let key = optionRegistry.keys[node.value]{
+                } else if let key = optionRegistry.key(for: node.value) {
                     if let next = node.next, !next.value.hasPrefix("-") {
                         do {
                             try key.setValue(next.value)
@@ -56,6 +61,9 @@ public class DefaultOptionParser: OptionParser {
                 arguments.remove(node: node)
             }
             current = node.next
+        }
+        if let failingGroup = optionRegistry.failingGroup() {
+            throw OptionParserError.groupRestrictionFailed(failingGroup)
         }
     }
     
