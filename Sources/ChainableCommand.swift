@@ -29,7 +29,7 @@ public class ChainableCommand: LightweightCommand {
     }
     
     @discardableResult
-    public func withCollectedOptionalArgument(named name: String) -> ChainableCommand {
+    public func withOptionalCollectedArgument(named name: String) -> ChainableCommand {
         arguments.append((name, OptionalCollectedArgument()))
         return self
     }

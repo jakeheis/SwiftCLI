@@ -168,15 +168,7 @@ public class CLI {
             }
             
             // Step 3: parse arguments
-            do {
-                try commandArgumentParser.parse(arguments: arguments, for: command)
-            } catch let CommandArgumentParserError.incorrectUsage(message) {
-                printError(message)
-                printError(command.usage)
-                throw CLIError.emptyError
-            } catch {
-                throw error
-            }
+            try parseArguments(command: command, arguments: arguments)
             
             // Step 4: execute
             try command.execute()
@@ -235,6 +227,17 @@ public class CLI {
             throw CLIError.error(message)
         }
     }
+    
+    private static func parseArguments(command: Command, arguments: ArgumentList) throws {
+        do {
+            try commandArgumentParser.parse(arguments: arguments, for: command)
+        } catch let CommandArgumentParserError.incorrectUsage(message) {
+            printError(message)
+            printError(command.usage)
+            throw CLIError.emptyError
+        }
+    }
+    
 }
 
 // MARK: -

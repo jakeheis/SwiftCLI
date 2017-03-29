@@ -12,12 +12,12 @@ public class CommandSignature {
     
     public var required: [Argument] = []
     public var optional: [OptionalArgument] = []
-    public var collected: CollectedArg?
+    public var collected: AnyCollectedArgument?
     
     init(command: Command) {
         for (_, argument) in command.arguments {
             assert(collected == nil, "The collection operator (...) must come at the end of a command signature")
-            if let c = argument as? CollectedArg {
+            if let c = argument as? AnyCollectedArgument {
                 collected = c
             } else if let r = argument as? Argument {
                 assert(optional.isEmpty, "All required parameters must come before optional parameters")

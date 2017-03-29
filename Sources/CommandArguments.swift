@@ -6,11 +6,11 @@
 //  Copyright (c) 2015 jakeheis. All rights reserved.
 //
 
-public protocol Arg {
+public protocol AnyArgument {
     func signature(for name: String) -> String
 }
 
-public class Argument: Arg {
+public class Argument: AnyArgument {
     
     private var privateValue: String? = nil
     
@@ -30,7 +30,7 @@ public class Argument: Arg {
 
 }
 
-public class OptionalArgument: Arg {
+public class OptionalArgument: AnyArgument {
     
     public var value: String? = nil
     
@@ -46,13 +46,15 @@ public class OptionalArgument: Arg {
     
 }
 
-public protocol CollectedArg: Arg {
+// MARK: - Collected arguments
+
+public protocol AnyCollectedArgument: AnyArgument {
     var required: Bool { get }
 
     func update(value: [String])
 }
 
-public class CollectedArgument: CollectedArg {
+public class CollectedArgument: AnyCollectedArgument {
     
     public let required = true
     public var value: [String] = []
@@ -69,7 +71,7 @@ public class CollectedArgument: CollectedArg {
 
 }
 
-public class OptionalCollectedArgument: CollectedArg {
+public class OptionalCollectedArgument: AnyCollectedArgument {
     
     public let required = false
     public var value: [String]? = nil

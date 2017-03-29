@@ -14,6 +14,44 @@ public protocol OptionParser {
 
 // MARK: - DefaultOptionParser
 
+public class DefaultOptionParser: OptionParser {
+    
+    public func recognizeOptions(in arguments: ArgumentList, for command: Command) throws {
+        let optionRegistry = OptionRegistry(command: command)
+        
+        var current = arguments.head
+        while let node = current {
+            if node.value.hasPrefix("-") {
+                try handleOption(node: node, arguments: arguments, optionRegistry: optionRegistry)
+            }
+            current = node.next
+        }
+        if let failingGroup = optionRegistry.failingGroup() {
+            throw OptionParserError.groupRestrictionFailed(failingGroup)
+        }
+    }
+    
+    private func handleOption(node: ArgumentNode, arguments: ArgumentList, optionRegistry: OptionRegistry) throws {
+        if let flag = optionRegistry.flag(for: node.value) {
+            flag.setOn()
+        } else if let key = optionRegistry.key(for: node.value) {
+            guard let next = node.next, !next.value.hasPrefix("-") else {
+                throw OptionParserError.noValueForKey(node.value)
+            }
+            guard key.setValue(next.value) else {
+                throw OptionParserError.illegalKeyValue(node.value, next.value)
+            }
+            arguments.remove(node: next)
+        } else {
+            throw OptionParserError.unrecognizedOption(node.value)
+        }
+        arguments.remove(node: node)
+    }
+    
+}
+
+// MARK: - OptionParserError
+
 public enum OptionParserError: Swift.Error {
     case unrecognizedOption(String)
     case illegalKeyValue(String, String)
@@ -33,39 +71,3 @@ public enum OptionParserError: Swift.Error {
         }
     }
 }
-
-public class DefaultOptionParser: OptionParser {
-    
-    public func recognizeOptions(in arguments: ArgumentList, for command: Command) throws {
-        let optionRegistry = OptionRegistry(command: command)
-        
-        var current = arguments.head
-        while let node = current {
-            if node.value.hasPrefix("-") {
-                if let flag = optionRegistry.flag(for: node.value) {
-                    flag.setOn()
-                } else if let key = optionRegistry.key(for: node.value) {
-                    if let next = node.next, !next.value.hasPrefix("-") {
-                        do {
-                            try key.setValue(next.value)
-                        } catch {
-                            throw OptionParserError.illegalKeyValue(node.value, next.value)
-                        }
-                        arguments.remove(node: next)
-                    } else {
-                        throw OptionParserError.noValueForKey(node.value)
-                    }
-                } else {
-                    throw OptionParserError.unrecognizedOption(node.value)
-                }
-                arguments.remove(node: node)
-            }
-            current = node.next
-        }
-        if let failingGroup = optionRegistry.failingGroup() {
-            throw OptionParserError.groupRestrictionFailed(failingGroup)
-        }
-    }
-    
-}
-

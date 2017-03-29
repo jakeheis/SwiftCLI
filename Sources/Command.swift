@@ -18,7 +18,7 @@ public protocol Command: class {
     var shortDescription: String { get }
     
     /// The arguments this command accepts - dervied automatically, don't implement
-    var arguments: [(String, Arg)] { get }
+    var arguments: [(String, AnyArgument)] { get }
     
     /// The options this command accepts - dervied automatically, don't implement
     var options: [(String, Option)] { get }
@@ -41,14 +41,24 @@ extension Command {
     
     // Defaults
     
-    public var arguments: [(String, Arg)] {
+    public var arguments: [(String, AnyArgument)] {
         let mirror = Mirror(reflecting: self)
-        return mirror.children.filter({ $0.label != nil && $0.value is Arg }).map { ($0.label!, $0.value as! Arg) }
+        return mirror.children.flatMap { (child) in
+            if let argument = child.value as? AnyArgument, let label = child.label {
+                return (label, argument)
+            }
+            return nil
+        }
     }
 
     public var options: [(String, Option)] {
         let mirror = Mirror(reflecting: self)
-        var options = mirror.children.filter({ $0.label != nil && $0.value is Option }).map { ($0.label!, $0.value as! Option) }
+        var options = mirror.children.flatMap { (child) -> (String, Option)? in
+            if let option = child.value as? Option, let label = child.label {
+                return (label, option)
+            }
+            return nil
+        }
         if let helpFlag = helpFlag {
             options.append(("helpFlag", helpFlag))
         }

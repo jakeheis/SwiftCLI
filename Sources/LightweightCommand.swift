@@ -12,11 +12,11 @@ public class LightweightCommand: Command {
     
     public var name: String = ""
     public var shortDescription: String = ""
-    public var arguments: [(String, Arg)] = []
+    public var arguments: [(String, AnyArgument)] = []
     
     public var failOnUnrecognizedOptions = true
     
-    public typealias ExecutionBlock = (_ arguments: [String: Arg]) throws -> ()
+    public typealias ExecutionBlock = (_ arguments: [String: AnyArgument]) throws -> ()
     public typealias OptionsSetupBlock = (_ options: OptionRegistry) -> ()
     
     public var executionBlock: ExecutionBlock? = nil
@@ -31,7 +31,7 @@ public class LightweightCommand: Command {
     }
     
     public func execute() throws {
-        var dict: [String: Arg] = [:]
+        var dict: [String: AnyArgument] = [:]
         for arg in arguments {
             dict[arg.0] = arg.1
         }
