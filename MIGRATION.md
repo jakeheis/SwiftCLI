@@ -1,13 +1,10 @@
-SwiftCLI 3.0
-==
+# SwiftCLI 3.0
 In SwiftCLI 3.0, arguments and options have been completely overhauled. They are now much easier to implement, with less boilerplate and increased clarity.
 
-Command
-===
+## Command
 Command and OptionCommand have been unified in SwiftCLI 3.0. The way in which commands handle both argument and options has improved significantly.
 
-Arguments
-====
+### Arguments
 Before, Commands would specify their parameters through the `signature` property, parameters are now specified in the command itself:
 ```swift
 // Before
@@ -66,8 +63,7 @@ class GreetCommand: Command {
 }
 ```
 
-Options
-====
+### Options
 As mentioned earlier, Command and OptionCommand have been unified, so all commands now can have options. Rather than adding the options in a `setupOptions` function, options should be specified as instance variables on the command itself:
 
 ```swift
