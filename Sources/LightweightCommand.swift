@@ -43,7 +43,7 @@ public class ParameterWrapper {
     private let parameters: [String: AnyParameter]
     
     init(params: [(String, AnyParameter)]) {
-        var dict: [String: AnyParameter]
+        var dict: [String: AnyParameter] = [:]
         for param in params {
             dict[param.0] = param.1
         }
