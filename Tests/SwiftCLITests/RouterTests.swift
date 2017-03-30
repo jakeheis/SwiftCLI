@@ -53,17 +53,6 @@ class RouterTests: XCTestCase {
         XCTAssert(args.head == nil, "Router should leave no arguments for the command")
     }
     
-    // [baker, bake, cake, -qt, frosting]
-    // Node(bake) -> Node(cake) -> Node(-qt) -> Node(frosting)
-    // ArgumentListManipulators()
-    // Node(bake) -> Node(cake) -> Node(-q) -> Node(-t) -> Node(frosting)
-    // Router()
-    // Command: bake -- Node(cake) -> Node(--with-topping) -> Node(frosting)
-    // OptionRecognizer()
-    // Command: bake, Options: topped with frosting -- Node(cake)
-    // CommandArgumentParser()
-    // Command: bake, Arguments: cake, Options: topped with frosting
-    
     func testAliasRoute() {
         let args = ArgumentList(argumentString: "tester -b")
         

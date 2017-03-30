@@ -16,7 +16,7 @@ public class LightweightCommand: Command {
     
     public var failOnUnrecognizedOptions = true
     
-    public typealias Execution = (_ parameters: [String: AnyParameter]) throws -> ()
+    public typealias Execution = (_ parameters: ParameterWrapper) throws -> ()
     public typealias OptionsSetup = (_ options: OptionRegistry) -> ()
     
     public var executionBlock: Execution? = nil
@@ -31,11 +31,39 @@ public class LightweightCommand: Command {
     }
     
     public func execute() throws {
-        var dict: [String: AnyParameter] = [:]
-        for param in parameters {
+        try executionBlock?(ParameterWrapper(params: parameters))
+    }
+    
+}
+
+// MARK: - ParameterWrapper
+
+public class ParameterWrapper {
+    
+    private let parameters: [String: AnyParameter]
+    
+    init(params: [(String, AnyParameter)]) {
+        var dict: [String: AnyParameter]
+        for param in params {
             dict[param.0] = param.1
         }
-        try executionBlock?(dict)
+        parameters = dict
+    }
+    
+    func required(_ name: String) -> String {
+        return (parameters[name] as! Parameter).value
+    }
+    
+    func optional(_ name: String) -> String? {
+        return (parameters[name] as! OptionalParameter).value
+    }
+    
+    func colllected(_ name: String) -> [String] {
+        return (parameters[name] as! CollectedParameter).value
+    }
+    
+    func optionalColllected(_ name: String) -> [String]? {
+        return (parameters[name] as! OptionalCollectedParameter).value
     }
     
 }
