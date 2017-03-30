@@ -1,79 +1,123 @@
-SwiftCLI 2.0
+SwiftCLI 3.0
 ==
-
-In SwiftCLI 2.0, the library has been updated for Swift 3 as well as had a number of customization options made available. If you don't want the updated functionality but instead just code that works with Swift 3, use Version 1.3.0 instead of 2.0.0.
+In SwiftCLI 3.0, arguments and options have been completely overhauled. They are now much easier to implement, with less boilerplate and increased clarity.
 
 Command
 ===
-Small changes were made in the Command protocol (formerly CommandType protocol)
-```swift
-// Old CommandType Implementation:
+Command and OptionCommand have been unified in SwiftCLI 3.0. The way in which commands handle both argument and options has improved significantly.
 
-var commandName: String { get }
-var commandSignature: String { get }
-var commandShortDescription: String { get }
-var commandShortcut: String? { get }
-
-// New Command Implementation:
-var name: String { get }
-var signature: String { get }
-var shortDescription: String { get }
-```
-Notably, `commandShortcut` is missing from the new protocol. In order to implement command shortcuts, check out the section on command aliases below.
-
-OptionRegistry
-===
-Option methods have been renamed, but Xcode should automatically rename these for you. Just in case it doesn't:
-```swift
-// Old
-public func onFlags(_ flags: [String], usage: String, block: FlagBlock?)
-public func onKeys(_ keys: [String], usage: String, valueSignature: String, block: KeyBlock?)
-
-// New
-public func add(flags: [String], usage: String = "", block: @escaping FlagBlock)
-public func add(keys: [String], usage: String = "", valueSignature: String = "value", block: @escaping KeyBlock)
-```
-Also worth noting is that a `FlagBlock` has no parameters, and a `KeyBlock` only has a value parameter.
+Arguments
+====
+Before, Commands would specify their parameters through the `signature` property, parameters are now specified in the command itself:
 ```swift
 // Before
-onFlags(["-a"]) { (flag) in
-
+class GreetCommand: OptionCommand {
+    let name = "greet"
+    let signature = "<person>"
+    ...
 }
-onKeys(["-m"]) { (key, value) in
 
-}
-
-// Now
-add(flags: ["-a"]) {
-    // Notice that you no longer should type "{ (flag) in"
-}
-add(keys: ["-m"]) { (value) in
-    // just (value), not (key, value)
+// Now:
+class GreetCommand: Command {
+    let name = "greet"
+    let person = Parameter()
+    ...
 }
 ```
-Command Aliases
-===
-Command shortcuts have been generalized to allow for the mapping from any name to another name. Where before you might have done:
+
+The available classes for parameters are: `Parameter`, `OptionalParameter`, `CollectedParameter`, and `OptionalCollectedParameter`.
 ```swift
-let cmd = ChainableCommand(name: "cmd").withShortcut("-c")
-CLI.registerCommand(name: "cmd")
-```
-you now do:
-```swift
-let cmd = ChainableCommand(name: "cmd")
-CLI.registerCommand(name: "cmd")
-CLI.alias(from: "-c", to: cmd.name)
-```
-This means you're no longer limited to only having one shortcut per command, nor must you prefix the shortcut with "-".
+// Before:
+class GreetCommand: OptionCommand {
+    let name = "greet"
+    let signature = "<person> [<greeting>] [<otherWords>] ..."
+    ...
+}
 
-Advanced Customization
-===
-There are now a number of protocols which may be implemented to customize CLI functionality further:
-```swift
-public protocol UsageStatementGenerator {}
-public protocol MisusedOptionsMessageGenerator {}
-public protocol RawArgumentParser {}
-public protocol CommandArgumentParser {}
-public protocol OptionParser {}
+// Now:
+class GreetCommand: Command {
+    let name = "greet"
+    let person = Parameter()
+    let greeting = OptionalParameter()
+    let otherWords = OptionalCollectedParameter()
+    ...
+}
 ```
-If you wish to replace the default implementations of any of these, just implement their respective functions on your own type and update CLI with your custom implementations. See https://github.com/jakeheis/SwiftCLI/blob/master/README.md#customization for more information.
+
+When it comes to accessing the values passed to these parameters, rather than using a type-unsafe string, use the `Parameter`s specified earlier:
+```swift
+// Before:
+class GreetCommand: OptionCommand {
+    let name = "greet"
+    let signature = "<person>"
+    func execute(arguments: CommandArguments) throws {
+        let person = arguments.requiredArgument("person")
+        print("Hi \(person)")
+    }
+}
+
+// Now:
+class GreetCommand: Command {
+    let name = "greet"
+    let person = Parameter()
+    func execute() throws {
+        print("Hi \(person.value)")
+    }
+}
+```
+
+Options
+====
+As mentioned earlier, Command and OptionCommand have been unified, so all commands now can have options. Rather than adding the options in a `setupOptions` function, options should be specified as instance variables on the command itself:
+
+```swift
+// Before:
+class GreetCommand: OptionCommand {
+    let name = "greet"
+    let signature = "<person>"
+
+    var loudly = false
+    var times = 1
+
+    func setupOptions(options: OptionRegistry) {
+        options.add(flags: ["-l", "--loudly"], usage: "") {
+            self.loudly = true
+        }
+        options.add(keys: ["-t", "--times"], usage: "", valueSignature: "") { (value) in
+            self.times = Int(value) ?? self.times
+        }
+    }
+
+    func execute(arguments: CommandArguments) throws {
+        let person = arguments.requiredArgument("person")
+        for i in 0..<times {
+            if loudly {
+                print("HI \(person)!!!!!!")
+            } else {
+                print("Hi \(person)")
+            }
+        }
+    }
+}
+
+// Now:
+class GreetCommand: Command {
+    let name = "greet"
+    let person = Parameter()
+
+    let loudly = Flag("-l", "--loudly")
+    let times = Key<Int>("-t", "--times")
+
+    func execute() throws {
+        let person = arguments.requiredArgument("person")
+        for i in 0..<(times.value ?? 1) {
+            if loudly.value {
+                print("HI \(person)!!!!!!")
+            } else {
+                print("Hi \(person)")
+            }
+        }
+    }
+}
+```
+The classes `Flag` and `Key<T>` should be used to specify options.

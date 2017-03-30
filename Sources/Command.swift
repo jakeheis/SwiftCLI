@@ -44,6 +44,9 @@ public protocol Command: class {
     
 }
 
+@available(*, unavailable, renamed: "Command")
+typealias OptionCommand = Command
+
 extension Command {
     
     // Defaults
