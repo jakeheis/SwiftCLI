@@ -192,7 +192,6 @@ class GreetCommand: Command {
 ```
 
 ```bash
-~ > # Greet command with a signature of "<person> ..."
 ~ > greeter greet Jack
 Hey there, Jack!
 ~ > greeter greet Jack Jill
@@ -204,7 +203,7 @@ Hey there, Jack, Jill, Hill!
 ## Options
 Commands have support for two types of options: flag options and keyed options. Both types of options can either be denoted by a dash followed by a single letter `git commit -a` or two dashes followed by the option name `git commit --all`. Single letter options can be cascaded into a single dash followed by all the desired options: `git commit -am "message"` == `git commit -a -m "message"`.
 
-Options are specified by instance variables on the command class, just like parameters:
+Options are specified as instance variables on the command class, just like parameters:
 ```swift
 class ExampleCommand: Command {
     ...
@@ -349,18 +348,34 @@ Given a call like
 
 the flow of the CLI is as such:
 
-"baker bake cake -qt frosting"
-    ArgumentList() converts the arguments to a linked list of argument nodes
-Node(bake) -> Node(cake) -> Node(-qt) -> Node(frosting)
-    ArgumentListManipulators() (including CommandAliaser() and OptionSplitter()) manipulate the nodes
-Node(bake) -> Node(cake) -> Node(-q) -> Node(-t) -> Node(frosting)
-    Router() uses the argument nodes to find the appropriate command
-Command: bake -- Node(cake) -> Node(-q) -> Node(-t) -> Node(frosting)
-    OptionRecognizer() recognizes the options present within the argument nodes
-Command: bake, Options: quietly, topped with frosting -- Node(cake)
-    ParameterFiller() fills the parameters of the routed command with the remaining arguments
-Command: bake, Arguments: cake, Options: topped with frosting
-
+```
+User calls "baker bake cake -qt frosting"
+    Command: ?
+    Parameters: ?
+    Options: ?
+    Arguments: Node(bake) -> Node(cake) -> Node(-qt) -> Node(frosting)
+ArgumentListManipulators() (including CommandAliaser() and OptionSplitter()) manipulate the nodes
+    Command: ?
+    Parameters: ?
+    Options: ?
+    Arguments: Node(bake) -> Node(cake) -> Node(-q) -> Node(-t) -> Node(frosting)
+Router() uses the argument nodes to find the appropriate command
+    Command: bake
+    Parameters: ?
+    Options: ?
+    Arguments: Node(cake) -> Node(-q) -> Node(-t) -> Node(frosting)
+OptionRecognizer() recognizes the options present within the argument nodes
+    Command: bake
+    Parameters: ?
+    Options: quietly, topped with frosting
+    Arguments: Node(cake)
+ParameterFiller() fills the parameters of the routed command with the remaining arguments
+    Command: bake
+    Parameters: cake
+    Options: quietly, topped with frosting
+    Arguments: (none)
+```
+All four of these steps can be customized:
 ```swift
 public static var argumentListManipulators: [ArgumentListManipulator] = [CommandAliaser(), OptionSplitter()]
 
