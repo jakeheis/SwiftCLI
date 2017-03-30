@@ -14,11 +14,12 @@ public protocol Option {
 public class Flag: Option {
     
     public let names: [String]
-    public private(set) var value = false
+    public private(set) var value: Bool
     public let usage: String
     
-    public init(_ names: String ..., usage: String = "") {
+    public init(_ names: String ..., usage: String = "", defaultValue: Bool = false) {
         self.names = names
+        self.value = defaultValue
         
         var optionsString = names.joined(separator: ", ")
         let spacing = String(repeating: " ", count: 40 - optionsString.characters.count)

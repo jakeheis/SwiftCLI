@@ -105,12 +105,11 @@ class GreetCommand: Command {
     let times = Key<Int>("-t", "--times")
 
     func execute() throws {
-        let person = arguments.requiredArgument("person")
         for i in 0..<(times.value ?? 1) {
             if loudly.value {
-                print("HI \(person)!!!!!!")
+                print("HI \(person.value)!!!!!!")
             } else {
-                print("Hi \(person)")
+                print("Hi \(person.value)")
             }
         }
     }
