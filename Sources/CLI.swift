@@ -17,15 +17,13 @@ public class CLI {
     public static var helpCommand: HelpCommand = DefaultHelpCommand()
     public static var versionCommand: Command = VersionCommand()
     
-    public static var commandAliaser = CommandAliaser()
-    
     // MARK: - Advanced customization
     
     public static var usageStatementGenerator: UsageStatementGenerator = DefaultUsageStatementGenerator()
     public static var misusedOptionsMessageGenerator: MisusedOptionsMessageGenerator
         = DefaultMisusedOptionsMessageGenerator()
     
-    public static var argumentListManipulators: [ArgumentListManipulator] = [commandAliaser, OptionSplitter()]
+    public static var argumentListManipulators: [ArgumentListManipulator] = [CommandAliaser(), OptionSplitter()]
     public static var router: Router = DefaultRouter()
     public static var optionRecognizer: OptionRecognizer = DefaultOptionRecognizer()
     public static var parameterFiller: ParameterFiller = DefaultParameterFiller()
@@ -83,9 +81,9 @@ public class CLI {
     /// For testing; don't use
     internal static func reset() {
         commands = []
-        commandAliaser = CommandAliaser()
-        argumentListManipulators = [commandAliaser, OptionSplitter()]
+        argumentListManipulators = [CommandAliaser(), OptionSplitter()]
         GlobalOptions.options = DefaultGlobalOptions.options
+        CommandAliaser.reset()
     }
     
     // MARK: - Go

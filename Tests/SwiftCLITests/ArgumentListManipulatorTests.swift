@@ -19,14 +19,13 @@ class ArgumentListManipulatorTests: XCTestCase {
     }
     
     func testCommandAliaser() {
-        let aliaser = CommandAliaser()
-        assertManipulation(start: "tester -h", manipulator: aliaser, end: "tester help")
+        assertManipulation(start: "tester -h", manipulator: CommandAliaser(), end: "tester help")
         
-        aliaser.alias(from: "-a", to: "alpha")
-        assertManipulation(start: "tester -a", manipulator: aliaser, end: "tester alpha")
+        CommandAliaser.alias(from: "-a", to: "alpha")
+        assertManipulation(start: "tester -a", manipulator: CommandAliaser(), end: "tester alpha")
         
-        aliaser.removeAlias(from: "-a")
-        assertManipulation(start: "tester -a", manipulator: aliaser, end: "tester -a")
+        CommandAliaser.removeAlias(from: "-a")
+        assertManipulation(start: "tester -a", manipulator: CommandAliaser(), end: "tester -a")
     }
     
     func testOptionSplitter() {

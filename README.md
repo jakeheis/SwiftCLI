@@ -33,6 +33,7 @@ Check out the [migration guide](MIGRATION.md)!
 * [Input](#input)
 * [Customization](#customization)
 * [Running your CLI](#running-your-cli)
+* [Xcode Installation](#xcode-installation)
 * [Example](#example)
 
 ## Installation
@@ -44,7 +45,7 @@ dependencies: [
 ```
 ## Creating a CLI
 ### Setup
-In the call to ```CLI.setup()```, a ```name``` must be passed, and a ```version``` and a ```description``` are both optional.
+In the call to `CLI.setup()`, a `name must be passed, and a `version` and a `description` are both optional.
 ```swift
 CLI.setup(name: "greeter", version: "1.0", description: "Greeter - your own personal greeter")
 ```
@@ -54,11 +55,11 @@ CLI.register(command: myCommand)
 CLI.register(commands: [myCommand, myOtherCommand])
 ```
 ### Calling go
-In any production app, ```go()``` should be used. This method uses the arguments passed to it on launch.
+In any production app, `go()` should be used. This method uses the arguments passed to it on launch.
 ```swift
 CLI.go()
 ```
-When you are creating and debugging your app, ```debugGo(with:)``` is the better choice. ```debugGo(with:)``` makes it easier to pass an argument string to your app during development.
+When you are creating and debugging your app, `debugGo(with:)` is the better choice. `debugGo(with:)` makes it easier to pass an argument string to your app during development.
 ```swift
 CLI.debugGo(with: "greeter greet")
 ```
@@ -349,9 +350,9 @@ Available commands:
 ```
 
 ### Aliases
-Aliases can be made through the call `CLI.commandAliaser.alias(from:to:)`. `Router` will take these aliases into account while routing to the matching command. For example, if this call is made:
+Aliases can be made through the call `CommandAliaser.alias(from:to:)`. `Router` will take these aliases into account while routing to the matching command. For example, if this call is made:
 ```swift
-CLI.alias(from: "-c", to: "command")
+CommandAliaser.alias(from: "-c", to: "command")
 ```
 And the user makes the call `myapp -c`, the router will search for a command with the name "command" because of the alias, not a command with the name "-c".
 
