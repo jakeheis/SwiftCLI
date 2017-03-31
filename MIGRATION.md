@@ -64,7 +64,8 @@ class GreetCommand: Command {
 ```
 
 ### Options
-As mentioned earlier, Command and OptionCommand have been unified, so all commands now can have options. Rather than adding the options in a `setupOptions` function, options should be specified as instance variables on the command itself:
+As mentioned earlier, Command and OptionCommand have been unified, so all commands now can have options. Rather than adding the options in a `setupOptions` function, options should be specified as instance variables on the command itself, using instances of the classes `Flag` and `Key<T>`:
+
 
 ```swift
 // Before:
@@ -115,4 +116,3 @@ class GreetCommand: Command {
     }
 }
 ```
-The classes `Flag` and `Key<T>` should be used to specify options.

@@ -22,19 +22,37 @@ Hey there!
 
 Check out the [migration guide](MIGRATION.md)!
 
-## Contents
-* [Installation](#installation)
-* [Creating a CLI](#creating-a-cli)
-* [Commands](#commands)
-* [Parameters](#parameters)
-* [Options](#options)
-* [Routing commands](#routing-commands)
-* [Special Commands](#special-commands)
-* [Input](#input)
-* [Customization](#customization)
-* [Running your CLI](#running-your-cli)
-* [Xcode Installation](#xcode-installation)
-* [Example](#example)
+Table of Contents
+=================
+  
+  * [Installation](#installation)
+  * [Creating a CLI](#creating-a-cli)
+    * [Setup](#setup)
+    * [Registering commands](#registering-commands)
+    * [Calling go](#calling-go)
+  * [Commands](#commands)
+    * [Implement Command](#implement-command)
+    * [Create a ChainableCommand](#create-a-chainablecommand)
+    * [Create a LightweightCommand](#create-a-lightweightcommand)
+  * [Parameters](#parameters)
+    * [Required parameters](#required-parameters)
+    * [Optional parameters](#optional-parameters)
+    * [Collected parameters](#collected-parameters)
+  * [Options](#options)
+    * [Flag options](#flag-options)
+    * [Keyed options](#keyed-options)
+    * [Option groups](#option-groups)
+    * [Global options](#global-options)
+    * [Usage of options](#usage-of-options)
+  * [Routing commands](#routing-commands)
+    * [Aliases](#aliases)
+  * [Special commands](#special-commands)
+    * [Help Command](#help-command)
+    * [Version Command](#version-command)
+  * [Input](#input)
+  * [Customization](#customization)
+  * [Running your CLI](#running-your-cli)
+  * [Example](#example)
 
 ## Installation
 Add SwiftCLI as a dependency to your project:
