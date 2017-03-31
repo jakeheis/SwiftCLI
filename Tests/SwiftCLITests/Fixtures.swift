@@ -29,9 +29,12 @@ class TestCommand: Command {
     }
 
     func execute() throws {
-        executionString = "\(testerName.value!) will test \(testName.value), \(times.value ?? 1) times"
+        executionString = "\(testerName.value ?? "defaultTester") will test \(testName.value), \(times.value ?? 1) times"
         if silent.value {
             executionString += ", silently"
+        }
+        if verbose.value {
+            executionString += ", verbosely"
         }
 
         completion?(executionString)

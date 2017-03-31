@@ -85,6 +85,7 @@ public class CLI {
         commands = []
         commandAliaser = CommandAliaser()
         argumentListManipulators = [commandAliaser, OptionSplitter()]
+        GlobalOptions.options = DefaultGlobalOptions.options
     }
     
     // MARK: - Go
@@ -122,7 +123,7 @@ public class CLI {
             
             // Step 2: parse options
             try parseOptions(command: command, arguments: arguments)
-            if command.helpFlag?.value == true {
+            if DefaultGlobalOptions.help.value == true {
                 return CLIResult.success
             }
             

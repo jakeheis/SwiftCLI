@@ -46,6 +46,14 @@ class SwiftCLITests: XCTestCase {
         XCTAssertEqual(result2, CLIResult.success, "Command should have succeeded")
     }
     
+    func testGlobalOptions() {
+        GlobalOptions.source(MyGlobalOptions.self)
+        let result3 = CLI.debugGo(with: "tester test myTest -v")
+        XCTAssertEqual(result3, CLIResult.success, "Command should have succeeded")
+        XCTAssertEqual(self.executionString, "defaultTester will test myTest, 1 times, verbosely", "Command should have produced accurate output")
+
+    }
+    
     // Tear down
     
     override func tearDown() {
@@ -54,4 +62,17 @@ class SwiftCLITests: XCTestCase {
         executionString = ""
     }
     
+}
+
+struct MyGlobalOptions: GlobalOptionsSource {
+    static let verbose = Flag("-v")
+    static var options: [Option] {
+        return [verbose]
+    }
+}
+
+extension Command {
+    var verbose: Flag {
+        return MyGlobalOptions.verbose
+    }
 }

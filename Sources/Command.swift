@@ -36,9 +36,6 @@ public protocol Command: class {
     /// A short description of the command; printed in the command's usage statement; defaults to empty string
     var shortDescription: String { get }
     
-    /// The help flag for this command; defaults to Flag("-h")
-    var helpFlag: Flag? { get }
-    
     /// The option groups of this command; defaults to empty array
     var optionGroups: [OptionGroup] { get }
     
@@ -69,18 +66,12 @@ extension Command {
             }
             return nil
         }
-        if let helpFlag = helpFlag {
-            options.append((helpFlag))
-        }
+        options += GlobalOptions.options
         return options
     }
     
     var shortDescription: String {
         return ""
-    }
-    
-    public var helpFlag: Flag? {
-        return Flag("-h", "--help", usage: "Show help information for this command")
     }
     
     public var optionGroups: [OptionGroup] {
