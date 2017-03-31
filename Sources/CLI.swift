@@ -124,6 +124,7 @@ public class CLI {
             // Step 2: parse options
             try parseOptions(command: command, arguments: arguments)
             if DefaultGlobalOptions.help.value == true {
+                print(usageStatementGenerator.generateUsageStatement(for: command))
                 return CLIResult.success
             }
             
@@ -161,7 +162,7 @@ public class CLI {
         
         guard let command = router.route(commands: availableCommands, arguments: arguments) else {
             if let attemptedCommandName = arguments.head {
-                printError("Command \"\(attemptedCommandName)\" not found\n")
+                printError("Command \"\(attemptedCommandName.value)\" not found\n")
                 
                 // Only print available commands if passed an unavailable command
                 helpCommand.printCLIDescription = false
