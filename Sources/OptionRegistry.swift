@@ -10,13 +10,11 @@ public class OptionRegistry {
     
     private let flags: [String: Flag]
     private let keys: [String: AnyKey]
-    private let all: [Option]
     private let groups: [OptionGroup]
     
     public init(command: Command) {
         var flags: [String: Flag] = [:]
         var keys: [String: AnyKey] = [:]
-        var all: [Option] = []
         for option in command.options {
             if let flag = option as? Flag {
                 for name in flag.names {
@@ -27,11 +25,9 @@ public class OptionRegistry {
                     keys[name] = key
                 }
             }
-            all.append(option)
         }
         self.flags = flags
         self.keys = keys
-        self.all = all
         self.groups = command.optionGroups
     }
     

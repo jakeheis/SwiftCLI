@@ -64,11 +64,11 @@ public class DefaultParameterFiller: ParameterFiller {
 
 // MARK: - ParameterFillerError
 
-enum ParameterFillerError: Error {
+public enum ParameterFillerError: Error {
     case tooFewArguments
     case tooManyArguments
     
-    var message: String {
+    public var message: String {
         switch self {
         case .tooFewArguments: return "Insufficient number of argument"
         case .tooManyArguments: return "Too many arguments"
