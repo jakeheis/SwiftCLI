@@ -16,21 +16,19 @@ class RouterTests: XCTestCase {
             ("testNoRoute", testNoRoute),
             ("testNameRoute", testNameRoute),
             ("testAliasRoute", testAliasRoute),
-            ("testFallbackCommandFlag", testFallbackCommandFlag),
+            ("testSingleRouter", testSingleRouter),
             ("testFailedRoute", testFailedRoute)
         ]
     }
     
     var alphaCommand: Command!
     var betaCommand: Command!
-    var fallbackCommand: Command!
     
     override func setUp() {
         super.setUp()
         
         alphaCommand = LightweightCommand(name: "alpha")
         betaCommand = ChainableCommand(name: "beta")
-        fallbackCommand = LightweightCommand(name: "fallback")
     }
     
     // MARK: - Tests
@@ -70,16 +68,16 @@ class RouterTests: XCTestCase {
         XCTAssert(args.head == nil, "Enabled router should pass on no arguments to the matched command")
     }
     
-    func testFallbackCommandFlag() {
+    func testSingleRouter() {
         let args = ArgumentList(argumentString: "tester -a")
         
-        guard let command = route(args, router: DefaultRouter(fallbackCommand: fallbackCommand)) else {
+        guard let command = route(args, router: SingleCommandRouter(command: alphaCommand)) else {
             XCTFail()
             return
         }
         
-        XCTAssertEqual(command.name, fallbackCommand.name, "Router should route to the fallback command when the flag does not match any command shortcut")
-        XCTAssert(args.head?.value == "-a" && args.head?.next == nil, "Router should pass the flag on to the fallback command")
+        XCTAssertEqual(command.name, alphaCommand.name, "Router should route to the single command")
+        XCTAssert(args.head?.value == "-a" && args.head?.next == nil, "Router should pass the flag on to the single command")
     }
     
     func testFailedRoute() {
@@ -92,7 +90,7 @@ class RouterTests: XCTestCase {
     // MARK: - Helper
     
     private func route(_ arguments: ArgumentList, router: Router? = nil) -> Command? {
-        let commands = [alphaCommand, betaCommand, fallbackCommand] as [Command]
+        let commands = [alphaCommand, betaCommand] as [Command]
         
         let router = router ?? DefaultRouter()
         return router.route(commands: commands, arguments: arguments)

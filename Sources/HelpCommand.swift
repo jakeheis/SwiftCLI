@@ -26,10 +26,6 @@ extension HelpCommand {
         return false
     }
     
-    public var helpFlag: Flag? {
-        return nil
-    }
-    
 }
 
 public class DefaultHelpCommand: HelpCommand {
