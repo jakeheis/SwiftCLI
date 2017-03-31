@@ -33,19 +33,15 @@ Check out the [migration guide](MIGRATION.md)!
 * [Input](#input)
 * [Customization](#customization)
 * [Running your CLI](#running-your-cli)
-* [Xcode Installation](#xcode-installation)
 * [Example](#example)
 
 ## Installation
-#### With Swift Package Manager
 Add SwiftCLI as a dependency to your project:
 ```swift
 dependencies: [
     .Package(url: "https://github.com/jakeheis/SwiftCLI", majorVersion: 3, minor: 0)
 ]
 ```
-#### With Xcode
-[See below](#xcode-installation)
 ## Creating a CLI
 ### Setup
 In the call to ```CLI.setup()```, a ```name``` must be passed, and a ```version``` and a ```description``` are both optional.
@@ -333,12 +329,16 @@ Usage: greeter greet <person> [options]
 
 ## Routing commands
 Command routing is done by an object implementing `Router`, which is just one simple method:
-```swift
-func route(commands: [Command], arguments: RawArguments) -> Command?
-```
-SwiftCLI supplies a default implementation of `Router` with `DefaultRouter`. `DefaultRouter` finds commands based on the first passed argument. For example, `greeter greet` would search for commands with the `name` of "greet".
 
-If a command is not found, `DefaultRouter` falls back to its `fallbackCommand` if given one. Otherwise, it outputs a help message.
+```swift
+func route(commands: [Command], arguments: ArgumentList) -> Command?
+```
+
+SwiftCLI supplies a default implementation of `Router` with `DefaultRouter`. `DefaultRouter` finds commands based on the first passed argument. For example, `greeter greet` would search for commands with the `name` of "greet". 
+
+SwiftCLI also supplies an implementation of `Router` called `SingleCommandRouter` which should be used if your command is only a single command. For example, if you were implementing the `ln` command, you would say `CLI.router = SingleCommandRouter(command: LinkCommand())`.
+
+If a command is not found, `CLI` outputs a help message.
 ```bash
 ~ > greeter
 Greeter - your own personal greeter
@@ -347,7 +347,6 @@ Available commands:
 - greet                Greets the given person
 - help                 Prints this help information
 ```
-A custom fallback command can be specified by calling ```CLI.router = DefaultRouter(fallbackCommand: customDefault)```.
 
 ### Aliases
 Aliases can be made through the call `CLI.commandAliaser.alias(from:to:)`. `Router` will take these aliases into account while routing to the matching command. For example, if this call is made:
@@ -460,38 +459,7 @@ See the individual files of each of these protocols in order to see how to provi
 
 ## Running your CLI
 
-### Within Xcode
-There are two methods to pass in arguments to your CLI within Xcode, explained below. After the arguments are set up using one of these methods, you just need to Build and Run, and your app will execute and print its ouput in Xcode's Console.
-
-##### CLI ```debugGo(with:)```
-As discussed before, this is the easiest way to pass arguments to the CLI. Just replace the ```CLI.go()``` call with ```CLI.debugGo(with: "")```. This is only appropriate for development, as when this method is called, the CLI disregards any arguments passed in on launch.
-
-##### Xcode Scheme
-This is not recommended, as the above option is simpler, but it is included for completions's sake. First click on your app's scheme, then "Edit Scheme...". Go to the "Run" section, then the "Arguments" tab. You can then add arguments where it says "Arguments Passed On Launch".
-
-Make sure to use ```CLI.go()``` with this method, **not** ```CLI.debugGo(with: "")```.
-
-### In Terminal
-To actually make your CLI accessible and executable outside of Xcode, you need to add a symbolic link somewhere in your $PATH to the executable product Xcode outputs. The easiest way to do this is to click on your project in Xcode, then your executable target, then Build Phases. Add a new Run Script with this command:
-```sh
-lowercase_name=`echo $PRODUCT_NAME | tr '[A-Z]' '[a-z]'`
-new_path=/usr/local/bin/$lowercase_name
-
-if [ ! -f $new_path ]; then ln -s "$BUILT_PRODUCTS_DIR/$PRODUCT_NAME" "$new_path";fi
-```
-If you would rather have the symbolic link be placed in a different directory on your $PATH, change ```/usr/local/bin``` to your directory of choice. Also, if you would like the app to be executed with a different name then the product name, change the ```lowercase_name``` on the first line to your custom name.
-
-You then need to Build your app once inside of Xcode. From then on, you should be able to access your CLI in your terminal.
-
-Again, be sure to use ```CLI.go()``` with this method, not ```CLI.debugGoWithArgumentString("")```.
-
-## Xcode Installation
-In your project directory, run:
-```bash
-git submodule add https://github.com/jakeheis/SwiftCLI.git
-git submodule update --init
-```
-Then drag the SwiftCLI/Sources folder into your Xcode project.
+After calling `swift build`, your executable should be available at `.build/debug/YourPackageName`. In order to ensure the `CLI` gets the arguments passed on the command line, make sure to call `CLI.go()`, **not** ```CLI.debugGo(with: "")```.
 
 ## Example
 An example of a CLI developed with SwfitCLI can be found at https://github.com/jakeheis/Baker.
