@@ -34,26 +34,20 @@ public class ChainableCommand: LightweightCommand {
     }
     
     @discardableResult
+    public func withOption(_ option: Option) -> ChainableCommand {
+        options.append(option)
+        return self
+    }
+    
+    @discardableResult
     public func withShortDescription(_ shortDescription: String) -> ChainableCommand {
         self.shortDescription = shortDescription
         return self
     }
     
     @discardableResult
-    public func withOptionsSetup(_ optionsSetup: @escaping OptionsSetup) -> ChainableCommand {
-        optionsSetupBlock = optionsSetup
-        return self
-    }
-    
-    @discardableResult
-    public func withFailOnUnrecognizedOptions(_ shouldFail: Bool) -> ChainableCommand {
-        failOnUnrecognizedOptions = shouldFail
-        return self
-    }
-    
-    @discardableResult
     public func withExecution(_ execution: @escaping Execution) -> ChainableCommand {
-        executionBlock = execution
+        self.execution = execution
         return self
     }
     

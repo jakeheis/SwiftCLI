@@ -42,7 +42,7 @@ public protocol Command: class {
 }
 
 @available(*, unavailable, renamed: "Command")
-typealias OptionCommand = Command
+public typealias OptionCommand = Command
 
 extension Command {
     

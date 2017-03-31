@@ -10,28 +10,20 @@
 /// than manually implementing Command.
 public class LightweightCommand: Command {
     
+    public typealias Execution = (_ parameters: ParameterWrapper) throws -> ()
+    
     public var name: String = ""
     public var shortDescription: String = ""
     public var parameters: [(String, AnyParameter)] = []
-    
-    public var failOnUnrecognizedOptions = true
-    
-    public typealias Execution = (_ parameters: ParameterWrapper) throws -> ()
-    public typealias OptionsSetup = (_ options: OptionRegistry) -> ()
-    
-    public var executionBlock: Execution? = nil
-    public var optionsSetupBlock: OptionsSetup? = nil
+    public var options: [Option] = []
+    public var execution: Execution? = nil
     
     public init(name: String) {
         self.name = name
     }
     
-    public func setupOptions(options: OptionRegistry) {
-        optionsSetupBlock?(options)
-    }
-    
     public func execute() throws {
-        try executionBlock?(ParameterWrapper(params: parameters))
+        try execution?(ParameterWrapper(params: parameters))
     }
     
 }
@@ -50,19 +42,19 @@ public class ParameterWrapper {
         parameters = dict
     }
     
-    func required(_ name: String) -> String {
+    public func required(_ name: String) -> String {
         return (parameters[name] as! Parameter).value
     }
     
-    func optional(_ name: String) -> String? {
+    public func optional(_ name: String) -> String? {
         return (parameters[name] as! OptionalParameter).value
     }
     
-    func colllected(_ name: String) -> [String] {
+    public func colllected(_ name: String) -> [String] {
         return (parameters[name] as! CollectedParameter).value
     }
     
-    func optionalColllected(_ name: String) -> [String]? {
+    public func optionalColllected(_ name: String) -> [String]? {
         return (parameters[name] as! OptionalCollectedParameter).value
     }
     
