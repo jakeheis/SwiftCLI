@@ -17,7 +17,7 @@ public class OptionRegistry {
         var flags: [String: Flag] = [:]
         var keys: [String: AnyKey] = [:]
         var all: [Option] = []
-        for (_, option) in command.options {
+        for option in command.options {
             if let flag = option as? Flag {
                 for name in flag.names {
                     flags[name] = flag

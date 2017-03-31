@@ -31,7 +31,7 @@ public protocol Command: class {
     var parameters: [(String, AnyParameter)] { get }
     
     /// The options this command accepts; dervied automatically, don't implement unless custom functionality needed
-    var options: [(String, Option)] { get }
+    var options: [Option] { get }
     
     /// A short description of the command; printed in the command's usage statement; defaults to empty string
     var shortDescription: String { get }
@@ -61,16 +61,16 @@ extension Command {
         }
     }
 
-    public var options: [(String, Option)] {
+    public var options: [Option] {
         let mirror = Mirror(reflecting: self)
-        var options = mirror.children.flatMap { (child) -> (String, Option)? in
-            if let option = child.value as? Option, let label = child.label {
-                return (label, option)
+        var options = mirror.children.flatMap { (child) -> Option? in
+            if let option = child.value as? Option {
+                return option
             }
             return nil
         }
         if let helpFlag = helpFlag {
-            options.append(("helpFlag", helpFlag))
+            options.append((helpFlag))
         }
         return options
     }

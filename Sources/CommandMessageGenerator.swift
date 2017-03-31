@@ -22,7 +22,7 @@ public class DefaultUsageStatementGenerator: UsageStatementGenerator {
         if !command.options.isEmpty {
             message += " [options]\n"
             
-            let sortedOptions = command.options.map({ $0.1 }).sorted { (lhs, rhs) in
+            let sortedOptions = command.options.sorted { (lhs, rhs) in
                 return lhs.names.first! < rhs.names.first!
             }
             for option in sortedOptions {
