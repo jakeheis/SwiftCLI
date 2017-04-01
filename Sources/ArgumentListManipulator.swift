@@ -3,7 +3,7 @@
 //  SwiftCLI
 //
 //  Created by Jake Heiser on 3/28/17.
-//
+//  Copyright © 2017 jakeheis. All rights reserved.
 //
 
 /// Protocol representing an object which can manipulate an ArgumentList. After creating a class which conforms

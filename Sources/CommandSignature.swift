@@ -1,9 +1,9 @@
 //
 //  CommandSignature.swift
-//  Pods
+//  SwiftCLI
 //
 //  Created by Jake Heiser on 3/9/15.
-//
+//  Copyright © 2017 jakeheis. All rights reserved.
 //
 
 /// The command signature of a command
@@ -15,7 +15,7 @@ public class CommandSignature {
     
     init(command: Command) {
         for (_, parameter) in command.parameters {
-            assert(collected == nil, "The collection operator (...) must come at the end of a command signature")
+            assert(collected == nil, "The collection parameter must be the last parameter in the command")
             if let c = parameter as? AnyCollectedParameter {
                 collected = c
             } else if let r = parameter as? Parameter {
@@ -24,7 +24,7 @@ public class CommandSignature {
             } else if let o = parameter as? OptionalParameter {
                 optional.append(o)
             } else {
-                assertionFailure("Unrecognized argument type")
+                assertionFailure("Unrecognized parameter type")
             }
         }
     }

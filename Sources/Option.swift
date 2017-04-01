@@ -3,12 +3,18 @@
 //  SwiftCLI
 //
 //  Created by Jake Heiser on 3/28/17.
-//
+//  Copyright © 2017 jakeheis. All rights reserved.
 //
 
 public protocol Option {
     var names: [String] { get }
     var usage: String { get }
+}
+
+extension Option {
+    static var usageLength: Int {
+        return 40
+    }
 }
 
 public class Flag: Option {
@@ -21,8 +27,8 @@ public class Flag: Option {
         self.names = names
         self.value = defaultValue
         
-        var optionsString = names.joined(separator: ", ")
-        let spacing = String(repeating: " ", count: 40 - optionsString.characters.count)
+        let optionsString = names.joined(separator: ", ")
+        let spacing = String(repeating: " ", count: Flag.usageLength - optionsString.characters.count)
         self.usage = "\(optionsString)\(spacing)\(usage)"
     }
     
@@ -41,9 +47,8 @@ public class Key<T: Keyable>: Option {
     public init(_ names: String ..., usage: String = "") {
         self.names = names
         
-        var optionsString = names.joined(separator: ", ")
-        optionsString += " <value>"
-        let spacing = String(repeating: " ", count: 40 - optionsString.characters.count)
+        let optionsString = names.joined(separator: ", ") + " <value>"
+        let spacing = String(repeating: " ", count: Key.usageLength - optionsString.characters.count)
         self.usage = "\(optionsString)\(spacing)\(usage)"
     }
     
@@ -56,7 +61,6 @@ public class Key<T: Keyable>: Option {
     }
     
 }
-
 
 // MARK: - AnyKey
 
@@ -93,5 +97,11 @@ extension Float: Keyable {
 extension Double: Keyable {
     public static func val(from: String) -> Double? {
         return Double(from)
+    }
+}
+
+extension RawRepresentable where Self: Keyable, RawValue == String {
+    public static func val(from: String) -> Self? {
+        return Self.init(rawValue: from)
     }
 }

@@ -9,9 +9,7 @@
 import Foundation
 
 public class Input {
-    
-    //  MARK: - Public
-    
+        
     /// Awaits a string of input
     ///
     /// - Parameters:

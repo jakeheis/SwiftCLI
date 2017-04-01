@@ -119,15 +119,15 @@ public class CLI {
             // Step 1: route
             let command = try routeCommand(arguments: arguments)
             
-            // Step 2: parse options
-            try parseOptions(command: command, arguments: arguments)
+            // Step 2: recognize options
+            try recognizeOptions(of: command, in: arguments)
             if DefaultGlobalOptions.help.value == true {
                 print(usageStatementGenerator.generateUsageStatement(for: command))
                 return CLIResult.success
             }
             
-            // Step 3: parse arguments
-            try parseArguments(command: command, arguments: arguments)
+            // Step 3: fill parameters
+            try fillParameters(of: command, with: arguments)
             
             // Step 4: execute
             try command.execute()
@@ -174,7 +174,7 @@ public class CLI {
         return command
     }
     
-    private static func parseOptions(command: Command, arguments: ArgumentList) throws {
+    private static func recognizeOptions(of command: Command, in arguments: ArgumentList) throws {
         if command is HelpCommand {
             return
         }
@@ -187,7 +187,7 @@ public class CLI {
         }
     }
     
-    private static func parseArguments(command: Command, arguments: ArgumentList) throws {
+    private static func fillParameters(of command: Command, with arguments: ArgumentList) throws {
         if command is HelpCommand {
             return
         }

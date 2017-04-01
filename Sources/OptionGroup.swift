@@ -3,7 +3,7 @@
 //  SwiftCLI
 //
 //  Created by Jake Heiser on 3/31/17.
-//
+//  Copyright © 2017 jakeheis. All rights reserved.
 //
 
 public class OptionGroup {

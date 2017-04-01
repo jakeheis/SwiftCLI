@@ -47,7 +47,7 @@ public class OptionRegistry {
         return nil
     }
     
-    public func incrementCount(for option: Option) {
+    private func incrementCount(for option: Option) {
         for group in groups {
             if group.options.contains(where: { $0.names == option.names }) {
                 group.count += 1
