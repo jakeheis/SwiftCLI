@@ -70,7 +70,7 @@ extension Command {
         return options
     }
     
-    var shortDescription: String {
+    public var shortDescription: String {
         return ""
     }
     
