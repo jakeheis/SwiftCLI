@@ -1,6 +1,8 @@
 SwiftCLI
 ========
 
+[![Build Status](https://travis-ci.org/jakeheis/SwiftCLI.svg?branch=master)](https://travis-ci.org/jakeheis/SwiftCLI)
+
 A powerful framework that can be used to develop a CLI, from the simplest to the most complex, in Swift.
 
 ```swift
