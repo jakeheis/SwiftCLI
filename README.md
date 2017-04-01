@@ -8,16 +8,21 @@ A powerful framework that can be used to develop a CLI, from the simplest to the
 ```swift
 import SwiftCLI
 
-CLI.setup(name: "greeter")
-CLI.registerChainableCommand(name: "greet")
-    .withExecution { (parameters) in
-        print("Hey there!")
+class GreetCommand: Command {
+    let name = "greet"
+    let person = Parameter()
+    func execute() throws {
+        print("Hello \(person.value)!")
     }
+}
+
+CLI.setup(name: "greeter")
+CLI.register(command: GreetCommand())
 CLI.go()
 ```
 ```bash
-~ > greeter greet
-Hey there!
+~ > greeter greet world
+Hello world!
 ```
 
 ## Upgrading to SwiftCLI 3.0?
