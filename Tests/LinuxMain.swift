@@ -2,9 +2,12 @@ import XCTest
 @testable import SwiftCLITests
 
 XCTMain([
-     testCase(CommandArgumentsTests.allTests),
-     testCase(CommandMessageGeneratorTests.allTests),
-     testCase(OptionsTests.allTests),
+	 testCase(ArgumentListManipulatorTests.allTests),
+	 testCase(ArgumentListTests.allTests),
+	 testCase(CommandMessageGeneratorTests.allTests),
+	 testCase(OptionRecognizerTests.allTests),
+     testCase(OptionRegistryTests.allTests),
+	 testCase(ParameterFillerTests.allTests),
      testCase(RouterTests.allTests),
      testCase(SwiftCLITests.allTests)
 ])
