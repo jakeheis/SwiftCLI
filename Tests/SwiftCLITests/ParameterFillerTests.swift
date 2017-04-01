@@ -9,9 +9,9 @@
 import XCTest
 @testable import SwiftCLI
 
-class CommandArgumentParserTests: XCTestCase {
+class ParameterFillerTests: XCTestCase {
     
-    static var allTests : [(String, (CommandArgumentParserTests) -> () throws -> Void)] {
+    static var allTests : [(String, (ParameterFillerTests) -> () throws -> Void)] {
         return [
             ("testEmptySignature", testEmptySignature),
             ("testRequiredParameters", testRequiredParameters),
