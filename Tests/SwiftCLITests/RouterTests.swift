@@ -1,12 +1,11 @@
 //
 //  RouterTests.swift
-//  Example
+//  SwiftCLI
 //
 //  Created by Jake Heiser on 1/7/15.
 //  Copyright (c) 2015 jakeheis. All rights reserved.
 //
 
-import Foundation
 import XCTest
 @testable import SwiftCLI
 
@@ -17,45 +16,46 @@ class RouterTests: XCTestCase {
             ("testNoRoute", testNoRoute),
             ("testNameRoute", testNameRoute),
             ("testAliasRoute", testAliasRoute),
-            ("testFallbackCommandFlag", testFallbackCommandFlag),
+            ("testSingleRouter", testSingleRouter),
             ("testFailedRoute", testFailedRoute)
         ]
     }
     
     var alphaCommand: Command!
     var betaCommand: Command!
-    var fallbackCommand: Command!
     
     override func setUp() {
         super.setUp()
         
         alphaCommand = LightweightCommand(name: "alpha")
         betaCommand = ChainableCommand(name: "beta")
-        fallbackCommand = LightweightCommand(name: "fallback")
     }
     
     // MARK: - Tests
     
     func testNoRoute() {
-        let args = RawArguments(argumentString: "tester")
+        let args = ArgumentList(argumentString: "tester")
         
         let command = route(args)
         XCTAssert(command == nil)
     }
     
     func testNameRoute() {
-        let args = RawArguments(argumentString: "tester alpha")
+        let args = ArgumentList(argumentString: "tester alpha")
         
         guard let command = route(args) else {
             XCTFail()
             return
         }
         XCTAssertEqual(command.name, alphaCommand.name, "Router should route to the command with the given name")
-        XCTAssert(args.unclassifiedArguments.isEmpty, "Router should leave no arguments for the command")
+        XCTAssert(args.head == nil, "Router should leave no arguments for the command")
     }
     
     func testAliasRoute() {
-        let args = RawArguments(argumentString: "tester -b")
+        let args = ArgumentList(argumentString: "tester -b")
+        
+        CommandAliaser.alias(from: "-b", to: "beta")
+        CommandAliaser().manipulate(arguments: args)
         
         guard let command = route(args) else {
             XCTFail()
@@ -64,23 +64,23 @@ class RouterTests: XCTestCase {
         
         XCTAssertEqual(command.name, betaCommand.name, "Router with enabled shortcut routing should route to the command with the given shortcut")
         
-        XCTAssert(args.unclassifiedArguments.isEmpty, "Enabled router should pass on no arguments to the matched command")
+        XCTAssert(args.head == nil, "Enabled router should pass on no arguments to the matched command")
     }
     
-    func testFallbackCommandFlag() {
-        let args = RawArguments(argumentString: "tester -a")
+    func testSingleRouter() {
+        let args = ArgumentList(argumentString: "tester -a")
         
-        guard let command = route(args, router: DefaultRouter(fallbackCommand: fallbackCommand)) else {
+        guard let command = route(args, router: SingleCommandRouter(command: alphaCommand)) else {
             XCTFail()
             return
         }
         
-        XCTAssertEqual(command.name, fallbackCommand.name, "Router should route to the fallback command when the flag does not match any command shortcut")
-        XCTAssertEqual(args.unclassifiedArguments.map { $0.value }, ["-a"], "Router should pass the flag on to the fallback command")
+        XCTAssertEqual(command.name, alphaCommand.name, "Router should route to the single command")
+        XCTAssert(args.head?.value == "-a" && args.head?.next == nil, "Router should pass the flag on to the single command")
     }
     
     func testFailedRoute() {
-        let args = RawArguments(argumentString: "tester charlie")
+        let args = ArgumentList(argumentString: "tester charlie")
         
         let command = route(args)
         XCTAssert(command == nil)
@@ -88,14 +88,11 @@ class RouterTests: XCTestCase {
     
     // MARK: - Helper
     
-    private func route(_ arguments: RawArguments, router: Router? = nil) -> Command? {
-        let commands = [alphaCommand, betaCommand, fallbackCommand] as [Command]
+    private func route(_ arguments: ArgumentList, router: Router? = nil) -> Command? {
+        let commands = [alphaCommand, betaCommand] as [Command]
         
-        let aliases = [
-            "-b": "beta"
-        ]
         let router = router ?? DefaultRouter()
-        return router.route(commands: commands, aliases: aliases, arguments: arguments)
+        return router.route(commands: commands, arguments: arguments)
     }
     
 }

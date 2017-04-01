@@ -1,55 +1,32 @@
 //
 //  CommandSignature.swift
-//  Pods
+//  SwiftCLI
 //
 //  Created by Jake Heiser on 3/9/15.
-//
+//  Copyright © 2017 jakeheis. All rights reserved.
 //
 
-import Foundation
-
+/// The command signature of a command
 public class CommandSignature {
     
-    public var requiredParameters: [String] = []
-    public var optionalParameters: [String] = []
-    public var collectRemainingArguments = false
+    public var required: [Parameter] = []
+    public var optional: [OptionalParameter] = []
+    public var collected: AnyCollectedParameter?
     
-    init(_ string: String) {
-        let parameters = string.components(separatedBy: " ").filter { !$0.isEmpty }
-        
-        let requiredRegex = try! Regex(pattern: "^<.*>$", options: [])
-        let optionalRegex = try! Regex(pattern: "^\\[<.*>\\]$", options: [])
-        
-        for parameter in parameters {
-            if parameter == "..." {
-                assert(parameter == parameters.last, "The collection operator (...) must come at the end of a command signature.")
-                collectRemainingArguments = true
-                continue
-            }
-            
-            let parameterRange = NSRange(location: 0, length: parameter.characters.count)
-            
-            if requiredRegex.numberOfMatches(in: parameter, options: [], range: parameterRange) > 0 {
-                assert(optionalParameters.count == 0, "All required parameters must come before any optional parameter.")
-                required(parameter: parameter.trimEnds(by: 1))
-            } else if optionalRegex.numberOfMatches(in: parameter, options: [], range: parameterRange) > 0 {
-                optional(parameter: parameter.trimEnds(by: 2))
+    init(command: Command) {
+        for (_, parameter) in command.parameters {
+            assert(collected == nil, "The collection parameter must be the last parameter in the command")
+            if let c = parameter as? AnyCollectedParameter {
+                collected = c
+            } else if let r = parameter as? Parameter {
+                assert(optional.isEmpty, "All required parameters must come before optional parameters")
+                required.append(r)
+            } else if let o = parameter as? OptionalParameter {
+                optional.append(o)
             } else {
-                assert(false, "Unrecognized parameter format: \(parameter)")
+                assertionFailure("Unrecognized parameter type")
             }
         }
-    }
-    
-    func required(parameter: String) {
-        requiredParameters.append(parameter)
-    }
-    
-    func optional(parameter: String) {
-        optionalParameters.append(parameter)
-    }
-    
-    var isEmpty: Bool {
-        return requiredParameters.isEmpty && optionalParameters.isEmpty
     }
 
 }

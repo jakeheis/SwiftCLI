@@ -1,209 +1,173 @@
 //
-//  OptionsSpec.swift
-//  Example
+//  OptionRecognizerTests.swift
+//  SwiftCLI
 //
 //  Created by Jake Heiser on 8/10/14.
 //  Copyright (c) 2014 jakeheis. All rights reserved.
 //
 
-import Foundation
 import XCTest
 @testable import SwiftCLI
 
-class OptionsTests: XCTestCase {
+class OptionRecognizerTests: XCTestCase {
     
-    static var allTests : [(String, (OptionsTests) -> () throws -> Void)] {
+   static var allTests : [(String, (OptionRecognizerTests) -> () throws -> Void)] {
         return [
-            ("testOnFlags", testOnFlags),
-            ("testOnKeys", testOnKeys),
             ("testSimpleFlagParsing", testSimpleFlagParsing),
             ("testSimpleKeyParsing", testSimpleKeyParsing),
+            ("testKeyValueParsing", testKeyValueParsing),
             ("testCombinedFlagsAndKeysParsing", testCombinedFlagsAndKeysParsing),
             ("testCombinedFlagsAndKeysAndArgumentsParsing", testCombinedFlagsAndKeysAndArgumentsParsing),
             ("testUnrecognizedOptions", testUnrecognizedOptions),
             ("testKeysNotGivenValues", testKeysNotGivenValues),
+            ("testIllegalOptionFormat", testIllegalOptionFormat),
             ("testFlagSplitting", testFlagSplitting),
-            ("testExitEarlyFlags", testExitEarlyFlags)
+            ("testGroupRestriction", testGroupRestriction)
         ]
     }
     
-    var options = OptionRegistry()
-    
     override func setUp() {
         super.setUp()
-        
-        options = OptionRegistry()
     }
     
     // MARK: - Tests
     
-    func testOnFlags() {
-        options.add(flags: ["-a", "--awesome"]) {_ in}
-        XCTAssert(options.flagBlocks.keys.contains("-a"), "Options should expect flags after a call to onFlags")
-        XCTAssert(options.flagBlocks.keys.contains("--awesome"), "Options should expect flags after a call to onFlags")
-    }
-    
-    func testOnKeys() {
-        options.add(keys: ["-a", "--awesome"]) {_ in}
-        XCTAssert(options.keyBlocks.keys.contains("-a"), "Options should expect keys after a call to onKeys")
-        XCTAssert(options.keyBlocks.keys.contains("--awesome"), "Options should expect keys after a call to onKeys")
-    }
-    
     func testSimpleFlagParsing() {
-        var aBlockCalled = false
-        var bBlockCalled = false
-        
-        options.add(flags: ["-a"]) { aBlockCalled = true }
-        options.add(flags: ["-b"]) { bBlockCalled = true }
-        
-        let arguments = RawArguments(argumentString: "tester -a -b")
-        
-        let result = parse(arguments: arguments, with: options)
+        let cmd = DoubleFlagCmd()
+        let arguments = ArgumentList(argumentString: "tester -a -b")
+        assertParseSuccess(arguments: arguments, with: cmd)
 
-        XCTAssert(arguments.unclassifiedArguments.isEmpty, "Options should classify all option arguments as options")
+        XCTAssert(arguments.head == nil, "Options should classify all option arguments as options")
         
-        XCTAssert(result == .success, "Option parse should succeed when all flags are added with add(flags:)")
-        
-        XCTAssert(aBlockCalled && bBlockCalled, "Options should execute the closures of passed flags")
+        XCTAssert(cmd.alpha.value && cmd.beta.value, "Options should execute the closures of passed flags")
     }
     
     func testSimpleKeyParsing() {
-        var aValue: String?
-        var bValue: String?
+        let cmd = DoubleKeyCmd()
+        let arguments = ArgumentList(argumentString: "tester -a apple -b banana")
+        assertParseSuccess(arguments: arguments, with: cmd)
         
-        options.add(keys: ["-a"]) { (value) in aValue = value }
-        options.add(keys: ["-b"]) { (value) in bValue = value }
+        XCTAssert(arguments.head == nil, "Options should classify all option arguments as options")
         
-        let arguments = RawArguments(argumentString: "tester -a apple -b banana")
+        XCTAssertEqual(cmd.alpha.value, "apple", "Options should execute the closures of passed keys")
+        XCTAssertEqual(cmd.beta.value, "banana", "Options should execute the closures of passed keys")
+    }
+    
+    func testKeyValueParsing() {
+        let cmd = IntKeyCmd()
+        let arguments = ArgumentList(argumentString: "tester -a 7")
+        assertParseSuccess(arguments: arguments, with: cmd)
         
-        let result = parse(arguments: arguments, with: options)
-        
-        XCTAssert(arguments.unclassifiedArguments.isEmpty, "Options should classify all option arguments as options")
-        
-        XCTAssert(result == .success, "Option parse should succeed when all keys are added with add(keys:)")
-        
-        XCTAssertEqual(aValue ?? "", "apple", "Options should execute the closures of passed keys")
-        XCTAssertEqual(bValue ?? "", "banana", "Options should execute the closures of passed keys")
+        XCTAssert(cmd.alpha.value == 7, "Options should parse int")
     }
     
     func testCombinedFlagsAndKeysParsing() {
-        var aBlockCalled = false
-        var bValue: String?
+        let cmd = FlagKeyCmd()
+        let arguments = ArgumentList(argumentString: "tester -a -b banana")
         
-        options.add(flags: ["-a"]) { aBlockCalled = true }
-        options.add(keys: ["-b"]) { (value) in bValue = value }
+        assertParseSuccess(arguments: arguments, with: cmd)
         
-        let arguments = RawArguments(argumentString: "tester -a -b banana")
+        XCTAssert(arguments.head == nil, "Options should classify all option arguments as options")
         
-        let result = parse(arguments: arguments, with: options)
-        
-        XCTAssert(arguments.unclassifiedArguments.isEmpty, "Options should classify all option arguments as options")
-
-        XCTAssert(result == .success, "Option parse should succeed when all flags/keys are added with add(flags/keys:)")
-        
-        XCTAssert(aBlockCalled, "Options should execute the closures of passed flags")
-        XCTAssertEqual(bValue ?? "", "banana", "Options should execute the closures of passed keys")
+        XCTAssert(cmd.alpha.value, "Options should execute the closures of passed flags")
+        XCTAssertEqual(cmd.beta.value, "banana", "Options should execute the closures of passed keys")
     }
     
     func testCombinedFlagsAndKeysAndArgumentsParsing() {
-        var aBlockCalled = false
-        var bValue: String?
+        let cmd = FlagKeyCmd()
+        let arguments = ArgumentList(argumentString: "tester -a argument -b banana")
         
-        options.add(flags: ["-a"]) { aBlockCalled = true }
-        options.add(keys: ["-b"]) { (value) in bValue = value }
+        assertParseSuccess(arguments: arguments, with: cmd)
         
-        let arguments = RawArguments(argumentString: "tester -a argument -b banana")
+        XCTAssert(arguments.head?.value ==  "argument" && arguments.head?.next == nil, "Options should classify all option arguments as options")
         
-        let result = parse(arguments: arguments, with: options)
-        
-        XCTAssertEqual(arguments.unclassifiedArguments.map { $0.value }, ["argument"], "Options should classify all option arguments as options")
-        
-        XCTAssert(result == .success, "Option parse should succeed when all flags/keys are added with add(flags/keys:)")
-        
-        XCTAssert(aBlockCalled, "Options should execute the closures of passed flags")
-        XCTAssertEqual(bValue ?? "", "banana", "Options should execute the closures of passed keys")
+        XCTAssert(cmd.alpha.value, "Options should execute the closures of passed flags")
+        XCTAssertEqual(cmd.beta.value, "banana", "Options should execute the closures of passed keys")
     }
     
     func testUnrecognizedOptions() {
-        options.add(flags: ["-a"]) {}
+        let cmd = FlagCmd()
+        let arguments = ArgumentList(argumentString: "tester -a -b")
         
-        let arguments = RawArguments(argumentString: "tester -a -b")
-        
-        let result = parse(arguments: arguments, with: options)
-        
-        XCTAssert(arguments.unclassifiedArguments.isEmpty, "Options should classify all option arguments as options")
-        
-        if case let .incorrectOptionUsage(incorrectOptionUsage) = result {
-            XCTAssertEqual(incorrectOptionUsage.unrecognizedOptions.first ?? "", "-b", "Options should identify when unrecognized options are used")
-        } else {
-            XCTFail("Options should identify when unrecognized options are used")
-        }
+        assertParseFailure(arguments: arguments, with: cmd, error: .unrecognizedOption("-b"))
     }
     
     func testKeysNotGivenValues() {
-        options.add(keys: ["-a"])  {_ in}
-        options.add(flags: ["-b"]) {}
+        let cmd = FlagKeyCmd()
+        let arguments = ArgumentList(argumentString: "tester -b -a")
         
-        let arguments = RawArguments(argumentString: "tester -a -b")
+        assertParseFailure(arguments: arguments, with: cmd, error: .noValueForKey("-b"))
+    }
+    
+    func testIllegalOptionFormat() {
+        let cmd = IntKeyCmd()
+        let arguments = ArgumentList(argumentString: "tester -a val")
         
-        let result = parse(arguments: arguments, with: options)
-        
-        XCTAssert(arguments.unclassifiedArguments.isEmpty, "Options should classify all option arguments as options")
-        
-        if case let .incorrectOptionUsage(incorrectOptionUsage) = result {
-            XCTAssertEqual(incorrectOptionUsage.keysNotGivenValue.first ?? "", "-a", "Options should identify when keys are not given values")
-        } else {
-            XCTFail("Options should identify when keys are not given values")
-        }
+        assertParseFailure(arguments: arguments, with: cmd, error: .illegalKeyValue("-a", "val"))
     }
 
     func testFlagSplitting() {
-        var aBlockCalled = false
-        var bBlockCalled = false
+        let cmd = DoubleFlagCmd()
+        let arguments = ArgumentList(argumentString: "tester -ab")
+        OptionSplitter().manipulate(arguments: arguments)
         
-        options.add(flags: ["-a"]) { aBlockCalled = true }
-        options.add(flags: ["-b"]) { bBlockCalled = true }
+        assertParseSuccess(arguments: arguments, with: cmd)
         
-        let arguments = RawArguments(argumentString: "tester -ab")
+        XCTAssert(arguments.head == nil, "Options should classify all option arguments as options")
         
-        let result = parse(arguments: arguments, with: options)
-        
-        XCTAssert(arguments.unclassifiedArguments.isEmpty, "Options should classify all option arguments as options")
-        
-        XCTAssert(result == .success, "Options should recognize all flags added with onFlags")
-        
-        XCTAssert(aBlockCalled && bBlockCalled, "Options should execute the closures of passed flags")
+        XCTAssert(cmd.alpha.value && cmd.beta.value, "Options should execute the closures of passed flags")
     }
     
-    func testExitEarlyFlags() {
-        options.add(flags: ["-a"]) {}
-        options.add(flags: ["-b"]) {}
-        options.exitEarlyOptions = ["-a"]
+    func testGroupRestriction() {
+        let cmd1 = ExactlyOneCmd()
+        let arguments1 = ArgumentList(argumentString: "tester -a -b")
+        assertParseFailure(arguments: arguments1, with: cmd1, error: .groupRestrictionFailed(cmd1.optionGroups[0]))
         
-        var arguments = RawArguments(argumentString: "tester -a")
-        let result1 = parse(arguments: arguments, with: options)
-        XCTAssert(result1 == .exitEarly, "Options should exitEarly when exit early flag is given")
+        let cmd2 = ExactlyOneCmd()
+        let arguments2 = ArgumentList(argumentString: "tester -a")
+        assertParseSuccess(arguments: arguments2, with: cmd2)
         
-        arguments = RawArguments(argumentString: "tester -b")
-        let result2 = parse(arguments: arguments, with: options)
-        XCTAssert(result2 == .success, "Options should not exitEarly when no exit early flag is given")
+        let cmd3 = ExactlyOneCmd()
+        let arguments3 = ArgumentList(argumentString: "tester -b")
+        assertParseSuccess(arguments: arguments3, with: cmd3)
+        
+        let cmd4 = ExactlyOneCmd()
+        let arguments4 = ArgumentList(argumentString: "tester")
+        assertParseFailure(arguments: arguments4, with: cmd4, error: .groupRestrictionFailed(cmd4.optionGroups[0]))
     }
     
     // MARK: - Helpers
     
-    private func parse(arguments: RawArguments, with optionRegistry: OptionRegistry) -> OptionParserResult {
-        return DefaultOptionParser().recognizeOptions(in: arguments, from: optionRegistry)
+    private func assertParseSuccess(arguments: ArgumentList, with cmd: Command) {
+        do {
+            try DefaultOptionRecognizer().recognizeOptions(of: cmd, in: arguments)
+        } catch {
+            XCTFail()
+        }
     }
     
-}
-
-extension OptionParserResult: Equatable {}
-
-public func == (lhs: OptionParserResult, rhs: OptionParserResult) -> Bool  {
-    switch (lhs, rhs) {
-    case (.success, .success): return true
-    case (.exitEarly, .exitEarly): return true
-    case (.incorrectOptionUsage(_), .incorrectOptionUsage(_)): return true
-    default: return false
+    private func assertParseFailure(arguments: ArgumentList, with cmd: Command, error expectedError: OptionRecognizerError) {
+        do {
+            print(cmd.optionGroups)
+            try DefaultOptionRecognizer().recognizeOptions(of: cmd, in: arguments)
+            XCTFail()
+        } catch let error as OptionRecognizerError {
+            switch (error, expectedError) {
+            case (.unrecognizedOption(let option1), .unrecognizedOption(let option2)) where option1 == option2:
+                break
+            case (.illegalKeyValue(let k1, let v1), .illegalKeyValue(let k2, let v2)) where k1 == k2 && v1 == v2:
+                break
+            case (.noValueForKey(let k1), .noValueForKey(let k2)) where k1 == k2:
+                break
+            case (.groupRestrictionFailed(let g1), .groupRestrictionFailed(let g2))
+                where g1.options.reduce("", { $0 + $1.names.joined() }) == g2.options.reduce("", { $0 + $1.names.joined() }):
+                break
+            default:
+                XCTFail()
+            }
+        } catch {
+            XCTFail()
+        }
     }
+    
 }

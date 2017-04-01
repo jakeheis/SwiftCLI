@@ -6,8 +6,6 @@
 //  Copyright (c) 2014 jakeheis. All rights reserved.
 //
 
-import Foundation
-
 public class CLI {
     
     // MARK: - Information
@@ -16,31 +14,32 @@ public class CLI {
     public static var version = "1.0"
     public static var description = ""
     
-    private static var commands: [Command] = []
-    private static var aliases: [String: String] = [:]
-    
     public static var helpCommand: HelpCommand = DefaultHelpCommand()
     public static var versionCommand: Command = VersionCommand()
     
     // MARK: - Advanced customization
     
-    public static var router: Router = DefaultRouter()
     public static var usageStatementGenerator: UsageStatementGenerator = DefaultUsageStatementGenerator()
-    public static var misusedOptionsMessageGenerator: MisusedOptionsMessageGenerator = DefaultMisusedOptionsMessageGenerator()
+    public static var misusedOptionsMessageGenerator: MisusedOptionsMessageGenerator
+        = DefaultMisusedOptionsMessageGenerator()
     
-    public static var rawArgumentParser: RawArgumentParser = DefaultRawArgumentParser()
-    public static var commandArgumentParser: CommandArgumentParser = DefaultCommandArgumentParser()
-    public static var optionParser: OptionParser = DefaultOptionParser()
+    public static var argumentListManipulators: [ArgumentListManipulator] = [CommandAliaser(), OptionSplitter()]
+    public static var router: Router = DefaultRouter()
+    public static var optionRecognizer: OptionRecognizer = DefaultOptionRecognizer()
+    public static var parameterFiller: ParameterFiller = DefaultParameterFiller()
+    
+    // MARK: - Private
+    
+    private static var commands: [Command] = []
     
     // MARK: - Setup
     
-    /**
-        Sets the CLI up with basic information
-    
-        - Parameter name: name of the app, printed in the help message and command usage statements
-        - Parameter version: version of the app, printed by the VersionCommand
-        - Parameter description: description of the app, printed in the help message
-    */
+    /// Sets the CLI up with basic information
+    ///
+    /// - Parameters:
+    ///   - name: name of the app, printed in the help message and command usage statements
+    ///   - version: version of the app, printed by the VersionCommand
+    ///   - description: description of the app, printed in the help message
     public static func setup(name: String, version: String? = nil, description: String? = nil) {
         self.name = name
         
@@ -51,143 +50,101 @@ public class CLI {
         if let description = description {
             self.description = description
         }
-        
-        alias(from: "-h", to: "help")
-        alias(from: "-v", to: "version")
     }
     
-    /**
-        Registers a command with the CLI for routing and execution. All commands must be registered 
-        with this method or its siblings before calling `CLI.go()`
-    
-        - Parameter command: the command to be registered
-    */
+    /// Registers a command with the CLI for routing and execution. All commands must be registered
+    /// with this method or its siblings before calling `CLI.go()`
+    ///
+    /// - Parameter command: the command to be registered
     public static func register(command: Command) {
         commands.append(command)
     }
     
-    @available(*, unavailable, renamed: "register(command:)")
-    public static func registerCommand(_ command: Command) {}
-    
-    /**
-        Registers a group of commands with the CLI for routing and execution. All commands must be registered
-        with this method or its siblings before calling `CLI.go()`
-    
-        - Parameter commands: the commands to be registered
-    */
+    /// Registers a group of commands with the CLI for routing and execution. All commands must be registered
+    /// with this method or its siblings before calling `CLI.go()`
+    ///
+    /// - Parameter commands: the commands to be registered
     public static func register(commands: [Command]) {
         commands.forEach { self.register(command: $0) }
     }
     
-    @available(*, unavailable, renamed: "register(commands:)")
-    public static func registerCommands(_ commands: [Command]) {}
-    
-    /**
-        Registers a chainable command with the CLI for routing and execution.
-    
-        - Parameter commandName: the name of the new chainable command
-        - Returns: a new chainable command for immediate chaining
-    */
+    /// Registers a chainable command with the CLI for routing and execution.
+    ///
+    /// - Parameter name: the name of the new chainable command
+    /// - Returns: a new chainable command for immediate chaining
     public static func registerChainableCommand(name: String) -> ChainableCommand {
         let chainable = ChainableCommand(name: name)
         register(command: chainable)
         return chainable
     }
     
-    @available(*, unavailable, renamed: "registerChainableCommand(name:)")
-    public static func registerChainableCommand(commandName: String) -> ChainableCommand {
-        return registerChainableCommand(name: commandName)
-    }
-    
-    /**
-        Aliases from one command name to another (e.g. from "-h" to "help" or from "co" to "checkout")
-        - Parameter from: Command name from which the alias should be made (e.g. "-h")
-        - Parameter to: Command name to which the alias should be made (e.g. "help")
-    */
-    public static func alias(from: String, to: String) {
-        aliases[from] = to
-    }
-    
-    /**
-        Removes an alias from one command name to another
-        - Parameter from: Alias source which should be removed
-     */
-    public static func removeAlias(from: String) {
-        aliases.removeValue(forKey: from)
+    /// For testing; don't use
+    internal static func reset() {
+        commands = []
+        argumentListManipulators = [CommandAliaser(), OptionSplitter()]
+        GlobalOptions.options = DefaultGlobalOptions.options
+        CommandAliaser.reset()
     }
     
     // MARK: - Go
     
-    /**
-        Kicks off the entire CLI process, routing to and executing the command specified by the passed arguments. 
-        Uses the arguments passed in the command line.
-    
-        - SeeAlso: `debugGoWithArgumentString()` when debugging
-        - Returns: a CLIResult (Int) representing the success of the CLI in routing to and executing the correct
-                    command. Usually should be passed to `exit(result)`
-    */
+    /// Kicks off the entire CLI process, routing to and executing the command specified by the passed arguments.
+    /// Uses the arguments passed in the command line.
+    ///
+    /// - SeeAlso: `debugGoWithArgumentString()` when debugging
+    /// - Returns: a CLIResult (Int32) representing the success of the CLI in routing to and executing the correct
+    /// command. Usually should be passed to `exit(result)`
     public static func go() -> CLIResult {
-       return go(with: RawArguments())
+        return go(with: ArgumentList())
     }
     
-    /**
-        Kicks off the entire CLI process, routing to and executing the command specified by the passed arguments.
-        Uses the arguments passed in as an argument.
-    
-        - Parameter argumentString: the arguments to use when running the CLI
-        - SeeAlso: `go()` when running from the command line
-        - Returns: a CLIResult (Int) representing the success of the CLI in routing to and executing the correct
-                    command. Usually should be passed to `exit(result)`
-    */
+    /// Kicks off the entire CLI process, routing to and executing the command specified by the passed arguments.
+    /// Uses the argument string passed to this function.
+    ///
+    /// - SeeAlso: `go()` when running from the command line
+    /// - Parameter argumentString: the arguments to use when running the CLI
+    /// - Returns: a CLIResult (Int) representing the success of the CLI in routing to and executing the correct
+    /// command. Usually should be passed to `exit(result)`
     public static func debugGo(with argumentString: String) -> CLIResult {
         print("[Debug Mode]")
-        return go(with: RawArguments(argumentString: argumentString))
-    }
-    
-    @available(*, unavailable, renamed: "debugGo(with:)")
-    public static func debugGoWithArgumentString(_ argumentString: String) -> CLIResult {
-        return debugGo(with: argumentString)
+        return go(with: ArgumentList(argumentString: argumentString))
     }
     
     // MARK: - Privates
     
-    private static func go(with arguments: RawArguments) -> CLIResult {
+    private static func go(with arguments: ArgumentList) -> CLIResult {
+        argumentListManipulators.forEach { $0.manipulate(arguments: arguments) }
+        
         do {
+            // Step 1: route
             let command = try routeCommand(arguments: arguments)
             
-            if let optionCommand = command as? OptionCommand {
-                let result = try parseOptions(command: optionCommand, arguments: arguments)
-                if case .exitEarly = result {
-                    return CLIResult.success
-                }
+            // Step 2: recognize options
+            try recognizeOptions(of: command, in: arguments)
+            if DefaultGlobalOptions.help.value == true {
+                print(usageStatementGenerator.generateUsageStatement(for: command))
+                return CLIResult.success
             }
             
-            let commandArguments: CommandArguments
-            do {
-                commandArguments = try parseArguments(command: command, arguments: arguments)
-            } catch let CommandArgumentParserError.incorrectUsage(message) {
-                printError(message)
-                printError(command.usage)
-                throw CLIError.emptyError
-            } catch {
-                throw error
-            }
+            // Step 3: fill parameters
+            try fillParameters(of: command, with: arguments)
             
-            try command.execute(arguments: commandArguments)
+            // Step 4: execute
+            try command.execute()
             
             return CLIResult.success
         } catch CLIError.error(let error) {
             printError(error)
         } catch CLIError.emptyError {
             // Do nothing
-        } catch let error as NSError {
+        } catch let error {
             printError("An error occurred: \(error.localizedDescription)")
         }
         
         if helpCommand.executeOnCommandFailure {
             do {
-                try helpCommand.execute(arguments: CommandArguments())
-            } catch let error as NSError {
+                try helpCommand.execute()
+            } catch let error {
                 printError("An error occurred: \(error.localizedDescription)")
             }
         }
@@ -195,21 +152,21 @@ public class CLI {
         return CLIResult.error
     }
     
-    private static func routeCommand(arguments: RawArguments) throws -> Command {
+    private static func routeCommand(arguments: ArgumentList) throws -> Command {
         var availableCommands = commands
         availableCommands.append(helpCommand)
         availableCommands.append(versionCommand)
         helpCommand.availableCommands = availableCommands
         
-        guard let command = router.route(commands: availableCommands, aliases: aliases, arguments: arguments) else {
-            if let attemptedCommandName = arguments.unclassifiedArguments.first?.value {
-                printError("Command \"\(attemptedCommandName)\" not found\n")
+        guard let command = router.route(commands: availableCommands, arguments: arguments) else {
+            if let attemptedCommandName = arguments.head {
+                printError("Command \"\(attemptedCommandName.value)\" not found\n")
                 
                 // Only print available commands if passed an unavailable command
                 helpCommand.printCLIDescription = false
             }
             
-            try helpCommand.execute(arguments: CommandArguments())
+            try helpCommand.execute()
             
             throw CLIError.emptyError
         }
@@ -217,28 +174,31 @@ public class CLI {
         return command
     }
     
-    private static func parseOptions(command: OptionCommand, arguments: RawArguments) throws -> OptionParserResult {
-        let optionRegistry = OptionRegistry()
-        
-        command.internalSetupOptions(options: optionRegistry)
-        
-        let result = optionParser.recognizeOptions(in: arguments, from: optionRegistry)
-        
-        if case .incorrectOptionUsage(let incorrectOptionUsage) = result {
-            if let message = misusedOptionsMessageGenerator.generateMisusedOptionsStatement(for: command, incorrectOptionUsage: incorrectOptionUsage) {
-                printError(message)
-            }
-            if command.failOnUnrecognizedOptions {
-                throw CLIError.emptyError
-            }
+    private static func recognizeOptions(of command: Command, in arguments: ArgumentList) throws {
+        if command is HelpCommand {
+            return
         }
         
-        return result
+        do {
+            try optionRecognizer.recognizeOptions(of: command, in: arguments)
+        } catch let error as OptionRecognizerError {
+            let message = misusedOptionsMessageGenerator.generateMisusedOptionsStatement(for: command, error: error)
+            throw CLIError.error(message)
+        }
     }
     
-    private static func parseArguments(command: Command, arguments: RawArguments) throws -> CommandArguments {
-        let commandSignature = CommandSignature(command.signature)
-        return try CommandArguments(rawArguments: arguments, signature: commandSignature)
+    private static func fillParameters(of command: Command, with arguments: ArgumentList) throws {
+        if command is HelpCommand {
+            return
+        }
+        
+        do {
+            try parameterFiller.fillParameters(of: command, with: arguments)
+        } catch let error as ParameterFillerError {
+            printError(error.message)
+            printError(command.usage)
+            throw CLIError.emptyError
+        }
     }
     
 }
@@ -263,13 +223,3 @@ extension CLIResult {
     }
     
 }
-
-// MARK: - Compatibility
-
-#if os(Linux)
-typealias Regex = RegularExpression
-
-#else
-typealias Regex = NSRegularExpression
-
-#endif

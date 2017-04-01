@@ -7,31 +7,39 @@
 //
 
 public protocol Router {
-    func route(commands: [Command], aliases: [String: String], arguments: RawArguments) -> Command?
+    func route(commands: [Command], arguments: ArgumentList) -> Command?
 }
 
 // MARK: - DefaultRouter
 
 public class DefaultRouter: Router {
     
-    public let fallbackCommand: Command?
-    
-    public init(fallbackCommand: Command? = nil) {
-        self.fallbackCommand = fallbackCommand
-    }
-    
-    public func route(commands: [Command], aliases: [String: String], arguments: RawArguments) -> Command? {
-        guard let commandNameArgument = arguments.unclassifiedArguments.first else {
-            return fallbackCommand
+    public func route(commands: [Command], arguments: ArgumentList) -> Command? {
+        guard let commandNameArgument = arguments.head else {
+            return nil
         }
         
-        let matchingName = aliases[commandNameArgument.value] ?? commandNameArgument.value
-        if let command = commands.first(where: { $0.name == matchingName }) {
-            commandNameArgument.classification = .commandName
+        if let command = commands.first(where: { $0.name == commandNameArgument.value }) {
+            arguments.remove(node: commandNameArgument)
             return command
         }
         
-        return fallbackCommand
+        return nil
+    }
+    
+}
+
+/// For use if the CLI functions as a single command, e.g. cat someFile
+public class SingleCommandRouter: Router {
+    
+    let command: Command
+    
+    public init(command: Command) {
+        self.command = command
+    }
+    
+    public func route(commands: [Command], arguments: ArgumentList) -> Command? {
+        return command
     }
     
 }

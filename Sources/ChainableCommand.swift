@@ -6,13 +6,36 @@
 //  Copyright (c) 2014 jakeheis. All rights reserved.
 //
 
-/// A chainable interface to a CommandType; all functions return the object itself for easy chaining.
-/// Should only be used for simple commands.
+/// A chainable interface to a CommandType; all functions return the object itself for easy chaining
 public class ChainableCommand: LightweightCommand {
     
     @discardableResult
-    public func withSignature(_ signature: String) -> ChainableCommand {
-        self.signature = signature
+    public func withParameter(named name: String) -> ChainableCommand {
+        parameters.append((name, Parameter()))
+        return self
+    }
+    
+    @discardableResult
+    public func withOptionalParameter(named name: String) -> ChainableCommand {
+        parameters.append((name, OptionalParameter()))
+        return self
+    }
+    
+    @discardableResult
+    public func withCollectedParameter(named name: String) -> ChainableCommand {
+        parameters.append((name, CollectedParameter()))
+        return self
+    }
+    
+    @discardableResult
+    public func withOptionalCollectedParameter(named name: String) -> ChainableCommand {
+        parameters.append((name, OptionalCollectedParameter()))
+        return self
+    }
+    
+    @discardableResult
+    public func withOption(_ option: Option) -> ChainableCommand {
+        options.append(option)
         return self
     }
     
@@ -23,26 +46,8 @@ public class ChainableCommand: LightweightCommand {
     }
     
     @discardableResult
-    public func withOptionsSetup(_ optionsSetup: @escaping OptionsSetupBlock) -> ChainableCommand {
-        optionsSetupBlock = optionsSetup
-        return self
-    }
-    
-    @discardableResult
-    public func withUnrecognizedOptionsPrintingBehavior(_ behavior: UnrecognizedOptionsPrintingBehavior) -> ChainableCommand {
-        unrecognizedOptionsPrintingBehavior = behavior
-        return self
-    }
-    
-    @discardableResult
-    public func withFailOnUnrecognizedOptions(_ shouldFail: Bool) -> ChainableCommand {
-        failOnUnrecognizedOptions = shouldFail
-        return self
-    }
-    
-    @discardableResult
-    public func withExecutionBlock(_ execution: @escaping ExecutionBlock) -> ChainableCommand {
-        executionBlock = execution
+    public func withExecution(_ execution: @escaping Execution) -> ChainableCommand {
+        self.execution = execution
         return self
     }
     

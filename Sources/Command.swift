@@ -9,109 +9,93 @@
 // MARK: Protocols
 
 /// The base protocol for all commands
-public protocol Command {
+public protocol Command: class {
+    
+    //
+    // Required:
+    //
 
     /// The name of the command; used to route arguments to commands
     var name: String { get }
     
-    // The argument signature of the command; used to map RawArguments to CommandArguments
-    /// See the README for details on this
-    var signature: String { get }
+    /// Executes the command
+    ///
+    /// - Throws: CLIError if command cannot execute successfully
+    func execute() throws
+
+    //
+    // Optional:
+    //
     
-    /// A short description of the command; printed in the command's usage statement
+    /// The paramters this command accepts; dervied automatically, don't implement unless custom functionality needed
+    var parameters: [(String, AnyParameter)] { get }
+    
+    /// The options this command accepts; dervied automatically, don't implement unless custom functionality needed
+    var options: [Option] { get }
+    
+    /// A short description of the command; printed in the command's usage statement; defaults to empty string
     var shortDescription: String { get }
     
-    /**
-        The actual execution block of the command
-    
-        - Parameter arguments: the parsed arguments
-    */
-    func execute(arguments: CommandArguments) throws
+    /// The option groups of this command; defaults to empty array
+    var optionGroups: [OptionGroup] { get }
     
 }
 
 @available(*, unavailable, renamed: "Command")
-public typealias CommandType = Command
-
-/// An expansion of CommandType to provide for option handling
-public protocol OptionCommand: Command {
-    
-    /// Whether the command should fail if passed unrecognized options. Default is true.
-    var failOnUnrecognizedOptions: Bool { get }
-    
-    /// The output behavior of the command when passed unrecognized options. Default is .PrintAll
-    var unrecognizedOptionsPrintingBehavior: UnrecognizedOptionsPrintingBehavior { get }
-    
-    /// Whether help for the command should be shown when -h is passed. Default is true.
-    var helpOnHFlag: Bool { get }
-    
-    /**
-        Where the command should configure all possible Options for the command
-    
-        - Parameter options: the instance of Options which should be set up
-    */
-    func setupOptions(options: OptionRegistry)
-
-}
-
-@available(*, unavailable, renamed: "OptionCommand")
-public typealias OptionCommandType = OptionCommand
-
-// MARK: Default implementations
-
-extension OptionCommand {
-    
-    public var failOnUnrecognizedOptions: Bool { return true }
-    
-    public var unrecognizedOptionsPrintingBehavior: UnrecognizedOptionsPrintingBehavior { return .printAll }
-    
-    public var helpOnHFlag: Bool { return true }
-    
-}
-
-// MARK: Additional functionality
+public typealias OptionCommand = Command
 
 extension Command {
     
+    // Defaults
+    
+    public var parameters: [(String, AnyParameter)] {
+        let mirror = Mirror(reflecting: self)
+        return mirror.children.flatMap { (child) in
+            if let argument = child.value as? AnyParameter, let label = child.label {
+                return (label, argument)
+            }
+            return nil
+        }
+    }
+
+    public var options: [Option] {
+        let mirror = Mirror(reflecting: self)
+        var options = mirror.children.flatMap { (child) -> Option? in
+            if let option = child.value as? Option {
+                return option
+            }
+            return nil
+        }
+        options += GlobalOptions.options
+        return options
+    }
+    
+    public var shortDescription: String {
+        return ""
+    }
+    
+    public var optionGroups: [OptionGroup] {
+        return []
+    }
+    
+    // Extras
+    
+    public var signature: String {
+        return parameters.map({ $0.1.signature(for: $0.0) }).joined(separator: " ")
+    }
+
     public var usage: String {
         var message = "Usage: \(CLI.name)"
-        
+
         if !name.isEmpty {
             message += " \(name)"
         }
-        
+
         if !signature.isEmpty {
             message += " \(signature)"
         }
-        
+
         return message
     }
-    
-}
 
-extension OptionCommand {
-    
-    func internalSetupOptions(options: OptionRegistry) {
-        setupOptions(options: options)
-        
-        if helpOnHFlag {
-            let helpFlags = ["-h", "--help"]
-            
-            options.add(flags: helpFlags, usage: "Show help information for this command") {(flag) in
-                print(CLI.usageStatementGenerator.generateUsageStatement(for: self, optionRegistry: options))
-            }
-
-            options.exitEarlyOptions += helpFlags
-        }
-    }
-    
-}
-
-// MARK: Enums
-
-public enum UnrecognizedOptionsPrintingBehavior {
-    case printNone
-    case printOnlyUnrecognizedOptions
-    case printOnlyUsage
-    case printAll
 }

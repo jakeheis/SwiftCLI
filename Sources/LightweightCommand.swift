@@ -7,32 +7,55 @@
 //
 
 /// Can be instantiated and configured as a fully functional command rather
-/// than manually implementing CommandType. Should only be used for simple commands
-public class LightweightCommand: OptionCommand {
+/// than manually implementing Command.
+public class LightweightCommand: Command {
+    
+    public typealias Execution = (_ parameters: ParameterWrapper) throws -> ()
     
     public var name: String = ""
-    public var signature: String = ""
     public var shortDescription: String = ""
-    
-    public var failOnUnrecognizedOptions = true
-    public var unrecognizedOptionsPrintingBehavior: UnrecognizedOptionsPrintingBehavior = .printAll
-    
-    public typealias ExecutionBlock = (_ arguments: CommandArguments) throws -> ()
-    public typealias OptionsSetupBlock = (_ options: OptionRegistry) -> ()
-    
-    public var executionBlock: ExecutionBlock? = nil
-    public var optionsSetupBlock: OptionsSetupBlock? = nil
+    public var parameters: [(String, AnyParameter)] = []
+    public var options: [Option] = []
+    public var execution: Execution? = nil
     
     public init(name: String) {
         self.name = name
     }
     
-    public func setupOptions(options: OptionRegistry) {
-        optionsSetupBlock?(options)
+    public func execute() throws {
+        try execution?(ParameterWrapper(params: parameters))
     }
     
-    public func execute(arguments: CommandArguments) throws {
-        try executionBlock?(arguments)
+}
+
+// MARK: - ParameterWrapper
+
+public class ParameterWrapper {
+    
+    private let parameters: [String: AnyParameter]
+    
+    init(params: [(String, AnyParameter)]) {
+        var dict: [String: AnyParameter] = [:]
+        for param in params {
+            dict[param.0] = param.1
+        }
+        parameters = dict
+    }
+    
+    public func required(_ name: String) -> String {
+        return (parameters[name] as! Parameter).value
+    }
+    
+    public func optional(_ name: String) -> String? {
+        return (parameters[name] as! OptionalParameter).value
+    }
+    
+    public func colllected(_ name: String) -> [String] {
+        return (parameters[name] as! CollectedParameter).value
+    }
+    
+    public func optionalColllected(_ name: String) -> [String]? {
+        return (parameters[name] as! OptionalCollectedParameter).value
     }
     
 }
