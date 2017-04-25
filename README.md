@@ -61,7 +61,7 @@ dependencies: [
 ```
 ## Creating a CLI
 ### Setup
-In the call to `CLI.setup()`, a `name must be passed, and a `version` and a `description` are both optional.
+In the call to `CLI.setup()`, a name must be passed, and a `version` and a `description` are both optional.
 ```swift
 CLI.setup(name: "greeter", version: "1.0", description: "Greeter - your own personal greeter")
 ```
