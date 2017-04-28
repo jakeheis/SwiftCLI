@@ -72,6 +72,7 @@ public class CLI {
     ///
     /// - Parameter name: the name of the new chainable command
     /// - Returns: a new chainable command for immediate chaining
+    @available(*, deprecated, message: "register(command:) a custom type implementing Command instead")
     public static func registerChainableCommand(name: String) -> ChainableCommand {
         let chainable = ChainableCommand(name: name)
         register(command: chainable)

@@ -44,9 +44,18 @@ class TestCommand: Command {
 
 // MARK: -
 
+class AlphaCmd: Command {
+    let name = "alpha"
+    func execute() throws {}
+}
+
+class BetaCmd: Command {
+    let name = "beta"
+    func execute() throws {}
+}
+
 class EmptyCmd: Command {
     let name = "req"
-    let shortDescription = ""
     func execute() throws {}
 }
 

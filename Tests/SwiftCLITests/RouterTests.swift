@@ -27,8 +27,8 @@ class RouterTests: XCTestCase {
     override func setUp() {
         super.setUp()
         
-        alphaCommand = LightweightCommand(name: "alpha")
-        betaCommand = ChainableCommand(name: "beta")
+        alphaCommand = AlphaCmd()
+        betaCommand = BetaCmd()
     }
     
     // MARK: - Tests

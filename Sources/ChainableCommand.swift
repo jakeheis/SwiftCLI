@@ -7,6 +7,7 @@
 //
 
 /// A chainable interface to a CommandType; all functions return the object itself for easy chaining
+@available(*, deprecated, message: "Implement Command on a custom type instead")
 public class ChainableCommand: LightweightCommand {
     
     @discardableResult
