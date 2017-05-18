@@ -35,15 +35,15 @@ Table of Contents
   * [Installation](#installation)
   * [Creating a CLI](#creating-a-cli)
   * [Commands](#commands)
-  * [Parameters](#parameters)
-    * [Required parameters](#required-parameters)
-    * [Optional parameters](#optional-parameters)
-    * [Collected parameters](#collected-parameters)
-  * [Options](#options)
-    * [Flag options](#flag-options)
-    * [Keyed options](#keyed-options)
-    * [Option groups](#option-groups)
-    * [Global options](#global-options)
+    * [Parameters](#parameters)
+      * [Required parameters](#required-parameters)
+      * [Optional parameters](#optional-parameters)
+      * [Collected parameters](#collected-parameters)
+    * [Options](#options)
+      * [Flag options](#flag-options)
+      * [Keyed options](#keyed-options)
+      * [Option groups](#option-groups)
+      * [Global options](#global-options)
   * [Routing commands](#routing-commands)
     * [Aliases](#aliases)
   * [Special commands](#special-commands)
@@ -71,7 +71,7 @@ CLI.register(command: myCommand)
 CLI.register(commands: [myCommand, myOtherCommand])
 ```
 ### Calling go
-In any production app, `go()` should be used. This method uses the arguments passed to it on launch.
+In a production app, `go()` should be used. This method uses the arguments passed to it on launch.
 ```swift
 CLI.go()
 ```
@@ -81,53 +81,20 @@ CLI.debugGo(with: "greeter greet")
 ```
 
 ## Commands
-There are three ways to create a command. You should decide which way to create your command based on how complex the command will be. In order to highlight the differences between the different command creation methods, the same command "greet" will be implemented each way.
-
-### Implement `Command`
-This is usually the best choice for a command. Any command that involves a non-trivial amount of execution or option-handling code should be created with this method. Implementing `Command` provides a structured way to develop a complex command, keeping it organized and easy to read.
+In order to create a command, you must implement the `Command` protocol. All that's required is to implement a `name` property and an `execute` function; the other properties of `Command` are optional (though a `shortDescription` is highly recommended). A simple hello world command could be created as such:
 ```swift
 class GreetCommand: Command {
 
     let name = "greet"
-    let shortDescription = "Greets the given person"
-
-    let person = Parameter()
+    let shortDescription = "Says hello to the world"
 
     func execute() throws  {
-        print("Hey there, \(person.value)!")
+        print("Hello world!")
     }
 
 }
 ```
-### Create a `ChainableCommand`
-This is the most lightweight option. You should only create this kind of command if the command is very simple and doesn't involve a lot of execution or option-handling code. It has all the same capabilities as a class which implements `Command` does, but it can quickly become bloated and hard to understand if there is a large amount of code involved.
-```swift
-let greetCommand = ChainableCommand(name: "greet")
-    .withShortDescription("Greets the given person")
-    .withParameter(named: "person")
-    .withExecution { (parameters) in
-        let person = parameters.required("person")
-        print("Hey there, \(person)!")
-    }
-```
-`CLI` also offers a shortcut method to register a ChainableCommand:
-```swift
-CLI.registerChainableCommand(name: "greet")
-    .with...
-```
-### Create a LightweightCommand
-This type of command is very similar to `ChainableCommand`. As with `ChainableCommand`s, this type of command should only be used when the command is relatively simple.
-```swift
-let greetCommand = LightweightCommand(name: "greet")
-greetCommand.shortDescription = "Greets the given person"
-greetCommand.parameters = [("person", Parameter())]
-greetCommand.execution = { (parameters) in
-    let person = parameters.required("person")
-    print("Hey there, \(person)!")
-}
-```
-
-## Parameters
+### Parameters
 A command can specify what parameters it accepts through certain instance variables. Using reflection, SwiftCLI will identify instance variables of type `Parameter`, `OptionalParameter`, `CollectedParameter`, and `OptionalCollectedParameter`. These instance variables should appear in the order that the command expects the user to pass the arguments:
 ```swift
 class GreetCommand: Command {
@@ -138,7 +105,7 @@ class GreetCommand: Command {
 ```
 In this example, if the user runs `greeter greet Jack Jill`, `firstParam` will be updated to have the value `Jack` and `secondParam` will be updated to have the value `Jill`. The values of these parameters can be accessed in `func execute()` by calling `firstParam.value`, etc.
 
-### Required parameters
+#### Required parameters
 
 Required parameters take the form of the type `Parameter`. If the command is not passed enough arguments to satisfy all required parameters, the command will fail.
 
@@ -162,7 +129,7 @@ Expected 2 arguments, but got 1.
 Hello, Jack!
 ```
 
-### Optional parameters
+#### Optional parameters
 
 Optional parameters take the form of the type `OptionalParameter`. Optional parameters must come after all required parameters. If the user does not pass enough arguments to satisfy all optional parameters, the `.value` of these unsatisfied parameters will be `nil`.
 
@@ -187,7 +154,7 @@ Hey there, Jack!
 Hello, Jack!
 ```
 
-### Collected parameters
+#### Collected parameters
 
 Commands may have a single collected parameter, a `CollectedParameter` or a `OptionalCollectedParameter`. These parameters allow the user to pass any number of arguments, and these arguments will be collected into the `value` array of the collected parameter.
 
@@ -213,7 +180,7 @@ Hey there, Jack, Jill!
 Hey there, Jack, Jill, Hill!
 ```
 
-## Options
+### Options
 Commands have support for two types of options: flag options and keyed options. Both types of options can either be denoted by a dash followed by a single letter (e.g. `git commit -a`) or two dashes followed by the option name (e.g. `git commit --all`). Single letter options can be cascaded into a single dash followed by all the desired options: `git commit -am "message"` == `git commit -a -m "message"`.
 
 Options are specified as instance variables on the command class, just like parameters:
@@ -226,7 +193,7 @@ class ExampleCommand: Command {
 }
 ```
 
-### Flag options
+#### Flag options
 Flag options are simple options that act as boolean switches. For example, if you were to implement `git commit`, `-a` would be a flag option. They take the form of variables of the type `Flag`.
 
 The ```GreetCommand``` could be modified to take a "loudly" flag:
@@ -248,7 +215,7 @@ class GreetCommand: Command {
 }
 ```
 
-### Keyed options
+#### Keyed options
 Keyed options are options that have an associated value. Using "git commit" as an example, "-m" would be a keyed option, as it has an associated value - the commit message. They take the form of variables of the generic type `Key<T>`, where `T` is the type of the option.
 
 The ```GreetCommand``` could be modified to take a "number of times" option:
@@ -268,7 +235,7 @@ class GreetCommand: Command {
 }
 ```
 
-### Option groups
+#### Option groups
 
 The relationship between multiple options can be specified through option groups. Option groups allow a command to specify that the user must pass at most one option of a group (passing more than one is an error), must pass exactly one option of a group (passing zero or more than one is an error), or must pass one or more options of a group (passing zero is an error). 
 
@@ -298,7 +265,7 @@ class GreetCommand: Command {
 }
 ```
 
-### Global options
+#### Global options
 
 Global options can be used to specify that every single command should have a certain option. This is how the `-h` flag is implemented for all commands.
 
@@ -328,7 +295,7 @@ extension Command {
 
 With this, every single command now has a `verbose` flag.
 
-### Usage of options
+#### Usage of options
 As seen in the above examples, ```Flag()``` and ```Key()``` both take an optional ```usage``` parameter. A concise description of what the option does should be included here. This allows the `UsageStatementGenerator` to generate a fully informative usage statement for the command.
 
 A command's usage statement is shown in two situations:
