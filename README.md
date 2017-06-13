@@ -166,7 +166,7 @@ class GreetCommand: Command {
 
     func execute() throws {
         let peopleString = people.value.joined(separator: ", ")
-        print("\(greet), \(peopleString)!")
+        print("Hey there, \(peopleString)!")
     }
 }
 ```
@@ -187,7 +187,7 @@ Options are specified as instance variables on the command class, just like para
 ```swift
 class ExampleCommand: Command {
     ...
-    let flag = Flag("-a", "--a")
+    let flag = Flag("-a", "--all")
     let key = Key<Int>("-t", "--times")
     ...
 }
