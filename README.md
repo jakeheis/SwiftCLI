@@ -267,7 +267,7 @@ class GreetCommand: Command {
 
 #### Global options
 
-Global options can be used to specify that every single command should have a certain option. This is how the `-h` flag is implemented for all commands.
+Global options can be used to specify that every command should have a certain option. This is how the `-h` flag is implemented for all commands.
 
 To add a global option, you must create a struct conforming to `GlobalOptionsSource` which contains static properties for the global options you wish to add, and an `options` static property that returns an array of these options. Finally, after calling `CLI.setup`, you should notify `CLI` of this new source of global options by calling `GlobalOptions.source(MyStruct.self)`.
 
@@ -293,7 +293,7 @@ extension Command {
 }
 ```
 
-With this, every single command now has a `verbose` flag.
+With this, every command now has a `verbose` flag.
 
 #### Usage of options
 As seen in the above examples, ```Flag()``` and ```Key()``` both take an optional ```usage``` parameter. A concise description of what the option does should be included here. This allows the `UsageStatementGenerator` to generate a fully informative usage statement for the command.
