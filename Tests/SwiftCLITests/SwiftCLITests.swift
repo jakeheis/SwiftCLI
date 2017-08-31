@@ -34,22 +34,22 @@ class SwiftCLITests: XCTestCase {
     
     func testCLIGo() {
         let result = CLI.debugGo(with: "tester test firstTest MyTester -t 5 -s")
-        XCTAssertEqual(result, CLIResult.success, "Command should have succeeded")
+        XCTAssertEqual(result, 0, "Command should have succeeded")
         XCTAssertEqual(self.executionString, "MyTester will test firstTest, 5 times, silently", "Command should have produced accurate output")
     }
     
     func testCLIHelp() {
         let result = CLI.debugGo(with: "tester help")
-        XCTAssertEqual(result, CLIResult.success, "Command should have succeeded")
+        XCTAssertEqual(result, 0, "Command should have succeeded")
         
         let result2 = CLI.debugGo(with: "tester -h")
-        XCTAssertEqual(result2, CLIResult.success, "Command should have succeeded")
+        XCTAssertEqual(result2, 0, "Command should have succeeded")
     }
     
     func testGlobalOptions() {
         GlobalOptions.source(MyGlobalOptions.self)
         let result3 = CLI.debugGo(with: "tester test myTest -v")
-        XCTAssertEqual(result3, CLIResult.success, "Command should have succeeded")
+        XCTAssertEqual(result3, 0, "Command should have succeeded")
         XCTAssertEqual(self.executionString, "defaultTester will test myTest, 1 times, verbosely", "Command should have produced accurate output")
 
     }

@@ -95,7 +95,7 @@ public class CLI {
     /// - SeeAlso: `debugGoWithArgumentString()` when debugging
     /// - Returns: a CLIResult (Int32) representing the success of the CLI in routing to and executing the correct
     /// command. Usually should be passed to `exit(result)`
-    public static func go() -> CLIResult {
+    public static func go() -> Int32 {
         return go(with: ArgumentList())
     }
     
@@ -106,15 +106,17 @@ public class CLI {
     /// - Parameter argumentString: the arguments to use when running the CLI
     /// - Returns: a CLIResult (Int) representing the success of the CLI in routing to and executing the correct
     /// command. Usually should be passed to `exit(result)`
-    public static func debugGo(with argumentString: String) -> CLIResult {
+    public static func debugGo(with argumentString: String) -> Int32 {
         print("[Debug Mode]")
         return go(with: ArgumentList(argumentString: argumentString))
     }
     
     // MARK: - Privates
     
-    private static func go(with arguments: ArgumentList) -> CLIResult {
+    private static func go(with arguments: ArgumentList) -> Int32 {
         argumentListManipulators.forEach { $0.manipulate(arguments: arguments) }
+        
+        var exitStatus: Int32 = 0
         
         do {
             // Step 1: route
@@ -124,7 +126,7 @@ public class CLI {
             try recognizeOptions(of: command, in: arguments)
             if DefaultGlobalOptions.help.value == true {
                 print(usageStatementGenerator.generateUsageStatement(for: command))
-                return CLIResult.success
+                return exitStatus
             }
             
             // Step 3: fill parameters
@@ -132,17 +134,17 @@ public class CLI {
             
             // Step 4: execute
             try command.execute()
-            
-            return CLIResult.success
-        } catch CLIError.error(let error) {
-            printError(error)
-        } catch CLIError.emptyError {
-            // Do nothing
+        } catch let error as ProcessError {
+            if let message = error.message {
+                printError(message)
+            }
+            exitStatus = Int32(error.exitStatus)
         } catch let error {
             printError("An error occurred: \(error.localizedDescription)")
+            exitStatus = 1
         }
         
-        if helpCommand.executeOnCommandFailure {
+        if exitStatus > 0 && helpCommand.executeOnCommandFailure {
             do {
                 try helpCommand.execute()
             } catch let error {
@@ -150,7 +152,7 @@ public class CLI {
             }
         }
         
-        return CLIResult.error
+        return exitStatus
     }
     
     private static func routeCommand(arguments: ArgumentList) throws -> Command {
@@ -169,7 +171,7 @@ public class CLI {
             
             try helpCommand.execute()
             
-            throw CLIError.emptyError
+            throw CLI.Error()
         }
         
         return command
@@ -184,7 +186,7 @@ public class CLI {
             try optionRecognizer.recognizeOptions(of: command, in: arguments)
         } catch let error as OptionRecognizerError {
             let message = misusedOptionsMessageGenerator.generateMisusedOptionsStatement(for: command, error: error)
-            throw CLIError.error(message)
+            throw CLI.Error(message: message)
         }
     }
     
@@ -198,29 +200,8 @@ public class CLI {
         } catch let error as ParameterFillerError {
             printError(error.message)
             printError(command.usage)
-            throw CLIError.emptyError
+            throw CLI.Error()
         }
-    }
-    
-}
-
-// MARK: -
-
-public enum CLIError: Error {
-    case error(String)
-    case emptyError
-}
-
-public typealias CLIResult = Int32
-
-extension CLIResult {
-    
-    public static var success: CLIResult {
-        return 0
-    }
-    
-    public static var error: CLIResult {
-        return 1
     }
     
 }
