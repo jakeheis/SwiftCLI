@@ -19,11 +19,13 @@ public class DefaultParameterFiller: ParameterFiller {
     
     public func fillParameters(of command: Command, with arguments: ArgumentList) throws {
         let signature = CommandSignature(command: command)
+        let requiredCount = signature.requiredCount()
+        let gotCount = arguments.count()
         
         // First satisfy required parameters
         for parameter in signature.required {
             guard let next = arguments.head else {
-                throw ParameterFillerError.tooFewArguments
+                throw wrongArgCount(expected: requiredCount, got: gotCount)
             }
             parameter.update(value: next.value)
             arguments.remove(node: next)
@@ -47,7 +49,7 @@ public class DefaultParameterFiller: ParameterFiller {
             }
             if last.isEmpty {
                 if collected.required {
-                    throw ParameterFillerError.tooFewArguments
+                    throw wrongArgCount(expected: requiredCount, got: gotCount)
                 }
             } else {
                 collected.update(value: last)
@@ -56,22 +58,13 @@ public class DefaultParameterFiller: ParameterFiller {
         
         // ArgumentList should be empty; if not, user passed too many arguments
         if arguments.head != nil {
-            throw ParameterFillerError.tooManyArguments
+            throw wrongArgCount(expected: requiredCount, got: gotCount)
         }
     }
     
-}
-
-// MARK: - ParameterFillerError
-
-public enum ParameterFillerError: Error {
-    case tooFewArguments
-    case tooManyArguments
-    
-    public var message: String {
-        switch self {
-        case .tooFewArguments: return "Insufficient number of argument"
-        case .tooManyArguments: return "Too many arguments"
-        }
+    func wrongArgCount(expected: Int, got: Int) -> Error {
+        let arguments = expected == 1 ? "argument" : "arguments"
+        return CLI.Error(message: "command expected \(expected) \(arguments), got \(got)")
     }
+    
 }

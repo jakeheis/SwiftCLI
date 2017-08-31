@@ -43,7 +43,7 @@ public class DefaultUsageStatementGenerator: UsageStatementGenerator {
 public class DefaultMisusedOptionsMessageGenerator: MisusedOptionsMessageGenerator {
 
     public func generateMisusedOptionsStatement(for command: Command, error: OptionRecognizerError) -> String {
-        return CLI.usageStatementGenerator.generateUsageStatement(for: command) + "\n" + error.message
+        return CLI.usageStatementGenerator.generateUsageStatement(for: command) + "\n" + error.message + "\n"
     }
     
 }

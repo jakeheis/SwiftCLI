@@ -13,7 +13,7 @@ public class CommandSignature {
     public var optional: [OptionalParameter] = []
     public var collected: AnyCollectedParameter?
     
-    init(command: Command) {
+    public init(command: Command) {
         for (_, parameter) in command.parameters {
             assert(collected == nil, "The collection parameter must be the last parameter in the command")
             if let c = parameter as? AnyCollectedParameter {
@@ -27,6 +27,14 @@ public class CommandSignature {
                 assertionFailure("Unrecognized parameter type")
             }
         }
+    }
+    
+    public func requiredCount() -> Int {
+        var count = required.count
+        if let collected = collected, collected.required {
+            count += 1
+        }
+        return count
     }
 
 }

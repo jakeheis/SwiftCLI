@@ -23,10 +23,6 @@ extension ProcessError {
     public init(message: String) {
         self.init(message: message, exitStatus: 1)
     }
-    
-    public init<T: SignedInteger>(message: String, exitStatus: T) {
-        self.init(message: message, exitStatus: Int32(exitStatus))
-    }
 }
 
 extension CLI {

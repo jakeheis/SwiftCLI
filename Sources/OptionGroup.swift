@@ -18,15 +18,15 @@ public class OptionGroup {
     public let restriction: Restriction
     
     public var message: String {
-        let names = options.flatMap({ $0.names.first }).joined(separator: " ")
-        var str = "Must pass "
+        let names = options.flatMap({ $0.names.last }).joined(separator: " ")
+        var str: String
         switch restriction {
         case .exactlyOne:
-            str += "exactly one of"
+            str = "Must pass exactly one of the following"
         case .atLeastOne:
-            str += "at least one of"
+            str = "Must pass at least one of the following"
         case .atMostOne:
-            str += "at most one of"
+            str = "Cannot pass more than most one of the following"
         }
         str += ": \(names)"
         return str

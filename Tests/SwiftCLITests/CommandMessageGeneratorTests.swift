@@ -59,7 +59,7 @@ class CommandMessageGeneratorTests: XCTestCase {
                 "-s, --silent                            Silence all test output",
                 "-t, --times <value>                     Number of times to run the test",
                 "",
-                "Unrecognized option: -a"
+                "Unrecognized option: -a\n"
                 ]).joined(separator: "\n")
             
             XCTAssertEqual(message, expectedMessage, "Should generate the correct misused options statement")

@@ -197,10 +197,12 @@ public class CLI {
         
         do {
             try parameterFiller.fillParameters(of: command, with: arguments)
-        } catch let error as ParameterFillerError {
-            printError(error.message)
+        } catch let error as CLI.Error {
+            if let message = error.message {
+                printError(message)
+            }
             printError(command.usage)
-            throw CLI.Error()
+            throw CLI.Error(exitStatus: error.exitStatus)
         }
     }
     

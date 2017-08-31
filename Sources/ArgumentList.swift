@@ -91,6 +91,18 @@ public class ArgumentList {
         return ArgumentListIterator(arguments: self)
     }
     
+    /// Counts the number of nodes in the list
+    ///
+    /// - Returns: the count of nodes
+    public func count() -> Int {
+        let iter = iterator()
+        var count = 0
+        while iter.next() != nil {
+            count += 1
+        }
+        return count
+    }
+    
 }
 
 /// A node representing a single argument within the ArgumentList
