@@ -23,11 +23,19 @@ class SwiftCLITests: XCTestCase {
     override func setUp() {
         super.setUp()
         
-        CLI.reset()
+        CLI.commands = []
+        CLI.argumentListManipulators = [CommandAliaser(), OptionSplitter()]
+        GlobalOptions.options = DefaultGlobalOptions.options
+        CommandAliaser.aliases = [
+            "-h": "help",
+            "-v": "version"
+        ]
+        
         CLI.setup(name: "tester")
-        CLI.register(command: TestCommand {(executionString) in
+        let testCommand = TestCommand { (executionString) in
             self.executionString = executionString
-        })
+        }
+        CLI.commands = [testCommand]
     }
     
     // Integration test

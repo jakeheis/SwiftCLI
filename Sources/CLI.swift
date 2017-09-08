@@ -14,6 +14,8 @@ public class CLI {
     public static var version = "1.0"
     public static var description = ""
     
+    public static var commands: [Command] = []
+    
     public static var helpCommand: HelpCommand = DefaultHelpCommand()
     public static var versionCommand: Command = VersionCommand()
     
@@ -27,10 +29,6 @@ public class CLI {
     public static var router: Router = DefaultRouter()
     public static var optionRecognizer: OptionRecognizer = DefaultOptionRecognizer()
     public static var parameterFiller: ParameterFiller = DefaultParameterFiller()
-    
-    // MARK: - Private
-    
-    private static var commands: [Command] = []
     
     // MARK: - Setup
     
@@ -56,6 +54,7 @@ public class CLI {
     /// with this method or its siblings before calling `CLI.go()`
     ///
     /// - Parameter command: the command to be registered
+    @available(*, deprecated, message: "add commands directly to the CLI.commands array")
     public static func register(command: Command) {
         commands.append(command)
     }
@@ -64,6 +63,7 @@ public class CLI {
     /// with this method or its siblings before calling `CLI.go()`
     ///
     /// - Parameter commands: the commands to be registered
+    @available(*, deprecated, message: "add commands directly to the CLI.commands array")
     public static func register(commands: [Command]) {
         commands.forEach { self.register(command: $0) }
     }
@@ -72,19 +72,11 @@ public class CLI {
     ///
     /// - Parameter name: the name of the new chainable command
     /// - Returns: a new chainable command for immediate chaining
-    @available(*, deprecated, message: "register(command:) a custom type implementing Command instead")
+    @available(*, deprecated, message: "add a custom type implementing Command to the CLI.commands array")
     public static func registerChainableCommand(name: String) -> ChainableCommand {
         let chainable = ChainableCommand(name: name)
         register(command: chainable)
         return chainable
-    }
-    
-    /// For testing; don't use
-    internal static func reset() {
-        commands = []
-        argumentListManipulators = [CommandAliaser(), OptionSplitter()]
-        GlobalOptions.options = DefaultGlobalOptions.options
-        CommandAliaser.reset()
     }
     
     // MARK: - Go

@@ -15,7 +15,7 @@ public protocol ArgumentListManipulator {
 /// Replaces the value of the first node with the aliased value if possible; e.g. command -h -> command help
 public class CommandAliaser: ArgumentListManipulator {
     
-    private static var aliases: [String: String] = [
+    static var aliases: [String: String] = [
         "-h": "help",
         "-v": "version"
     ]
@@ -26,14 +26,6 @@ public class CommandAliaser: ArgumentListManipulator {
     
     public static func removeAlias(from: String) {
         aliases.removeValue(forKey: from)
-    }
-    
-    /// For testing only
-    static func reset() {
-        aliases = [
-            "-h": "help",
-            "-v": "version"
-        ]
     }
     
     public func manipulate(arguments: ArgumentList) {
