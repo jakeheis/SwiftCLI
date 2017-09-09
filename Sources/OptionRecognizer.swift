@@ -17,7 +17,7 @@ public protocol OptionRecognizer {
 public class DefaultOptionRecognizer: OptionRecognizer {
     
     public func recognizeOptions(of command: Command, in arguments: ArgumentList) throws {
-        let optionRegistry = OptionRegistry(command: command)
+        let optionRegistry = OptionRegistry(options: command.options, optionGroups: command.optionGroups)
         
         let iterator = arguments.iterator()
         while let node = iterator.next() {

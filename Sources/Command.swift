@@ -6,10 +6,17 @@
 //  Copyright (c) 2014 jakeheis. All rights reserved.
 //
 
-// MARK: Protocols
+// MARK: - Routables
 
-/// The base protocol for all commands
-public protocol Command: class {
+public protocol Routable {
+    var name: String { get }
+    var shortDescription: String { get }
+}
+
+
+// MARK: -
+
+public protocol Command: class, Routable {
     
     //
     // Required:
@@ -99,3 +106,10 @@ extension Command {
     }
 
 }
+
+// MARK: -
+
+public protocol CommandGroup: Routable {
+    var children: [Routable] { get }
+}
+

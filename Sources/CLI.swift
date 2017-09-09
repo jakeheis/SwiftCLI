@@ -14,7 +14,7 @@ public class CLI {
     public static var version = "1.0"
     public static var description = ""
     
-    public static var commands: [Command] = []
+    public static var commands: [Routable] = []
     
     public static var helpCommand: HelpCommand = DefaultHelpCommand()
     public static var versionCommand: Command = VersionCommand()
@@ -153,7 +153,7 @@ public class CLI {
         availableCommands.append(versionCommand)
         helpCommand.availableCommands = availableCommands
         
-        guard let command = router.route(commands: availableCommands, arguments: arguments) else {
+        guard let command = router.route(routables: availableCommands, arguments: arguments) else {
             if let attemptedCommandName = arguments.head {
                 printError("Command \"\(attemptedCommandName.value)\" not found\n")
                 

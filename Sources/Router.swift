@@ -7,21 +7,28 @@
 //
 
 public protocol Router {
-    func route(commands: [Command], arguments: ArgumentList) -> Command?
+    func route(routables: [Routable], arguments: ArgumentList) -> Command?
 }
 
 // MARK: - DefaultRouter
 
 public class DefaultRouter: Router {
     
-    public func route(commands: [Command], arguments: ArgumentList) -> Command? {
-        guard let commandNameArgument = arguments.head else {
-            return nil
-        }
-        
-        if let command = commands.first(where: { $0.name == commandNameArgument.value }) {
-            arguments.remove(node: commandNameArgument)
-            return command
+    public func route(routables: [Routable], arguments: ArgumentList) -> Command? {
+        var options = routables
+        while let node = arguments.head {
+            if let matching = options.first(where: { node.value == $0.name }) {
+                arguments.remove(node: node)
+                if let command = matching as? Command {
+                    return command
+                } else if let group = matching as? CommandGroup {
+                    options = group.children
+                } else {
+                    assertionFailure("Routables must either be Commands or Groups")
+                }
+            } else {
+                return nil
+            }
         }
         
         return nil
@@ -38,7 +45,7 @@ public class SingleCommandRouter: Router {
         self.command = command
     }
     
-    public func route(commands: [Command], arguments: ArgumentList) -> Command? {
+    public func route(routables: [Routable], arguments: ArgumentList) -> Command? {
         return command
     }
     

@@ -9,7 +9,7 @@
 public protocol HelpCommand: Command {
     
     /// Set by CLI to an array of all commands which have been registered
-    var availableCommands: [Command] { get set }
+    var availableCommands: [Routable] { get set }
     
     /// Set by CLI to boolean representing whether the CLI description should be printed.
     /// False if router failed, true in all other situations
@@ -33,25 +33,25 @@ public class DefaultHelpCommand: HelpCommand {
     public let name = "help"
     public let shortDescription = "Prints this help information"
         
-    public var availableCommands: [Command] = []
+    public var availableCommands: [Routable] = []
     public var printCLIDescription = true
     
     public func execute() throws {
-        if printCLIDescription && !CLI.description.isEmpty {
-            print("\(CLI.description)")
-            print()
-        }
+        print()
+        print("  Usage: \(CLI.name) [command] [flags]")
         
-        print("Available commands: ")
-
+        print()
+        print("  Commands:")
+        print()
         for command in availableCommands {
             printCommand(command)
         }
+        print()
     }
     
-    func printCommand(_ command: Command) {
+    func printCommand(_ command: Routable) {
         let spacing = String(repeating: " ", count: 20 - command.name.characters.count)
-        print("- \(command.name)\(spacing)\(command.shortDescription)")
+        print("  - \(command.name)\(spacing)\(command.shortDescription)")
     }
     
 }
