@@ -40,13 +40,16 @@ public class CommandAliaser: ArgumentListManipulator {
     
 }
 
-/// Splits options represented by a single node into multiple nodes; e.g. command -ab -> command -a -b
+/// Splits options represented by a single node into multiple nodes; e.g. command -ab -> command -a -b, --option=value -> --option value
 public class OptionSplitter: ArgumentListManipulator {
     
     public func manipulate(arguments: ArgumentList) {
         let iterator = arguments.iterator()
         while let node = iterator.next() {
-            if node.value.hasPrefix("-") && !node.value.hasPrefix("--") {
+            if node.value.hasPrefix("--"), let equalsIndex = node.value.index(of: "=") {
+                arguments.insert(value: String(node.value[node.value.index(after: equalsIndex)...]), after: node)
+                node.value = String(node.value[..<equalsIndex])
+            } else if node.value.hasPrefix("-") && !node.value.hasPrefix("--") {
                 var previous = node
                 node.value.characters.dropFirst().forEach {
                     previous = arguments.insert(value: "-\($0)", after: previous)

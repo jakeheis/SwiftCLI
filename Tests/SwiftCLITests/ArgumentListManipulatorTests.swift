@@ -14,30 +14,44 @@ class ArgumentListManipulatorTests: XCTestCase {
     static var allTests : [(String, (ArgumentListManipulatorTests) -> () throws -> Void)] {
         return [
             ("testCommandAliaser", testCommandAliaser),
-            ("testOptionSplitter", testOptionSplitter)
+            ("testOptionSplitter", testOptionSplitter),
+            ("testEqualsSplit", testEqualsSplit)
         ]
     }
     
     func testCommandAliaser() {
-        assertManipulation(start: "tester -h", manipulator: CommandAliaser(), end: "tester help")
+        var result = assertManipulation(start: "tester -h", manipulator: CommandAliaser())
+        XCTAssertEqual(result, "tester help")
         
         CommandAliaser.alias(from: "-a", to: "alpha")
-        assertManipulation(start: "tester -a", manipulator: CommandAliaser(), end: "tester alpha")
+        result = assertManipulation(start: "tester -a", manipulator: CommandAliaser())
+        XCTAssertEqual(result, "tester alpha")
         
         CommandAliaser.removeAlias(from: "-a")
-        assertManipulation(start: "tester -a", manipulator: CommandAliaser(), end: "tester -a")
+        result = assertManipulation(start: "tester -a", manipulator: CommandAliaser())
+        XCTAssertEqual(result, "tester -a")
     }
     
     func testOptionSplitter() {
         let splitter = OptionSplitter()
-        assertManipulation(start: "tester -ab", manipulator: splitter, end: "tester -a -b")
+        let result = assertManipulation(start: "tester -ab", manipulator: splitter)
+        XCTAssertEqual(result, "tester -a -b")
     }
     
-    func assertManipulation(start: String, manipulator: ArgumentListManipulator, end: String) {
+    func testEqualsSplit() {
+        let splitter = OptionSplitter()
+        
+        var result = assertManipulation(start: "tester --key=value", manipulator: splitter)
+        XCTAssertEqual(result, "tester --key value")
+        
+        result = assertManipulation(start: "tester --key value", manipulator: splitter)
+        XCTAssertEqual(result, "tester --key value")
+    }
+    
+    func assertManipulation(start: String, manipulator: ArgumentListManipulator) -> String {
         let arguments = ArgumentList(argumentString: start)
         manipulator.manipulate(arguments: arguments)
-        let finish = "tester " + IteratorSequence(arguments.iterator()).map({ $0.value }).joined(separator: " ")
-        XCTAssert(finish == end, "Manipulator manipulated incorrectly")
+        return "tester " + IteratorSequence(arguments.iterator()).map({ $0.value }).joined(separator: " ")
     }
     
 }
