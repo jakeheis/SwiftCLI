@@ -6,6 +6,12 @@
 //  Copyright (c) 2014 jakeheis. All rights reserved.
 //
 
+#if os(Linux)
+    import Glibc
+#else
+    import Darwin
+#endif
+
 public class CLI {
     
     public let name: String
@@ -31,6 +37,16 @@ public class CLI {
     }
     
     // MARK: - Go
+    
+    /// Kicks off the entire CLI process, routing to and executing the command specified by the passed arguments.
+    /// Uses the arguments passed in the command line. Exits the program upon completion.
+    ///
+    /// - SeeAlso: `debugGoWithArgumentString()` when debugging
+    /// - Returns: Never
+    public func goAndExit() -> Never {
+        let result = go(with: ArgumentList())
+        exit(result)
+    }
     
     /// Kicks off the entire CLI process, routing to and executing the command specified by the passed arguments.
     /// Uses the arguments passed in the command line.
