@@ -8,8 +8,8 @@
 
 public protocol HelpMessageGenerator {
     func generateCommandList(prefix: String, description: String?, routables: [Routable]) -> String
-    func generateUsageStatement(for command: Command) -> String
-    func generateMisusedOptionsStatement(for command: Command, error: OptionRecognizerError) -> String
+    func generateUsageStatement(for command: Command, cliName: String) -> String
+    func generateMisusedOptionsStatement(for command: Command, error: OptionRecognizerError, cliName: String) -> String
 }
 
 extension HelpMessageGenerator {
@@ -58,8 +58,8 @@ extension HelpMessageGenerator {
         return lines.joined(separator: "\n");
     }
     
-    public func generateUsageStatement(for command: Command) -> String {
-        var message = "Usage: \(command.usage)\n"
+    public func generateUsageStatement(for command: Command, cliName: String) -> String {
+        var message = "Usage: \(cliName) \(command.usage)\n"
         
         if !command.options.isEmpty {
             let sortedOptions = command.options.sorted { (lhs, rhs) in
@@ -76,8 +76,8 @@ extension HelpMessageGenerator {
         return message
     }
     
-    public func generateMisusedOptionsStatement(for command: Command, error: OptionRecognizerError) -> String {
-        return generateUsageStatement(for: command) + "\n" + error.message + "\n"
+    public func generateMisusedOptionsStatement(for command: Command, error: OptionRecognizerError, cliName: String) -> String {
+        return generateUsageStatement(for: command, cliName: cliName) + "\n" + error.message + "\n"
     }
     
 }

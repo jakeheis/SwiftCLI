@@ -11,8 +11,14 @@ public class VersionCommand: Command {
     public let name = "version"
     public let shortDescription = "Prints the current version of this app"
     
+    let version: String
+    
+    init(version: String) {
+        self.version = version
+    }
+    
     public func execute() throws  {
-        print("Version: \(CLI.version)")
+        print("Version: \(version)")
     }
     
 }

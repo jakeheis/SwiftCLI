@@ -20,12 +20,6 @@ class HelpMessageGeneratorTests: XCTestCase {
     }
     
     let command = TestCommand()
-
-    override func setUp() {
-        super.setUp()
-        
-        CLI.setup(name: "tester")
-    }
     
     func testCommandListGeneration() {
         var message = DefaultHelpMessageGenerator().generateCommandList(prefix: "tester", description: "A tester for SwiftCLI", routables: [
@@ -68,7 +62,7 @@ class HelpMessageGeneratorTests: XCTestCase {
     }
 
     func testUsageStatementGeneration() {
-        let message = DefaultHelpMessageGenerator().generateUsageStatement(for: command)
+        let message = DefaultHelpMessageGenerator().generateUsageStatement(for: command, cliName: "tester")
         
         let expectedMessage = ([
             "Usage: tester test <testName> [<testerName>] [options]",
@@ -91,7 +85,7 @@ class HelpMessageGeneratorTests: XCTestCase {
             try DefaultOptionRecognizer().recognizeOptions(of: command, in: arguments)
             XCTFail("Option parser should fail on incorrectly used options")
         } catch let error as OptionRecognizerError {
-            let message = DefaultHelpMessageGenerator().generateMisusedOptionsStatement(for: command, error: error)
+            let message = DefaultHelpMessageGenerator().generateMisusedOptionsStatement(for: command, error: error, cliName: "tester")
             
             let expectedMessage = ([
                 "Usage: tester test <testName> [<testerName>] [options]",

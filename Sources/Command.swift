@@ -88,10 +88,10 @@ extension Command {
     // Extras
     
     public var usage: String {
-        var message = "\(CLI.name)"
+        var message = ""
 
         if !name.isEmpty {
-            message += " \(name)"
+            message += "\(name)"
         }
 
         if !parameters.isEmpty {

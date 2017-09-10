@@ -11,11 +11,17 @@ public class HelpCommand: Command {
     public let name = "help"
     public let shortDescription = "Prints this help information"
     
+    let cli: CLI
+    
+    init(cli: CLI) {
+        self.cli = cli
+    }
+    
     public func execute() throws {
-        let message = CLI.helpMessageGenerator.generateCommandList(
-            prefix: CLI.name,
-            description: CLI.description,
-            routables: CLI.commands
+        let message = cli.helpMessageGenerator.generateCommandList(
+            prefix: cli.name,
+            description: cli.description,
+            routables: cli.commands
         )
         print(message)
     }

@@ -14,7 +14,7 @@ public protocol Router {
 
 public enum RouteResult {
     case success(Command)
-    case failure(partialPath: String, group: CommandGroup?, attempted: String?)
+    case failure(partialPath: [String], group: CommandGroup?, attempted: String?)
 }
 
 public class DefaultRouter: Router {
@@ -22,7 +22,7 @@ public class DefaultRouter: Router {
     public func route(routables: [Routable], arguments: ArgumentList) -> RouteResult {
         var options = routables
         var currentGroup: CommandGroup?
-        var partialPath = CLI.name
+        var path: [String] = []
         while let node = arguments.head {
             if let matching = options.first(where: { node.value == $0.name }) {
                 arguments.remove(node: node)
@@ -35,12 +35,12 @@ public class DefaultRouter: Router {
                     assertionFailure("Routables must either be Commands or Groups")
                 }
             } else {
-                return .failure(partialPath: partialPath, group: currentGroup, attempted: node.value)
+                return .failure(partialPath: path, group: currentGroup, attempted: node.value)
             }
-            partialPath += " \(node.value)"
+            path.append(node.value)
         }
         
-        return .failure(partialPath: partialPath, group: currentGroup, attempted: nil)
+        return .failure(partialPath: path, group: currentGroup, attempted: nil)
     }
     
 }
