@@ -19,13 +19,12 @@ public class DefaultParameterFiller: ParameterFiller {
     
     public func fillParameters(of command: Command, with arguments: ArgumentList) throws {
         let signature = CommandSignature(command: command)
-        let requiredCount = signature.requiredCount()
         let gotCount = arguments.count()
         
         // First satisfy required parameters
         for parameter in signature.required {
             guard let next = arguments.head else {
-                throw wrongArgCount(expected: requiredCount, got: gotCount)
+                throw wrongArgCount(signature: signature, got: gotCount)
             }
             parameter.update(value: next.value)
             arguments.remove(node: next)
@@ -49,7 +48,7 @@ public class DefaultParameterFiller: ParameterFiller {
             }
             if last.isEmpty {
                 if collected.required {
-                    throw wrongArgCount(expected: requiredCount, got: gotCount)
+                    throw wrongArgCount(signature: signature, got: gotCount)
                 }
             } else {
                 collected.update(value: last)
@@ -58,13 +57,22 @@ public class DefaultParameterFiller: ParameterFiller {
         
         // ArgumentList should be empty; if not, user passed too many arguments
         if arguments.head != nil {
-            throw wrongArgCount(expected: requiredCount, got: gotCount)
+            throw wrongArgCount(signature: signature, got: gotCount)
         }
     }
     
-    func wrongArgCount(expected: Int, got: Int) -> Error {
-        let arguments = expected == 1 ? "argument" : "arguments"
-        return CLI.Error(message: "command expected \(expected) \(arguments), got \(got)")
+    func wrongArgCount(signature: CommandSignature, got: Int) -> CLI.Error {
+        let requiredCount = signature.required.count
+        let optionalCount = signature.optional.count
+        
+        let plural = requiredCount == 1 ? "argument" : "arguments"
+        if signature.collected != nil {
+            return CLI.Error(message: "error: command requires at least \(requiredCount) \(plural), got \(got)")
+        }
+        if optionalCount == 0 {
+            return CLI.Error(message: "error: command requires exactly \(requiredCount) \(plural), got \(got)")
+        }
+        return CLI.Error(message: "error: command requires between \(requiredCount) and \(requiredCount + optionalCount) arguments, got \(got)")
     }
     
 }

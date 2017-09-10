@@ -87,19 +87,20 @@ extension Command {
     
     // Extras
     
-    public var signature: String {
-        return parameters.map({ $0.1.signature(for: $0.0) }).joined(separator: " ")
-    }
-
     public var usage: String {
-        var message = "Usage: \(CLI.name)"
+        var message = "\(CLI.name)"
 
         if !name.isEmpty {
             message += " \(name)"
         }
 
-        if !signature.isEmpty {
+        if !parameters.isEmpty {
+            let signature = parameters.map({ $0.1.signature(for: $0.0) }).joined(separator: " ")
             message += " \(signature)"
+        }
+        
+        if !options.isEmpty {
+            message += " [options]"
         }
 
         return message

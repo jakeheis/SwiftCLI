@@ -9,10 +9,11 @@
 import XCTest
 @testable import SwiftCLI
 
-class CommandMessageGeneratorTests: XCTestCase {
+class HelpMessageGeneratorTests: XCTestCase {
     
-    static var allTests : [(String, (CommandMessageGeneratorTests) -> () throws -> Void)] {
+    static var allTests : [(String, (HelpMessageGeneratorTests) -> () throws -> Void)] {
         return [
+            ("testCommandListGeneration", testCommandListGeneration),
             ("testUsageStatementGeneration", testUsageStatementGeneration),
             ("testMisusedOptionsStatementGeneration", testMisusedOptionsStatementGeneration)
         ]
@@ -25,9 +26,30 @@ class CommandMessageGeneratorTests: XCTestCase {
         
         CLI.setup(name: "tester")
     }
+    
+    func testCommandListGeneration() {
+        let message = DefaultHelpMessageGenerator().generateCommandList(prefix: "tester", description: "A tester for SwiftCLI", routables: [
+            alphaCmd,
+            betaCmd
+        ])
+        
+        let exepectedMessage = ([
+            "",
+            "Usage: tester <command> [options]",
+            "",
+            "A tester for SwiftCLI",
+            "",
+            "Commands:",
+            "  alpha               The alpha command",
+            "  beta                A beta command",
+            ""
+            ]).joined(separator: "\n")
+        
+        XCTAssertEqual(message, exepectedMessage)
+    }
 
     func testUsageStatementGeneration() {
-        let message = DefaultUsageStatementGenerator().generateUsageStatement(for: command)
+        let message = DefaultHelpMessageGenerator().generateUsageStatement(for: command)
         
         let expectedMessage = ([
             "Usage: tester test <testName> [<testerName>] [options]",
@@ -50,7 +72,7 @@ class CommandMessageGeneratorTests: XCTestCase {
             try DefaultOptionRecognizer().recognizeOptions(of: command, in: arguments)
             XCTFail("Option parser should fail on incorrectly used options")
         } catch let error as OptionRecognizerError {
-            let message = DefaultMisusedOptionsMessageGenerator().generateMisusedOptionsStatement(for: command, error: error)
+            let message = DefaultHelpMessageGenerator().generateMisusedOptionsStatement(for: command, error: error)
             
             let expectedMessage = ([
                 "Usage: tester test <testName> [<testerName>] [options]",

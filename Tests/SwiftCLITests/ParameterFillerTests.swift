@@ -20,7 +20,8 @@ class ParameterFillerTests: XCTestCase {
             ("testCollectedRequiredParameters", testCollectedRequiredParameters),
             ("testCollectedOptionalParameters", testCollectedOptionalParameters),
             ("testCombinedRequiredAndOptionalParameters", testCombinedRequiredAndOptionalParameters),
-            ("testEmptyOptionalCollectedParameter", testEmptyOptionalCollectedParameter)
+            ("testEmptyOptionalCollectedParameter", testEmptyOptionalCollectedParameter),
+            ("testExpectedMessages", testExpectedMessages)
         ]
     }
     
@@ -58,6 +59,10 @@ class ParameterFillerTests: XCTestCase {
         arguments = ["arg1", "arg2"]
         assertParse(req2.req1.value == "arg1" && req2.req2.value == "arg2",
                     assertMessage: "Signature parser should succeed for 2 required arguments and 2 passed arguments")
+        
+        current = Req2Cmd()
+        arguments = ["arg1", "arg2", "arg3"]
+        assertParseFails("Signature parser should fail for 2 required arguments and 3 passed arguments")
     }
     
     func testOptionalParameters() {
@@ -75,6 +80,10 @@ class ParameterFillerTests: XCTestCase {
         arguments = ["arg1", "arg2"]
         assertParse(opt2.opt1.value == "arg1" && opt2.opt2.value == "arg2",
                     assertMessage: "Signature parser should succeed for 2 optional arguments and 2 passed arguments")
+        
+        current = Opt2Cmd()
+        arguments = ["arg1", "arg2", "arg3"]
+        assertParseFails("Signature parser should fail for 2 optional arguments and 3 passed arguments")
     }
     
     func testExtraneousArguments() {
@@ -127,6 +136,10 @@ class ParameterFillerTests: XCTestCase {
     
     func testCombinedRequiredAndOptionalParameters() {
         current = Req2Opt2Cmd()
+        arguments = ["arg1"]
+        assertParseFails("Signature parser should fail for 2 required argument and 1 passed arguments")
+        
+        current = Req2Opt2Cmd()
         arguments = ["arg1", "arg2"]
         assertParse(
             req2Opt2.req1.value == "arg1" && req2Opt2.req2.value == "arg2" &&
@@ -146,12 +159,30 @@ class ParameterFillerTests: XCTestCase {
             req2Opt2.req1.value == "arg1" && req2Opt2.req2.value == "arg2" &&
             req2Opt2.opt1.value == "arg3" && req2Opt2.opt2.value == "arg4",
             assertMessage: "Signature parser should succeed for combined signature and 4 passed arguments")
+        
+        current = Req2Opt2Cmd()
+        arguments = ["arg1", "arg2", "arg3", "arg4", "arg5"]
+        assertParseFails("Signature parser should fail for 2 required arguments, 2 optional arguments and 5 passed arguments")
     }
     
     func testEmptyOptionalCollectedParameter() { // Tests regression
         current = OptCollectedCmd()
         arguments = []
         assertParse(true, assertMessage: "Signature parser should succeed with empty optional collected parameters")
+    }
+    
+    func testExpectedMessages() {
+        let filler = DefaultParameterFiller()
+        
+        var signature = CommandSignature(command: Req2Cmd())
+        XCTAssertEqual(filler.wrongArgCount(signature: signature, got: 1).message, "error: command requires exactly 2 arguments, got 1")
+        XCTAssertEqual(filler.wrongArgCount(signature: signature, got: 3).message, "error: command requires exactly 2 arguments, got 3")
+        
+        signature = CommandSignature(command: Req2CollectedCmd())
+        XCTAssertEqual(filler.wrongArgCount(signature: signature, got: 0).message, "error: command requires at least 1 argument, got 0")
+        
+        signature = CommandSignature(command: Req2Opt2Cmd())
+        XCTAssertEqual(filler.wrongArgCount(signature: signature, got: 1).message, "error: command requires between 2 and 4 arguments, got 1")
     }
     
     // MARK: - Helpers

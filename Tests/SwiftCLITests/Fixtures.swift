@@ -44,13 +44,36 @@ class TestCommand: Command {
 
 // MARK: -
 
+let alphaCmd = AlphaCmd()
+let betaCmd = BetaCmd()
+let charlieCmd = CharlieCmd()
+let deltaCmd = DeltaCmd()
+
 class AlphaCmd: Command {
     let name = "alpha"
+    let shortDescription = "The alpha command"
+    fileprivate init() {}
     func execute() throws {}
 }
 
 class BetaCmd: Command {
     let name = "beta"
+    let shortDescription = "A beta command"
+    fileprivate init() {}
+    func execute() throws {}
+}
+
+class CharlieCmd: Command {
+    let name = "charlie"
+    let shortDescription = "A beta command"
+    fileprivate init() {}
+    func execute() throws {}
+}
+
+class DeltaCmd: Command {
+    let name = "delta"
+    let shortDescription = "A beta command"
+    fileprivate init() {}
     func execute() throws {}
 }
 
@@ -100,6 +123,25 @@ class Req2Opt2Cmd: EmptyCmd {
     let req2 = Parameter()
     let opt1 = OptionalParameter()
     let opt2 = OptionalParameter()
+}
+
+// MARK: -
+
+let midGroup = MidGroup()
+let intraGroup = IntraGroup()
+
+class MidGroup: CommandGroup {
+    let name = "mid"
+    let shortDescription = "The mid level of commands"
+    let children: [Routable] = [alphaCmd, betaCmd]
+    fileprivate init() {}
+}
+
+class IntraGroup: CommandGroup {
+    let name = "intra"
+    let shortDescription = "The intra level of commands"
+    let children: [Routable] = [charlieCmd, deltaCmd]
+    fileprivate init() {}
 }
 
 // MARK: -

@@ -16,14 +16,12 @@ public class CLI {
     
     public static var commands: [Routable] = []
     
-    public static var helpCommand: HelpCommand = DefaultHelpCommand()
+    public static var helpCommand: Command = HelpCommand()
     public static var versionCommand: Command = VersionCommand()
-    
+        
     // MARK: - Advanced customization
     
-    public static var usageStatementGenerator: UsageStatementGenerator = DefaultUsageStatementGenerator()
-    public static var misusedOptionsMessageGenerator: MisusedOptionsMessageGenerator
-        = DefaultMisusedOptionsMessageGenerator()
+    public static var helpMessageGenerator: HelpMessageGenerator = DefaultHelpMessageGenerator()
     
     public static var argumentListManipulators: [ArgumentListManipulator] = [CommandAliaser(), OptionSplitter()]
     public static var router: Router = DefaultRouter()
@@ -106,6 +104,8 @@ public class CLI {
     // MARK: - Privates
     
     private static func go(with arguments: ArgumentList) -> Int32 {
+        commands += [helpCommand, versionCommand]
+        
         argumentListManipulators.forEach { $0.manipulate(arguments: arguments) }
         
         var exitStatus: Int32 = 0
@@ -117,7 +117,7 @@ public class CLI {
             // Step 2: recognize options
             try recognizeOptions(of: command, in: arguments)
             if DefaultGlobalOptions.help.value == true {
-                print(usageStatementGenerator.generateUsageStatement(for: command))
+                print(helpMessageGenerator.generateUsageStatement(for: command))
                 return exitStatus
             }
             
@@ -136,37 +136,36 @@ public class CLI {
             exitStatus = 1
         }
         
-        if exitStatus > 0 && helpCommand.executeOnCommandFailure {
-            do {
-                try helpCommand.execute()
-            } catch let error {
-                printError("An error occurred: \(error.localizedDescription)")
-            }
-        }
-        
         return exitStatus
     }
     
     private static func routeCommand(arguments: ArgumentList) throws -> Command {
-        var availableCommands = commands
-        availableCommands.append(helpCommand)
-        availableCommands.append(versionCommand)
-        helpCommand.availableCommands = availableCommands
+        let routeResult = router.route(routables: commands, arguments: arguments)
         
-        guard let command = router.route(routables: availableCommands, arguments: arguments) else {
-            if let attemptedCommandName = arguments.head {
-                printError("Command \"\(attemptedCommandName.value)\" not found\n")
-                
-                // Only print available commands if passed an unavailable command
-                helpCommand.printCLIDescription = false
+        switch routeResult {
+        case let .success(command):
+            return command
+        case let .failure(partialPath: partialPath, group: group, attempted: attempted):
+            if let attempted = attempted {
+                printError("Command \"\(attempted)\" not found\n")
             }
-            
-            try helpCommand.execute()
-            
+            let description: String?
+            let routables: [Routable]
+            if let group = group {
+                description = attempted == nil ? group.shortDescription : nil
+                routables = group.children
+            } else {
+                description = attempted == nil ? CLI.description : nil
+                routables = commands
+            }
+            let list = helpMessageGenerator.generateCommandList(
+                prefix: partialPath,
+                description: description,
+                routables: routables
+            )
+            print(list)
             throw CLI.Error()
         }
-        
-        return command
     }
     
     private static func recognizeOptions(of command: Command, in arguments: ArgumentList) throws {
@@ -177,7 +176,7 @@ public class CLI {
         do {
             try optionRecognizer.recognizeOptions(of: command, in: arguments)
         } catch let error as OptionRecognizerError {
-            let message = misusedOptionsMessageGenerator.generateMisusedOptionsStatement(for: command, error: error)
+            let message = helpMessageGenerator.generateMisusedOptionsStatement(for: command, error: error)
             throw CLI.Error(message: message)
         }
     }

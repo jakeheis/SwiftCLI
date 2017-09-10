@@ -28,13 +28,5 @@ public class CommandSignature {
             }
         }
     }
-    
-    public func requiredCount() -> Int {
-        var count = required.count
-        if let collected = collected, collected.required {
-            count += 1
-        }
-        return count
-    }
 
 }

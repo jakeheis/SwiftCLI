@@ -7,31 +7,46 @@
 //
 
 public protocol Router {
-    func route(routables: [Routable], arguments: ArgumentList) -> Command?
+    func route(routables: [Routable], arguments: ArgumentList) -> RouteResult
 }
 
 // MARK: - DefaultRouter
 
+public enum RouteResult {
+    case success(Command)
+    case failure(partialPath: String, group: CommandGroup?, attempted: String?)
+}
+
+//public struct RouteFailure {
+//    public let group: CommandGroup?
+//    public let wrongName: String?
+//}
+
 public class DefaultRouter: Router {
     
-    public func route(routables: [Routable], arguments: ArgumentList) -> Command? {
+    public func route(routables: [Routable], arguments: ArgumentList) -> RouteResult {
         var options = routables
+        var currentGroup: CommandGroup?
+        var partialPath = CLI.name
         while let node = arguments.head {
             if let matching = options.first(where: { node.value == $0.name }) {
                 arguments.remove(node: node)
                 if let command = matching as? Command {
-                    return command
+                    return .success(command)
                 } else if let group = matching as? CommandGroup {
                     options = group.children
+                    currentGroup = group
                 } else {
                     assertionFailure("Routables must either be Commands or Groups")
                 }
             } else {
-                return nil
+                return .failure(partialPath: partialPath, group: currentGroup, attempted: node.value)
             }
+            partialPath += " \(node.value)"
         }
         
-        return nil
+        // Didn't specify a single command
+        return .failure(partialPath: partialPath, group: currentGroup, attempted: nil)
     }
     
 }
@@ -45,8 +60,8 @@ public class SingleCommandRouter: Router {
         self.command = command
     }
     
-    public func route(routables: [Routable], arguments: ArgumentList) -> Command? {
-        return command
+    public func route(routables: [Routable], arguments: ArgumentList) -> RouteResult {
+        return .success(command)
     }
     
 }
