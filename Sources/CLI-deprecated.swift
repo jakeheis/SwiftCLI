@@ -107,7 +107,7 @@ extension CLI {
             fatalError("Cannot call CLI.setup() multiple times")
         }
         
-        shared = CLI(name: name, commands: [], version: version)
+        shared = CLI(name: name, version: version, commands: [])
         shared?.description = description
     }
     

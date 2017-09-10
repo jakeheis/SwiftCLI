@@ -25,10 +25,10 @@ public class CLI {
     public var optionRecognizer: OptionRecognizer = DefaultOptionRecognizer()
     public var parameterFiller: ParameterFiller = DefaultParameterFiller()
     
-    public init(name: String, commands: [Routable], version: String? = nil) {
+    public init(name: String, version: String? = nil, commands: [Routable]) {
         self.name = name
-        self.commands = commands
         self.version = version
+        self.commands = commands
         
         self.commands.append(HelpCommand(cli: self))
         if let version = version {
