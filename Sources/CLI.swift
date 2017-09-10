@@ -25,7 +25,7 @@ public class CLI {
     public var optionRecognizer: OptionRecognizer = DefaultOptionRecognizer()
     public var parameterFiller: ParameterFiller = DefaultParameterFiller()
     
-    init(name: String, commands: [Routable], version: String? = nil) {
+    public init(name: String, commands: [Routable], version: String? = nil) {
         self.name = name
         self.commands = commands
         self.version = version
