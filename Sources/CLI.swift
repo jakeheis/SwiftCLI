@@ -151,7 +151,7 @@ public class CLI {
             return command
         case let .failure(partialPath: partialPath, group: group, attempted: attempted):
             if let attempted = attempted {
-                printError("Command \"\(attempted)\" not found\n")
+                printError("\nCommand \"\(attempted)\" not found")
             }
             let description: String?
             let routables: [Routable]

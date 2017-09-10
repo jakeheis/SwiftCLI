@@ -17,11 +17,6 @@ public enum RouteResult {
     case failure(partialPath: String, group: CommandGroup?, attempted: String?)
 }
 
-//public struct RouteFailure {
-//    public let group: CommandGroup?
-//    public let wrongName: String?
-//}
-
 public class DefaultRouter: Router {
     
     public func route(routables: [Routable], arguments: ArgumentList) -> RouteResult {
@@ -45,7 +40,6 @@ public class DefaultRouter: Router {
             partialPath += " \(node.value)"
         }
         
-        // Didn't specify a single command
         return .failure(partialPath: partialPath, group: currentGroup, attempted: nil)
     }
     
