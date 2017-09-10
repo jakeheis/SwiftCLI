@@ -8,6 +8,7 @@
 
 public protocol Option {
     var names: [String] { get }
+    var shortDescription: String { get }
     var usage: String { get }
 }
 
@@ -20,16 +21,26 @@ extension Option {
 public class Flag: Option {
     
     public let names: [String]
+    public let shortDescription: String
     public private(set) var value: Bool
-    public let usage: String
     
+    public var usage: String {
+        let optionsString = names.joined(separator: ", ")
+        let spacing = String(repeating: " ", count: Flag.usageLength - optionsString.characters.count)
+        return "\(optionsString)\(spacing)\(shortDescription)"
+    }
+    
+    @available(*, unavailable, renamed: "init(_:description:defaultValue:)")
     public init(_ names: String ..., usage: String = "", defaultValue: Bool = false) {
         self.names = names
         self.value = defaultValue
-        
-        let optionsString = names.joined(separator: ", ")
-        let spacing = String(repeating: " ", count: Flag.usageLength - optionsString.characters.count)
-        self.usage = "\(optionsString)\(spacing)\(usage)"
+        self.shortDescription = usage
+    }
+    
+    public init(_ names: String ..., description: String = "", defaultValue: Bool = false) {
+        self.names = names
+        self.value = defaultValue
+        self.shortDescription = description
     }
     
     public func setOn() {
@@ -41,15 +52,24 @@ public class Flag: Option {
 public class Key<T: Keyable>: Option {
     
     public let names: [String]
+    public let shortDescription: String
     public private(set) var value: T?
-    public let usage: String
     
-    public init(_ names: String ..., usage: String = "") {
-        self.names = names
-        
+    public var usage: String {
         let optionsString = names.joined(separator: ", ") + " <value>"
         let spacing = String(repeating: " ", count: Key.usageLength - optionsString.characters.count)
-        self.usage = "\(optionsString)\(spacing)\(usage)"
+        return "\(optionsString)\(spacing)\(shortDescription)"
+    }
+    
+    @available(*, unavailable, renamed: "init(_:description:)")
+    public init(_ names: String ..., usage: String = "") {
+        self.names = names
+        self.shortDescription = usage
+    }
+    
+    public init(_ names: String ..., description: String = "") {
+        self.names = names
+        self.shortDescription = description
     }
     
     public func setValue(_ value: String) -> Bool {

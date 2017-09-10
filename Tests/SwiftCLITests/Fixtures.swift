@@ -19,8 +19,8 @@ class TestCommand: Command {
     let testName = Parameter()
     let testerName = OptionalParameter()
     
-    let silent = Flag("-s", "--silent", usage: "Silence all test output")
-    let times = Key<Int>("-t", "--times", usage: "Number of times to run the test")
+    let silent = Flag("-s", "--silent", description: "Silence all test output")
+    let times = Key<Int>("-t", "--times", description: "Number of times to run the test")
 
     let completion: ((_ executionString: String) -> ())?
 

@@ -44,7 +44,7 @@ public class CLI {
     /// - SeeAlso: `debugGoWithArgumentString()` when debugging
     /// - Returns: Never
     public func goAndExit() -> Never {
-        let result = go(with: ArgumentList())
+        let result = go()
         exit(result)
     }
     

@@ -23,7 +23,7 @@ public class GlobalOptions {
 // MARK: - Default
 
 struct DefaultGlobalOptions: GlobalOptionsSource {
-    static let help = Flag("-h", "--help", usage: "Show help information for this command")
+    static let help = Flag("-h", "--help", description: "Show help information for this command")
     static var options: [Option] {
         return [help]
     }
