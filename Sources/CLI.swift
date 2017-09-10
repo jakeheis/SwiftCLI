@@ -12,7 +12,7 @@ public class CLI {
     
     public static var name = ""
     public static var version = "1.0"
-    public static var description = ""
+    public static var description: String?
     
     public static var commands: [Routable] = []
     
@@ -104,6 +104,10 @@ public class CLI {
     // MARK: - Privates
     
     private static func go(with arguments: ArgumentList) -> Int32 {
+        if CLI.name.isEmpty {
+            assertionFailure("Call CLI.setup() before calling CLI.go()")
+        }
+        
         commands += [helpCommand, versionCommand]
         
         argumentListManipulators.forEach { $0.manipulate(arguments: arguments) }

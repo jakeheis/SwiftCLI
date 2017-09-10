@@ -28,12 +28,12 @@ class HelpMessageGeneratorTests: XCTestCase {
     }
     
     func testCommandListGeneration() {
-        let message = DefaultHelpMessageGenerator().generateCommandList(prefix: "tester", description: "A tester for SwiftCLI", routables: [
+        var message = DefaultHelpMessageGenerator().generateCommandList(prefix: "tester", description: "A tester for SwiftCLI", routables: [
             alphaCmd,
             betaCmd
         ])
         
-        let exepectedMessage = ([
+        var expectedMessage = ([
             "",
             "Usage: tester <command> [options]",
             "",
@@ -45,7 +45,26 @@ class HelpMessageGeneratorTests: XCTestCase {
             ""
             ]).joined(separator: "\n")
         
-        XCTAssertEqual(message, exepectedMessage)
+        XCTAssertEqual(message, expectedMessage)
+        
+        message = DefaultHelpMessageGenerator().generateCommandList(prefix: "tester", description: nil, routables: [
+            alphaCmd,
+            midGroup
+        ])
+        
+        expectedMessage = ([
+            "",
+            "Usage: tester <command> [options]",
+            "",
+            "Groups:",
+            "  mid                 The mid level of commands",
+            "",
+            "Commands:",
+            "  alpha               The alpha command",
+            ""
+            ]).joined(separator: "\n")
+        
+        XCTAssertEqual(message, expectedMessage)
     }
 
     func testUsageStatementGeneration() {

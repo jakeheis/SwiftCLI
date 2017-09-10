@@ -19,7 +19,7 @@ extension HelpMessageGenerator {
             "",
             "Usage: \(prefix) <command> [options]"
         ]
-        if let description = description {
+        if let description = description, !description.isEmpty {
             lines += [
                 "",
                 description
