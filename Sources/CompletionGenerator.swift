@@ -64,7 +64,8 @@ public final class ZshCompletionGenerator: CompletionGenerator {
         """
         
         for routable in routables {
-            stream << "               \(routable.name)'[\(routable.shortDescription)]'"
+            let info = routable.shortDescription.isEmpty ? routable.name : routable.shortDescription
+            stream << "               \(routable.name)'[\(info)]'"
         }
         
         stream << """
