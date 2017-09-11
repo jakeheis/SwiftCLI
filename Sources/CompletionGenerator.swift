@@ -26,7 +26,7 @@ public final class ZshCompletionGenerator: CompletionGenerator {
         self.cli = cli
     }
     
-    public func writeCompletions(into stream: CompletionOutputStream) {
+    public func writeCompletions(into stream: CompletionOutputStream = StdoutStream()) {
         stream << "#compdef \(cli.name)"
         
         writeEntryFunction(into: stream)
@@ -111,6 +111,7 @@ public protocol CompletionOutputStream {
 }
 
 public struct StdoutStream: CompletionOutputStream {
+    public init() {}
     public func output(_ content: String) {
         print(content)
     }
@@ -118,6 +119,7 @@ public struct StdoutStream: CompletionOutputStream {
 
 public class CaptureStream: CompletionOutputStream {
     private(set) var content: String = ""
+    public init() {}
     public func output(_ content: String) {
         self.content += content + "\n"
     }
