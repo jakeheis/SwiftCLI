@@ -13,7 +13,9 @@ class CompletionGeneratorTests: XCTestCase {
     static var allTests : [(String, (CompletionGeneratorTests) -> () throws -> Void)] {
         return [
             ("testEntryFunction", testEntryFunction),
-            ("testTopLevel", testTopLevel),
+            ("testCommandList", testCommandList),
+            ("testOptions", testOptions),
+            ("testFull", testFull)
         ]
     }
     
@@ -37,11 +39,11 @@ class CompletionGeneratorTests: XCTestCase {
         """)
     }
     
-    func testTopLevel() {
+    func testCommandList() {
         let cli = CLI(name: "tester", commands: [alphaCmd, betaCmd])
         let generator = ZshCompletionGenerator(cli: cli)
         let capture = CaptureStream()
-        generator.writeTopLevel(into: capture)
+        generator.writeCommandList(routables: cli.commands, prefix: "tester", into: capture)
         XCTAssertEqual(capture.content, """
         __tester_commands() {
              _arguments -C \\
@@ -58,7 +60,19 @@ class CompletionGeneratorTests: XCTestCase {
                        ;;
              esac
         }
-        
+        _tester_alpha() {
+            _arguments -C \\
+              '(-h --help)'{-h,--help}'[Show help information for this command]'
+        }
+        _tester_beta() {
+            _arguments -C \\
+              '(-h --help)'{-h,--help}'[Show help information for this command]'
+        }
+        _tester_help() {
+            _arguments -C \\
+              '(-h --help)'{-h,--help}'[Show help information for this command]'
+        }
+
         """)
     }
     
@@ -66,7 +80,7 @@ class CompletionGeneratorTests: XCTestCase {
         let cli = CLI(name: "tester", commands: [])
         let generator = ZshCompletionGenerator(cli: cli)
         let capture = CaptureStream()
-        generator.writeCommand(TestCommand(), into: capture)
+        generator.writeCommand(TestCommand(), prefix: "tester", into: capture)
         XCTAssertEqual(capture.content, """
         _tester_test() {
             _arguments -C \\
@@ -79,9 +93,76 @@ class CompletionGeneratorTests: XCTestCase {
     }
     
     func testFull() {
-        let cli = CLI(name: "tester", commands: [alphaCmd, betaCmd])
+        let cli = CLI(name: "tester", commands: [alphaCmd, betaCmd, intraGroup])
         let generator = ZshCompletionGenerator(cli: cli)
+        let capture = CaptureStream()
         generator.writeCompletions(into: StdoutStream())
+        generator.writeCompletions(into: capture)
+        XCTAssertEqual(capture.content, """
+        #compdef tester
+        _tester() {
+            local context state line
+            if (( CURRENT > 2 )); then
+                (( CURRENT-- ))
+                shift words
+                _call_function - "_tester_${words[1]}" || _nothing
+            else
+                __tester_commands
+            fi
+        }
+        __tester_commands() {
+             _arguments -C \\
+               ': :->command'
+             case "$state" in
+                  command)
+                       local -a commands
+                       commands=(
+                       alpha'[The alpha command]'
+                       beta'[A beta command]'
+                       intra'[The intra level of commands]'
+                       help'[Prints this help information]'
+                       )
+                       _values 'command' $commands
+                       ;;
+             esac
+        }
+        _tester_alpha() {
+            _arguments -C \\
+              '(-h --help)'{-h,--help}'[Show help information for this command]'
+        }
+        _tester_beta() {
+            _arguments -C \\
+              '(-h --help)'{-h,--help}'[Show help information for this command]'
+        }
+        __tester_intra_commands() {
+             _arguments -C \\
+               ': :->command'
+             case "$state" in
+                  command)
+                       local -a commands
+                       commands=(
+                       charlie'[A beta command]'
+                       delta'[A beta command]'
+                       )
+                       _values 'command' $commands
+                       ;;
+             esac
+        }
+        _tester_intra_charlie() {
+            _arguments -C \\
+              '(-h --help)'{-h,--help}'[Show help information for this command]'
+        }
+        _tester_intra_delta() {
+            _arguments -C \\
+              '(-h --help)'{-h,--help}'[Show help information for this command]'
+        }
+        _tester_help() {
+            _arguments -C \\
+              '(-h --help)'{-h,--help}'[Show help information for this command]'
+        }
+        _tester
+        
+        """)
     }
     
 }

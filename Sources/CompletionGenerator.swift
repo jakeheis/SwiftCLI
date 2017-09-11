@@ -5,48 +5,32 @@
 //  Created by Jake Heiser on 9/10/17.
 //
 
-protocol CompletionOutputStream {
-    func output(_ content: String)
+public enum Shell {
+    case bash
+    case zsh
 }
 
-struct StdoutStream: CompletionOutputStream {
-    func output(_ content: String) {
-        print(content)
-    }
-}
-
-class CaptureStream: CompletionOutputStream {
-    private(set) var content: String = ""
-    func output(_ content: String) {
-        self.content += content + "\n"
-    }
-}
-
-infix operator <<
-
-func <<(stream: CompletionOutputStream, text: String) {
-    stream.output(text)
-}
-
-protocol CompletionGenerator {
+public protocol CompletionGenerator {
+    var shell: Shell { get }
+    
     init(cli: CLI)
     func writeCompletions(into stream: CompletionOutputStream)
 }
 
-final class ZshCompletionGenerator: CompletionGenerator {
+public final class ZshCompletionGenerator: CompletionGenerator {
     
-    let cli: CLI
+    public let cli: CLI
+    public let shell = Shell.zsh
     
-    init(cli: CLI) {
+    public init(cli: CLI) {
         self.cli = cli
     }
     
-    func writeCompletions(into stream: CompletionOutputStream) {
+    public func writeCompletions(into stream: CompletionOutputStream) {
         stream << "#compdef \(cli.name)"
         
         writeEntryFunction(into: stream)
-        writeTopLevel(into: stream)
-        writeCommands(into: stream)
+        writeCommandList(routables: cli.commands, prefix: cli.name, into: stream)
         
         stream << "_\(cli.name)"
     }
@@ -66,9 +50,9 @@ final class ZshCompletionGenerator: CompletionGenerator {
         """
     }
     
-    func writeTopLevel(into stream: CompletionOutputStream) {
+    func writeCommandList(routables: [Routable], prefix: String, into stream: CompletionOutputStream) {
         stream << """
-        __\(cli.name)_commands() {
+        __\(prefix)_commands() {
              _arguments -C \\
                ': :->command'
              case "$state" in
@@ -77,8 +61,8 @@ final class ZshCompletionGenerator: CompletionGenerator {
                        commands=(
         """
         
-        for command in cli.commands {
-            stream << "               \(command.name)'[\(command.shortDescription)]'"
+        for routable in routables {
+            stream << "               \(routable.name)'[\(routable.shortDescription)]'"
         }
         
         stream << """
@@ -88,15 +72,19 @@ final class ZshCompletionGenerator: CompletionGenerator {
              esac
         }
         """
+        
+        routables.forEach { (routable) in
+            if let command = routable as? Command {
+                self.writeCommand(command, prefix: prefix, into: stream)
+            } else if let group = routable as? CommandGroup {
+                self.writeCommandList(routables: group.children, prefix: prefix + "_\(group.name)", into: stream)
+            }
+        }
     }
     
-    func writeCommands(into stream: CompletionOutputStream) {
-        cli.commands.flatMap { $0 as? Command }.forEach { writeCommand($0, into: stream)}
-    }
-    
-    func writeCommand(_ command: Command, into stream: CompletionOutputStream) {
+    func writeCommand(_ command: Command, prefix: String, into stream: CompletionOutputStream) {
         stream << """
-        _\(cli.name)_\(command.name)() {
+        _\(prefix)_\(command.name)() {
             _arguments -C \\
         """
         
@@ -114,4 +102,29 @@ final class ZshCompletionGenerator: CompletionGenerator {
         """
     }
     
+}
+
+// MARK: - Streams
+
+public protocol CompletionOutputStream {
+    func output(_ content: String)
+}
+
+public struct StdoutStream: CompletionOutputStream {
+    public func output(_ content: String) {
+        print(content)
+    }
+}
+
+public class CaptureStream: CompletionOutputStream {
+    private(set) var content: String = ""
+    public func output(_ content: String) {
+        self.content += content + "\n"
+    }
+}
+
+infix operator <<
+
+func <<(stream: CompletionOutputStream, text: String) {
+    stream.output(text)
 }

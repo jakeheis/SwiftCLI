@@ -36,7 +36,16 @@ public class CLI {
         }
     }
     
-    // MARK: - Go
+    /// Generates shell completions for the cli's commands
+    ///
+    /// - Parameter shell: the type of shell for which to generate completions
+    /// - Returns: a generator
+    public func createCompletionGenerator(for shell: Shell) -> CompletionGenerator {
+        if shell == .bash {
+            fatalError("Bash completions not yet supported")
+        }
+        return ZshCompletionGenerator(cli: self)
+    }
     
     /// Kicks off the entire CLI process, routing to and executing the command specified by the passed arguments.
     /// Uses the arguments passed in the command line. Exits the program upon completion.
