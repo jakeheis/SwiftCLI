@@ -10,7 +10,7 @@ public protocol AnyParameter {
     func signature(for name: String) -> String
 }
 
-public class Parameter: AnyParameter {
+open class Parameter: AnyParameter {
     
     private var privateValue: String? = nil
     
@@ -20,27 +20,27 @@ public class Parameter: AnyParameter {
 
     public init() {}
     
-    public func update(value: String) {
+    open func update(value: String) {
         privateValue = value
     }
     
-    public func signature(for name: String) -> String {
+    open func signature(for name: String) -> String {
         return "<\(name)>"
     }
 
 }
 
-public class OptionalParameter: AnyParameter {
+open class OptionalParameter: AnyParameter {
     
     public var value: String? = nil
     
     public init() {}
     
-    public func update(value: String) {
+    open func update(value: String) {
         self.value = value
     }
     
-    public func signature(for name: String) -> String {
+    open func signature(for name: String) -> String {
         return "[<\(name)>]"
     }
     
@@ -54,35 +54,35 @@ public protocol AnyCollectedParameter: AnyParameter {
     func update(value: [String])
 }
 
-public class CollectedParameter: AnyCollectedParameter {
+open class CollectedParameter: AnyCollectedParameter {
     
     public let required = true
     public var value: [String] = []
     
     public init() {}
     
-    public func update(value: [String]) {
+    open func update(value: [String]) {
         self.value = value
     }
     
-    public func signature(for name: String) -> String {
+    open func signature(for name: String) -> String {
         return "<\(name)> ..."
     }
 
 }
 
-public class OptionalCollectedParameter: AnyCollectedParameter {
+open class OptionalCollectedParameter: AnyCollectedParameter {
     
     public let required = false
     public var value: [String]? = nil
     
     public init() {}
     
-    public func update(value: [String]) {
+    open func update(value: [String]) {
         self.value = value
     }
     
-    public func signature(for name: String) -> String {
+    open func signature(for name: String) -> String {
         return "[<\(name)>] ..."
     }
     

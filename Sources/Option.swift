@@ -18,7 +18,7 @@ extension Option {
     }
 }
 
-public class Flag: Option {
+open class Flag: Option {
     
     public let names: [String]
     public let shortDescription: String
@@ -43,13 +43,13 @@ public class Flag: Option {
         self.shortDescription = description
     }
     
-    public func setOn() {
+    open func setOn() {
         value = true
     }
     
 }
 
-public class Key<T: Keyable>: Option {
+open class Key<T: Keyable>: Option {
     
     public let names: [String]
     public let shortDescription: String
@@ -72,7 +72,7 @@ public class Key<T: Keyable>: Option {
         self.shortDescription = description
     }
     
-    public func setValue(_ value: String) -> Bool {
+    open func setValue(_ value: String) -> Bool {
         guard let value = T.val(from: value) else {
             return false
         }
