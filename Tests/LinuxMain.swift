@@ -4,8 +4,9 @@ import XCTest
 XCTMain([
 	 testCase(ArgumentListManipulatorTests.allTests),
 	 testCase(ArgumentListTests.allTests),
-	 testCase(CommandMessageGeneratorTests.allTests),
-	 testCase(OptionRecognizerTests.allTests),
+	 testCase(CompletionGeneratorTests.allTests),
+	 testCase(HelpMessageGeneratorTests.allTests),
+	 testCase(OptionParserTests.allTests),
      testCase(OptionRegistryTests.allTests),
 	 testCase(ParameterFillerTests.allTests),
      testCase(RouterTests.allTests),

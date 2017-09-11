@@ -1,5 +1,5 @@
 //
-//  OptionRecognizerTests.swift
+//  OptionParserTests.swift
 //  SwiftCLI
 //
 //  Created by Jake Heiser on 8/10/14.
@@ -9,9 +9,9 @@
 import XCTest
 @testable import SwiftCLI
 
-class OptionRecognizerTests: XCTestCase {
+class OptionParserTests: XCTestCase {
     
-   static var allTests : [(String, (OptionRecognizerTests) -> () throws -> Void)] {
+   static var allTests : [(String, (OptionParserTests) -> () throws -> Void)] {
         return [
             ("testSimpleFlagParsing", testSimpleFlagParsing),
             ("testSimpleKeyParsing", testSimpleKeyParsing),
