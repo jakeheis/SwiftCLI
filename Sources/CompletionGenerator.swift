@@ -5,6 +5,8 @@
 //  Created by Jake Heiser on 9/10/17.
 //
 
+import Foundation
+
 public enum Shell {
     case bash
     case zsh
@@ -26,7 +28,7 @@ public final class ZshCompletionGenerator: CompletionGenerator {
         self.cli = cli
     }
     
-    public func writeCompletions(into stream: CompletionOutputStream = StdoutStream()) {
+    public func writeCompletions(into stream: CompletionOutputStream) {
         stream << "#compdef \(cli.name)"
         
         writeEntryFunction(into: stream)
@@ -92,7 +94,13 @@ public final class ZshCompletionGenerator: CompletionGenerator {
         let lines: [String] = options.map { (option) in
             let first = "(" + option.names.joined(separator: " ") + ")"
             let middle = "{" + option.names.joined(separator: ",") + "}"
-            let end = "[" + option.shortDescription + "]"
+            let end: String
+            if option.shortDescription.isEmpty {
+                let sortedNames = option.names.sorted(by: {$0.characters.count > $1.characters.count})
+                end = "[" + sortedNames.first!.trimmingCharacters(in: CharacterSet(charactersIn: "-")) + "]"
+            } else {
+                end = "[" + option.shortDescription + "]"
+            }
             return "      '\(first)'\(middle)'\(end)'"
         }
         stream << lines.joined(separator: " \\\n")
