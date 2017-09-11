@@ -16,6 +16,7 @@ public protocol CompletionGenerator {
     var shell: Shell { get }
     
     init(cli: CLI)
+    func writeCompletions()
     func writeCompletions(into stream: CompletionOutputStream)
 }
 
@@ -26,6 +27,10 @@ public final class ZshCompletionGenerator: CompletionGenerator {
     
     public init(cli: CLI) {
         self.cli = cli
+    }
+    
+    public func writeCompletions() {
+        writeCompletions(into: StdoutStream())
     }
     
     public func writeCompletions(into stream: CompletionOutputStream) {
