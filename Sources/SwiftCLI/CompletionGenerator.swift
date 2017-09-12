@@ -17,7 +17,7 @@ public protocol CompletionGenerator {
     
     init(cli: CLI)
     func writeCompletions()
-    func writeCompletions(into stream: CompletionOutputStream)
+    func writeCompletions(into stream: OutputStream)
 }
 
 public final class ZshCompletionGenerator: CompletionGenerator {
@@ -33,7 +33,7 @@ public final class ZshCompletionGenerator: CompletionGenerator {
         writeCompletions(into: StdoutStream())
     }
     
-    public func writeCompletions(into stream: CompletionOutputStream) {
+    public func writeCompletions(into stream: OutputStream) {
         stream << "#compdef \(cli.name)"
         
         writeEntryFunction(into: stream)
@@ -42,7 +42,7 @@ public final class ZshCompletionGenerator: CompletionGenerator {
         stream << "_\(cli.name)"
     }
     
-    func writeEntryFunction(into stream: CompletionOutputStream) {
+    func writeEntryFunction(into stream: OutputStream) {
         stream << """
         _\(cli.name)() {
             local context state line
@@ -57,7 +57,7 @@ public final class ZshCompletionGenerator: CompletionGenerator {
         """
     }
     
-    func writeCommandList(routables: [Routable], prefix: String, into stream: CompletionOutputStream) {
+    func writeCommandList(routables: [Routable], prefix: String, into stream: OutputStream) {
         stream << """
         __\(prefix)_commands() {
              _arguments -C \\
@@ -90,7 +90,7 @@ public final class ZshCompletionGenerator: CompletionGenerator {
         }
     }
     
-    func writeCommand(_ command: Command, prefix: String, into stream: CompletionOutputStream) {
+    func writeCommand(_ command: Command, prefix: String, into stream: OutputStream) {
         stream << """
         _\(prefix)_\(command.name)() {
             _arguments -C \\
@@ -116,31 +116,4 @@ public final class ZshCompletionGenerator: CompletionGenerator {
         """
     }
     
-}
-
-// MARK: - Streams
-
-public protocol CompletionOutputStream {
-    func output(_ content: String)
-}
-
-public struct StdoutStream: CompletionOutputStream {
-    public init() {}
-    public func output(_ content: String) {
-        print(content)
-    }
-}
-
-public class CaptureStream: CompletionOutputStream {
-    private(set) var content: String = ""
-    public init() {}
-    public func output(_ content: String) {
-        self.content += content + "\n"
-    }
-}
-
-infix operator <<
-
-func <<(stream: CompletionOutputStream, text: String) {
-    stream.output(text)
 }

@@ -18,7 +18,7 @@ public class VersionCommand: Command {
     }
     
     public func execute() throws  {
-        print("Version: \(version)")
+        stdout << "Version: \(version)"
     }
     
 }

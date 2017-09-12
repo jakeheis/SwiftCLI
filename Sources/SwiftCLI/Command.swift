@@ -105,6 +105,14 @@ extension Command {
 
         return message
     }
+    
+    public var stdout: OutputStream {
+        return StdoutStream()
+    }
+    
+    public var stderr: OutputStream {
+        return StderrStream()
+    }
 
 }
 
