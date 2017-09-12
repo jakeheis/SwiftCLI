@@ -26,16 +26,14 @@ public class ArgumentList {
         
         let arguments: [String] = argumentMatches.map {(match) in
             let matchRange = match.range
-            var argument = argumentString.substring(from: argumentString.index(argumentString.startIndex,
-                                                                               offsetBy: matchRange.location))
-            argument = argument.substring(to: argument.index(argument.startIndex, offsetBy: matchRange.length))
+            let startIndex = argumentString.index(argumentString.startIndex, offsetBy: matchRange.location)
+            let endIndex = argumentString.index(argumentString.startIndex, offsetBy: matchRange.location + matchRange.length)
+            var argument = argumentString[startIndex..<endIndex]
             
             if argument.hasPrefix("\"") {
-                let range = Range(uncheckedBounds: (lower: argument.index(argument.startIndex, offsetBy: 1),
-                                                    upper: argument.index(argument.endIndex, offsetBy: -1)))
-                argument = argument.substring(with: range)
+                argument = argument[argument.index(argument.startIndex, offsetBy: 1)..<argument.index(argument.endIndex, offsetBy: -1)]
             }
-            return argument
+            return String(argument)
         }
         
         self.init(arguments: arguments)
