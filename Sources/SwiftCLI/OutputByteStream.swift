@@ -51,7 +51,7 @@ public class FileStream: OutputByteStream {
 }
 
 public class CaptureStream: OutputByteStream {
-    private(set) var content: String = ""
+    public private(set) var content: String = ""
     public init() {}
     public func output(_ content: String) {
         self.content += content + "\n"
