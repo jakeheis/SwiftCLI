@@ -107,8 +107,7 @@ extension CLI {
             fatalError("Cannot call CLI.setup() multiple times")
         }
         
-        shared = CLI(name: name, version: version, commands: [])
-        shared?.description = description
+        shared = CLI(name: name, version: version, description: description)
     }
     
     /// Registers a command with the CLI for routing and execution. All commands must be registered

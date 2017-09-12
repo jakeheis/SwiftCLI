@@ -25,26 +25,16 @@ public class CLI {
     public var optionRecognizer: OptionRecognizer = DefaultOptionRecognizer()
     public var parameterFiller: ParameterFiller = DefaultParameterFiller()
     
-    public init(name: String, version: String? = nil, commands: [Routable]) {
+    /// Creates a new CLI
+    ///
+    /// - Parameter name: the name of the CLI executable
+    /// - Parameter version: the current version of the CLI
+    /// - Parameter description: a brief description of the CLI
+    public init(name: String, version: String? = nil, description: String? = nil, commands: [Routable] = []) {
         self.name = name
         self.version = version
+        self.description = description
         self.commands = commands
-        
-        self.commands.append(HelpCommand(cli: self))
-        if let version = version {
-            self.commands.append(VersionCommand(version: version))
-        }
-    }
-    
-    /// Generates shell completions for the cli's commands
-    ///
-    /// - Parameter shell: the type of shell for which to generate completions
-    /// - Returns: a generator
-    public func createCompletionGenerator(for shell: Shell) -> CompletionGenerator {
-        if shell == .bash {
-            fatalError("Bash completions not yet supported")
-        }
-        return ZshCompletionGenerator(cli: self)
     }
     
     /// Kicks off the entire CLI process, routing to and executing the command specified by the passed arguments.
@@ -82,6 +72,11 @@ public class CLI {
     // MARK: - Privates
     
     private func go(with arguments: ArgumentList) -> Int32 {
+        commands.append(HelpCommand(cli: self))
+        if let version = version {
+            commands.append(VersionCommand(version: version))
+        }
+        
         argumentListManipulators.forEach { $0.manipulate(arguments: arguments) }
         
         var exitStatus: Int32 = 0

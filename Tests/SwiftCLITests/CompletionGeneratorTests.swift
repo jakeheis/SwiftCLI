@@ -20,7 +20,7 @@ class CompletionGeneratorTests: XCTestCase {
     }
     
     func testEntryFunction() {
-        let cli = CLI(name: "tester", commands: [])
+        let cli = CLI(name: "tester")
         let generator = ZshCompletionGenerator(cli: cli)
         let capture = CaptureStream()
         generator.writeEntryFunction(into: capture)
@@ -54,7 +54,6 @@ class CompletionGeneratorTests: XCTestCase {
                        commands=(
                        alpha'[The alpha command]'
                        beta'[A beta command]'
-                       help'[Prints this help information]'
                        )
                        _values 'command' $commands
                        ;;
@@ -68,16 +67,12 @@ class CompletionGeneratorTests: XCTestCase {
             _arguments -C \\
               '(-h --help)'{-h,--help}'[Show help information for this command]'
         }
-        _tester_help() {
-            _arguments -C \\
-              '(-h --help)'{-h,--help}'[Show help information for this command]'
-        }
 
         """)
     }
     
     func testOptions() {
-        let cli = CLI(name: "tester", commands: [])
+        let cli = CLI(name: "tester")
         let generator = ZshCompletionGenerator(cli: cli)
         let capture = CaptureStream()
         generator.writeCommand(TestCommand(), prefix: "tester", into: capture)
@@ -120,7 +115,6 @@ class CompletionGeneratorTests: XCTestCase {
                        alpha'[The alpha command]'
                        beta'[A beta command]'
                        intra'[The intra level of commands]'
-                       help'[Prints this help information]'
                        )
                        _values 'command' $commands
                        ;;
@@ -153,10 +147,6 @@ class CompletionGeneratorTests: XCTestCase {
               '(-h --help)'{-h,--help}'[Show help information for this command]'
         }
         _tester_intra_delta() {
-            _arguments -C \\
-              '(-h --help)'{-h,--help}'[Show help information for this command]'
-        }
-        _tester_help() {
             _arguments -C \\
               '(-h --help)'{-h,--help}'[Show help information for this command]'
         }
