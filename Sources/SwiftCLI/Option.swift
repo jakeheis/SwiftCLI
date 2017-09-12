@@ -9,12 +9,14 @@
 public protocol Option {
     var names: [String] { get }
     var shortDescription: String { get }
-    var usage: String { get }
+    var identifier: String { get }
+    func usage(padding: Int) -> String
 }
 
-extension Option {
-    static var usageLength: Int {
-        return 40
+public extension Option {
+    func usage(padding: Int) -> String {
+        let spacing = String(repeating: " ", count: padding - identifier.characters.count)
+        return "\(identifier)\(spacing)\(shortDescription)"
     }
 }
 
@@ -24,10 +26,8 @@ open class Flag: Option {
     public let shortDescription: String
     public private(set) var value: Bool
     
-    public var usage: String {
-        let optionsString = names.joined(separator: ", ")
-        let spacing = String(repeating: " ", count: Flag.usageLength - optionsString.characters.count)
-        return "\(optionsString)\(spacing)\(shortDescription)"
+    open var identifier: String {
+        return names.joined(separator: ", ")
     }
     
     @available(*, unavailable, renamed: "init(_:description:defaultValue:)")
@@ -55,10 +55,8 @@ open class Key<T: Keyable>: Option {
     public let shortDescription: String
     public private(set) var value: T?
     
-    public var usage: String {
-        let optionsString = names.joined(separator: ", ") + " <value>"
-        let spacing = String(repeating: " ", count: Key.usageLength - optionsString.characters.count)
-        return "\(optionsString)\(spacing)\(shortDescription)"
+    open var identifier: String {
+        return names.joined(separator: ", ") + " <value>"
     }
     
     @available(*, unavailable, renamed: "init(_:description:)")

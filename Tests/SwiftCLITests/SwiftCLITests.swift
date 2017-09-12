@@ -14,7 +14,8 @@ class SwiftCLITests: XCTestCase {
     static var allTests : [(String, (SwiftCLITests) -> () throws -> Void)] {
         return [
             ("testCLIGo", testCLIGo),
-            ("testCLIHelp", testCLIHelp)
+            ("testCLIHelp", testCLIHelp),
+            ("testGlobalOptions", testGlobalOptions)
         ]
     }
     

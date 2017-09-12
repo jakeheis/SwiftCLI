@@ -27,17 +27,17 @@ class HelpMessageGeneratorTests: XCTestCase {
             betaCmd
         ])
         
-        var expectedMessage = ([
-            "",
-            "Usage: tester <command> [options]",
-            "",
-            "A tester for SwiftCLI",
-            "",
-            "Commands:",
-            "  alpha               The alpha command",
-            "  beta                A beta command",
-            ""
-            ]).joined(separator: "\n")
+        var expectedMessage = """
+        
+        Usage: tester <command> [options]
+        
+        A tester for SwiftCLI
+        
+        Commands:
+          alpha           The alpha command
+          beta            A beta command
+        
+        """
         
         XCTAssertEqual(message, expectedMessage)
         
@@ -46,17 +46,17 @@ class HelpMessageGeneratorTests: XCTestCase {
             midGroup
         ])
         
-        expectedMessage = ([
-            "",
-            "Usage: tester <command> [options]",
-            "",
-            "Groups:",
-            "  mid                 The mid level of commands",
-            "",
-            "Commands:",
-            "  alpha               The alpha command",
-            ""
-            ]).joined(separator: "\n")
+        expectedMessage = """
+        
+        Usage: tester <command> [options]
+        
+        Groups:
+          mid             The mid level of commands
+        
+        Commands:
+          alpha           The alpha command
+        
+        """
         
         XCTAssertEqual(message, expectedMessage)
     }
@@ -64,14 +64,16 @@ class HelpMessageGeneratorTests: XCTestCase {
     func testUsageStatementGeneration() {
         let message = DefaultHelpMessageGenerator().generateUsageStatement(for: command, cliName: "tester")
         
-        let expectedMessage = ([
-            "Usage: tester test <testName> [<testerName>] [options]",
-            "",
-            "-h, --help                              Show help information for this command",
-            "-s, --silent                            Silence all test output",
-            "-t, --times <value>                     Number of times to run the test",
-            ""
-        ]).joined(separator: "\n")
+        let expectedMessage = """
+        
+        Usage: tester test <testName> [<testerName>] [options]
+        
+        Options:
+          -h, --help             Show help information for this command
+          -s, --silent           Silence all test output
+          -t, --times <value>    Number of times to run the test
+        
+        """
         
         XCTAssertEqual(message, expectedMessage, "Should generate the correct usage statement")
     }
@@ -87,15 +89,18 @@ class HelpMessageGeneratorTests: XCTestCase {
         } catch let error as OptionRecognizerError {
             let message = DefaultHelpMessageGenerator().generateMisusedOptionsStatement(for: command, error: error, cliName: "tester")
             
-            let expectedMessage = ([
-                "Usage: tester test <testName> [<testerName>] [options]",
-                "",
-                "-h, --help                              Show help information for this command",
-                "-s, --silent                            Silence all test output",
-                "-t, --times <value>                     Number of times to run the test",
-                "",
-                "Unrecognized option: -a\n"
-                ]).joined(separator: "\n")
+            let expectedMessage = """
+            
+            Usage: tester test <testName> [<testerName>] [options]
+            
+            Options:
+              -h, --help             Show help information for this command
+              -s, --silent           Silence all test output
+              -t, --times <value>    Number of times to run the test
+            
+            Unrecognized option: -a
+
+            """
             
             XCTAssertEqual(message, expectedMessage, "Should generate the correct misused options statement")
         } catch {}

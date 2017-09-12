@@ -32,8 +32,15 @@ extension HelpMessageGenerator {
             if let command = routable as? Command { commands.append(command) }
         }
         
+        let maxNameLength = routables.reduce(12) { (length, routable) in
+            if routable.name.characters.count > length {
+               return routable.name.characters.count
+            }
+            return length
+        }
+        
         func toLine(_ routable: Routable) -> String {
-            let spacing = String(repeating: " ", count: 20 - routable.name.characters.count)
+            let spacing = String(repeating: " ", count: maxNameLength + 4 - routable.name.characters.count)
             return "  \(routable.name)\(spacing)\(routable.shortDescription)"
         }
         
@@ -59,15 +66,22 @@ extension HelpMessageGenerator {
     }
     
     public func generateUsageStatement(for command: Command, cliName: String) -> String {
-        var message = "Usage: \(cliName) \(command.usage)\n"
+        var message = "\nUsage: \(cliName) \(command.usage)\n"
         
         if !command.options.isEmpty {
+            message += "\nOptions:"
             let sortedOptions = command.options.sorted { (lhs, rhs) in
                 return lhs.names.first! < rhs.names.first!
             }
+            let maxOptionLength = sortedOptions.reduce(12) { (length, option) in
+                if option.identifier.characters.count > length {
+                    return option.identifier.characters.count
+                }
+                return length
+            }
             for option in sortedOptions {
-                let usage = option.usage
-                message += "\n\(usage)"
+                let usage = option.usage(padding: maxOptionLength + 4)
+                message += "\n  \(usage)"
             }
             
             message += "\n"
@@ -93,3 +107,4 @@ public protocol UsageStatementGenerator {
 public protocol MisusedOptionsMessageGenerator {
     func generateMisusedOptionsStatement(for command: Command, error: OptionRecognizerError) -> String
 }
+
