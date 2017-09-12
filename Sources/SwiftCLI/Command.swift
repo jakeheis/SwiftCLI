@@ -106,11 +106,11 @@ extension Command {
         return message
     }
     
-    public var stdout: OutputStream {
+    public var stdout: OutputByteStream {
         return StdoutStream()
     }
     
-    public var stderr: OutputStream {
+    public var stderr: OutputByteStream {
         return StderrStream()
     }
 

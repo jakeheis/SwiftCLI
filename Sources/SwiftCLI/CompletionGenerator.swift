@@ -17,7 +17,7 @@ public protocol CompletionGenerator {
     
     init(cli: CLI)
     func writeCompletions()
-    func writeCompletions(into stream: OutputStream)
+    func writeCompletions(into stream: OutputByteStream)
 }
 
 public final class ZshCompletionGenerator: CompletionGenerator {
@@ -33,7 +33,7 @@ public final class ZshCompletionGenerator: CompletionGenerator {
         writeCompletions(into: StdoutStream())
     }
     
-    public func writeCompletions(into stream: OutputStream) {
+    public func writeCompletions(into stream: OutputByteStream) {
         stream << "#compdef \(cli.name)"
         
         writeEntryFunction(into: stream)
@@ -42,7 +42,7 @@ public final class ZshCompletionGenerator: CompletionGenerator {
         stream << "_\(cli.name)"
     }
     
-    func writeEntryFunction(into stream: OutputStream) {
+    func writeEntryFunction(into stream: OutputByteStream) {
         stream << """
         _\(cli.name)() {
             local context state line
@@ -57,7 +57,7 @@ public final class ZshCompletionGenerator: CompletionGenerator {
         """
     }
     
-    func writeCommandList(routables: [Routable], prefix: String, into stream: OutputStream) {
+    func writeCommandList(routables: [Routable], prefix: String, into stream: OutputByteStream) {
         stream << """
         __\(prefix)_commands() {
              _arguments -C \\
@@ -90,7 +90,7 @@ public final class ZshCompletionGenerator: CompletionGenerator {
         }
     }
     
-    func writeCommand(_ command: Command, prefix: String, into stream: OutputStream) {
+    func writeCommand(_ command: Command, prefix: String, into stream: OutputByteStream) {
         stream << """
         _\(prefix)_\(command.name)() {
             _arguments -C \\
