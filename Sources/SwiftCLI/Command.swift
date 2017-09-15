@@ -107,11 +107,11 @@ extension Command {
     }
     
     public var stdout: OutputByteStream {
-        return StdoutStream()
+        return Term.stdout
     }
     
     public var stderr: OutputByteStream {
-        return StderrStream()
+        return Term.stderr
     }
 
 }
