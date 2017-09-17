@@ -58,6 +58,8 @@ public class CaptureStream: OutputByteStream {
     }
 }
 
-public func <<(stream: OutputByteStream, text: String) {
+infix operator <<<: AssignmentPrecedence
+
+public func <<<(stream: OutputByteStream, text: String) {
     stream.output(text)
 }

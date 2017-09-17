@@ -18,7 +18,7 @@ public class HelpCommand: Command {
     }
     
     public func execute() throws {
-        stdout << cli.helpMessageGenerator.generateCommandList(
+        stdout <<< cli.helpMessageGenerator.generateCommandList(
             prefix: cli.name,
             description: cli.description,
             routables: cli.commands

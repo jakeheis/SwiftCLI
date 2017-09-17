@@ -34,16 +34,16 @@ public final class ZshCompletionGenerator: CompletionGenerator {
     }
     
     public func writeCompletions(into stream: OutputByteStream) {
-        stream << "#compdef \(cli.name)"
+        stream <<< "#compdef \(cli.name)"
         
         writeEntryFunction(into: stream)
         writeCommandList(routables: cli.commands, prefix: cli.name, into: stream)
         
-        stream << "_\(cli.name)"
+        stream <<< "_\(cli.name)"
     }
     
     func writeEntryFunction(into stream: OutputByteStream) {
-        stream << """
+        stream <<< """
         _\(cli.name)() {
             local context state line
             if (( CURRENT > 2 )); then
@@ -58,7 +58,7 @@ public final class ZshCompletionGenerator: CompletionGenerator {
     }
     
     func writeCommandList(routables: [Routable], prefix: String, into stream: OutputByteStream) {
-        stream << """
+        stream <<< """
         __\(prefix)_commands() {
              _arguments -C \\
                ': :->command'
@@ -70,10 +70,10 @@ public final class ZshCompletionGenerator: CompletionGenerator {
         
         for routable in routables {
             let info = routable.shortDescription.isEmpty ? routable.name : routable.shortDescription
-            stream << "               \(routable.name)'[\(info)]'"
+            stream <<< "               \(routable.name)'[\(info)]'"
         }
         
-        stream << """
+        stream <<< """
                        )
                        _values 'command' $commands
                        ;;
@@ -91,7 +91,7 @@ public final class ZshCompletionGenerator: CompletionGenerator {
     }
     
     func writeCommand(_ command: Command, prefix: String, into stream: OutputByteStream) {
-        stream << """
+        stream <<< """
         _\(prefix)_\(command.name)() {
             _arguments -C \\
         """
@@ -109,9 +109,9 @@ public final class ZshCompletionGenerator: CompletionGenerator {
             }
             return "      '\(first)'\(middle)'\(end)'"
         }
-        stream << lines.joined(separator: " \\\n")
+        stream <<< lines.joined(separator: " \\\n")
         
-        stream << """
+        stream <<< """
         }
         """
     }
