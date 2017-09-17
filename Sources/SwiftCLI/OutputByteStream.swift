@@ -21,6 +21,7 @@ public class StdoutStream: OutputByteStream {
     public init() {}
     public func output(_ content: String, terminator: String) {
         print(content, terminator: terminator)
+        fflush(stdout)
     }
 }
 
