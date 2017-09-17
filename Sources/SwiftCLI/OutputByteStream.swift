@@ -8,26 +8,32 @@
 import Foundation
 
 public protocol OutputByteStream {
-    func output(_ content: String)
+    func output(_ content: String, terminator: String)
+}
+
+public extension OutputByteStream {
+    func output(_ content: String) {
+        output(content, terminator: "\n")
+    }
 }
 
 public class StdoutStream: OutputByteStream {
     public init() {}
-    public func output(_ content: String) {
-        print(content)
+    public func output(_ content: String, terminator: String) {
+        print(content, terminator: terminator)
     }
 }
 
 public class StderrStream: OutputByteStream {
     public init() {}
-    public func output(_ content: String) {
-        printError(content)
+    public func output(_ content: String, terminator: String) {
+        printError(content, terminator: terminator)
     }
 }
 
 public class NullStream: OutputByteStream {
     public init() {}
-    public func output(_ content: String) {}
+    public func output(_ content: String, terminator: String) {}
 }
 
 public class FileStream: OutputByteStream {
@@ -39,8 +45,8 @@ public class FileStream: OutputByteStream {
         handle.seekToEndOfFile()
         self.handle = handle
     }
-    public func output(_ content: String) {
-        guard let data = (content + "\n").data(using: .utf8) else {
+    public func output(_ content: String, terminator: String) {
+        guard let data = (content + terminator).data(using: .utf8) else {
             fatalError("Couldn't output content: \(content)")
         }
         handle.write(data)
@@ -53,8 +59,8 @@ public class FileStream: OutputByteStream {
 public class CaptureStream: OutputByteStream {
     public private(set) var content: String = ""
     public init() {}
-    public func output(_ content: String) {
-        self.content += content + "\n"
+    public func output(_ content: String, terminator: String) {
+        self.content += content + terminator
     }
 }
 
