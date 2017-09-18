@@ -12,38 +12,17 @@ class CompletionGeneratorTests: XCTestCase {
     
     static var allTests : [(String, (CompletionGeneratorTests) -> () throws -> Void)] {
         return [
-            ("testEntryFunction", testEntryFunction),
             ("testCommandList", testCommandList),
             ("testOptions", testOptions),
             ("testFull", testFull)
         ]
     }
     
-    func testEntryFunction() {
-        let cli = CLI(name: "tester")
-        let generator = ZshCompletionGenerator(cli: cli)
-        let capture = CaptureStream()
-        generator.writeEntryFunction(into: capture)
-        XCTAssertEqual(capture.content, """
-        _tester() {
-            local context state line
-            if (( CURRENT > 2 )); then
-                (( CURRENT-- ))
-                shift words
-                _call_function - "_tester_${words[1]}" || _nothing
-            else
-                __tester_commands
-            fi
-        }
-
-        """)
-    }
-    
     func testCommandList() {
         let cli = CLI(name: "tester", commands: [alphaCmd, betaCmd])
         let generator = ZshCompletionGenerator(cli: cli)
         let capture = CaptureStream()
-        generator.writeCommandList(routables: cli.commands, prefix: "tester", into: capture)
+        generator.writeCommandList(name: "tester", routables: cli.commands, into: capture)
         XCTAssertEqual(capture.content, """
         __tester_commands() {
              _arguments -C \\
@@ -127,6 +106,16 @@ class CompletionGeneratorTests: XCTestCase {
         _tester_beta() {
             _arguments -C \\
               '(-h --help)'{-h,--help}'[Show help information for this command]'
+        }
+        _tester_intra() {
+            local context state line
+            if (( CURRENT > 2 )); then
+                (( CURRENT-- ))
+                shift words
+                _call_function - "_tester_intra_${words[1]}" || _nothing
+            else
+                __tester_intra_commands
+            fi
         }
         __tester_intra_commands() {
              _arguments -C \\

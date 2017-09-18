@@ -36,30 +36,30 @@ public final class ZshCompletionGenerator: CompletionGenerator {
     public func writeCompletions(into stream: OutputByteStream) {
         stream <<< "#compdef \(cli.name)"
         
-        writeEntryFunction(into: stream)
-        writeCommandList(routables: cli.commands, prefix: cli.name, into: stream)
+        writeGroup(name: cli.name, routables: cli.commands, into: stream)
         
         stream <<< "_\(cli.name)"
     }
     
-    func writeEntryFunction(into stream: OutputByteStream) {
+    func writeGroup(name: String, routables: [Routable], into stream: OutputByteStream) {
         stream <<< """
-        _\(cli.name)() {
+        _\(name)() {
             local context state line
             if (( CURRENT > 2 )); then
                 (( CURRENT-- ))
                 shift words
-                _call_function - "_\(cli.name)_${words[1]}" || _nothing
+                _call_function - "_\(name)_${words[1]}" || _nothing
             else
-                __\(cli.name)_commands
+                __\(name)_commands
             fi
         }
         """
+        writeCommandList(name: name, routables: routables, into: stream)
     }
     
-    func writeCommandList(routables: [Routable], prefix: String, into stream: OutputByteStream) {
+    func writeCommandList(name: String, routables: [Routable], into stream: OutputByteStream) {
         stream <<< """
-        __\(prefix)_commands() {
+        __\(name)_commands() {
              _arguments -C \\
                ': :->command'
              case "$state" in
@@ -83,9 +83,9 @@ public final class ZshCompletionGenerator: CompletionGenerator {
         
         routables.forEach { (routable) in
             if let command = routable as? Command {
-                self.writeCommand(command, prefix: prefix, into: stream)
+                self.writeCommand(command, prefix: name, into: stream)
             } else if let group = routable as? CommandGroup {
-                self.writeCommandList(routables: group.children, prefix: prefix + "_\(group.name)", into: stream)
+                self.writeGroup(name: name + "_\(group.name)", routables: group.children, into: stream)
             }
         }
     }
