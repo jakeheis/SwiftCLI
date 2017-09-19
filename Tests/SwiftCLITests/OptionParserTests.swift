@@ -140,7 +140,9 @@ class OptionParserTests: XCTestCase {
     
     private func assertParseSuccess(arguments: ArgumentList, with cmd: Command) {
         do {
-            try DefaultOptionRecognizer().recognizeOptions(of: cmd, in: arguments)
+            let cli = CLI(name: "tester")
+            let registry = OptionRegistry(options: cmd.options(for: cli), optionGroups: cmd.optionGroups)
+            try DefaultOptionRecognizer().recognizeOptions(from: registry, in: arguments)
         } catch {
             XCTFail()
         }
@@ -148,8 +150,9 @@ class OptionParserTests: XCTestCase {
     
     private func assertParseFailure(arguments: ArgumentList, with cmd: Command, error expectedError: OptionRecognizerError) {
         do {
-            print(cmd.optionGroups)
-            try DefaultOptionRecognizer().recognizeOptions(of: cmd, in: arguments)
+            let cli = CLI(name: "tester")
+            let registry = OptionRegistry(options: cmd.options(for: cli), optionGroups: cmd.optionGroups)
+            try DefaultOptionRecognizer().recognizeOptions(from: registry, in: arguments)
             XCTFail()
         } catch let error as OptionRecognizerError {
             switch (error, expectedError) {

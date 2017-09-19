@@ -62,7 +62,8 @@ class HelpMessageGeneratorTests: XCTestCase {
     }
 
     func testUsageStatementGeneration() {
-        let message = DefaultHelpMessageGenerator().generateUsageStatement(for: command, cliName: "tester")
+        let cli = CLI(name: "tester")
+        let message = DefaultHelpMessageGenerator().generateUsageStatement(for: command, in: cli)
         
         let expectedMessage = """
         
@@ -83,11 +84,14 @@ class HelpMessageGeneratorTests: XCTestCase {
         arguments.remove(node: arguments.head!)
         arguments.remove(node: arguments.head!)
         
+        let cli = CLI(name: "tester")
+        let registry = OptionRegistry(options: command.options(for: cli), optionGroups: command.optionGroups)
+        
         do {
-            try DefaultOptionRecognizer().recognizeOptions(of: command, in: arguments)
+            try DefaultOptionRecognizer().recognizeOptions(from: registry, in: arguments)
             XCTFail("Option parser should fail on incorrectly used options")
         } catch let error as OptionRecognizerError {
-            let message = DefaultHelpMessageGenerator().generateMisusedOptionsStatement(for: command, error: error, cliName: "tester")
+            let message = DefaultHelpMessageGenerator().generateMisusedOptionsStatement(for: command, error: error, in: cli)
             
             let expectedMessage = """
             

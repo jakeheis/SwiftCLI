@@ -9,16 +9,14 @@
 // MARK: - OptionRecognizer
 
 public protocol OptionRecognizer {
-    func recognizeOptions(of command: Command, in arguments: ArgumentList) throws
+    func recognizeOptions(from optionRegistry: OptionRegistry, in arguments: ArgumentList) throws
 }
 
 // MARK: - DefaultOptionRecognizer
 
 public class DefaultOptionRecognizer: OptionRecognizer {
     
-    public func recognizeOptions(of command: Command, in arguments: ArgumentList) throws {
-        let optionRegistry = OptionRegistry(options: command.options, optionGroups: command.optionGroups)
-        
+    public func recognizeOptions(from optionRegistry: OptionRegistry, in arguments: ArgumentList) throws {
         let iterator = arguments.iterator()
         while let node = iterator.next() {
             if node.value.hasPrefix("-") {

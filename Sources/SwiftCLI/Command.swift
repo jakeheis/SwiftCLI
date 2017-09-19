@@ -37,14 +37,14 @@ public protocol Command: class, Routable {
     /// The paramters this command accepts; dervied automatically, don't implement unless custom functionality needed
     var parameters: [(String, AnyParameter)] { get }
     
-    /// The options this command accepts; dervied automatically, don't implement unless custom functionality needed
-    var options: [Option] { get }
-    
     /// A short description of the command; printed in the command's usage statement; defaults to empty string
     var shortDescription: String { get }
     
     /// The option groups of this command; defaults to empty array
     var optionGroups: [OptionGroup] { get }
+    
+    /// The options this command accepts; dervied automatically, don't implement unless custom functionality needed
+    func options(for cli: CLI) -> [Option]
     
 }
 
@@ -65,7 +65,7 @@ extension Command {
         }
     }
 
-    public var options: [Option] {
+    public func options(for cli: CLI) -> [Option] {
         let mirror = Mirror(reflecting: self)
         var options = mirror.children.flatMap { (child) -> Option? in
             if let option = child.value as? Option {
@@ -73,7 +73,7 @@ extension Command {
             }
             return nil
         }
-        options += GlobalOptions.options
+        options += cli.globalOptions
         return options
     }
     
@@ -87,7 +87,7 @@ extension Command {
     
     // Extras
     
-    public var usage: String {
+    public func usage(for cli: CLI) -> String {
         var message = ""
 
         if !name.isEmpty {
@@ -99,7 +99,7 @@ extension Command {
             message += " \(signature)"
         }
         
-        if !options.isEmpty {
+        if !options(for: cli).isEmpty {
             message += " [options]"
         }
 

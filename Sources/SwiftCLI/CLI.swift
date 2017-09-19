@@ -19,6 +19,9 @@ public class CLI {
     public var description: String?
     public var commands: [Routable]
     
+    public var globalOptions: [Option] = []
+    private let helpFlag = Flag("-h", "--help", description: "Show help information for this command")
+    
     public var helpMessageGenerator: HelpMessageGenerator = DefaultHelpMessageGenerator()
     public var argumentListManipulators: [ArgumentListManipulator] = [CommandAliaser(), OptionSplitter()]
     public var router: Router = DefaultRouter()
@@ -35,6 +38,7 @@ public class CLI {
         self.version = version
         self.description = description
         self.commands = commands
+        self.globalOptions = [helpFlag]
     }
     
     /// Kicks off the entire CLI process, routing to and executing the command specified by the passed arguments.
@@ -87,8 +91,8 @@ public class CLI {
             
             // Step 2: recognize options
             try recognizeOptions(of: command, in: arguments)
-            if DefaultGlobalOptions.help.value == true {
-                print(helpMessageGenerator.generateUsageStatement(for: command, cliName: name))
+            if helpFlag.value == true {
+                print(helpMessageGenerator.generateUsageStatement(for: command, in: self))
                 return exitStatus
             }
             
@@ -145,9 +149,10 @@ public class CLI {
         }
         
         do {
-            try optionRecognizer.recognizeOptions(of: command, in: arguments)
+            let optionRegistry = OptionRegistry(options: command.options(for: self), optionGroups: command.optionGroups)
+            try optionRecognizer.recognizeOptions(from: optionRegistry, in: arguments)
         } catch let error as OptionRecognizerError {
-            let message = helpMessageGenerator.generateMisusedOptionsStatement(for: command, error: error, cliName: name)
+            let message = helpMessageGenerator.generateMisusedOptionsStatement(for: command, error: error, in: self)
             throw CLI.Error(message: message)
         }
     }

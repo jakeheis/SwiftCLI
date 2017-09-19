@@ -8,8 +8,8 @@
 
 public protocol HelpMessageGenerator {
     func generateCommandList(prefix: String, description: String?, routables: [Routable]) -> String
-    func generateUsageStatement(for command: Command, cliName: String) -> String
-    func generateMisusedOptionsStatement(for command: Command, error: OptionRecognizerError, cliName: String) -> String
+    func generateUsageStatement(for command: Command, in cli: CLI) -> String
+    func generateMisusedOptionsStatement(for command: Command, error: OptionRecognizerError, in cli: CLI) -> String
 }
 
 extension HelpMessageGenerator {
@@ -65,12 +65,13 @@ extension HelpMessageGenerator {
         return lines.joined(separator: "\n");
     }
     
-    public func generateUsageStatement(for command: Command, cliName: String) -> String {
-        var message = "\nUsage: \(cliName) \(command.usage)\n"
+    public func generateUsageStatement(for command: Command, in cli: CLI) -> String {
+        var message = "\nUsage: \(cli.name) \(command.usage(for: cli))\n"
         
-        if !command.options.isEmpty {
+        let options = command.options(for: cli)
+        if !options.isEmpty {
             message += "\nOptions:"
-            let sortedOptions = command.options.sorted { (lhs, rhs) in
+            let sortedOptions = options.sorted { (lhs, rhs) in
                 return lhs.names.first! < rhs.names.first!
             }
             let maxOptionLength = sortedOptions.reduce(12) { (length, option) in
@@ -90,8 +91,8 @@ extension HelpMessageGenerator {
         return message
     }
     
-    public func generateMisusedOptionsStatement(for command: Command, error: OptionRecognizerError, cliName: String) -> String {
-        return generateUsageStatement(for: command, cliName: cliName) + "\n" + error.message + "\n"
+    public func generateMisusedOptionsStatement(for command: Command, error: OptionRecognizerError, in cli: CLI) -> String {
+        return generateUsageStatement(for: command, in: cli) + "\n" + error.message + "\n"
     }
     
 }

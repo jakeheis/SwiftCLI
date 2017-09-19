@@ -48,11 +48,10 @@ class SwiftCLITests: XCTestCase {
     }
     
     func testGlobalOptions() {
-        GlobalOptions.source(MyGlobalOptions.self)
+        cli.globalOptions.append(_verboseFlag)
         let result3 = cli.debugGo(with: "tester test myTest -v")
         XCTAssertEqual(result3, 0, "Command should have succeeded")
         XCTAssertEqual(self.executionString, "defaultTester will test myTest, 1 times, verbosely", "Command should have produced accurate output")
-
     }
     
     // Tear down
@@ -65,15 +64,10 @@ class SwiftCLITests: XCTestCase {
     
 }
 
-struct MyGlobalOptions: GlobalOptionsSource {
-    static let verbose = Flag("-v")
-    static var options: [Option] {
-        return [verbose]
-    }
-}
+private let _verboseFlag = Flag("-v")
 
 extension Command {
     var verbose: Flag {
-        return MyGlobalOptions.verbose
+        return _verboseFlag
     }
 }

@@ -7,7 +7,7 @@
 
 extension CLI {
  
-    private static var shared: CLI?
+    static var shared: CLI?
     
     private static func guardShared() -> CLI {
         guard let cli = shared else {

@@ -96,7 +96,7 @@ public final class ZshCompletionGenerator: CompletionGenerator {
             _arguments -C \\
         """
         
-        let options = command.options
+        let options = command.options(for: cli)
         let lines: [String] = options.map { (option) in
             let first = "(" + option.names.joined(separator: " ") + ")"
             let middle = "{" + option.names.joined(separator: ",") + "}"
