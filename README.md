@@ -26,7 +26,7 @@ greeter.go()
 Hello world!
 ```
 
-With `SwiftCLI`, you get for free:
+With SwiftCLI, you get for free:
 - Command routing
 - Option parsing
 - Help messages
@@ -67,6 +67,8 @@ dependencies: [
     .package(url: "https://github.com/jakeheis/SwiftCLI", from: "4.0.0")
 ]
 ```
+
+`4.0.0` has a number of breaking changes. Use `3.1.0` if you wish to use the new features without the breaking changes.
 
 ## Creating a CLI
 
