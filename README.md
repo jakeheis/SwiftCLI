@@ -16,10 +16,11 @@ class GreetCommand: Command {
     }
 }
 
-CLI.setup(name: "greeter")
-CLI.register(command: GreetCommand())
-CLI.go()
+let greeter = CLI(name: "greeter")
+greeter.commands = [GreetCommand()]
+greeter.go()
 ```
+
 ```bash
 ~ > greeter greet world
 Hello world!
@@ -44,6 +45,7 @@ Table of Contents
       * [Keyed options](#keyed-options)
       * [Option groups](#option-groups)
       * [Global options](#global-options)
+  * [Command groups](#groups)
   * [Routing commands](#routing-commands)
     * [Aliases](#aliases)
   * [Special commands](#special-commands)
@@ -54,30 +56,40 @@ Table of Contents
 
 ## Installation
 Add SwiftCLI as a dependency to your project:
+
 ```swift
 dependencies: [
-    .Package(url: "https://github.com/jakeheis/SwiftCLI", majorVersion: 3, minor: 0)
+    .package(url: "https://github.com/jakeheis/SwiftCLI", from: "4.0.0")
 ]
 ```
+
 ## Creating a CLI
-### Setup
-In the call to `CLI.setup()`, a name must be passed, and a `version` and a `description` are both optional.
+
+When creating a `CLI`, a `name` is required, and a `version` and `description` are both optional.
+
 ```swift
-CLI.setup(name: "greeter", version: "1.0", description: "Greeter - your own personal greeter")
+let myCli = CLI(name: "greeter", version: "1.0.0", description: "Greeter - your own personal greeter")
 ```
-### Registering commands
+
+You set commands through the `.commands` property:
+
 ```swift
-CLI.register(command: myCommand)
-CLI.register(commands: [myCommand, myOtherCommand])
+myCli.commands = [myCommand, myOtherCommand]
 ```
-### Calling go
-In a production app, `go()` should be used. This method uses the arguments passed to it on launch.
+
+Finally, to actually start the CLI, you call one of the `go` methods. In a production app, `go()` or `goAndExit()` should be used. These methods use the arguments passed to your CLI on launch.
+
 ```swift
-CLI.go()
+// Use go if you want program execution to continue afterwards
+myCli.go() 
+
+// Use exitAndGo if you want your program to terminate after CLI has finished
+myCli.exitAndGo()
 ```
-When you are creating and debugging your app, `debugGo(with:)` is the better choice. `debugGo(with:)` makes it easier to pass an argument string to your app during development.
+
+When you are creating and debugging your app, you can use `debugGo(with:)` which makes it easier to pass an argument string to your app during development.
 ```swift
-CLI.debugGo(with: "greeter greet")
+myCli.debugGo(with: "greeter greet")
 ```
 
 ## Commands
@@ -202,7 +214,7 @@ class GreetCommand: Command {
 
     ...
 
-    let loudly = Flag("-l", "--loudly", usage: "Say the greeting loudly")
+    let loudly = Flag("-l", "--loudly", description: "Say the greeting loudly")
 
     func execute() throws {
         if loudly.value {
@@ -246,8 +258,8 @@ class GreetCommand: Command {
 
     ...
 
-    let loudly = Flag("-l", "--loudly", usage: "Say the greeting loudly")
-    let whisper = Flag("-w", "--whisper", usage: "Whisper the greeting")
+    let loudly = Flag("-l", "--loudly", description: "Say the greeting loudly")
+    let whisper = Flag("-w", "--whisper", description: "Whisper the greeting")
     
     var optionGroups: [OptionGroup] {
         let volume = OptionGroup(options: [loudly, whisper], restriction: .atMostOne)
@@ -267,36 +279,23 @@ class GreetCommand: Command {
 
 #### Global options
 
-Global options can be used to specify that every command should have a certain option. This is how the `-h` flag is implemented for all commands.
-
-To add a global option, you must create a struct conforming to `GlobalOptionsSource` which contains static properties for the global options you wish to add, and an `options` static property that returns an array of these options. Finally, after calling `CLI.setup`, you should notify `CLI` of this new source of global options by calling `GlobalOptions.source(MyStruct.self)`.
+Global options can be used to specify that every command should have a certain option. This is how the `-h` flag is implemented for all commands. Simply add an option to CLI's `.globalOptions` array (and optionally extend `Command` to make the option easy to access in your commands):
 
 ```swift
-struct MyGlobalOptions: GlobalOptionsSource {
-    static let verbose = Flag("-v")
-    static var options: [Option] {
-        return [verbose]
-    }
-}
-
-CLI.setup(name: "greeter")
-GlobalOptions.source(MyGlobalOptions.self)
-```
-
-You can create a shortcut to this flag within every command by extending `Command`:
-
-```swift
+private let verboseFlag = Flag("-v")
 extension Command {
     var verbose: Flag {
-        return MyGlobalOptions.verbose
+        return verboseFlag
     }
 }
+
+myCli.globalOptions.append(verboseFlag)
 ```
 
 With this, every command now has a `verbose` flag.
 
 #### Usage of options
-As seen in the above examples, ```Flag()``` and ```Key()``` both take an optional ```usage``` parameter. A concise description of what the option does should be included here. This allows the `UsageStatementGenerator` to generate a fully informative usage statement for the command.
+As seen in the above examples, `Flag()` and `Key()` both take an optional `description` parameter. A concise description of what the option does should be included here. This allows the `UsageStatementGenerator` to generate a fully informative usage statement for the command.
 
 A command's usage statement is shown in two situations:
 - The user passed an option that the command does not support -- ```greeter greet -z```
@@ -311,14 +310,52 @@ Usage: greeter greet <person> [options]
 -h, --help                               Show help information for this command
 ```
 
+## Command groups
+
+Command groups provide a way for related commands to be nested under a certain namespace. Groups can themselves contain other groups.
+
+```swift
+class ConfigGroup: CommandGroup {
+    let name = "config"
+    let children = [GetCommand(), SetCommand()]
+}
+class GetCommand: Command {
+    let name = "get"
+    func execute() throws {}
+}
+class SetCommand: Command {
+    let name = "set"
+    func execute() throws {}
+}
+```
+
+You can add a command group to your CLI's `.commands` array just as add a normal command:
+
+```swift
+greeter.commands = [ConfigGroup()]
+```
+
+```shell
+> greeter config
+
+Usage: greeter config <command> [options]
+
+Commands:
+  get
+  set
+
+> greeter config set
+> greeter config get
+```
+
 ## Routing commands
 Command routing is done by an object implementing `Router`, which is just one simple method:
 
 ```swift
-func route(commands: [Command], arguments: ArgumentList) -> Command?
+func route(routables: [Routable], arguments: ArgumentList) -> RouteResult
 ```
 
-SwiftCLI supplies a default implementation of `Router` with `DefaultRouter`. `DefaultRouter` finds commands based on the first passed argument. For example, `greeter greet` would search for commands with the `name` of "greet". 
+SwiftCLI supplies a default implementation of `Router` with `DefaultRouter`. `DefaultRouter` finds commands based on the first passed argument (or, in the case of command groups, the first several arguments). For example, `greeter greet` would search for commands with the `name` of "greet". 
 
 SwiftCLI also supplies an implementation of `Router` called `SingleCommandRouter` which should be used if your command is only a single command. For example, if you were implementing the `ln` command, you would say `CLI.router = SingleCommandRouter(command: LinkCommand())`.
 
@@ -340,7 +377,7 @@ CommandAliaser.alias(from: "-c", to: "command")
 And the user makes the call `myapp -c`, the router will search for a command with the name "command" because of the alias, not a command with the name "-c".
 
 ## Special commands
-`CLI` has two special commands: `helpCommand` and `versionCommand`.
+`CLI` has two special commands: `HelpCommand` and `VersionCommand`.
 
 ### Help Command
 The `HelpCommand` can be invoked with `myapp help` or `myapp -h`. The `HelpCommand` first prints the app description (if any was given during `CLI.setup()`). It then iterates through all available commands, printing their name and their short description.
@@ -354,17 +391,13 @@ Available commands:
 - help                 Prints this help information
 ```
 
-A custom `HelpCommand` can be used by calling `CLI.helpCommand = customHelp`.
-
 ### Version Command
-The `VersionCommand` can be invoked with `myapp version` or `myapp -v`. The VersionCommand prints the version of the app given during `CLI.setup()`.
+The `VersionCommand` can be invoked with `myapp version` or `myapp -v`. The VersionCommand prints the version of the app given during init `CLI(name:version:)`. If no version is given, the command is not available.
 
 ```bash
 ~ > greeter -v
 Version: 1.0
 ```
-
-A custom `VersionCommand` can be used by calling `CLI.versionComand = customVersion`.
 
 ## Input
 
@@ -433,17 +466,14 @@ public static var parameterFiller: ParameterFiller = DefaultParameterFiller()
 The messages formed by SwiftCLI can also be customized:
 
 ```swift
-// Generate a usage statement for the given command
-public static var usageStatementGenerator: UsageStatementGenerator = DefaultUsageStatementGenerator()
-
-// Generate a misused options message for the given command with the given incorrect options
-public static var misusedOptionsMessageGenerator: MisusedOptionsMessageGenerator = DefaultMisusedOptionsMessageGenerator()
+public var helpMessageGenerator: HelpMessageGenerator = DefaultHelpMessageGenerator()
 ```
+
 See the individual files of each of these protocols in order to see how to provide a custom implementation.
 
 ## Running your CLI
 
-After calling `swift build`, your executable should be available at `.build/debug/YourPackageName`. In order to ensure the `CLI` gets the arguments passed on the command line, make sure to call `CLI.go()`, **not** ```CLI.debugGo(with: "")```.
+Simply call `swift run`. In order to ensure your `CLI` gets the arguments passed on the command line, make sure to call `CLI.go()`, **not** ```CLI.debugGo(with: "")```.
 
 ## Example
 An example of a CLI developed with SwfitCLI can be found at https://github.com/jakeheis/Baker.
