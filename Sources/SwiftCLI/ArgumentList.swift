@@ -28,7 +28,7 @@ public class ArgumentList {
             let matchRange = match.range
             let startIndex = argumentString.index(argumentString.startIndex, offsetBy: matchRange.location)
             let endIndex = argumentString.index(argumentString.startIndex, offsetBy: matchRange.location + matchRange.length)
-            var argument = argumentString[startIndex..<endIndex]
+            var argument = String(argumentString[startIndex..<endIndex])
             
             if argument.hasPrefix("\"") {
                 argument = argument[argument.index(argument.startIndex, offsetBy: 1)..<argument.index(argument.endIndex, offsetBy: -1)]
