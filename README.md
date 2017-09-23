@@ -26,9 +26,13 @@ greeter.go()
 Hello world!
 ```
 
-## Upgrading to SwiftCLI 3.0?
-
-Check out the [migration guide](MIGRATION.md)!
+With `SwiftCLI`, you get for free:
+- Command routing
+- Option parsing
+- Help messages
+- Usage statements
+- Error messages when commands are used incorrectly
+- Zsh completions
 
 Table of Contents
 =================
