@@ -31,7 +31,7 @@ public class ArgumentList {
             var argument = String(argumentString[startIndex..<endIndex])
             
             if argument.hasPrefix("\"") {
-                argument = argument[argument.index(argument.startIndex, offsetBy: 1)..<argument.index(argument.endIndex, offsetBy: -1)]
+                argument = String(argument[argument.index(argument.startIndex, offsetBy: 1)..<argument.index(argument.endIndex, offsetBy: -1)])
             }
             return String(argument)
         }
