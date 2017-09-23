@@ -45,9 +45,10 @@ Table of Contents
       * [Keyed options](#keyed-options)
       * [Option groups](#option-groups)
       * [Global options](#global-options)
-  * [Command groups](#groups)
+  * [Command groups](#command-groups)
   * [Routing commands](#routing-commands)
     * [Aliases](#aliases)
+  * [Shell completions](#shell-completions)
   * [Special commands](#special-commands)
   * [Input](#input)
   * [Customization](#customization)
@@ -375,6 +376,17 @@ Aliases can be made through the call `CommandAliaser.alias(from:to:)`. `Router` 
 CommandAliaser.alias(from: "-c", to: "command")
 ```
 And the user makes the call `myapp -c`, the router will search for a command with the name "command" because of the alias, not a command with the name "-c".
+
+## Shell completions
+
+Zsh completions can be automatically generated for your CLI (bash completions coming soon).
+
+```swift
+let myCli = CLI(...)
+
+let generator = ZshCompletionGenerator(cli: myCli)
+generator.writeCompletions()
+```
 
 ## Special commands
 `CLI` has two special commands: `HelpCommand` and `VersionCommand`.
