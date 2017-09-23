@@ -168,7 +168,7 @@ public class CLI {
             if let message = error.message {
                 printError(message)
             }
-            printError("Usage: \(name) \(command.usage)")
+            printError("Usage: \(name) \(command.usage(for: self))")
             throw CLI.Error(exitStatus: error.exitStatus)
         }
     }
