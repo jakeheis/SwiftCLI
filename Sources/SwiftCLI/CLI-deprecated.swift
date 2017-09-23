@@ -18,19 +18,19 @@ extension CLI {
     
     // MARK: - Information
     
-    @available(*, deprecated, message: "Create a new CLI object: let cli = CLI(..)")
+    @available(*, unavailable, message: "Create a new CLI object: let cli = CLI(..)")
     public static var name: String {
         get {
             return guardShared().name
         }
     }
-    @available(*, deprecated, message: "Create a new CLI object: let cli = CLI(..)")
+    @available(*, unavailable, message: "Create a new CLI object: let cli = CLI(..)")
     public static var version: String? {
         get {
             return guardShared().version
         }
     }
-    @available(*, deprecated, message: "Create a new CLI object: let cli = CLI(..)")
+    @available(*, unavailable, message: "Create a new CLI object: let cli = CLI(..)")
     public static var description: String? {
         get {
             return guardShared().description
@@ -47,7 +47,7 @@ extension CLI {
     
     // MARK: - Advanced customization
     
-    @available(*, deprecated, message: "Create a new CLI object: let cli = CLI(..)")
+    @available(*, unavailable, message: "Create a new CLI object: let cli = CLI(..)")
     public static var helpMessageGenerator: HelpMessageGenerator {
         get {
             return guardShared().helpMessageGenerator
@@ -56,7 +56,7 @@ extension CLI {
             guardShared().helpMessageGenerator = newValue
         }
     }
-    @available(*, deprecated, message: "Create a new CLI object: let cli = CLI(..)")
+    @available(*, unavailable, message: "Create a new CLI object: let cli = CLI(..)")
     public static var argumentListManipulators: [ArgumentListManipulator] {
         get {
             return guardShared().argumentListManipulators
@@ -65,7 +65,7 @@ extension CLI {
             guardShared().argumentListManipulators = newValue
         }
     }
-    @available(*, deprecated, message: "Create a new CLI object: let cli = CLI(..)")
+    @available(*, unavailable, message: "Create a new CLI object: let cli = CLI(..)")
     public static var router: Router {
         get {
             return guardShared().router
@@ -74,7 +74,7 @@ extension CLI {
             guardShared().router = newValue
         }
     }
-    @available(*, deprecated, message: "Create a new CLI object: let cli = CLI(..)")
+    @available(*, unavailable, message: "Create a new CLI object: let cli = CLI(..)")
     public static var optionRecognizer: OptionRecognizer {
         get {
             return guardShared().optionRecognizer
@@ -83,7 +83,7 @@ extension CLI {
             guardShared().optionRecognizer = newValue
         }
     }
-    @available(*, deprecated, message: "Create a new CLI object: let cli = CLI(..)")
+    @available(*, unavailable, message: "Create a new CLI object: let cli = CLI(..)")
     public static var parameterFiller: ParameterFiller {
         get {
             return guardShared().parameterFiller
@@ -101,50 +101,29 @@ extension CLI {
     ///   - name: name of the app, printed in the help message and command usage statements
     ///   - version: version of the app, printed by the VersionCommand
     ///   - description: description of the app, printed in the help message
-    @available(*, deprecated, message: "Create a new CLI object: let cli = CLI(..)")
-    public static func setup(name: String, version: String? = nil, description: String? = nil) {
-        guard shared == nil else {
-            fatalError("Cannot call CLI.setup() multiple times")
-        }
-        
-        shared = CLI(name: name, version: version, description: description)
-    }
+    @available(*, unavailable, message: "Create a new CLI object: let cli = CLI(..)")
+    public static func setup(name: String, version: String? = nil, description: String? = nil) {}
     
     /// Registers a command with the CLI for routing and execution. All commands must be registered
     /// with this method or its siblings before calling `CLI.go()`
     ///
     /// - Parameter command: the command to be registered
-    @available(*, deprecated, message: "Create a new CLI object: let cli = CLI(..)")
-    public static func register(command: Command) {
-        guardShared().commands.append(command)
-    }
+    @available(*, unavailable, message: "Create a new CLI object: let cli = CLI(..)")
+    public static func register(command: Command) {}
     
     /// Registers a group of commands with the CLI for routing and execution. All commands must be registered
     /// with this method or its siblings before calling `CLI.go()`
     ///
     /// - Parameter commands: the commands to be registered
-    @available(*, deprecated, message: "Create a new CLI object: let cli = CLI(..)")
-    public static func register(commands: [Command]) {
-        commands.forEach { self.register(command: $0) }
-    }
+    @available(*, unavailable, message: "Create a new CLI object: let cli = CLI(..)")
+    public static func register(commands: [Command]) {}
     
-    /// Registers a chainable command with the CLI for routing and execution.
-    ///
-    /// - Parameter name: the name of the new chainable command
-    /// - Returns: a new chainable command for immediate chaining
-    @available(*, deprecated, message: "add a custom type implementing Command to the CLI.commands array")
-    public static func registerChainableCommand(name: String) -> ChainableCommand {
-        let chainable = ChainableCommand(name: name)
-        register(command: chainable)
-        return chainable
-    }
-    
-    @available(*, deprecated, message: "Create a new CLI object: let cli = CLI(..)")
+    @available(*, unavailable, message: "Create a new CLI object: let cli = CLI(..)")
     public static func go() -> Int32 {
         return guardShared().go()
     }
     
-    @available(*, deprecated, message: "Create a new CLI object: let cli = CLI(..)")
+    @available(*, unavailable, message: "Create a new CLI object: let cli = CLI(..)")
     public static func debugGo(with argumentString: String) -> Int32 {
         return guardShared().debugGo(with: argumentString)
     }

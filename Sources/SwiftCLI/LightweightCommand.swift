@@ -8,7 +8,7 @@
 
 /// Can be instantiated and configured as a fully functional command rather
 /// than manually implementing Command.
-@available(*, deprecated, message: "Implement Command on a custom type instead")
+@available(*, unavailable, message: "Implement Command on a custom type instead")
 public class LightweightCommand: Command {
     
     public typealias Execution = (_ parameters: ParameterWrapper) throws -> ()

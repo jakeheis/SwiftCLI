@@ -49,7 +49,7 @@ extension CLI {
 
 // MARK: -
 
-@available(*, deprecated, message: "use CLI.Error instead")
+@available(*, unavailable, message: "use CLI.Error instead")
 public enum CLIError: Error {
     case error(String)
     case emptyError
