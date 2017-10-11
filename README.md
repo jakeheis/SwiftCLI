@@ -60,6 +60,11 @@ Table of Contents
   * [Example](#example)
 
 ## Installation
+### [Ice Package Manager](https://github.com/jakeheis/Ice)
+```shell
+> ice add jakeheis/Ice
+```
+### Swift Package Manager
 Add SwiftCLI as a dependency to your project:
 
 ```swift
