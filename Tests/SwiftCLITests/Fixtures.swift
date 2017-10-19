@@ -42,6 +42,10 @@ class TestCommand: Command {
 
 }
 
+class TestInheritedCommand: TestCommand {
+    let verbose = Flag("-v", "--verbose", description: "Show more output information")
+}
+
 // MARK: -
 
 let alphaCmd = AlphaCmd()
@@ -98,6 +102,10 @@ class Req2Cmd: EmptyCmd {
 class Opt2Cmd: EmptyCmd {
     let opt1 = OptionalParameter()
     let opt2 = OptionalParameter()
+}
+
+class Opt2InhCmd: Opt2Cmd {
+    let opt3 = OptionalParameter()
 }
 
 class ReqCollectedCmd: EmptyCmd {
