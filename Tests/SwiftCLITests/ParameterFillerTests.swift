@@ -29,6 +29,7 @@ class ParameterFillerTests: XCTestCase {
     private var req2: Req2Cmd { return current as! Req2Cmd }
     private var opt1: Opt1Cmd { return current as! Opt1Cmd }
     private var opt2: Opt2Cmd { return current as! Opt2Cmd }
+    private var opt2Inh: Opt2InhCmd { return current as! Opt2InhCmd }
     private var reqCollected: ReqCollectedCmd{ return current as! ReqCollectedCmd }
     private var optCollected: OptCollectedCmd { return current as! OptCollectedCmd }
     private var req2Collected: Req2CollectedCmd{ return current as! Req2CollectedCmd }
@@ -84,6 +85,32 @@ class ParameterFillerTests: XCTestCase {
         current = Opt2Cmd()
         arguments = ["arg1", "arg2", "arg3"]
         assertParseFails("Signature parser should fail for 2 optional arguments and 3 passed arguments")
+    }
+    
+    func testOptionalParametersWithInheritance() {
+        current = Opt2InhCmd()
+        arguments = []
+        assertParse(opt2Inh.opt1.value == nil && opt2Inh.opt2.value == nil,
+                    assertMessage: "Signature parser should succeed for 2 optional arguments and 0 passed arguments")
+        
+        current = Opt2InhCmd()
+        arguments = ["arg1"]
+        assertParse(opt2Inh.opt1.value == "arg1" && opt2Inh.opt2.value == nil,
+                    assertMessage: "Signature parser should succeed for 2 optional arguments and 1 passed argument")
+        
+        current = Opt2InhCmd()
+        arguments = ["arg1", "arg2"]
+        assertParse(opt2Inh.opt1.value == "arg1" && opt2Inh.opt2.value == "arg2",
+                    assertMessage: "Signature parser should succeed for 2 optional arguments and 2 passed arguments")
+        
+        current = Opt2InhCmd()
+        arguments = ["arg1", "arg2", "arg3"]
+        assertParse(opt2Inh.opt1.value == "arg1" && opt2Inh.opt2.value == "arg2" && opt2Inh.opt3.value == "arg3",
+                    assertMessage: "Signature parser should succeed for 3 optional arguments and 3 passed arguments")
+        
+        current = Opt2InhCmd()
+        arguments = ["arg1", "arg2", "arg3", "arg4"]
+        assertParseFails("Signature parser should fail for 3 optional arguments and 4 passed arguments")
     }
     
     func testExtraneousArguments() {

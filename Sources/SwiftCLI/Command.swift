@@ -56,24 +56,40 @@ extension Command {
     // Defaults
     
     public var parameters: [(String, AnyParameter)] {
-        let mirror = Mirror(reflecting: self)
-        return mirror.children.flatMap { (child) in
+        return parametersFromMirror(Mirror(reflecting: self))
+    }
+    
+    func parametersFromMirror(_ mirror: Mirror) -> [(String, AnyParameter)] {
+        var parameters: [(String, AnyParameter)] = []
+        if let superMirror = mirror.superclassMirror {
+            parameters = parametersFromMirror(superMirror)
+        }
+        parameters.append(contentsOf: mirror.children.flatMap { (child) in
             if let argument = child.value as? AnyParameter, let label = child.label {
                 return (label, argument)
             }
             return nil
-        }
+        })
+        return parameters
     }
 
     public func options(for cli: CLI) -> [Option] {
-        let mirror = Mirror(reflecting: self)
-        var options = mirror.children.flatMap { (child) -> Option? in
+        var options = optionsFromMirror(Mirror(reflecting: self))
+        options += cli.globalOptions
+        return options
+    }
+    
+    func optionsFromMirror(_ mirror: Mirror) -> [Option] {
+        var options: [Option] = []
+        if let superMirror = mirror.superclassMirror {
+            options = optionsFromMirror(superMirror)
+        }
+        options.append(contentsOf: mirror.children.flatMap { (child) -> Option? in
             if let option = child.value as? Option {
                 return option
             }
             return nil
-        }
-        options += cli.globalOptions
+        })
         return options
     }
     

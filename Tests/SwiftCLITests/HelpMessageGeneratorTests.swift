@@ -79,6 +79,25 @@ class HelpMessageGeneratorTests: XCTestCase {
         XCTAssertEqual(message, expectedMessage, "Should generate the correct usage statement")
     }
     
+    func testInheritedUsageStatementGeneration() {
+        let cli = CLI(name: "tester")
+        let message = DefaultHelpMessageGenerator().generateUsageStatement(for: TestInheritedCommand(), in: cli)
+        
+        let expectedMessage = """
+        
+        Usage: tester test <testName> [<testerName>] [options]
+        
+        Options:
+          -h, --help             Show help information for this command
+          -s, --silent           Silence all test output
+          -t, --times <value>    Number of times to run the test
+          -v, --verbose          Show more output information
+        
+        """
+        
+        XCTAssertEqual(message, expectedMessage, "Should generate the correct usage statement")
+    }
+    
     func testMisusedOptionsStatementGeneration() {
         let arguments = ArgumentList(argumentString: "tester test -s -a --times")
         arguments.remove(node: arguments.head!)
