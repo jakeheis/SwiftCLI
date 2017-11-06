@@ -33,14 +33,14 @@ extension HelpMessageGenerator {
         }
         
         let maxNameLength = routables.reduce(12) { (length, routable) in
-            if routable.name.characters.count > length {
-               return routable.name.characters.count
+            if routable.name.count > length {
+               return routable.name.count
             }
             return length
         }
         
         func toLine(_ routable: Routable) -> String {
-            let spacing = String(repeating: " ", count: maxNameLength + 4 - routable.name.characters.count)
+            let spacing = String(repeating: " ", count: maxNameLength + 4 - routable.name.count)
             return "  \(routable.name)\(spacing)\(routable.shortDescription)"
         }
         
@@ -75,8 +75,8 @@ extension HelpMessageGenerator {
                 return lhs.names.first! < rhs.names.first!
             }
             let maxOptionLength = sortedOptions.reduce(12) { (length, option) in
-                if option.identifier.characters.count > length {
-                    return option.identifier.characters.count
+                if option.identifier.count > length {
+                    return option.identifier.count
                 }
                 return length
             }
