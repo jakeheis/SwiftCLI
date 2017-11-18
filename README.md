@@ -499,4 +499,4 @@ See the individual files of each of these protocols in order to see how to provi
 Simply call `swift run`. In order to ensure your `CLI` gets the arguments passed on the command line, make sure to call `CLI.go()`, **not** ```CLI.debugGo(with: "")```.
 
 ## Example
-An example of a CLI developed with SwfitCLI can be found at https://github.com/jakeheis/Baker.
+An example of a CLI developed with SwfitCLI can be found at https://github.com/jakeheis/Ice.
