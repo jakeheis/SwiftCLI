@@ -15,7 +15,7 @@ public protocol Option {
 
 public extension Option {
     func usage(padding: Int) -> String {
-        let spacing = String(repeating: " ", count: padding - identifier.characters.count)
+        let spacing = String(repeating: " ", count: padding - identifier.count)
         return "\(identifier)\(spacing)\(shortDescription)"
     }
 }

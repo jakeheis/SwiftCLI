@@ -102,7 +102,7 @@ public final class ZshCompletionGenerator: CompletionGenerator {
             let middle = "{" + option.names.joined(separator: ",") + "}"
             let end: String
             if option.shortDescription.isEmpty {
-                let sortedNames = option.names.sorted(by: {$0.characters.count > $1.characters.count})
+                let sortedNames = option.names.sorted(by: {$0.count > $1.count})
                 end = "[" + sortedNames.first!.trimmingCharacters(in: CharacterSet(charactersIn: "-")) + "]"
             } else {
                 end = "[" + option.shortDescription + "]"
