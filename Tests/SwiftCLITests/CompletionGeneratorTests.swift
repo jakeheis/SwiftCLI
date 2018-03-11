@@ -31,8 +31,8 @@ class CompletionGeneratorTests: XCTestCase {
                   command)
                        local -a commands
                        commands=(
-                       alpha'[The alpha command]'
-                       beta'[A beta command]'
+                       alpha"[The alpha command]"
+                       beta"[A beta command]"
                        )
                        _values 'command' $commands
                        ;;
@@ -40,11 +40,11 @@ class CompletionGeneratorTests: XCTestCase {
         }
         _tester_alpha() {
             _arguments -C \\
-              '(-h --help)'{-h,--help}'[Show help information for this command]'
+              '(-h --help)'{-h,--help}"[Show help information for this command]"
         }
         _tester_beta() {
             _arguments -C \\
-              '(-h --help)'{-h,--help}'[Show help information for this command]'
+              '(-h --help)'{-h,--help}"[Show help information for this command]"
         }
 
         """)
@@ -58,9 +58,9 @@ class CompletionGeneratorTests: XCTestCase {
         XCTAssertEqual(capture.content, """
         _tester_test() {
             _arguments -C \\
-              '(-s --silent)'{-s,--silent}'[Silence all test output]' \\
-              '(-t --times)'{-t,--times}'[Number of times to run the test]' \\
-              '(-h --help)'{-h,--help}'[Show help information for this command]'
+              '(-s --silent)'{-s,--silent}"[Silence all test output]" \\
+              '(-t --times)'{-t,--times}"[Number of times to run the test]" \\
+              '(-h --help)'{-h,--help}"[Show help information for this command]"
         }
         
         """)
@@ -91,9 +91,9 @@ class CompletionGeneratorTests: XCTestCase {
                   command)
                        local -a commands
                        commands=(
-                       alpha'[The alpha command]'
-                       beta'[A beta command]'
-                       intra'[The intra level of commands]'
+                       alpha"[The alpha command]"
+                       beta"[A beta command]"
+                       intra"[The intra level of commands]"
                        )
                        _values 'command' $commands
                        ;;
@@ -101,11 +101,11 @@ class CompletionGeneratorTests: XCTestCase {
         }
         _tester_alpha() {
             _arguments -C \\
-              '(-h --help)'{-h,--help}'[Show help information for this command]'
+              '(-h --help)'{-h,--help}"[Show help information for this command]"
         }
         _tester_beta() {
             _arguments -C \\
-              '(-h --help)'{-h,--help}'[Show help information for this command]'
+              '(-h --help)'{-h,--help}"[Show help information for this command]"
         }
         _tester_intra() {
             local context state line
@@ -124,8 +124,8 @@ class CompletionGeneratorTests: XCTestCase {
                   command)
                        local -a commands
                        commands=(
-                       charlie'[A beta command]'
-                       delta'[A beta command]'
+                       charlie"[A beta command]"
+                       delta"[A beta command]"
                        )
                        _values 'command' $commands
                        ;;
@@ -133,11 +133,11 @@ class CompletionGeneratorTests: XCTestCase {
         }
         _tester_intra_charlie() {
             _arguments -C \\
-              '(-h --help)'{-h,--help}'[Show help information for this command]'
+              '(-h --help)'{-h,--help}"[Show help information for this command]"
         }
         _tester_intra_delta() {
             _arguments -C \\
-              '(-h --help)'{-h,--help}'[Show help information for this command]'
+              '(-h --help)'{-h,--help}"[Show help information for this command]"
         }
         _tester
         

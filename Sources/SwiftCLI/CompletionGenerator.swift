@@ -69,8 +69,8 @@ public final class ZshCompletionGenerator: CompletionGenerator {
         """
         
         for routable in routables {
-            let info = routable.shortDescription.isEmpty ? routable.name : routable.shortDescription
-            stream <<< "               \(routable.name)'[\(info)]'"
+            let info = escapeDescription(routable.shortDescription.isEmpty ? routable.name : routable.shortDescription)
+            stream <<< "               \(routable.name)\"[\(info)]\""
         }
         
         stream <<< """
@@ -105,15 +105,19 @@ public final class ZshCompletionGenerator: CompletionGenerator {
                 let sortedNames = option.names.sorted(by: {$0.count > $1.count})
                 end = "[" + sortedNames.first!.trimmingCharacters(in: CharacterSet(charactersIn: "-")) + "]"
             } else {
-                end = "[" + option.shortDescription + "]"
+                end = "[" + escapeDescription(option.shortDescription) + "]"
             }
-            return "      '\(first)'\(middle)'\(end)'"
+            return "      '\(first)'\(middle)\"\(end)\""
         }
         stream <<< lines.joined(separator: " \\\n")
         
         stream <<< """
         }
         """
+    }
+    
+    private func escapeDescription(_ description: String) -> String {
+        return description.replacingOccurrences(of: "\"", with: "\\\"")
     }
     
 }
