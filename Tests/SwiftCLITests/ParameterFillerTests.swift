@@ -213,7 +213,8 @@ class ParameterFillerTests: XCTestCase {
         XCTAssertEqual(filler.wrongArgCount(signature: signature, got: 0).message, "error: command requires at least 1 argument, got 0")
 
         signature = CommandSignature(command: Req2CollectedCmd())
-        XCTAssertEqual(filler.wrongArgCount(signature: signature, got: 0).message, "error: command requires at least 1 argument, got 0")
+        XCTAssertEqual(filler.wrongArgCount(signature: signature, got: 0).message, "error: command requires at least 2 arguments, got 0")
+        XCTAssertEqual(filler.wrongArgCount(signature: signature, got: 1).message, "error: command requires at least 2 arguments, got 1")
         
         signature = CommandSignature(command: Req2Opt2Cmd())
         XCTAssertEqual(filler.wrongArgCount(signature: signature, got: 1).message, "error: command requires between 2 and 4 arguments, got 1")
