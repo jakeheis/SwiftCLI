@@ -69,7 +69,7 @@ public class DefaultParameterFiller: ParameterFiller {
         let optionalCount = signature.optional.count
         
         let plural = requiredCount == 1 ? "argument" : "arguments"
-        if let collected = signature.collected {
+        if signature.collected != nil {
             return CLI.Error(message: "error: command requires at least \(requiredCount) \(plural), got \(got)")
         }
         if optionalCount == 0 {
