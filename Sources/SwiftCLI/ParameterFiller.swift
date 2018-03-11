@@ -62,11 +62,14 @@ public class DefaultParameterFiller: ParameterFiller {
     }
     
     func wrongArgCount(signature: CommandSignature, got: Int) -> CLI.Error {
-        let requiredCount = signature.required.count
+        var requiredCount = signature.required.count
+        if signature.collected?.required == true {
+            requiredCount += 1
+        }
         let optionalCount = signature.optional.count
         
         let plural = requiredCount == 1 ? "argument" : "arguments"
-        if signature.collected != nil {
+        if let collected = signature.collected {
             return CLI.Error(message: "error: command requires at least \(requiredCount) \(plural), got \(got)")
         }
         if optionalCount == 0 {

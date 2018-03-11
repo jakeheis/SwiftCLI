@@ -124,6 +124,10 @@ class ParameterFillerTests: XCTestCase {
     }
     
     func testCollectedRequiredParameters() {
+        current = ReqCollectedCmd()
+        arguments = []
+        assertParseFails("Signature parser should fail for 1 required argument and 0 passed arguments")
+
         current = Req2CollectedCmd()
         arguments = ["arg1"]
         assertParseFails("Signature parser should fail for 2 required argument and 1 passed arguments")
@@ -205,8 +209,12 @@ class ParameterFillerTests: XCTestCase {
         XCTAssertEqual(filler.wrongArgCount(signature: signature, got: 1).message, "error: command requires exactly 2 arguments, got 1")
         XCTAssertEqual(filler.wrongArgCount(signature: signature, got: 3).message, "error: command requires exactly 2 arguments, got 3")
         
-        signature = CommandSignature(command: Req2CollectedCmd())
+        signature = CommandSignature(command: ReqCollectedCmd())
         XCTAssertEqual(filler.wrongArgCount(signature: signature, got: 0).message, "error: command requires at least 1 argument, got 0")
+
+        signature = CommandSignature(command: Req2CollectedCmd())
+        XCTAssertEqual(filler.wrongArgCount(signature: signature, got: 0).message, "error: command requires at least 2 arguments, got 0")
+        XCTAssertEqual(filler.wrongArgCount(signature: signature, got: 1).message, "error: command requires at least 2 arguments, got 1")
         
         signature = CommandSignature(command: Req2Opt2Cmd())
         XCTAssertEqual(filler.wrongArgCount(signature: signature, got: 1).message, "error: command requires between 2 and 4 arguments, got 1")
