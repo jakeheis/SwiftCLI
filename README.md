@@ -424,17 +424,41 @@ Version: 1.0
 
 ## Input
 
-The `Input` class wraps the handling of input from stdin. Several methods are available:
+The `Input` class makes it easy to read input from stdin. Several methods are available:
 
 ```swift
-// Simple input:
-public static func awaitInput(message: String?) -> String {}
-public static func awaitInt(message: String?) -> Int {}
-public static func awaitYesNoInput(message: String = "Confirm?") -> Bool {}
+let str = Input.readLine()
+let int = Input.readInt()
+let double = Input.readDouble()
+let bool = Input.readBool()
+```
 
-// Complex input (if the simple input methods are not sufficient):
-public static func awaitInputWithValidation(message: String?, validation: (input: String) -> Bool) -> String {}
-public static func awaitInputWithConversion<T>(message: String?, conversion: (input: String) -> T?) -> T {}
+All `read` methods have four optional parameters:
+- `prompt`: the message to print before accepting input (e.g. "Input: ")
+- `secure`: if true, the input is hidden as the user types
+- `validation`: a closure which defines whether the input is valid, or if the user should be reprompted
+- `errorResponse`: a closure which is executed when the user enters input which is not valid
+
+For example, you could write:
+
+```swift
+let percentage = Input.readDouble(
+    prompt: "Percentage:",
+    validation: { $0 >= 0 && $0 <= 100 },
+    errorResponse: { (input) in
+        print("'\(input)' is invalid; must be a number between 0 and 100")
+    }
+)
+```
+
+which would result in interaction such as:
+
+```shell
+Percentage: asdf
+'asdf' is invalid; must be a number between 0 and 100
+Percentage: 104
+'104' is invalid; must be a number between 0 and 100
+Percentage: 43.6
 ```
 
 ## Customization

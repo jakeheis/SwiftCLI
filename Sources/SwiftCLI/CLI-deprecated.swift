@@ -5,6 +5,8 @@
 //  Created by Jake Heiser on 9/9/17.
 //
 
+import Foundation
+
 extension CLI {
  
     static var shared: CLI?
@@ -126,6 +128,75 @@ extension CLI {
     @available(*, unavailable, message: "Create a new CLI object: let cli = CLI(..)")
     public static func debugGo(with argumentString: String) -> Int32 {
         return guardShared().debugGo(with: argumentString)
+    }
+    
+}
+
+extension Input {
+    
+    @available(*, deprecated, message: "Use Input.readLine()")
+    public static func awaitInput(message: String?, secure: Bool = false) -> String {
+        var input: String? = nil
+        while input == nil {
+            if let message = message {
+                var printMessage = message
+                if !printMessage.hasSuffix(" ") && !printMessage.hasSuffix("\n") {
+                    printMessage += " "
+                }
+                print(printMessage, terminator: "")
+                fflush(stdout)
+            }
+            
+            if secure {
+                if let chars = UnsafePointer<CChar>(getpass("")) {
+                    input = String(cString: chars, encoding: .utf8)
+                }
+            } else {
+                input = readLine()
+            }
+        }
+        
+        return input!
+    }
+    
+    @available(*, deprecated, message: "Use Input.readLine() with a validation closure")
+    public static func awaitInputWithValidation(message: String?, secure: Bool = false, validation: (_ input: String) -> Bool) -> String {
+        while true {
+            let str = awaitInput(message: message, secure: secure)
+            
+            if validation(str) {
+                return str
+            } else {
+                print("Invalid input")
+            }
+        }
+    }
+    
+    @available(*, deprecated, message: "Use a custom InputGetter")
+    public static func awaitInputWithConversion<T>(message: String?, secure: Bool = false, conversion: (_ input: String) -> T?) -> T {
+        let input = awaitInputWithValidation(message: message) { (input) in
+            return conversion(input) != nil
+        }
+        
+        return conversion(input)!
+    }
+    
+    @available(*, deprecated, message: "Use Input.readInt() instead")
+    public static func awaitInt(message: String?) -> Int {
+        return awaitInputWithConversion(message: message) { Int($0) }
+    }
+    
+    @available(*, deprecated, message: "Use Input.readBool() instead")
+    public static func awaitYesNoInput(message: String = "Confirm?") -> Bool {
+        return awaitInputWithConversion(message: "\(message) [y/N]: ") {(input) in
+            if input.lowercased() == "y" || input.lowercased() == "yes" {
+                return true
+            } else if input.lowercased() == "n" || input.lowercased() == "no" {
+                return false
+            }
+            
+            return nil
+        }
     }
     
 }
