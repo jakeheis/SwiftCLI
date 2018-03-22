@@ -8,7 +8,7 @@
 import Foundation
 
 extension CLI {
- 
+    
     static var shared: CLI?
     
     private static func guardShared() -> CLI {
@@ -199,4 +199,9 @@ extension Input {
         }
     }
     
+}
+
+@available(*, unavailable, message: "Use myCLI.aliases instead")
+public class CommandAliaser: ArgumentListManipulator {
+    public func manipulate(arguments: ArgumentList) {}
 }

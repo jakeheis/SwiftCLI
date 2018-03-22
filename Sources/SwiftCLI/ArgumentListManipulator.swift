@@ -12,34 +12,6 @@ public protocol ArgumentListManipulator {
     func manipulate(arguments: ArgumentList)
 }
 
-/// Replaces the value of the first node with the aliased value if possible; e.g. command -h -> command help
-public class CommandAliaser: ArgumentListManipulator {
-    
-    static var aliases: [String: String] = [
-        "-h": "help",
-        "-v": "version"
-    ]
-    
-    public static func alias(from: String, to: String) {
-        aliases[from] = to
-    }
-    
-    public static func removeAlias(from: String) {
-        aliases.removeValue(forKey: from)
-    }
-    
-    public func manipulate(arguments: ArgumentList) {
-        guard let commandNode = arguments.head else {
-            return
-        }
-        if let alias = CommandAliaser.aliases[commandNode.value] {
-            commandNode.value = alias
-            
-        }
-    }
-    
-}
-
 /// Splits options represented by a single node into multiple nodes; e.g. command -ab -> command -a -b, --option=value -> --option value
 public class OptionSplitter: ArgumentListManipulator {
     

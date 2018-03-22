@@ -8,6 +8,12 @@
 import XCTest
 @testable import SwiftCLI
 
+extension CLI {
+    static func createTester(commands: [Routable], description: String? = nil) -> CLI {
+        return CLI(name: "tester", description: description, commands: commands)
+    }
+}
+
 class CompletionGeneratorTests: XCTestCase {
     
     static var allTests : [(String, (CompletionGeneratorTests) -> () throws -> Void)] {
@@ -19,10 +25,10 @@ class CompletionGeneratorTests: XCTestCase {
     }
     
     func testCommandList() {
-        let cli = CLI(name: "tester", commands: [alphaCmd, betaCmd])
+        let cli = CLI.createTester(commands: [alphaCmd, betaCmd])
         let generator = ZshCompletionGenerator(cli: cli)
         let capture = CaptureStream()
-        generator.writeCommandList(name: "tester", routables: cli.commands, into: capture)
+        generator.writeCommandList(for: CommandGroupPath(cli: cli), into: capture)
         XCTAssertEqual(capture.content, """
         __tester_commands() {
              _arguments -C \\
@@ -51,10 +57,13 @@ class CompletionGeneratorTests: XCTestCase {
     }
     
     func testOptions() {
-        let cli = CLI(name: "tester")
+        let cmd = TestCommand()
+        let cli = CLI.createTester(commands: [cmd])
         let generator = ZshCompletionGenerator(cli: cli)
         let capture = CaptureStream()
-        generator.writeCommand(TestCommand(), prefix: "tester", into: capture)
+        
+        let path = CommandGroupPath(cli: cli).appending(cmd)
+        generator.writeCommand(for: path, into: capture)
         XCTAssertEqual(capture.content, """
         _tester_test() {
             _arguments -C \\
@@ -67,7 +76,7 @@ class CompletionGeneratorTests: XCTestCase {
     }
     
     func testFull() {
-        let cli = CLI(name: "tester", commands: [alphaCmd, betaCmd, intraGroup])
+        let cli = CLI.createTester(commands: [alphaCmd, betaCmd, intraGroup])
         let generator = ZshCompletionGenerator(cli: cli)
         let capture = CaptureStream()
         generator.writeCompletions(into: StdoutStream())

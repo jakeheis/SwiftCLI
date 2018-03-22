@@ -22,10 +22,8 @@ class HelpMessageGeneratorTests: XCTestCase {
     let command = TestCommand()
     
     func testCommandListGeneration() {
-        var message = DefaultHelpMessageGenerator().generateCommandList(prefix: "tester", description: "A tester for SwiftCLI", routables: [
-            alphaCmd,
-            betaCmd
-        ])
+        let path = CommandGroupPath(cli: CLI.createTester(commands: [alphaCmd, betaCmd], description: "A tester for SwiftCLI"))
+        var message = DefaultHelpMessageGenerator().generateCommandList(for: path)
         
         var expectedMessage = """
         
@@ -36,15 +34,14 @@ class HelpMessageGeneratorTests: XCTestCase {
         Commands:
           alpha           The alpha command
           beta            A beta command
+          help            Prints this help information
         
         """
         
         XCTAssertEqual(message, expectedMessage)
         
-        message = DefaultHelpMessageGenerator().generateCommandList(prefix: "tester", description: nil, routables: [
-            alphaCmd,
-            midGroup
-        ])
+        let path2 = CommandGroupPath(cli: CLI.createTester(commands: [alphaCmd, midGroup]))
+        message = DefaultHelpMessageGenerator().generateCommandList(for: path2)
         
         expectedMessage = """
         
@@ -55,6 +52,7 @@ class HelpMessageGeneratorTests: XCTestCase {
         
         Commands:
           alpha           The alpha command
+          help            Prints this help information
         
         """
         
@@ -62,8 +60,9 @@ class HelpMessageGeneratorTests: XCTestCase {
     }
 
     func testUsageStatementGeneration() {
-        let cli = CLI(name: "tester")
-        let message = DefaultHelpMessageGenerator().generateUsageStatement(for: command, in: cli)
+        let cli = CLI.createTester(commands: [command])
+        let path = CommandGroupPath(cli: cli).appending(command)
+        let message = DefaultHelpMessageGenerator().generateUsageStatement(for: path)
         
         let expectedMessage = """
         
@@ -80,8 +79,10 @@ class HelpMessageGeneratorTests: XCTestCase {
     }
     
     func testInheritedUsageStatementGeneration() {
-        let cli = CLI(name: "tester")
-        let message = DefaultHelpMessageGenerator().generateUsageStatement(for: TestInheritedCommand(), in: cli)
+        let cmd = TestInheritedCommand()
+        let cli = CLI.createTester(commands: [cmd])
+        let path = CommandGroupPath(cli: cli).appending(cmd)
+        let message = DefaultHelpMessageGenerator().generateUsageStatement(for: path)
         
         let expectedMessage = """
         
@@ -103,14 +104,15 @@ class HelpMessageGeneratorTests: XCTestCase {
         arguments.remove(node: arguments.head!)
         arguments.remove(node: arguments.head!)
         
-        let cli = CLI(name: "tester")
-        let registry = OptionRegistry(options: command.options(for: cli), optionGroups: command.optionGroups)
+        let cli = CLI.createTester(commands: [command])
+        let registry = OptionRegistry(options: command.options, optionGroups: command.optionGroups)
         
         do {
             try DefaultOptionRecognizer().recognizeOptions(from: registry, in: arguments)
             XCTFail("Option parser should fail on incorrectly used options")
         } catch let error as OptionRecognizerError {
-            let message = DefaultHelpMessageGenerator().generateMisusedOptionsStatement(for: command, error: error, in: cli)
+            let path = CommandGroupPath(cli: cli).appending(command)
+            let message = DefaultHelpMessageGenerator().generateMisusedOptionsStatement(for: path, error: error)
             
             let expectedMessage = """
             

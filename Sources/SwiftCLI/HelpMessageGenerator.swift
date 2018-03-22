@@ -7,36 +7,34 @@
 //
 
 public protocol HelpMessageGenerator {
-    func generateCommandList(prefix: String, description: String?, routables: [Routable]) -> String
-    func generateUsageStatement(for command: Command, in cli: CLI) -> String
-    func generateMisusedOptionsStatement(for command: Command, error: OptionRecognizerError, in cli: CLI) -> String
+    func generateCommandList(for path: CommandGroupPath) -> String
+    func generateUsageStatement(for path: CommandPath) -> String
+    func generateMisusedOptionsStatement(for path: CommandPath, error: OptionRecognizerError) -> String
 }
 
 extension HelpMessageGenerator {
     
-    public func generateCommandList(prefix: String, description: String?, routables: [Routable]) -> String {
+    public func generateCommandList(for path: CommandGroupPath) -> String {
         var lines = [
             "",
-            "Usage: \(prefix) <command> [options]"
+            "Usage: \(path.joined()) <command> [options]"
         ]
-        if let description = description, !description.isEmpty {
+        let bottom = path.bottom
+        if !bottom.shortDescription.isEmpty {
             lines += [
                 "",
-                description
+                bottom.shortDescription
             ]
         }
         var commandGroups: [CommandGroup] = []
         var commands: [Command] = []
-        for routable in routables {
+        var maxNameLength = 12
+        for routable in bottom.children {
             if let commandGroup = routable as? CommandGroup { commandGroups.append(commandGroup) }
             if let command = routable as? Command { commands.append(command) }
-        }
-        
-        let maxNameLength = routables.reduce(12) { (length, routable) in
-            if routable.name.count > length {
-               return routable.name.count
+            if routable.name.count > maxNameLength {
+                maxNameLength = routable.name.count
             }
-            return length
         }
         
         func toLine(_ routable: Routable) -> String {
@@ -65,10 +63,10 @@ extension HelpMessageGenerator {
         return lines.joined(separator: "\n");
     }
     
-    public func generateUsageStatement(for command: Command, in cli: CLI) -> String {
-        var message = "\nUsage: \(cli.name) \(command.usage(for: cli))\n"
+    public func generateUsageStatement(for path: CommandPath) -> String {
+        var message = "\nUsage: \(path.usage)\n"
         
-        let options = command.options(for: cli)
+        let options = path.options
         if !options.isEmpty {
             message += "\nOptions:"
             let sortedOptions = options.sorted { (lhs, rhs) in
@@ -91,8 +89,8 @@ extension HelpMessageGenerator {
         return message
     }
     
-    public func generateMisusedOptionsStatement(for command: Command, error: OptionRecognizerError, in cli: CLI) -> String {
-        return generateUsageStatement(for: command, in: cli) + "\n" + error.message + "\n"
+    public func generateMisusedOptionsStatement(for path: CommandPath, error: OptionRecognizerError) -> String {
+        return generateUsageStatement(for: path) + "\n" + error.message + "\n"
     }
     
 }

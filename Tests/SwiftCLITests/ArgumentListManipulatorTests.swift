@@ -13,23 +13,9 @@ class ArgumentListManipulatorTests: XCTestCase {
     
     static var allTests : [(String, (ArgumentListManipulatorTests) -> () throws -> Void)] {
         return [
-            ("testCommandAliaser", testCommandAliaser),
             ("testOptionSplitter", testOptionSplitter),
             ("testEqualsSplit", testEqualsSplit)
         ]
-    }
-    
-    func testCommandAliaser() {
-        var result = assertManipulation(start: "tester -h", manipulator: CommandAliaser())
-        XCTAssertEqual(result, "tester help")
-        
-        CommandAliaser.alias(from: "-a", to: "alpha")
-        result = assertManipulation(start: "tester -a", manipulator: CommandAliaser())
-        XCTAssertEqual(result, "tester alpha")
-        
-        CommandAliaser.removeAlias(from: "-a")
-        result = assertManipulation(start: "tester -a", manipulator: CommandAliaser())
-        XCTAssertEqual(result, "tester -a")
     }
     
     func testOptionSplitter() {

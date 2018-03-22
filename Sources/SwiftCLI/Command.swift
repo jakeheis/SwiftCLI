@@ -44,7 +44,7 @@ public protocol Command: class, Routable {
     var optionGroups: [OptionGroup] { get }
     
     /// The options this command accepts; dervied automatically, don't implement unless custom functionality needed
-    func options(for cli: CLI) -> [Option]
+    var options: [Option] { get }
     
 }
 
@@ -59,6 +59,10 @@ extension Command {
         return parametersFromMirror(Mirror(reflecting: self))
     }
     
+    public var options: [Option] {
+        return optionsFromMirror(Mirror(reflecting: self))
+    }
+    
     func parametersFromMirror(_ mirror: Mirror) -> [(String, AnyParameter)] {
         var parameters: [(String, AnyParameter)] = []
         if let superMirror = mirror.superclassMirror {
@@ -71,12 +75,6 @@ extension Command {
             return nil
         })
         return parameters
-    }
-
-    public func options(for cli: CLI) -> [Option] {
-        var options = optionsFromMirror(Mirror(reflecting: self))
-        options += cli.globalOptions
-        return options
     }
     
     func optionsFromMirror(_ mirror: Mirror) -> [Option] {
@@ -103,25 +101,6 @@ extension Command {
     
     // Extras
     
-    public func usage(for cli: CLI) -> String {
-        var message = ""
-
-        if !name.isEmpty {
-            message += "\(name)"
-        }
-
-        if !parameters.isEmpty {
-            let signature = parameters.map({ $0.1.signature(for: $0.0) }).joined(separator: " ")
-            message += " \(signature)"
-        }
-        
-        if !options(for: cli).isEmpty {
-            message += " [options]"
-        }
-
-        return message
-    }
-    
     public var stdout: OutputByteStream {
         return Term.stdout
     }
@@ -136,5 +115,16 @@ extension Command {
 
 public protocol CommandGroup: Routable {
     var children: [Routable] { get }
+    var sharedOptions: [Option] { get }
+    var aliases: [String: String] { get }
+}
+
+public extension CommandGroup {
+    var sharedOptions: [Option] {
+        return []
+    }
+    var aliases: [String: String] {
+        return [:]
+    }
 }
 

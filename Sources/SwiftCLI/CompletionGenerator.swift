@@ -36,12 +36,13 @@ public final class ZshCompletionGenerator: CompletionGenerator {
     public func writeCompletions(into stream: OutputByteStream) {
         stream <<< "#compdef \(cli.name)"
         
-        writeGroup(name: cli.name, routables: cli.commands, into: stream)
+        writeGroupHeader(for: CommandGroupPath(cli: cli), into: stream)
         
         stream <<< "_\(cli.name)"
     }
     
-    func writeGroup(name: String, routables: [Routable], into stream: OutputByteStream) {
+    func writeGroupHeader(for group: CommandGroupPath, into stream: OutputByteStream) {
+        let name = groupName(for: group)
         stream <<< """
         _\(name)() {
             local context state line
@@ -54,10 +55,11 @@ public final class ZshCompletionGenerator: CompletionGenerator {
             fi
         }
         """
-        writeCommandList(name: name, routables: routables, into: stream)
+        writeCommandList(for: group, into: stream)
     }
     
-    func writeCommandList(name: String, routables: [Routable], into stream: OutputByteStream) {
+    func writeCommandList(for group: CommandGroupPath, into stream: OutputByteStream) {
+        let name = groupName(for: group)
         stream <<< """
         __\(name)_commands() {
              _arguments -C \\
@@ -68,7 +70,8 @@ public final class ZshCompletionGenerator: CompletionGenerator {
                        commands=(
         """
         
-        for routable in routables {
+        for routable in group.bottom.children {
+            if routable is HelpCommand { continue }
             let info = escapeDescription(routable.shortDescription.isEmpty ? routable.name : routable.shortDescription)
             stream <<< "               \(routable.name)\"[\(info)]\""
         }
@@ -81,23 +84,24 @@ public final class ZshCompletionGenerator: CompletionGenerator {
         }
         """
         
-        routables.forEach { (routable) in
+        group.bottom.children.forEach { (routable) in
+            if routable is HelpCommand { return }
             if let command = routable as? Command {
-                self.writeCommand(command, prefix: name, into: stream)
-            } else if let group = routable as? CommandGroup {
-                self.writeGroup(name: name + "_\(group.name)", routables: group.children, into: stream)
+                self.writeCommand(for: group.appending(command), into: stream)
+            } else if let subGroup = routable as? CommandGroup {
+                self.writeGroupHeader(for: group.appending(subGroup), into: stream)
             }
         }
     }
     
-    func writeCommand(_ command: Command, prefix: String, into stream: OutputByteStream) {
+    func writeCommand(for command: CommandPath, into stream: OutputByteStream) {
+        let prefix = groupName(for: command.groupPath)
         stream <<< """
-        _\(prefix)_\(command.name)() {
+        _\(prefix)_\(command.command.name)() {
             _arguments -C \\
         """
         
-        let options = command.options(for: cli)
-        let lines: [String] = options.map { (option) in
+        let lines: [String] = command.options.map { (option) in
             let first = "(" + option.names.joined(separator: " ") + ")"
             let middle = "{" + option.names.joined(separator: ",") + "}"
             let end: String
@@ -118,6 +122,10 @@ public final class ZshCompletionGenerator: CompletionGenerator {
     
     private func escapeDescription(_ description: String) -> String {
         return description.replacingOccurrences(of: "\"", with: "\\\"")
+    }
+    
+    private func groupName(for group: CommandGroupPath) -> String {
+        return group.joined(separator: "_")
     }
     
 }

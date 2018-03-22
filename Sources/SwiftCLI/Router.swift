@@ -7,40 +7,37 @@
 //
 
 public protocol Router {
-    func route(routables: [Routable], arguments: ArgumentList) -> RouteResult
+    func route(cli: CLI, arguments: ArgumentList) -> RouteResult
 }
 
 // MARK: - DefaultRouter
 
 public enum RouteResult {
-    case success(Command)
-    case failure(partialPath: [String], group: CommandGroup?, attempted: String?)
+    case success(CommandPath)
+    case failure(partialPath: CommandGroupPath, notFound: String?)
 }
 
 public class DefaultRouter: Router {
     
-    public func route(routables: [Routable], arguments: ArgumentList) -> RouteResult {
-        var options = routables
-        var currentGroup: CommandGroup?
-        var path: [String] = []
+    public func route(cli: CLI, arguments: ArgumentList) -> RouteResult {
+        var path = CommandGroupPath(cli: cli)
         while let node = arguments.head {
-            if let matching = options.first(where: { node.value == $0.name }) {
+            let value = path.bottom.aliases[node.value] ?? node.value
+            if let matching = path.bottom.children.first(where: { $0.name == value }) {
                 arguments.remove(node: node)
                 if let command = matching as? Command {
-                    return .success(command)
+                    return .success(path.appending(command))
                 } else if let group = matching as? CommandGroup {
-                    options = group.children
-                    currentGroup = group
+                    path = path.appending(group)
                 } else {
                     assertionFailure("Routables must either be Commands or Groups")
                 }
             } else {
-                return .failure(partialPath: path, group: currentGroup, attempted: node.value)
+                return .failure(partialPath: path, notFound: node.value)
             }
-            path.append(node.value)
         }
         
-        return .failure(partialPath: path, group: currentGroup, attempted: nil)
+        return .failure(partialPath: path, notFound: nil)
     }
     
 }
@@ -54,8 +51,8 @@ public class SingleCommandRouter: Router {
         self.command = command
     }
     
-    public func route(routables: [Routable], arguments: ArgumentList) -> RouteResult {
-        return .success(command)
+    public func route(cli: CLI, arguments: ArgumentList) -> RouteResult {
+        return .success(CommandGroupPath(cli: cli).appending(command))
     }
     
 }
