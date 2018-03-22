@@ -49,7 +49,7 @@ open class Flag: Option {
     
 }
 
-open class Key<T: Keyable>: Option {
+open class Key<T: ConvertibleFromString>: Option {
     
     public let names: [String]
     public let shortDescription: String
@@ -71,7 +71,7 @@ open class Key<T: Keyable>: Option {
     }
     
     open func setValue(_ value: String) -> Bool {
-        guard let value = T.val(from: value) else {
+        guard let value = T.convert(from: value) else {
             return false
         }
         self.value = value
@@ -88,38 +88,52 @@ public protocol AnyKey: Option {
 
 extension Key: AnyKey {}
 
-// MARK: - Keyable
+// MARK: - ConvertibleFromString
 
-public protocol Keyable {
-    static func val(from: String) -> Self?
+public protocol ConvertibleFromString {
+    static func convert(from: String) -> Self?
 }
 
-extension String: Keyable {
-    public static func val(from: String) -> String? {
+extension String: ConvertibleFromString {
+    public static func convert(from: String) -> String? {
         return from
     }
 }
 
-extension Int: Keyable {
-    public static func val(from: String) -> Int? {
+extension Int: ConvertibleFromString {
+    public static func convert(from: String) -> Int? {
         return Int(from)
     }
 }
 
-extension Float: Keyable {
-    public static func val(from: String) -> Float? {
+extension Float: ConvertibleFromString {
+    public static func convert(from: String) -> Float? {
         return Float(from)
     }
 }
 
-extension Double: Keyable {
-    public static func val(from: String) -> Double? {
+extension Double: ConvertibleFromString {
+    public static func convert(from: String) -> Double? {
         return Double(from)
     }
 }
 
-extension RawRepresentable where Self: Keyable, RawValue == String {
-    public static func val(from: String) -> Self? {
-        return Self.init(rawValue: from)
+extension Bool: ConvertibleFromString {
+    public static func convert(from: String) -> Bool? {
+        let lowercased = from.lowercased()
+        
+        if ["y", "yes", "t", "true"].contains(lowercased) { return true }
+        if ["n", "no", "f", "false"].contains(lowercased) { return false }
+        
+        return nil
+    }
+}
+
+extension RawRepresentable where RawValue: ConvertibleFromString {
+    public static func convert(from: String) -> Self? {
+        guard let val = RawValue.convert(from: from) else {
+            return nil
+        }
+        return Self.init(rawValue: val)
     }
 }

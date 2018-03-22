@@ -64,34 +64,7 @@ public class Input {
 
 // MARK: InputReader
 
-public protocol Inputable {
-    static func convert(input: String) -> Self?
-}
-
-extension String: Inputable {
-    public static func convert(input: String) -> String? { return input }
-}
-
-extension Int: Inputable {
-    public static func convert(input: String) -> Int? { return Int(input) }
-}
-
-extension Double: Inputable {
-    public static func convert(input: String) -> Double? { return Double(input) }
-}
-
-extension Bool: Inputable {
-    public static func convert(input: String) -> Bool? {
-        let lowercased = input.lowercased()
-        
-        if ["y", "yes", "t", "true"].contains(lowercased) { return true }
-        if ["n", "no", "f", "false"].contains(lowercased) { return false }
-        
-        return nil
-    }
-}
-
-public class InputReader<T: Inputable> {
+public class InputReader<T: ConvertibleFromString> {
     
     public typealias Validation = (T) -> Bool
     public typealias ErrorResponse = (_ input: String) -> ()
@@ -126,7 +99,7 @@ public class InputReader<T: Inputable> {
                 exit(1)
             }
             
-            if let converted = T.convert(input: input), validation?(converted) ?? true {
+            if let converted = T.convert(from: input), validation?(converted) ?? true {
                 return converted
             } else {
                 if let errorResponse = errorResponse {
