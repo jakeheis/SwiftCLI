@@ -172,7 +172,7 @@ extension Input {
         }
     }
     
-    @available(*, deprecated, message: "Use a custom InputGetter")
+    @available(*, deprecated, message: "Implement CovertibleFromString on a custom object and use Input.readObject()")
     public static func awaitInputWithConversion<T>(message: String?, secure: Bool = false, conversion: (_ input: String) -> T?) -> T {
         let input = awaitInputWithValidation(message: message) { (input) in
             return conversion(input) != nil

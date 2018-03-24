@@ -8,7 +8,7 @@
 
 import Foundation
 
-public class Input {
+public struct Input {
     
     /// Reads a line of input
     ///
@@ -16,10 +16,10 @@ public class Input {
     ///   - prompt: prompt to be printed before accepting input (e.g. "Name: ")
     ///   - secure: boolean defining that input should be hidden
     ///   - validation: predicate defining whether the given input is valid
-    ///   - errorResponse: what to do if the input is invalid
+    ///   - errorResponse: what to do if the input is invalid; default prints "Invalid input"
     /// - Returns: input
     public static func readLine(prompt: String? = nil, secure: Bool = false, validation: InputReader<String>.Validation? = nil, errorResponse: InputReader<String>.ErrorResponse? = nil) -> String {
-        return InputReader<String>(prompt: prompt, secure: secure, validation: validation, errorResponse: errorResponse).read()
+        return readObject(prompt: prompt, secure: secure, validation: validation, errorResponse: errorResponse)
     }
     
     /// Reads a line of input from stdin
@@ -28,10 +28,10 @@ public class Input {
     ///   - prompt: prompt to be printed before accepting input (e.g. "Name: ")
     ///   - secure: boolean defining that input should be hidden
     ///   - validation: predicate defining whether the given input is valid
-    ///   - errorResponse: what to do if the input is invalid
+    ///   - errorResponse: what to do if the input is invalid; default prints "Invalid input"
     /// - Returns: input
     public static func readInt(prompt: String? = nil, secure: Bool = false, validation: InputReader<Int>.Validation? = nil, errorResponse: InputReader<Int>.ErrorResponse? = nil) -> Int {
-        return InputReader<Int>(prompt: prompt, secure: secure, validation: validation, errorResponse: errorResponse).read()
+        return readObject(prompt: prompt, secure: secure, validation: validation, errorResponse: errorResponse)
     }
     
     /// Reads a double from stdin
@@ -40,10 +40,10 @@ public class Input {
     ///   - prompt: prompt to be printed before accepting input (e.g. "Name: ")
     ///   - secure: boolean defining that input should be hidden
     ///   - validation: predicate defining whether the given input is valid
-    ///   - errorResponse: what to do if the input is invalid
+    ///   - errorResponse: what to do if the input is invalid; default prints "Invalid input"
     /// - Returns: input
     public static func readDouble(prompt: String? = nil, secure: Bool = false, validation: InputReader<Double>.Validation? = nil, errorResponse: InputReader<Double>.ErrorResponse? = nil) -> Double {
-        return InputReader<Double>(prompt: prompt, secure: secure, validation: validation, errorResponse: errorResponse).read()
+        return readObject(prompt: prompt, secure: secure, validation: validation, errorResponse: errorResponse)
     }
     
     /// Reads a bool from stdin. "y", "yes", "t", and "true" are accepted as truthy values
@@ -52,10 +52,22 @@ public class Input {
     ///   - prompt: prompt to be printed before accepting input (e.g. "Name: ")
     ///   - secure: boolean defining that input should be hidden
     ///   - validation: predicate defining whether the given input is valid
-    ///   - errorResponse: what to do if the input is invalid
+    ///   - errorResponse: what to do if the input is invalid; default prints "Invalid input"
     /// - Returns: input
     public static func readBool(prompt: String? = nil, secure: Bool = false, validation: InputReader<Bool>.Validation? = nil, errorResponse: InputReader<Bool>.ErrorResponse? = nil) -> Bool {
-        return InputReader<Bool>(prompt: prompt, secure: secure, validation: validation, errorResponse: errorResponse).read()
+        return readObject(prompt: prompt, secure: secure, validation: validation, errorResponse: errorResponse)
+    }
+    
+    /// Reads an object which conforms to ConvertibleFromString from stdin
+    ///
+    /// - Parameters:
+    ///   - prompt: prompt to be printed before accepting input (e.g. "Name: ")
+    ///   - secure: boolean defining that input should be hidden
+    ///   - validation: predicate defining whether the given input is valid
+    ///   - errorResponse: what to do if the input is invalid; default prints "Invalid input"
+    /// - Returns: input
+    public static func readObject<T: ConvertibleFromString>(prompt: String? = nil, secure: Bool = false, validation: InputReader<T>.Validation? = nil, errorResponse: InputReader<T>.ErrorResponse? = nil) -> T {
+        return InputReader<T>(prompt: prompt, secure: secure, validation: validation, errorResponse: errorResponse).read()
     }
     
     private init() {}
