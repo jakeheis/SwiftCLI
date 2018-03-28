@@ -16,6 +16,8 @@ public protocol OptionRecognizer {
 
 public class DefaultOptionRecognizer: OptionRecognizer {
     
+    public init() {}
+    
     public func recognizeOptions(from optionRegistry: OptionRegistry, in arguments: ArgumentList) throws {
         let iterator = arguments.iterator()
         while let node = iterator.next() {

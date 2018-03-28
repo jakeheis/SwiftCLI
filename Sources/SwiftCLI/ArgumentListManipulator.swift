@@ -15,6 +15,8 @@ public protocol ArgumentListManipulator {
 /// Splits options represented by a single node into multiple nodes; e.g. command -ab -> command -a -b, --option=value -> --option value
 public class OptionSplitter: ArgumentListManipulator {
     
+    public init() {}
+    
     public func manipulate(arguments: ArgumentList) {
         let iterator = arguments.iterator()
         while let node = iterator.next() {

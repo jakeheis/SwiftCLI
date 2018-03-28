@@ -17,6 +17,8 @@ public protocol ParameterFiller {
 
 public class DefaultParameterFiller: ParameterFiller {
     
+    public init() {}
+    
     public func fillParameters(of command: Command, with arguments: ArgumentList) throws {
         let signature = CommandSignature(command: command)
         let gotCount = arguments.count()

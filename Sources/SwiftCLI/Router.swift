@@ -19,6 +19,8 @@ public enum RouteResult {
 
 public class DefaultRouter: Router {
     
+    public init() {}
+    
     public func route(cli: CLI, arguments: ArgumentList) -> RouteResult {
         var path = CommandGroupPath(cli: cli)
         while let node = arguments.head {

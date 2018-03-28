@@ -95,7 +95,9 @@ extension HelpMessageGenerator {
     
 }
 
-public class DefaultHelpMessageGenerator: HelpMessageGenerator {}
+public class DefaultHelpMessageGenerator: HelpMessageGenerator {
+    public init() {}
+}
 
 @available(*, unavailable, message: "Implement HelpMessageGenerator instead")
 public protocol UsageStatementGenerator {
