@@ -53,7 +53,7 @@ Table of Contents
   * [Routing commands](#routing-commands)
     * [Aliases](#aliases)
   * [Shell completions](#shell-completions)
-  * [Special commands](#special-commands)
+  * [Built-in commands](#built-in-commands)
   * [Input](#input)
   * [Customization](#customization)
   * [Running your CLI](#running-your-cli)
@@ -306,6 +306,12 @@ myCli.globalOptions.append(verboseFlag)
 
 With this, every command now has a `verbose` flag.
 
+By default, every command will have a `-h` flag which prints help information. You can turn this off by setting the CLI `helpFlag` to nil:
+
+```swift
+myCli.helpFlag = nil
+```
+
 #### Usage of options
 As seen in the above examples, `Flag()` and `Key()` both take an optional `description` parameter. A concise description of what the option does should be included here. This allows the `UsageStatementGenerator` to generate a fully informative usage statement for the command.
 
@@ -364,12 +370,12 @@ Commands:
 Command routing is done by an object implementing `Router`, which is just one simple method:
 
 ```swift
-func route(routables: [Routable], arguments: ArgumentList) -> RouteResult
+func route(cli: [CLI], arguments: ArgumentList) -> RouteResult
 ```
 
 SwiftCLI supplies a default implementation of `Router` with `DefaultRouter`. `DefaultRouter` finds commands based on the first passed argument (or, in the case of command groups, the first several arguments). For example, `greeter greet` would search for commands with the `name` of "greet". 
 
-SwiftCLI also supplies an implementation of `Router` called `SingleCommandRouter` which should be used if your command is only a single command. For example, if you were implementing the `ln` command, you would say `CLI.router = SingleCommandRouter(command: LinkCommand())`.
+SwiftCLI also supplies an implementation of `Router` called `SingleCommandRouter` which should be used if your command is only a single command. For example, if you were implementing the `ln` command, you would say `CLI.router = SingleCommandRouter(command: LinkCommand())`. This router will then always returns the same command.
 
 If a command is not found, `CLI` outputs a help message.
 ```bash
@@ -382,11 +388,19 @@ Available commands:
 ```
 
 ### Aliases
-Aliases can be made through the call `CommandAliaser.alias(from:to:)`. `Router` will take these aliases into account while routing to the matching command. For example, if this call is made:
+Aliases can be made through the the `aliases` property on CLI. `Router` will take these aliases into account while routing to the matching command. For example, if you write:
+
 ```swift
-CommandAliaser.alias(from: "-c", to: "command")
+myCLI.aliases["-c"] = "command"
 ```
+
 And the user makes the call `myapp -c`, the router will search for a command with the name "command" because of the alias, not a command with the name "-c".
+
+By default, "-h" is aliased to "help" and "-v" to "version", but you can remove these if they're not wanted:
+
+```swift
+myCLI.aliases["-h"] = nil
+```
 
 ## Shell completions
 
@@ -399,8 +413,8 @@ let generator = ZshCompletionGenerator(cli: myCli)
 generator.writeCompletions()
 ```
 
-## Special commands
-`CLI` has two special commands: `HelpCommand` and `VersionCommand`.
+## Built-in commands
+`CLI` has two built-in commands: `HelpCommand` and `VersionCommand`.
 
 ### Help Command
 The `HelpCommand` can be invoked with `myapp help` or `myapp -h`. The `HelpCommand` first prints the app description (if any was given during `CLI.setup()`). It then iterates through all available commands, printing their name and their short description.
@@ -414,12 +428,24 @@ Available commands:
 - help                 Prints this help information
 ```
 
+If you don't want this command to be automatically included, set the `helpCommand` property to nil:
+
+```swift
+myCLI.helpCommand = nil
+```
+
 ### Version Command
 The `VersionCommand` can be invoked with `myapp version` or `myapp -v`. The VersionCommand prints the version of the app given during init `CLI(name:version:)`. If no version is given, the command is not available.
 
 ```bash
 ~ > greeter -v
 Version: 1.0
+```
+
+If you don't want this command to be automatically included, set the `versionCommand` property to nil:
+
+```swift
+myCLI.versionCommand = nil
 ```
 
 ## Input
@@ -463,7 +489,7 @@ Percentage: 43.6
 
 ## Customization
 
-SwiftCLI was designed with sensible defaults but also the ability to be customized at every level. ``CLI`` has six properties that can be changed from the default implementations to customized implementations.
+SwiftCLI was designed with sensible defaults but also the ability to be customized at every level. ``CLI`` has five properties that can be changed from the default implementations to customized implementations.
 
 Given a call like
 ```bash
@@ -478,7 +504,7 @@ User calls "baker bake cake -qt frosting"
     Parameters: ?
     Options: ?
     Arguments: Node(bake) -> Node(cake) -> Node(-qt) -> Node(frosting)
-ArgumentListManipulators() (including CommandAliaser() and OptionSplitter()) manipulate the nodes
+ArgumentListManipulators() (including OptionSplitter()) manipulate the nodes
     Command: ?
     Parameters: ?
     Options: ?
@@ -501,7 +527,7 @@ ParameterFiller() fills the parameters of the routed command with the remaining 
 ```
 All four of these steps can be customized:
 ```swift
-public static var argumentListManipulators: [ArgumentListManipulator] = [CommandAliaser(), OptionSplitter()]
+public static var argumentListManipulators: [ArgumentListManipulator] = [OptionSplitter()]
 
 public static var router: Router = DefaultRouter()
 
