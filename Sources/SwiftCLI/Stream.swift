@@ -47,9 +47,8 @@ open class WriteStream {
 
 public class CaptureStream: WriteStream {
     
-    public private(set) var content: String = ""
+    private var content: String = ""
     private let inStream: ReadStream
-    
     private let semaphore = DispatchSemaphore(value: 0)
     
     public init() {
@@ -65,9 +64,9 @@ public class CaptureStream: WriteStream {
         }
     }
     
-    public func finish() {
-        close()
+    public func awaitContent() -> String {
         semaphore.wait()
+        return content
     }
     
 }
@@ -77,17 +76,7 @@ public class ReadStream {
     public static let stdin = ReadStream(fileHandle: .standardInput)
     
     let fileHandle: FileHandle
-    
-    var onInput: ((String) -> ())? {
-        didSet {
-            fileHandle.readabilityHandler = { [weak self] (handle) in
-                guard let str = String(data: handle.availableData, encoding: .utf8) else {
-                    fatalError()
-                }
-                self?.onInput?(str)
-            }
-        }
-    }
+    private var carryData: Data? = nil
     
     public init(fileHandle: FileHandle) {
         self.fileHandle = fileHandle
@@ -101,18 +90,17 @@ public class ReadStream {
     }
     
     public func read() -> String? {
-        let data = fileHandle.availableData
+        let data = (carryData ?? Data()) + fileHandle.availableData
         guard !data.isEmpty else { return nil }
         
         return String(data: data, encoding: .utf8)
     }
     
     public func readLine() -> String? {
-        let originalOffset = fileHandle.offsetInFile
+        var accumluated = carryData ?? Data()
         
-        var accumluated = Data()
         let delimiter = "\n".data(using: .utf8)![0]
-        while true {
+        while !accumluated.contains(delimiter) {
             let data = fileHandle.readData(ofLength: 10)
             if data.isEmpty {
                 if accumluated.isEmpty {
@@ -120,21 +108,23 @@ public class ReadStream {
                 }
                 break
             }
-            
-            if let index = data.index(of: delimiter) {
-                accumluated += data[..<index]
-                break
-            } else {
-                accumluated += data
-            }
+            accumluated += data
         }
         
-        fileHandle.seek(toFileOffset: originalOffset + UInt64(accumluated.count) + 1)
+        let lineData: Data
+        if let index = accumluated.index(of: delimiter) {
+            lineData = accumluated[..<index]
+            let remainder = accumluated[accumluated.index(after: index)...]
+            carryData = remainder.isEmpty ? nil : remainder
+        } else {
+            lineData = accumluated
+            carryData = nil
+        }
         
-        return String(data: accumluated, encoding: .utf8)
+        return String(data: lineData, encoding: .utf8)
     }
     
-    public func lines() -> LazySequence<AnyIterator<String>> {
+    public func readLines() -> LazySequence<AnyIterator<String>> {
         let iter = AnyIterator {
             return self.readLine()
         }
@@ -155,6 +145,10 @@ public class ReadStream {
                 output.write(some)
             }
         }
+    }
+    
+    public func close() {
+        fileHandle.closeFile()
     }
     
 }

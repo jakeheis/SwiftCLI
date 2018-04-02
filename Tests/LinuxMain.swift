@@ -10,5 +10,7 @@ XCTMain([
      testCase(OptionRegistryTests.allTests),
 	 testCase(ParameterFillerTests.allTests),
      testCase(RouterTests.allTests),
-     testCase(SwiftCLITests.allTests)
+	 testCase(StreamTests.allTests),
+     testCase(SwiftCLITests.allTests),
+	 testCase(TaskTests.allTests)
 ])

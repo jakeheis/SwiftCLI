@@ -26,11 +26,13 @@ class CompletionGeneratorTests: XCTestCase {
     
     func testCommandList() {
         let cli = CLI.createTester(commands: [alphaCmd, betaCmd])
+        
         let generator = ZshCompletionGenerator(cli: cli)
         let capture = CaptureStream()
         generator.writeCommandList(for: CommandGroupPath(cli: cli), into: capture)
-        capture.finish()
-        XCTAssertEqual(capture.content, """
+        capture.close()
+        
+        XCTAssertEqual(capture.awaitContent(), """
         __tester_commands() {
              _arguments -C \\
                ': :->command'
@@ -60,13 +62,14 @@ class CompletionGeneratorTests: XCTestCase {
     func testOptions() {
         let cmd = TestCommand()
         let cli = CLI.createTester(commands: [cmd])
+        
         let generator = ZshCompletionGenerator(cli: cli)
         let capture = CaptureStream()
-        
         let path = CommandGroupPath(cli: cli).appending(cmd)
         generator.writeCommand(for: path, into: capture)
-        capture.finish()
-        XCTAssertEqual(capture.content, """
+        capture.close()
+        
+        XCTAssertEqual(capture.awaitContent(), """
         _tester_test() {
             _arguments -C \\
               '(-s --silent)'{-s,--silent}"[Silence all test output]" \\
@@ -79,11 +82,13 @@ class CompletionGeneratorTests: XCTestCase {
     
     func testFull() {
         let cli = CLI.createTester(commands: [alphaCmd, betaCmd, intraGroup])
+        
         let generator = ZshCompletionGenerator(cli: cli)
         let capture = CaptureStream()
         generator.writeCompletions(into: capture)
-        capture.finish()
-        XCTAssertEqual(capture.content, """
+        capture.close()
+        
+        XCTAssertEqual(capture.awaitContent(), """
         #compdef tester
         _tester() {
             local context state line

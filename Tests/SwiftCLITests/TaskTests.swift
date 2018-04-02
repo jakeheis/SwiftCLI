@@ -19,14 +19,14 @@ class TaskTests: XCTestCase {
     
     func testExec() throws {
         let file = "file.txt"
-        try Task.execute("/usr/bin/touch", file)
+        try execute("/usr/bin/touch", file)
         
         XCTAssertTrue(FileManager.default.fileExists(atPath: file))
         try FileManager.default.removeItem(atPath: file)
     }
     
     func testCapture() throws {
-        let output = try Task.capture("/bin/ls", "Sources")
+        let output = try capture("/bin/ls", "Sources")
         XCTAssertEqual(output.stdout, "SwiftCLI")
         XCTAssertEqual(output.stderr, "")
     }
@@ -34,21 +34,21 @@ class TaskTests: XCTestCase {
     func testExecutableFind() throws {
         XCTAssertEqual(Task.findExecutable(named: "ls"), "/bin/ls")
         
-        let output = try Task.capture("ls", "Sources")
+        let output = try capture("ls", "Sources")
         XCTAssertEqual(output.stdout, "SwiftCLI")
         XCTAssertEqual(output.stderr, "")
     }
     
     func testBashExec() throws {
         let file = "file.txt"
-        try Task.execute(bash: "touch \(file)")
+        try execute(bash: "touch \(file)")
         
         XCTAssertTrue(FileManager.default.fileExists(atPath: file))
         try FileManager.default.removeItem(atPath: file)
     }
     
     func testBashCapture() throws {
-        let output = try Task.capture(bash: "ls Sources")
+        let output = try capture(bash: "ls Sources")
         XCTAssertEqual(output.stdout, "SwiftCLI")
         XCTAssertEqual(output.stderr, "")
     }
@@ -66,7 +66,20 @@ class TaskTests: XCTestCase {
         
         let code = task.finish()
         XCTAssertEqual(code, 0)
-        XCTAssertEqual(out.content, "alpha\nbeta\n")
+        XCTAssertEqual(out.awaitContent(), "alpha\nbeta\n")
+    }
+    
+    func testPipe() {
+        let (read, write) = Task.createPipe()
+        let capture = CaptureStream()
+        
+        let ls = Task(executable: "ls", args: ["Tests"], stdout: write)
+        let grep = Task(executable: "grep", args: ["Swift"], stdout: capture, stdin: read)
+        
+        ls.runAsync()
+        grep.runAsync()
+                
+        XCTAssertEqual(capture.awaitContent(), "SwiftCLITests\n")
     }
     
 }

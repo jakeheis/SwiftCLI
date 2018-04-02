@@ -23,10 +23,8 @@ public func capture(_ executable: String, _ args: String...) throws -> CaptureRe
     
     let task = Task(executable: executable, args: args, stdout: out, stderr: err)
     let exitCode = task.runSync()
-    out.finish()
-    err.finish()
     
-    let captured = CaptureResult(rawStdout: out.content, rawStderr: err.content)
+    let captured = CaptureResult(rawStdout: out.awaitContent(), rawStderr: err.awaitContent())
     guard exitCode == 0 else {
         throw CaptureError(code: exitCode, captured: captured)
     }
@@ -46,8 +44,24 @@ public func capture(bash: String) throws -> CaptureResult {
 
 public class Task {
     
+    public static func findExecutable(named: String) -> String? {
+        if named.hasPrefix("/") || named.hasPrefix(".") {
+            return named
+        }
+        return try? capture(bash: "which \(named)").stdout
+    }
+    
+    public static func createPipe() -> (read: ReadStream, write: WriteStream) {
+        let pipe = Pipe()
+        return (ReadStream(fileHandle: pipe.fileHandleForReading), WriteStream(fileHandle: pipe.fileHandleForWriting))
+    }
+    
     private let process: Process
     public var onTermination: ((Int32) -> ())? = nil
+    
+    private var stdout: WriteStream?
+    private var stderr: WriteStream?
+    private var stdin: ReadStream?
     
     public init(executable: String, args: [String] = [], stdout: WriteStream = .stdout, stderr: WriteStream = .stderr, stdin: ReadStream = .stdin, forwardInterrupt: Bool = true) {
         self.process = Process()
@@ -68,24 +82,36 @@ public class Task {
         
         if stdout !== WriteStream.stdout {
             self.process.standardOutput = stdout.fileHandle
+            self.stdout = stdout
         }
         if stderr !== WriteStream.stderr {
             self.process.standardError = stderr.fileHandle
+            self.stderr = stderr
         }
         if stdin !== ReadStream.stdin {
             self.process.standardInput = stdin.fileHandle
+            self.stdin = stdin
         }
     }
     
-    public func runSync() -> Int32 {
+    func launch() {
         process.launch()
+        
+        stdout?.close()
+        stderr?.close()
+        stdin?.close()
+    }
+    
+    public func runSync() -> Int32 {
+        launch()
         return finish()
     }
     
     public func runAsync() {
-        process.launch()
+        launch()
     }
     
+    @discardableResult
     public func finish() -> Int32 {
         process.waitUntilExit()
         return process.terminationStatus
@@ -98,20 +124,6 @@ public class Task {
 }
 
 // MARK: -
-
-extension Task {
-    public static func createPipe() -> (read: ReadStream, write: WriteStream) {
-        let pipe = Pipe()
-        return (ReadStream(fileHandle: pipe.fileHandleForReading), WriteStream(fileHandle: pipe.fileHandleForWriting))
-    }
-    
-    public static func findExecutable(named: String) -> String? {
-        if named.hasPrefix("/") || named.hasPrefix(".") {
-            return named
-        }
-        return try? capture(bash: "which \(named)").stdout
-    }
-}
 
 struct ExecuteError: Swift.Error {
     let code: Int32
