@@ -17,7 +17,7 @@ public protocol CompletionGenerator {
     
     init(cli: CLI)
     func writeCompletions()
-    func writeCompletions(into stream: OutStream)
+    func writeCompletions(into stream: WriteStream)
 }
 
 public final class ZshCompletionGenerator: CompletionGenerator {
@@ -33,7 +33,7 @@ public final class ZshCompletionGenerator: CompletionGenerator {
         writeCompletions(into: Term.stdout)
     }
     
-    public func writeCompletions(into stream: OutStream) {
+    public func writeCompletions(into stream: WriteStream) {
         stream <<< "#compdef \(cli.name)"
         
         writeGroupHeader(for: CommandGroupPath(cli: cli), into: stream)
@@ -41,7 +41,7 @@ public final class ZshCompletionGenerator: CompletionGenerator {
         stream <<< "_\(cli.name)"
     }
     
-    func writeGroupHeader(for group: CommandGroupPath, into stream: OutStream) {
+    func writeGroupHeader(for group: CommandGroupPath, into stream: WriteStream) {
         let name = groupName(for: group)
         stream <<< """
         _\(name)() {
@@ -58,7 +58,7 @@ public final class ZshCompletionGenerator: CompletionGenerator {
         writeCommandList(for: group, into: stream)
     }
     
-    func writeCommandList(for group: CommandGroupPath, into stream: OutStream) {
+    func writeCommandList(for group: CommandGroupPath, into stream: WriteStream) {
         let name = groupName(for: group)
         stream <<< """
         __\(name)_commands() {
@@ -94,7 +94,7 @@ public final class ZshCompletionGenerator: CompletionGenerator {
         }
     }
     
-    func writeCommand(for command: CommandPath, into stream: OutStream) {
+    func writeCommand(for command: CommandPath, into stream: WriteStream) {
         let prefix = groupName(for: command.groupPath)
         stream <<< """
         _\(prefix)_\(command.command.name)() {

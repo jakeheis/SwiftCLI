@@ -8,11 +8,11 @@
 import Foundation
 import Dispatch
 
-public class OutStream {
+open class WriteStream {
     
-    public static let stdout = OutStream(fileHandle: FileHandle.standardOutput)
-    public static let stderr = OutStream(fileHandle: FileHandle.standardError)
-    public static let null = OutStream(fileHandle: FileHandle.nullDevice)
+    public static let stdout = WriteStream(fileHandle: .standardOutput)
+    public static let stderr = WriteStream(fileHandle: .standardError)
+    public static let null = WriteStream(fileHandle: .nullDevice)
     
     let fileHandle: FileHandle
     
@@ -45,16 +45,16 @@ public class OutStream {
     
 }
 
-public class CaptureStream: OutStream {
+public class CaptureStream: WriteStream {
     
     public private(set) var content: String = ""
-    private let inStream: InStream
+    private let inStream: ReadStream
     
     private let semaphore = DispatchSemaphore(value: 0)
     
     public init() {
         let pipe = Pipe()
-        self.inStream = InStream(fileHandle: pipe.fileHandleForReading)
+        self.inStream = ReadStream(fileHandle: pipe.fileHandleForReading)
         super.init(fileHandle: pipe.fileHandleForWriting)
         
         DispatchQueue.global().async { [weak self] in
@@ -72,9 +72,9 @@ public class CaptureStream: OutStream {
     
 }
 
-public class InStream {
+public class ReadStream {
     
-    public static let stdin = InStream(fileHandle: FileHandle.standardInput)
+    public static let stdin = ReadStream(fileHandle: .standardInput)
     
     let fileHandle: FileHandle
     
@@ -107,6 +107,40 @@ public class InStream {
         return String(data: data, encoding: .utf8)
     }
     
+    public func readLine() -> String? {
+        let originalOffset = fileHandle.offsetInFile
+        
+        var accumluated = Data()
+        let delimiter = "\n".data(using: .utf8)![0]
+        while true {
+            let data = fileHandle.readData(ofLength: 10)
+            if data.isEmpty {
+                if accumluated.isEmpty {
+                    return nil
+                }
+                break
+            }
+            
+            if let index = data.index(of: delimiter) {
+                accumluated += data[..<index]
+                break
+            } else {
+                accumluated += data
+            }
+        }
+        
+        fileHandle.seek(toFileOffset: originalOffset + UInt64(accumluated.count) + 1)
+        
+        return String(data: accumluated, encoding: .utf8)
+    }
+    
+    public func lines() -> LazySequence<AnyIterator<String>> {
+        let iter = AnyIterator {
+            return self.readLine()
+        }
+        return iter.lazy
+    }
+    
     public func readAll() -> String {
         var all = ""
         while let some = read() {
@@ -115,7 +149,7 @@ public class InStream {
         return all
     }
     
-    public func forward(to output: OutStream) {
+    public func forward(to output: WriteStream) {
         DispatchQueue.global().async { [weak self] in
             while let some = self?.read() {
                 output.write(some)
@@ -129,6 +163,6 @@ public class InStream {
 
 infix operator <<<: AssignmentPrecedence
 
-public func <<<(stream: OutStream, text: String) {
+public func <<<(stream: WriteStream, text: String) {
     stream.print(text)
 }
