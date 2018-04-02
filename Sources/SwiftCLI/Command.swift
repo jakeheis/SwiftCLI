@@ -101,11 +101,11 @@ extension Command {
     
     // Extras
     
-    public var stdout: OutputByteStream {
+    public var stdout: OutStream {
         return Term.stdout
     }
     
-    public var stderr: OutputByteStream {
+    public var stderr: OutStream {
         return Term.stderr
     }
 

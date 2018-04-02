@@ -29,6 +29,7 @@ class CompletionGeneratorTests: XCTestCase {
         let generator = ZshCompletionGenerator(cli: cli)
         let capture = CaptureStream()
         generator.writeCommandList(for: CommandGroupPath(cli: cli), into: capture)
+        capture.finish()
         XCTAssertEqual(capture.content, """
         __tester_commands() {
              _arguments -C \\
@@ -64,6 +65,7 @@ class CompletionGeneratorTests: XCTestCase {
         
         let path = CommandGroupPath(cli: cli).appending(cmd)
         generator.writeCommand(for: path, into: capture)
+        capture.finish()
         XCTAssertEqual(capture.content, """
         _tester_test() {
             _arguments -C \\
@@ -79,8 +81,8 @@ class CompletionGeneratorTests: XCTestCase {
         let cli = CLI.createTester(commands: [alphaCmd, betaCmd, intraGroup])
         let generator = ZshCompletionGenerator(cli: cli)
         let capture = CaptureStream()
-        generator.writeCompletions(into: StdoutStream())
         generator.writeCompletions(into: capture)
+        capture.finish()
         XCTAssertEqual(capture.content, """
         #compdef tester
         _tester() {
