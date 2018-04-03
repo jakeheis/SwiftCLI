@@ -82,4 +82,13 @@ class TaskTests: XCTestCase {
         XCTAssertEqual(capture.awaitContent(), "SwiftCLITests\n")
     }
     
+    func testCurrentDirectory() {
+        let capture = CaptureStream()
+        
+        let ls = Task(executable: "ls", currentDirectory: "Sources", stdout: capture)
+        ls.runSync()
+        
+        XCTAssertEqual(capture.awaitContent(), "SwiftCLI\n")
+    }
+    
 }

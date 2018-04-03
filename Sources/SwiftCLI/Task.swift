@@ -71,10 +71,13 @@ public class Task {
     private var stderr: WriteStream?
     private var stdin: ReadStream?
     
-    public init(executable: String, args: [String] = [], stdout: WriteStream = .stdout, stderr: WriteStream = .stderr, stdin: ReadStream = .stdin, forwardInterrupt: Bool = true) {
+    public init(executable: String, args: [String] = [], currentDirectory: String? = nil, stdout: WriteStream = .stdout, stderr: WriteStream = .stderr, stdin: ReadStream = .stdin, forwardInterrupt: Bool = true) {
         self.process = Process()
         self.process.launchPath = Task.findExecutable(named: executable) ?? executable
         self.process.arguments = args
+        if let currentDirectory = currentDirectory {
+            self.process.currentDirectoryPath = currentDirectory
+        }
         
         if forwardInterrupt {
             InterruptPasser.add(self)
@@ -110,6 +113,7 @@ public class Task {
         stdin?.close()
     }
     
+    @discardableResult
     public func runSync() -> Int32 {
         launch()
         return finish()
