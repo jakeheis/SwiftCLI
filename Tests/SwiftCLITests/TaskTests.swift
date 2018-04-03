@@ -19,7 +19,7 @@ class TaskTests: XCTestCase {
     
     func testExec() throws {
         let file = "file.txt"
-        try execute("/usr/bin/touch", file)
+        try SwiftCLI.run("/usr/bin/touch", file)
         
         XCTAssertTrue(FileManager.default.fileExists(atPath: file))
         try FileManager.default.removeItem(atPath: file)
@@ -41,7 +41,7 @@ class TaskTests: XCTestCase {
     
     func testBashExec() throws {
         let file = "file.txt"
-        try execute(bash: "touch \(file)")
+        try SwiftCLI.run(bash: "touch \(file)")
         
         XCTAssertTrue(FileManager.default.fileExists(atPath: file))
         try FileManager.default.removeItem(atPath: file)

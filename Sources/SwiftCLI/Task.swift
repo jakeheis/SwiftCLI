@@ -9,11 +9,11 @@ import Foundation
 
 // MARK: -
 
-public func execute(_ executable: String, _ args: String...) throws {
-    try execute(executable, args)
+public func run(_ executable: String, _ args: String...) throws {
+    try run(executable, args)
 }
 
-public func execute(_ executable: String, _ args: [String]) throws {
+public func run(_ executable: String, _ args: [String]) throws {
     let task = Task(executable: executable, args: args)
     let code = task.runSync()
     guard code == 0 else {
@@ -40,8 +40,8 @@ public func capture(_ executable: String, _ args: [String]) throws -> CaptureRes
     return captured
 }
 
-public func execute(bash: String) throws {
-    try execute("/bin/bash", "-c", bash)
+public func run(bash: String) throws {
+    try run("/bin/bash", "-c", bash)
 }
 
 public func capture(bash: String) throws -> CaptureResult {
