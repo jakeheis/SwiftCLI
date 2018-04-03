@@ -8,7 +8,7 @@
 
 // MARK: - Routables
 
-public protocol Routable {
+public protocol Routable: class {
     var name: String { get }
     var shortDescription: String { get }
 }
@@ -16,7 +16,7 @@ public protocol Routable {
 
 // MARK: -
 
-public protocol Command: class, Routable {
+public protocol Command: Routable {
     
     //
     // Required:
