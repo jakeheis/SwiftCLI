@@ -1,6 +1,6 @@
 //
-//  CLI-deprecated.swift
-//  SwiftCLIPackageDescription
+//  Compatibility.swift
+//  SwiftCLI
 //
 //  Created by Jake Heiser on 9/9/17.
 //
@@ -204,4 +204,14 @@ extension Input {
 @available(*, unavailable, message: "Use myCLI.aliases instead")
 public class CommandAliaser: ArgumentListManipulator {
     public func manipulate(arguments: ArgumentList) {}
+}
+
+extension Sequence {
+    func optMap<T>(_ transform: (Element) -> T?) -> [T] {
+        #if swift(>=4.1)
+        return compactMap(transform)
+        #else
+        return flatMap(transform)
+        #endif
+    }
 }

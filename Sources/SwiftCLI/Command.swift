@@ -68,7 +68,7 @@ extension Command {
         if let superMirror = mirror.superclassMirror {
             parameters = parametersFromMirror(superMirror)
         }
-        parameters.append(contentsOf: mirror.children.flatMap { (child) in
+        parameters.append(contentsOf: mirror.children.optMap { (child) in
             if let argument = child.value as? AnyParameter, let label = child.label {
                 return (label, argument)
             }
@@ -82,7 +82,7 @@ extension Command {
         if let superMirror = mirror.superclassMirror {
             options = optionsFromMirror(superMirror)
         }
-        options.append(contentsOf: mirror.children.flatMap { (child) -> Option? in
+        options.append(contentsOf: mirror.children.optMap { (child) -> Option? in
             if let option = child.value as? Option {
                 return option
             }

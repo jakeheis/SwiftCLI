@@ -18,7 +18,7 @@ public class OptionGroup {
     public let restriction: Restriction
     
     public var message: String {
-        let names = options.flatMap({ $0.names.last }).joined(separator: " ")
+        let names = options.optMap({ $0.names.last }).joined(separator: " ")
         var str: String
         switch restriction {
         case .exactlyOne:
