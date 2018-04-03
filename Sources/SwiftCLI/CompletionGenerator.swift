@@ -30,7 +30,7 @@ public final class ZshCompletionGenerator: CompletionGenerator {
     }
     
     public func writeCompletions() {
-        writeCompletions(into: Term.stdout)
+        writeCompletions(into: .stdout)
     }
     
     public func writeCompletions(into stream: WriteStream) {

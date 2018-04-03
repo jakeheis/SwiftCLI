@@ -102,11 +102,11 @@ extension Command {
     // Extras
     
     public var stdout: WriteStream {
-        return Term.stdout
+        return WriteStream.stdout
     }
     
     public var stderr: WriteStream {
-        return Term.stderr
+        return WriteStream.stderr
     }
 
 }
