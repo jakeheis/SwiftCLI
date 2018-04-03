@@ -13,7 +13,7 @@ public func execute(_ executable: String, _ args: String...) throws {
     let task = Task(executable: executable, args: args)
     let code = task.runSync()
     guard code == 0 else {
-        throw ExecuteError(code: code)
+        throw ExecuteError(exitStatus: code)
     }
 }
 
@@ -26,7 +26,7 @@ public func capture(_ executable: String, _ args: String...) throws -> CaptureRe
     
     let captured = CaptureResult(rawStdout: out.awaitContent(), rawStderr: err.awaitContent())
     guard exitCode == 0 else {
-        throw CaptureError(code: exitCode, captured: captured)
+        throw CaptureError(exitStatus: exitCode, captured: captured)
     }
     
     return captured
@@ -94,7 +94,7 @@ public class Task {
         }
     }
     
-    func launch() {
+    private func launch() {
         process.launch()
         
         stdout?.close()
@@ -125,13 +125,18 @@ public class Task {
 
 // MARK: -
 
-struct ExecuteError: Swift.Error {
-    let code: Int32
+public struct ExecuteError: ProcessError {
+    public let exitStatus: Int32
+    public let message: String? = nil
 }
 
-struct CaptureError: Swift.Error {
-    let code: Int32
-    let captured: CaptureResult
+public struct CaptureError: ProcessError {
+    public let exitStatus: Int32
+    public let captured: CaptureResult
+    
+    public var message: String? {
+        return captured.stderr
+    }
 }
 
 public struct CaptureResult {
