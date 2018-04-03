@@ -57,8 +57,8 @@ public class CaptureStream: WriteStream {
         super.init(fileHandle: pipe.fileHandleForWriting)
         
         DispatchQueue.global().async { [weak self] in
-            while let some = self?.inStream.read() {
-                self?.content += some
+            if let content = self?.inStream.readAll() {
+                self?.content = content
             }
             self?.semaphore.signal()
         }

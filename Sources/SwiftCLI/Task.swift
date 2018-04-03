@@ -10,6 +10,10 @@ import Foundation
 // MARK: -
 
 public func execute(_ executable: String, _ args: String...) throws {
+    try execute(executable, args)
+}
+
+public func execute(_ executable: String, _ args: [String]) throws {
     let task = Task(executable: executable, args: args)
     let code = task.runSync()
     guard code == 0 else {
@@ -18,6 +22,10 @@ public func execute(_ executable: String, _ args: String...) throws {
 }
 
 public func capture(_ executable: String, _ args: String...) throws -> CaptureResult {
+    return try capture(executable, args)
+}
+
+public func capture(_ executable: String, _ args: [String]) throws -> CaptureResult {
     let out = CaptureStream()
     let err = CaptureStream()
     
