@@ -76,7 +76,9 @@ public class ReadStream {
     public static let stdin = ReadStream(fileHandle: .standardInput)
     
     let fileHandle: FileHandle
-    private var carryData: Data? = nil
+    public var textEncoding: String.Encoding = .utf8
+    
+    private var unreadBuffer = ""
     
     public init(fileHandle: FileHandle) {
         self.fileHandle = fileHandle
@@ -89,39 +91,44 @@ public class ReadStream {
         self.init(fileHandle: fileHandle)
     }
     
-    public func read() -> String? {
-        let data = (carryData ?? Data()) + fileHandle.availableData
-        guard !data.isEmpty else { return nil }
-        
-        return String(data: data, encoding: .utf8)
+    public func readData() -> Data? {
+        let data = fileHandle.availableData
+        return data.isEmpty ? nil : data
     }
     
-    public func readLine() -> String? {
-        var accumluated = carryData ?? Data()
+    public func read() -> String? {
+        let unread = unreadBuffer
+        unreadBuffer = ""
         
-        let delimiter = "\n".data(using: .utf8)![0]
+        guard let data = readData() else {
+            return unread.isEmpty ? nil : unread
+        }
+        guard let new = String(data: data, encoding: textEncoding) else {
+            fatalError("Couldn't parse data into string using \(textEncoding)")
+        }
+        return unread + new
+    }
+    
+    public func readLine(delimiter: Character = "\n") -> String? {
+        guard var accumluated = read() else {
+            return nil
+        }
+        
         while !accumluated.contains(delimiter) {
-            let data = fileHandle.availableData
-            if data.isEmpty {
-                if accumluated.isEmpty {
-                    return nil
-                }
+            if let some = read() {
+                accumluated += some
+            } else {
                 break
             }
-            accumluated += data
         }
         
-        let lineData: Data
         if let index = accumluated.index(of: delimiter) {
-            lineData = accumluated[..<index]
-            let remainder = accumluated[accumluated.index(after: index)...]
-            carryData = remainder.isEmpty ? nil : remainder
+            let remainder = String(accumluated[accumluated.index(after: index)...])
+            unreadBuffer = remainder.isEmpty ? "" : remainder
+            return String(accumluated[..<index])
         } else {
-            lineData = accumluated
-            carryData = nil
+            return accumluated
         }
-        
-        return String(data: lineData, encoding: .utf8)
     }
     
     public func readLines() -> LazySequence<AnyIterator<String>> {

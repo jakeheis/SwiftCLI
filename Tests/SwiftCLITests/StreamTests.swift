@@ -80,6 +80,24 @@ class StreamTests: XCTestCase {
         XCTAssertEqual(read.readLine(), "")
         XCTAssertEqual(read.readLine(), "second line")
         XCTAssertEqual(read.readLine(), "")
+        XCTAssertEqual(read.readLine(), nil)
+        
+        let (read2, write2) = Task.createPipe()
+        
+        write2.write("first ")
+        
+        DispatchQueue.global().asyncAfter(deadline: .now() + .seconds(1)) {
+            write2.write("line\nlast ")
+        }
+        
+        DispatchQueue.global().asyncAfter(deadline: .now() + .milliseconds(1500)) {
+            write2.write("line")
+            write2.close()
+        }
+        
+        XCTAssertEqual(read2.readLine(), "first line")
+        XCTAssertEqual(read2.readLine(), "last line")
+        XCTAssertEqual(read2.readLine(), nil)
     }
     
     func testReadLines() {
