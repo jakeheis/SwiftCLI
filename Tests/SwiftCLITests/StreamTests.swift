@@ -82,6 +82,8 @@ class StreamTests: XCTestCase {
         XCTAssertEqual(read.readLine(), "")
         XCTAssertEqual(read.readLine(), nil)
         
+        // DispatchQueue errors on Linux on Swifts < 4.1
+        #if os(macOS) || swift(>=4.1)
         let (read2, write2) = Task.createPipe()
         
         write2.write("first ")
@@ -98,6 +100,7 @@ class StreamTests: XCTestCase {
         XCTAssertEqual(read2.readLine(), "first line")
         XCTAssertEqual(read2.readLine(), "last line")
         XCTAssertEqual(read2.readLine(), nil)
+        #endif
     }
     
     func testReadLines() {
