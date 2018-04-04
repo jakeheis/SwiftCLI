@@ -6,20 +6,22 @@
 //
 
 import Foundation
-import Dispatch
+
+// MARK: - Writable
 
 public protocol WritableStream {
-    var writeHandle: FileHandle { get }
+    var writeStream: WriteStream { get }
     var encoding: String.Encoding { get }
     var processObject: Any { get }
 }
 
 extension WritableStream {
+    
     public func write(_ content: String) {
         guard let data = content.data(using: encoding) else {
             fatalError("Couldn't write content: \(content)")
         }
-        writeHandle.write(data)
+        writeStream.writeHandle.write(data)
     }
     
     public func print(_ content: String, terminator: String = "\n") {
@@ -27,8 +29,9 @@ extension WritableStream {
     }
     
     public func closeWrite() {
-        writeHandle.closeFile()
+        writeStream.writeHandle.closeFile()
     }
+    
 }
 
 public class WriteStream: WritableStream {
@@ -37,7 +40,10 @@ public class WriteStream: WritableStream {
     public static let stderr = WriteStream(writeHandle: .standardError)
     public static let null = WriteStream(writeHandle: .nullDevice)
     
-    public let writeHandle: FileHandle
+    fileprivate let writeHandle: FileHandle
+    
+    // WritableStream
+    public var writeStream: WriteStream { return self }
     public var encoding: String.Encoding = .utf8
     public var processObject: Any { return writeHandle }
     
@@ -59,22 +65,24 @@ public class WriteStream: WritableStream {
     
 }
 
+// MARK: - Readable
+
 public protocol ReadableStream: class {
-    var readHandle: FileHandle { get }
-    var unreadBuffer: String { get set }
+    var readStream: ReadStream { get }
     var encoding: String.Encoding { get }
     var processObject: Any { get }
 }
 
 extension ReadableStream {
+    
     public func readData() -> Data? {
-        let data = readHandle.availableData
+        let data = readStream.readHandle.availableData
         return data.isEmpty ? nil : data
     }
     
     public func read() -> String? {
-        let unread = unreadBuffer
-        unreadBuffer = ""
+        let unread = readStream.unreadBuffer
+        readStream.unreadBuffer = ""
         
         guard let data = readData() else {
             return unread.isEmpty ? nil : unread
@@ -100,7 +108,7 @@ extension ReadableStream {
         
         if let index = accumluated.index(of: delimiter) {
             let remainder = String(accumluated[accumluated.index(after: index)...])
-            unreadBuffer = remainder.isEmpty ? "" : remainder
+            readStream.unreadBuffer = remainder.isEmpty ? "" : remainder
             return String(accumluated[..<index])
         } else {
             return accumluated
@@ -122,25 +130,21 @@ extension ReadableStream {
         return all
     }
     
-    public func forward(to output: WriteStream) {
-        DispatchQueue.global().async { [weak self] in
-            while let some = self?.read() {
-                output.write(some)
-            }
-        }
+    public func closeRead() {
+        readStream.readHandle.closeFile()
     }
     
-    public func closeRead() {
-        readHandle.closeFile()
-    }
 }
 
 public class ReadStream: ReadableStream {
     
     public static let stdin = ReadStream(readHandle: .standardInput)
     
-    public let readHandle: FileHandle
-    public var unreadBuffer = ""
+    fileprivate let readHandle: FileHandle
+    fileprivate var unreadBuffer = ""
+    
+    // ReadableStream
+    public var readStream: ReadStream { return self }
     public var encoding: String.Encoding = .utf8
     public var processObject: Any { return readHandle }
     
@@ -161,29 +165,26 @@ public class ReadStream: ReadableStream {
     
 }
 
+// MARK: - Pipe
+
 public class PipeStream: ReadableStream, WritableStream {
     
-    public let pipe: Pipe
-    
-    let readStream: ReadStream
-    let writeStream: WriteStream
-    
-    public var readHandle: FileHandle { return readStream.readHandle }
-    public var writeHandle: FileHandle { return writeStream.writeHandle }
-    public var encoding: String.Encoding = .utf8
-    public var processObject: Any { return pipe }
-    
-    public var unreadBuffer: String {
+    public let processObject: Any
+    public let readStream: ReadStream
+    public let writeStream: WriteStream
+    public var encoding: String.Encoding {
         get {
-            return readStream.unreadBuffer
+            return readStream.encoding
         }
         set(newValue) {
-            readStream.unreadBuffer = newValue
+            readStream.encoding = newValue
+            writeStream.encoding = newValue
         }
     }
     
     public init() {
-        self.pipe = Pipe()
+        let pipe = Pipe()
+        self.processObject = pipe
         self.readStream = ReadStream(readHandle: pipe.fileHandleForReading)
         self.writeStream = WriteStream(writeHandle: pipe.fileHandleForWriting)
     }
