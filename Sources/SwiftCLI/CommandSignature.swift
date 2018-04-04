@@ -28,5 +28,11 @@ public class CommandSignature {
             }
         }
     }
+    
+    public init(required: [Parameter], optional: [OptionalParameter], collected: AnyCollectedParameter?) {
+        self.required = required
+        self.optional = optional
+        self.collected = collected
+    }
 
 }

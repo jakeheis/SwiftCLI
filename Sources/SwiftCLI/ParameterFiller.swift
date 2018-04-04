@@ -10,7 +10,7 @@
 
 /// Protcol representing an object which parses the arguments for a command from an argument list
 public protocol ParameterFiller {
-    func fillParameters(of command: Command, with arguments: ArgumentList) throws
+    func fillParameters(of signature: CommandSignature, with arguments: ArgumentList) throws
 }
 
 // MARK: - DefaultParameterFiller
@@ -19,8 +19,7 @@ public class DefaultParameterFiller: ParameterFiller {
     
     public init() {}
     
-    public func fillParameters(of command: Command, with arguments: ArgumentList) throws {
-        let signature = CommandSignature(command: command)
+    public func fillParameters(of signature: CommandSignature, with arguments: ArgumentList) throws {
         let gotCount = arguments.count()
         
         // First satisfy required parameters

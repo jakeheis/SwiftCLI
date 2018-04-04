@@ -171,7 +171,7 @@ public class CLI {
         }
         
         do {
-            try parameterFiller.fillParameters(of: command.command, with: arguments)
+            try parameterFiller.fillParameters(of: CommandSignature(command: command.command), with: arguments)
         } catch let error as CLI.Error {
             if let message = error.message {
                 printError(message)
