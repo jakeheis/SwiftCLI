@@ -91,4 +91,14 @@ class TaskTests: XCTestCase {
         XCTAssertEqual(capture.awaitContent(), "SwiftCLI\n")
     }
     
+    func testEnv() {
+        let capture = CaptureStream()
+        
+        let echo = Task(executable: "bash", args: ["-c", "echo $MY_VAR"], stdout: capture)
+        echo.env["MY_VAR"] = "aVal"
+        echo.runSync()
+        
+        XCTAssertEqual(capture.awaitContent(), "aVal\n")
+    }
+    
 }

@@ -65,30 +65,21 @@ public class Task {
     }
     
     private let process: Process
+    
     public var onTermination: ((Int32) -> ())? = nil
+    public var env: [String: String] = ProcessInfo.processInfo.environment
+    public var forwardInterrupt = true
     
     private var stdout: WriteStream?
     private var stderr: WriteStream?
     private var stdin: ReadStream?
     
-    public init(executable: String, args: [String] = [], currentDirectory: String? = nil, stdout: WriteStream = .stdout, stderr: WriteStream = .stderr, stdin: ReadStream = .stdin, forwardInterrupt: Bool = true) {
+    public init(executable: String, args: [String] = [], currentDirectory: String? = nil, stdout: WriteStream = .stdout, stderr: WriteStream = .stderr, stdin: ReadStream = .stdin) {
         self.process = Process()
         self.process.launchPath = Task.findExecutable(named: executable) ?? executable
         self.process.arguments = args
         if let currentDirectory = currentDirectory {
             self.process.currentDirectoryPath = currentDirectory
-        }
-        
-        if forwardInterrupt {
-            InterruptPasser.add(self)
-        }
-        
-        self.process.terminationHandler = { [weak self] (process) in
-            guard let weakSelf = self else { return }
-            if forwardInterrupt {
-                InterruptPasser.remove(weakSelf)
-            }
-            weakSelf.onTermination?(process.terminationStatus)
         }
         
         if stdout !== WriteStream.stdout {
@@ -106,6 +97,19 @@ public class Task {
     }
     
     private func launch() {
+        if forwardInterrupt {
+            InterruptPasser.add(self)
+        }
+        
+        self.process.terminationHandler = { [weak self] (process) in
+            guard let weakSelf = self else { return }
+            if weakSelf.forwardInterrupt {
+                InterruptPasser.remove(weakSelf)
+            }
+            weakSelf.onTermination?(process.terminationStatus)
+        }
+        
+        process.environment = env
         process.launch()
         
         stdout?.close()
