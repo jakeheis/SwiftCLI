@@ -5,8 +5,9 @@
 //  Created by Jake Heiser on 4/1/18.
 //
 
-import XCTest
+import Foundation
 import SwiftCLI
+import XCTest
 
 class TaskTests: XCTestCase {
     
@@ -110,7 +111,25 @@ class TaskTests: XCTestCase {
     }
     
     func testSignals() {
+        let task = Task(executable: "/bin/sleep", args: ["1"])
+        task.runAsync()
         
+        XCTAssertTrue(task.suspend())
+        sleep(2)
+        XCTAssertTrue(task.isRunning)
+        XCTAssertTrue(task.resume())
+        sleep(2)
+        XCTAssertFalse(task.isRunning)
+        
+        let task2 = Task(executable: "/bin/sleep", args: ["3"])
+        task2.runAsync()
+        task2.interrupt()
+        XCTAssertEqual(task2.finish(), 2)
+        
+        let task3 = Task(executable: "/bin/sleep", args: ["3"])
+        task3.runAsync()
+        task3.terminate()
+        XCTAssertEqual(task3.finish(), 15)
     }
     
 }

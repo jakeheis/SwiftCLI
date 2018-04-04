@@ -65,6 +65,9 @@ public class Task {
     public var env: [String: String] = ProcessInfo.processInfo.environment
     public var forwardInterrupt = true
     
+    public var pid: Int32 { return process.processIdentifier }
+    public var isRunning: Bool { return process.isRunning }
+    
     private var stdout: WritableStream?
     private var stderr: WritableStream?
     private var stdin: ReadableStream?
@@ -106,10 +109,6 @@ public class Task {
         
         process.environment = env
         process.launch()
-        
-        stdout?.closeWrite()
-        stderr?.closeWrite()
-        stdin?.closeRead()
     }
     
     @discardableResult
@@ -148,7 +147,7 @@ public class Task {
         #if os(Linux)
         return sendSignal(SIGCONT) == 0
         #else
-        return process.suspend()
+        return process.resume()
         #endif
     }
     
@@ -162,7 +161,7 @@ public class Task {
     
     @discardableResult
     public func sendSignal(_ sig: Int32) -> Int32 {
-        return kill(process.processIdentifier, SIGINT)
+        return kill(pid, sig)
     }
     
 }
