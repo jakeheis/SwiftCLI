@@ -26,13 +26,13 @@ public func capture(_ executable: String, _ args: String...) throws -> CaptureRe
 }
 
 public func capture(_ executable: String, _ args: [String]) throws -> CaptureResult {
-    let out = CaptureStream()
-    let err = CaptureStream()
+    let out = PipeStream()
+    let err = PipeStream()
     
     let task = Task(executable: executable, args: args, stdout: out, stderr: err)
     let exitCode = task.runSync()
     
-    let captured = CaptureResult(rawStdout: out.awaitContent(), rawStderr: err.awaitContent())
+    let captured = CaptureResult(rawStdout: out.readAll(), rawStderr: err.readAll())
     guard exitCode == 0 else {
         throw CaptureError(exitStatus: exitCode, captured: captured)
     }
@@ -59,22 +59,17 @@ public class Task {
         return try? capture(bash: "which \(named)").stdout
     }
     
-    public static func createPipe() -> (read: ReadStream, write: WriteStream) {
-        let pipe = Pipe()
-        return (ReadStream(fileHandle: pipe.fileHandleForReading), WriteStream(fileHandle: pipe.fileHandleForWriting))
-    }
-    
     private let process: Process
     
     public var onTermination: ((Int32) -> ())? = nil
     public var env: [String: String] = ProcessInfo.processInfo.environment
     public var forwardInterrupt = true
     
-    private var stdout: WriteStream?
-    private var stderr: WriteStream?
-    private var stdin: ReadStream?
+    private var stdout: WritableStream?
+    private var stderr: WritableStream?
+    private var stdin: ReadableStream?
     
-    public init(executable: String, args: [String] = [], currentDirectory: String? = nil, stdout: WriteStream = .stdout, stderr: WriteStream = .stderr, stdin: ReadStream = .stdin) {
+    public init(executable: String, args: [String] = [], currentDirectory: String? = nil, stdout: WritableStream = WriteStream.stdout, stderr: WritableStream = WriteStream.stderr, stdin: ReadableStream = ReadStream.stdin) {
         self.process = Process()
         self.process.launchPath = Task.findExecutable(named: executable) ?? executable
         self.process.arguments = args
@@ -82,16 +77,16 @@ public class Task {
             self.process.currentDirectoryPath = currentDirectory
         }
         
-        if stdout !== WriteStream.stdout {
-            self.process.standardOutput = stdout.fileHandle
+        if (stdout as? WriteStream) !== WriteStream.stdout {
+            self.process.standardOutput = stdout.processObject
             self.stdout = stdout
         }
-        if stderr !== WriteStream.stderr {
-            self.process.standardError = stderr.fileHandle
+        if (stderr as? WriteStream) !== WriteStream.stderr {
+            self.process.standardError = stderr.processObject
             self.stderr = stderr
         }
-        if stdin !== ReadStream.stdin {
-            self.process.standardInput = stdin.fileHandle
+        if (stdin as? ReadStream) !== ReadStream.stdin {
+            self.process.standardInput = stdin.processObject
             self.stdin = stdin
         }
     }
@@ -112,9 +107,9 @@ public class Task {
         process.environment = env
         process.launch()
         
-        stdout?.close()
-        stderr?.close()
-        stdin?.close()
+        stdout?.closeWrite()
+        stderr?.closeWrite()
+        stdin?.closeRead()
     }
     
     @discardableResult
@@ -134,7 +129,40 @@ public class Task {
     }
     
     public func interrupt() {
+        #if os(Linux)
+        sendSignal(SIGINT)
+        #else
         process.interrupt()
+        #endif
+    }
+    
+    public func suspend() -> Bool {
+        #if os(Linux)
+        return sendSignal(SIGSTOP) == 0
+        #else
+        return process.suspend()
+        #endif
+    }
+    
+    public func resume() -> Bool {
+        #if os(Linux)
+        return sendSignal(SIGCONT) == 0
+        #else
+        return process.suspend()
+        #endif
+    }
+    
+    public func terminate() {
+        #if os(Linux)
+        sendSignal(SIGTERM)
+        #else
+        process.terminate()
+        #endif
+    }
+    
+    @discardableResult
+    public func sendSignal(_ sig: Int32) -> Int32 {
+        return kill(process.processIdentifier, SIGINT)
     }
     
 }

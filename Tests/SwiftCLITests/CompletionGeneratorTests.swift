@@ -28,11 +28,11 @@ class CompletionGeneratorTests: XCTestCase {
         let cli = CLI.createTester(commands: [alphaCmd, betaCmd])
         
         let generator = ZshCompletionGenerator(cli: cli)
-        let capture = CaptureStream()
+        let capture = PipeStream()
         generator.writeCommandList(for: CommandGroupPath(cli: cli), into: capture)
-        capture.close()
+        capture.closeWrite()
         
-        XCTAssertEqual(capture.awaitContent(), """
+        XCTAssertEqual(capture.readAll(), """
         __tester_commands() {
              _arguments -C \\
                ': :->command'
@@ -64,12 +64,12 @@ class CompletionGeneratorTests: XCTestCase {
         let cli = CLI.createTester(commands: [cmd])
         
         let generator = ZshCompletionGenerator(cli: cli)
-        let capture = CaptureStream()
+        let capture = PipeStream()
         let path = CommandGroupPath(cli: cli).appending(cmd)
         generator.writeCommand(for: path, into: capture)
-        capture.close()
+        capture.closeWrite()
         
-        XCTAssertEqual(capture.awaitContent(), """
+        XCTAssertEqual(capture.readAll(), """
         _tester_test() {
             _arguments -C \\
               '(-s --silent)'{-s,--silent}"[Silence all test output]" \\
@@ -84,11 +84,11 @@ class CompletionGeneratorTests: XCTestCase {
         let cli = CLI.createTester(commands: [alphaCmd, betaCmd, intraGroup])
         
         let generator = ZshCompletionGenerator(cli: cli)
-        let capture = CaptureStream()
+        let capture = PipeStream()
         generator.writeCompletions(into: capture)
-        capture.close()
+        capture.closeWrite()
         
-        XCTAssertEqual(capture.awaitContent(), """
+        XCTAssertEqual(capture.readAll(), """
         #compdef tester
         _tester() {
             local context state line

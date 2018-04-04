@@ -20,7 +20,8 @@ class TaskTests: XCTestCase {
             ("testIn", testIn),
             ("testPipe", testPipe),
             ("testCurrentDirectory", testCurrentDirectory),
-            ("testEnv", testEnv)
+            ("testEnv", testEnv),
+            ("testSignals", testSignals)
         ]
     }
     
@@ -61,51 +62,55 @@ class TaskTests: XCTestCase {
     }
     
     func testIn() throws {
-        let (read, write) = Task.createPipe()
+        let input = PipeStream()
         
-        let out = CaptureStream()
-        let task = Task(executable: "sort", stdout: out, stdin: read)
+        let output = PipeStream()
+        let task = Task(executable: "/usr/bin/sort", stdout: output, stdin: input)
         task.runAsync()
         
-        write <<< "beta"
-        write <<< "alpha"
-        write.close()
+        input <<< "beta"
+        input <<< "alpha"
+        input.closeWrite()
         
         let code = task.finish()
         XCTAssertEqual(code, 0)
-        XCTAssertEqual(out.awaitContent(), "alpha\nbeta\n")
+        XCTAssertEqual(output.readAll(), "alpha\nbeta\n")
     }
     
     func testPipe() {
-        let (read, write) = Task.createPipe()
-        let capture = CaptureStream()
+        let connector = PipeStream()
+        let output = PipeStream()
         
-        let ls = Task(executable: "ls", args: ["Tests"], stdout: write)
-        let grep = Task(executable: "grep", args: ["Swift"], stdout: capture, stdin: read)
+        let ls = Task(executable: "ls", args: ["Tests"], stdout: connector)
+        let grep = Task(executable: "grep", args: ["Swift"], stdout: output, stdin: connector)
         
         ls.runAsync()
         grep.runAsync()
                 
-        XCTAssertEqual(capture.awaitContent(), "SwiftCLITests\n")
+        XCTAssertEqual(output.readAll(), "SwiftCLITests\n")
     }
     
     func testCurrentDirectory() {
-        let capture = CaptureStream()
+        let capture = PipeStream()
         
         let ls = Task(executable: "ls", currentDirectory: "Sources", stdout: capture)
         ls.runSync()
         
-        XCTAssertEqual(capture.awaitContent(), "SwiftCLI\n")
+        XCTAssertEqual(capture.readAll(), "SwiftCLI\n")
     }
     
     func testEnv() {
-        let capture = CaptureStream()
+        let capture = PipeStream()
         
         let echo = Task(executable: "bash", args: ["-c", "echo $MY_VAR"], stdout: capture)
         echo.env["MY_VAR"] = "aVal"
         echo.runSync()
         
-        XCTAssertEqual(capture.awaitContent(), "aVal\n")
+        XCTAssertEqual(capture.readAll(), "aVal\n")
+    }
+    
+    func testSignals() {
+        
     }
     
 }

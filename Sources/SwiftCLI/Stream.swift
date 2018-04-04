@@ -8,16 +8,41 @@
 import Foundation
 import Dispatch
 
-open class WriteStream {
+public protocol WritableStream {
+    var writeHandle: FileHandle { get }
+    var encoding: String.Encoding { get }
+    var processObject: Any { get }
+}
+
+extension WritableStream {
+    public func write(_ content: String) {
+        guard let data = content.data(using: encoding) else {
+            fatalError("Couldn't write content: \(content)")
+        }
+        writeHandle.write(data)
+    }
     
-    public static let stdout = WriteStream(fileHandle: .standardOutput)
-    public static let stderr = WriteStream(fileHandle: .standardError)
-    public static let null = WriteStream(fileHandle: .nullDevice)
+    public func print(_ content: String, terminator: String = "\n") {
+        write(content + terminator)
+    }
     
-    let fileHandle: FileHandle
+    public func closeWrite() {
+        writeHandle.closeFile()
+    }
+}
+
+public class WriteStream: WritableStream {
     
-    public init(fileHandle: FileHandle) {
-        self.fileHandle = fileHandle
+    public static let stdout = WriteStream(writeHandle: .standardOutput)
+    public static let stderr = WriteStream(writeHandle: .standardError)
+    public static let null = WriteStream(writeHandle: .nullDevice)
+    
+    public let writeHandle: FileHandle
+    public var encoding: String.Encoding = .utf8
+    public var processObject: Any { return writeHandle }
+    
+    public init(writeHandle: FileHandle) {
+        self.writeHandle = writeHandle
     }
     
     public convenience init?(path: String) {
@@ -25,74 +50,25 @@ open class WriteStream {
             return nil
         }
         fileHandle.seekToEndOfFile()
-        self.init(fileHandle: fileHandle)
-    }
-    
-    public func write(_ content: String) {
-        guard let data = content.data(using: .utf8) else {
-            fatalError("Couldn't write content: \(content)")
-        }
-        fileHandle.write(data)
-    }
-    
-    public func print(_ content: String, terminator: String = "\n") {
-        write(content + terminator)
+        self.init(writeHandle: fileHandle)
     }
     
     public func close() {
-        fileHandle.closeFile()
+        closeWrite()
     }
     
 }
 
-public class CaptureStream: WriteStream {
-    
-    private var content: String = ""
-    private let inStream: ReadStream
-    private let semaphore = DispatchSemaphore(value: 0)
-    
-    public init() {
-        let pipe = Pipe()
-        self.inStream = ReadStream(fileHandle: pipe.fileHandleForReading)
-        super.init(fileHandle: pipe.fileHandleForWriting)
-        
-        DispatchQueue.global().async { [weak self] in
-            if let content = self?.inStream.readAll() {
-                self?.content = content
-            }
-            self?.semaphore.signal()
-        }
-    }
-    
-    public func awaitContent() -> String {
-        semaphore.wait()
-        return content
-    }
-    
+public protocol ReadableStream: class {
+    var readHandle: FileHandle { get }
+    var unreadBuffer: String { get set }
+    var encoding: String.Encoding { get }
+    var processObject: Any { get }
 }
 
-public class ReadStream {
-    
-    public static let stdin = ReadStream(fileHandle: .standardInput)
-    
-    let fileHandle: FileHandle
-    public var textEncoding: String.Encoding = .utf8
-    
-    private var unreadBuffer = ""
-    
-    public init(fileHandle: FileHandle) {
-        self.fileHandle = fileHandle
-    }
-    
-    public convenience init?(path: String) {
-        guard let fileHandle = FileHandle(forReadingAtPath: path) else {
-            return nil
-        }
-        self.init(fileHandle: fileHandle)
-    }
-    
+extension ReadableStream {
     public func readData() -> Data? {
-        let data = fileHandle.availableData
+        let data = readHandle.availableData
         return data.isEmpty ? nil : data
     }
     
@@ -103,8 +79,8 @@ public class ReadStream {
         guard let data = readData() else {
             return unread.isEmpty ? nil : unread
         }
-        guard let new = String(data: data, encoding: textEncoding) else {
-            fatalError("Couldn't parse data into string using \(textEncoding)")
+        guard let new = String(data: data, encoding: encoding) else {
+            fatalError("Couldn't parse data into string using \(encoding)")
         }
         return unread + new
     }
@@ -154,8 +130,62 @@ public class ReadStream {
         }
     }
     
+    public func closeRead() {
+        readHandle.closeFile()
+    }
+}
+
+public class ReadStream: ReadableStream {
+    
+    public static let stdin = ReadStream(readHandle: .standardInput)
+    
+    public let readHandle: FileHandle
+    public var unreadBuffer = ""
+    public var encoding: String.Encoding = .utf8
+    public var processObject: Any { return readHandle }
+    
+    public init(readHandle: FileHandle) {
+        self.readHandle = readHandle
+    }
+    
+    public convenience init?(path: String) {
+        guard let readHandle = FileHandle(forReadingAtPath: path) else {
+            return nil
+        }
+        self.init(readHandle: readHandle)
+    }
+    
     public func close() {
-        fileHandle.closeFile()
+        closeRead()
+    }
+    
+}
+
+public class PipeStream: ReadableStream, WritableStream {
+    
+    public let pipe: Pipe
+    
+    let readStream: ReadStream
+    let writeStream: WriteStream
+    
+    public var readHandle: FileHandle { return readStream.readHandle }
+    public var writeHandle: FileHandle { return writeStream.writeHandle }
+    public var encoding: String.Encoding = .utf8
+    public var processObject: Any { return pipe }
+    
+    public var unreadBuffer: String {
+        get {
+            return readStream.unreadBuffer
+        }
+        set(newValue) {
+            readStream.unreadBuffer = newValue
+        }
+    }
+    
+    public init() {
+        self.pipe = Pipe()
+        self.readStream = ReadStream(readHandle: pipe.fileHandleForReading)
+        self.writeStream = WriteStream(writeHandle: pipe.fileHandleForWriting)
     }
     
 }
@@ -164,6 +194,6 @@ public class ReadStream {
 
 infix operator <<<: AssignmentPrecedence
 
-public func <<<(stream: WriteStream, text: String) {
+public func <<<(stream: WritableStream, text: String) {
     stream.print(text)
 }
