@@ -13,7 +13,14 @@ class TaskTests: XCTestCase {
     static var allTests : [(String, (TaskTests) -> () throws -> Void)] {
         return [
             ("testExec", testExec),
-            ("testCapture", testCapture)
+            ("testCapture", testCapture),
+            ("testExecutableFind", testExecutableFind),
+            ("testBashExec", testBashExec),
+            ("testBashCapture", testBashCapture),
+            ("testIn", testIn),
+            ("testPipe", testPipe),
+            ("testCurrentDirectory", testCurrentDirectory),
+            ("testEnv", testEnv)
         ]
     }
     

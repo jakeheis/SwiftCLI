@@ -17,7 +17,8 @@ class StreamTests: XCTestCase {
             ("testRead", testRead),
             ("testReadAll", testReadAll),
             ("testReadLine", testReadLine),
-            ("testReadLines", testReadLines),
+            ("testReadLineDelayed", testReadLineDelayed),
+            ("testReadLines", testReadLines)
         ]
     }
     
@@ -82,26 +83,29 @@ class StreamTests: XCTestCase {
         XCTAssertEqual(read.readLine(), "")
         XCTAssertEqual(read.readLine(), nil)
         
-        // DispatchQueue errors on Linux on Swifts < 4.1
-        #if os(macOS) || swift(>=4.1)
-        let (read2, write2) = Task.createPipe()
+    }
+
+    // DispatchQueue errors on Linux on Swifts < 4.1
+    #if os(macOS) || swift(>=4.1)
+    func testReadLineDelayed() {
+        let (read, write) = Task.createPipe()
         
-        write2.write("first ")
+        write.write("first ")
         
         DispatchQueue.global().asyncAfter(deadline: .now() + .seconds(1)) {
-            write2.write("line\nlast ")
+            write.write("line\nlast ")
         }
         
         DispatchQueue.global().asyncAfter(deadline: .now() + .milliseconds(1500)) {
-            write2.write("line")
-            write2.close()
+            write.write("line")
+            write.close()
         }
         
-        XCTAssertEqual(read2.readLine(), "first line")
-        XCTAssertEqual(read2.readLine(), "last line")
-        XCTAssertEqual(read2.readLine(), nil)
-        #endif
+        XCTAssertEqual(read.readLine(), "first line")
+        XCTAssertEqual(read.readLine(), "last line")
+        XCTAssertEqual(read.readLine(), nil)
     }
+    #endif
     
     func testReadLines() {
         let (read, write) = Task.createPipe()

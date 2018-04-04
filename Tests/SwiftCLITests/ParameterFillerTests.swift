@@ -16,6 +16,7 @@ class ParameterFillerTests: XCTestCase {
             ("testEmptySignature", testEmptySignature),
             ("testRequiredParameters", testRequiredParameters),
             ("testOptionalParameters", testOptionalParameters),
+            ("testOptionalParametersWithInheritance", testOptionalParametersWithInheritance),
             ("testExtraneousArguments", testExtraneousArguments),
             ("testCollectedRequiredParameters", testCollectedRequiredParameters),
             ("testCollectedOptionalParameters", testCollectedOptionalParameters),
