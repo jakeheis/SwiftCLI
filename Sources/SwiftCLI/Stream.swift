@@ -101,7 +101,7 @@ public class ReadStream {
         
         let delimiter = "\n".data(using: .utf8)![0]
         while !accumluated.contains(delimiter) {
-            let data = fileHandle.readData(ofLength: 10)
+            let data = fileHandle.availableData
             if data.isEmpty {
                 if accumluated.isEmpty {
                     return nil
