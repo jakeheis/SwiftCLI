@@ -227,7 +227,7 @@ class ParameterFillerTests: XCTestCase {
         let stringArguments = arguments.joined(separator: " ")
         let argumentList = ArgumentList(argumentString: "tester \(stringArguments)")
         
-        try DefaultParameterFiller().fillParameters(of: current!, with: argumentList)
+        try DefaultParameterFiller().fillParameters(of: CommandSignature(command: current!), with: argumentList)
     }
     
     private func assertParse(_ test: @autoclosure () -> Bool, assertMessage: String) {

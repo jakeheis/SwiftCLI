@@ -1,5 +1,5 @@
 //
-//  OutputByteStream.swift
+//  Stream.swift
 //  SwiftCLI
 //
 //  Created by Jake Heiser on 9/11/17.
@@ -17,17 +17,33 @@ public protocol WritableStream {
 
 extension WritableStream {
     
+    /// Writes the given data to the stream
+    ///
+    /// - Parameter data: the data to write
+    public func writeData(_ data: Data) {
+        writeStream.writeHandle.write(data)
+    }
+    
+    /// Write the given content to the stream without any terminator
+    ///
+    /// - Parameter content: the content to write
     public func write(_ content: String) {
         guard let data = content.data(using: encoding) else {
             fatalError("Couldn't write content: \(content)")
         }
-        writeStream.writeHandle.write(data)
+        writeData(data)
     }
     
+    /// Write the given content to the stream with a terminator (default newline)
+    ///
+    /// - Parameters:
+    ///   - content: the content to write
+    ///   - terminator: the terminator to write after the content; default newline
     public func print(_ content: String, terminator: String = "\n") {
         write(content + terminator)
     }
     
+    /// Close the stream
     public func closeWrite() {
         writeStream.writeHandle.closeFile()
     }
@@ -36,21 +52,33 @@ extension WritableStream {
 
 public class WriteStream: WritableStream {
     
+    /// A stream which writes to the current process's standard output
     public static let stdout = WriteStream(writeHandle: .standardOutput)
-    public static let stderr = WriteStream(writeHandle: .standardError)
-    public static let null = WriteStream(writeHandle: .nullDevice)
     
-    fileprivate let writeHandle: FileHandle
+    /// A stream which writes to the current process's standard error
+    public static let stderr = WriteStream(writeHandle: .standardError)
+    
+    /// A stream which does nothing upon write
+    public static let null = WriteStream(writeHandle: .nullDevice)
     
     // WritableStream
     public var writeStream: WriteStream { return self }
     public var encoding: String.Encoding = .utf8
     public var processObject: Any { return writeHandle }
     
+    // private
+    fileprivate let writeHandle: FileHandle
+    
+    /// Create a stream which writes to the given file handle
+    ///
+    /// - Parameter writeHandle: the file handle to write to
     public init(writeHandle: FileHandle) {
         self.writeHandle = writeHandle
     }
     
+    /// Create a stream which writes to the given path
+    ///
+    /// - Parameter path: the path to write to
     public convenience init?(path: String) {
         guard let fileHandle = FileHandle(forWritingAtPath: path) else {
             return nil
@@ -59,6 +87,7 @@ public class WriteStream: WritableStream {
         self.init(writeHandle: fileHandle)
     }
     
+    /// Close the stream
     public func close() {
         closeWrite()
     }
@@ -75,11 +104,17 @@ public protocol ReadableStream: class {
 
 extension ReadableStream {
     
+    /// Read any available data; blocks if no data is available but stream is open
+    ///
+    /// - Returns: the read data
     public func readData() -> Data? {
         let data = readStream.readHandle.availableData
         return data.isEmpty ? nil : data
     }
     
+    /// Read any available text; blocks if no text is available but stream is open
+    ///
+    /// - Returns: the read text
     public func read() -> String? {
         let unread = readStream.unreadBuffer
         readStream.unreadBuffer = ""
@@ -93,6 +128,10 @@ extension ReadableStream {
         return unread + new
     }
     
+    /// Read a line of text ending with the given delimiter; blocks if line of text is not available but stream is open
+    ///
+    /// - Parameter delimiter: the end of line marker; default newline
+    /// - Returns: the line of text
     public func readLine(delimiter: Character = "\n") -> String? {
         guard var accumluated = read() else {
             return nil
@@ -115,6 +154,9 @@ extension ReadableStream {
         }
     }
     
+    /// Lazily read a seuqence of all lines
+    ///
+    /// - Returns: a lazy sequence of all lines
     public func readLines() -> LazySequence<AnyIterator<String>> {
         let iter = AnyIterator {
             return self.readLine()
@@ -122,6 +164,9 @@ extension ReadableStream {
         return iter.lazy
     }
     
+    /// Read all content; blocks until stream is closed
+    ///
+    /// - Returns: all content
     public func readAll() -> String {
         var all = ""
         while let some = read() {
@@ -130,6 +175,7 @@ extension ReadableStream {
         return all
     }
     
+    /// Close the stream
     public func closeRead() {
         readStream.readHandle.closeFile()
     }
@@ -138,6 +184,8 @@ extension ReadableStream {
 
 public class ReadStream: ReadableStream {
     
+    /// A stream which reads from the current process's standard input
+    /// - Warning: do not call readLine on this stream and also call Swift.readLine() or Input.readLine()
     public static let stdin = ReadStream(readHandle: .standardInput)
     
     fileprivate let readHandle: FileHandle
@@ -148,10 +196,16 @@ public class ReadStream: ReadableStream {
     public var encoding: String.Encoding = .utf8
     public var processObject: Any { return readHandle }
     
+    /// Create a stream which reads from the given file handle
+    ///
+    /// - Parameter path: the file handle to read from
     public init(readHandle: FileHandle) {
         self.readHandle = readHandle
     }
     
+    /// Create a stream which reads from the given path
+    ///
+    /// - Parameter path: the path to read from
     public convenience init?(path: String) {
         guard let readHandle = FileHandle(forReadingAtPath: path) else {
             return nil
@@ -159,6 +213,7 @@ public class ReadStream: ReadableStream {
         self.init(readHandle: readHandle)
     }
     
+    /// Close the stream
     public func close() {
         closeRead()
     }

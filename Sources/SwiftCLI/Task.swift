@@ -109,6 +109,7 @@ public class Task {
     public var env: [String: String] = ProcessInfo.processInfo.environment
     
     /// Whether interrupt signals which this process receives should be forwarded to this task; defaults to true
+    /// - Warning: when true, SwiftCLI takes over the signal handler for SIGINT which removes any handler that is already in place
     public var forwardInterrupt = true
     
     /// The id of the running task
@@ -239,15 +240,21 @@ public class Task {
 
 // MARK: -
 
+/// The error thrown by run(...) and run(bash:)
 public struct RunError: ProcessError {
+    
     /// The status which the task exited with
     public let exitStatus: Int32
+    
     public let message: String? = nil
 }
 
+/// The error thrown by capture(...) and capture(bash:)
 public struct CaptureError: ProcessError {
+    
     /// The status which the task exited with
     public let exitStatus: Int32
+    
     /// Data which was captured prior to the process failing
     public let captured: CaptureResult
     
@@ -260,7 +267,7 @@ public struct CaptureResult {
     /// The full stdout contents; use `stdout` for trimmed contents
     public let rawStdout: String
     
-    /// The full stderr contents; use `stdout` for trimmed contents
+    /// The full stderr contents; use `stderr` for trimmed contents
     public let rawStderr: String
     
     /// The stdout contents, trimmed of whitespace

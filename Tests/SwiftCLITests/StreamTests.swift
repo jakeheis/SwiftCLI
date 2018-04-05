@@ -13,13 +13,16 @@ class StreamTests: XCTestCase {
     static var allTests : [(String, (StreamTests) -> () throws -> ())] {
         return [
             ("testWrite", testWrite),
-            ("testPipe", testPipe),
+            ("testWriteData", testWriteData),
             ("testRead", testRead),
+            ("testReadData", testReadData),
             ("testReadAll", testReadAll),
             ("testReadLine", testReadLine),
-            ("testReadLines", testReadLines)
+            ("testReadLines", testReadLines),
         ]
     }
+    
+    // MARK: - Write
     
     func testWrite() {
         let text = "first line\nsecond line"
@@ -34,25 +37,39 @@ class StreamTests: XCTestCase {
         XCTAssertEqual(String(data: data, encoding: .utf8), text)
     }
     
-    func testPipe() {
-        let text = "first line\nsecond line"
+    func testWriteData() {
+        let data = "someString".data(using: .utf8)!
         
-        let pipe = PipeStream()
+        let pipe = Pipe()
+        let write = WriteStream(writeHandle: pipe.fileHandleForWriting)
+        write.writeData(data)
+        write.close()
         
-        pipe.write(text)
-        pipe.closeWrite()
-        
-        XCTAssertEqual(pipe.readAll(), text)
+        XCTAssertEqual(pipe.fileHandleForReading.readDataToEndOfFile(), data)
     }
     
+    // MARK: - Read
+    
     func testRead() {
-        let pipe = PipeStream()
+        let pipe = Pipe()
+        let read = ReadStream(readHandle: pipe.fileHandleForReading)
         
-        pipe <<< "first line"
-        XCTAssertEqual(pipe.read(), "first line\n")
+        let first = "first line\n"
+        pipe.fileHandleForWriting.write(first.data(using: .utf8)!)
+        XCTAssertEqual(read.read(), first)
         
-        pipe <<< "second line"
-        XCTAssertEqual(pipe.read(), "second line\n")
+        let second = "second line\n"
+        pipe.fileHandleForWriting.write(second.data(using: .utf8)!)
+        XCTAssertEqual(read.read(), second)
+    }
+    
+    func testReadData() {
+        let data = "someString".data(using: .utf8)!
+        
+        let pipe = Pipe()
+        let read = ReadStream(readHandle: pipe.fileHandleForReading)
+        pipe.fileHandleForWriting.write(data)
+        XCTAssertEqual(read.readData(), data)
     }
     
     func testReadAll() {
