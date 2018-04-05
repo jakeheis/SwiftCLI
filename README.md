@@ -55,6 +55,7 @@ Table of Contents
   * [Shell completions](#shell-completions)
   * [Built-in commands](#built-in-commands)
   * [Input](#input)
+  * [External tasks](#external-tasks)
   * [Customization](#customization)
   * [Running your CLI](#running-your-cli)
   * [Example](#example)
@@ -486,6 +487,37 @@ Percentage: 104
 '104' is invalid; must be a number between 0 and 100
 Percentage: 43.6
 ```
+
+## External tasks
+
+SwiftCLI makes it easy to execute external tasks:
+
+```swift
+// Execute a command and print output:
+try run("echo", "hello")
+try run(bash: "while true; do echo hi && sleep 1; done")
+
+// Execute a command and capture the output:
+let currentDirectory = try capture("pwd").stdout
+let sorted = try capture(bash: "cat Package.swift | sort").stdout
+```
+
+You can also use the `Task` class for more custom behavior:
+
+```swift
+let input = PipeStream()
+let output = PipeStream()
+let task = Task(executable: "sort", currentDirectory: "~/Ice", stdout: output, stdin: input)
+task.runAsync()
+
+input <<< "beta"
+input <<< "alpha"
+input.closeWrite()
+
+output.readAll() // will be alpha\nbeta\n
+```
+
+See `Sources/SwiftCLI/Task.swift` for full documentation on `Task`.
 
 ## Customization
 
