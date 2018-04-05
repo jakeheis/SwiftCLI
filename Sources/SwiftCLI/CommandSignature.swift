@@ -36,3 +36,29 @@ public class CommandSignature {
     }
 
 }
+
+public class ParameterIterator {
+    
+    var params: [AnyParameter]
+    let collected: AnyCollectedParameter?
+    
+    init(command: Command) {
+        var all = command.parameters.map({ $0.1 })
+        if let collected = all.last as? AnyCollectedParameter {
+            self.collected = collected
+            all.removeLast()
+        } else {
+            self.collected = nil
+        }
+        self.params = all
+    }
+    
+    func next() -> AnyParameter? {
+        if let individual = params.first {
+            params.removeFirst()
+            return individual
+        }
+        return collected
+    }
+    
+}

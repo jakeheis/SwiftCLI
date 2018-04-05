@@ -13,6 +13,46 @@ public protocol ParameterFiller {
     func fillParameters(of signature: CommandSignature, with arguments: ArgumentList) throws
 }
 
+public class Parse {
+
+    func parse(arguments: ArgumentList, command: CommandPath) throws {
+        let params = ParameterIterator(command: command.command)
+        let options = OptionRegistry(options: command.options, optionGroups: command.command.optionGroups)
+        
+        var cur = arguments.head
+        while let arg = cur {
+            if arg.value.hasPrefix("-") {
+                try handleOption(node: arg, arguments: arguments, optionRegistry: options)
+            } else if let param = params.next() {
+                param.update(value: arg.value)
+            } else {
+                throw CLI.Error(message: "nope")
+            }
+            cur = arg.next
+            arguments.remove(node: arg)
+        }
+    }
+    
+    private func handleOption(node: ArgumentNode, arguments: ArgumentList, optionRegistry: OptionRegistry) throws {
+        print("handling \(node.value)")
+        if let flag = optionRegistry.flag(for: node.value) {
+            flag.setOn()
+        } else if let key = optionRegistry.key(for: node.value) {
+            guard let next = node.next, !next.value.hasPrefix("-") else {
+                throw OptionRecognizerError.noValueForKey(node.value)
+            }
+            guard key.setValue(next.value) else {
+                throw OptionRecognizerError.illegalKeyValue(node.value, next.value)
+            }
+            arguments.remove(node: next)
+        } else {
+            throw OptionRecognizerError.unrecognizedOption(node.value)
+        }
+        arguments.remove(node: node)
+    }
+    
+}
+
 // MARK: - DefaultParameterFiller
 
 public class DefaultParameterFiller: ParameterFiller {

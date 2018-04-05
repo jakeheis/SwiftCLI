@@ -53,6 +53,19 @@ public class ArgumentList {
         }
     }
     
+    public init(argumentsWithoutDrop: [String]) {
+        var current: ArgumentNode?
+        for value in argumentsWithoutDrop {
+            let argument = ArgumentNode(value: value)
+            current?.next = argument
+            argument.previous = current
+            current = argument
+            if head == nil {
+                head = current
+            }
+        }
+    }
+    
     /// Inserts a new argument node with the given value before given node
     ///
     /// - Parameters:

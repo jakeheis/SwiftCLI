@@ -6,12 +6,16 @@
 //  Copyright (c) 2015 jakeheis. All rights reserved.
 //
 
-public protocol AnyParameter {
+public protocol AnyParameter: class {
+    var required: Bool { get }
+    
+    func update(value: String)
     func signature(for name: String) -> String
 }
 
 open class Parameter: AnyParameter {
     
+    public let required = true
     private var privateValue: String? = nil
     
     public var value: String {
@@ -32,6 +36,7 @@ open class Parameter: AnyParameter {
 
 open class OptionalParameter: AnyParameter {
     
+    public let required = false
     public var value: String? = nil
     
     public init() {}
@@ -49,10 +54,28 @@ open class OptionalParameter: AnyParameter {
 // MARK: - Collected parameters
 
 public protocol AnyCollectedParameter: AnyParameter {
-    var required: Bool { get }
-
     func update(value: [String])
 }
+
+//public class DynamicParameter: AnyCollectedParameter {
+//
+//    public let required: Bool
+//    public let reaction: ([String]) -> ()
+//
+//    public init(required: Bool, reaction: @escaping ([String]) -> ()) {
+//        self.required = required
+//        self.reaction = reaction
+//    }
+//
+//    public func update(value: [String]) {
+//        reaction(value)
+//    }
+//
+//    public func signature(for name: String) -> String {
+//        return (required ? "<\(name)>" : "[<\(name)>]") + " ..."
+//    }
+//
+//}
 
 open class CollectedParameter: AnyCollectedParameter {
     
@@ -63,6 +86,10 @@ open class CollectedParameter: AnyCollectedParameter {
     
     open func update(value: [String]) {
         self.value = value
+    }
+    
+    public func update(value: String) {
+        self.value.append(value)
     }
     
     open func signature(for name: String) -> String {
@@ -80,6 +107,10 @@ open class OptionalCollectedParameter: AnyCollectedParameter {
     
     open func update(value: [String]) {
         self.value = value
+    }
+    
+    public func update(value: String) {
+        self.value?.append(value)
     }
     
     open func signature(for name: String) -> String {
