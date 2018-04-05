@@ -8,9 +8,6 @@
 import Foundation
 
 public class Term {
-    
-    public static let stdout = StdoutStream()
-    public static let stderr = StderrStream()
 
     public static let isTTY = isatty(fileno(Foundation.stdout)) != 0
     

@@ -10,6 +10,14 @@ import XCTest
 
 class InputTests: XCTestCase {
     
+    static var allTests : [(String, (InputTests) -> () throws -> Void)] {
+        return [
+            ("testInt", testInt),
+            ("testDouble", testDouble),
+            ("testBool", testBool)
+        ]
+    }
+    
     var input: [String] = []
 
     override func setUp() {

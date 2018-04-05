@@ -215,3 +215,59 @@ extension Sequence {
         #endif
     }
 }
+
+// MARK: - Streams
+
+@available(*, deprecated, renamed: "WritableStream")
+public typealias OutputByteStream = WritableStream
+
+@available(*, deprecated, message: "Use WriteStream.stdout instead")
+public class StdoutStream: WriteStream {
+    convenience init() {
+        self.init(writeHandle: FileHandle.standardOutput)
+    }
+}
+
+
+@available(*, deprecated, message: "Use WriteStream.stderr instead")
+public class StderrStream: WriteStream {
+    convenience init() {
+        self.init(writeHandle: FileHandle.standardError)
+    }
+}
+
+@available(*, deprecated, message: "Use WriteStream.null instead")
+public class NullStream: WriteStream {
+    convenience init() {
+        self.init(writeHandle: FileHandle.nullDevice)
+    }
+}
+
+@available(*, deprecated, renamed: "WriteStream")
+public typealias FileStream = WriteStream
+
+extension WritableStream {
+    
+    @available(*, deprecated, renamed: "print")
+    func output(_ content: String) {
+        output(content, terminator: "\n")
+    }
+    
+    @available(*, deprecated, renamed: "print")
+    public func output(_ content: String, terminator: String) {
+        print(content, terminator: terminator)
+    }
+    
+}
+
+extension Term {
+    @available(*, deprecated, message: "Use WriteStream.stdout instead")
+    public static var stdout: WriteStream {
+        return WriteStream.stdout
+    }
+    
+    @available(*, deprecated, message: "Use WriteStream.stderr instead")
+    public static var stderr: WriteStream {
+        return WriteStream.stderr
+    }
+}
