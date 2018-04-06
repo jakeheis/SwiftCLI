@@ -19,6 +19,11 @@ public class OptionGroup {
     
     public var message: String {
         let names = options.optMap({ $0.names.last }).joined(separator: " ")
+        
+        if options.count == 1 {
+            return "Must pass the following option: \(names)"
+        }
+        
         var str: String
         switch restriction {
         case .exactlyOne:
@@ -35,6 +40,11 @@ public class OptionGroup {
     public var count: Int = 0
     
     public init(options: [Option], restriction: Restriction) {
+        precondition(!options.isEmpty, "must pass one or more options")
+        if options.count == 1 {
+            precondition(restriction == .exactlyOne, "cannot use atMostOne or atLeastOne when passing one option")
+        }
+        
         self.options = options
         self.restriction = restriction
     }
