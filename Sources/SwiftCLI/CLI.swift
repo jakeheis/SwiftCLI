@@ -131,22 +131,15 @@ public class CLI {
         do {
             return try parser.init(commandGroup: self, arguments: arguments).parse()
         } catch let error as RouteError {
-            if let command = error.partialPath.bottom as? Command & CommandGroup {
-                if let value = error.notFound {
-                    command.notFound.update(value: value)
-                }
-                return error.partialPath.droppingLast().appending(command)
-            } else {
-                if let notFound = error.notFound {
-                    stderr <<< ""
-                    stderr <<< "Command \"\(notFound)\" not found"
-                    stderr <<< ""
-                }
-                
-                let list = helpMessageGenerator.generateCommandList(for: error.partialPath)
-                stdout <<< list
-                throw CLI.Error()
+            if let notFound = error.notFound {
+                stderr <<< ""
+                stderr <<< "Command \"\(notFound)\" not found"
+                stderr <<< ""
             }
+            
+            let list = helpMessageGenerator.generateCommandList(for: error.partialPath)
+            stdout <<< list
+            throw CLI.Error()
         } catch let error as OptionError {
             let message = helpMessageGenerator.generateMisusedOptionsStatement(error: error)
             throw CLI.Error(message: message)

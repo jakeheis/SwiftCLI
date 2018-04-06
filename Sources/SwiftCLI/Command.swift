@@ -71,15 +71,11 @@ public protocol Command: Routable {
     /// The paramters this command accepts; dervied automatically, don't implement unless custom functionality needed
     var parameters: [(String, AnyParameter)] { get }
     
-    
 }
 
 extension Command {
     
     public var parameters: [(String, AnyParameter)] {
-        if self is CommandGroup {
-            return [("notFound", _notFound)]
-        }
         return parametersFromMirror(Mirror(reflecting: self))
     }
     
@@ -115,11 +111,3 @@ public extension CommandGroup {
         return [:]
     }
 }
-
-private let _notFound = Parameter()
-public extension CommandGroup where Self : Command {
-    var notFound: Parameter {
-        return _notFound
-    }
-}
-

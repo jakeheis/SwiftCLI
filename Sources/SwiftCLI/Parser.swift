@@ -30,7 +30,7 @@ public protocol Parser {
 
 final public class DefaultParser: Parser {
     
-    enum State {
+    public enum State {
         case routing(CommandGroupPath)
         case found(CommandPath, ParameterIterator)
         
@@ -42,9 +42,9 @@ final public class DefaultParser: Parser {
         }
     }
     
-    var state: State
-    let arguments: ArgumentList
-    let optionRegistry: OptionRegistry
+    public var state: State
+    public let arguments: ArgumentList
+    public let optionRegistry: OptionRegistry
     
     public init(commandGroup: CommandGroup, arguments: ArgumentList) {
         self.state = .routing(CommandGroupPath(top: commandGroup))
@@ -79,6 +79,9 @@ final public class DefaultParser: Parser {
         
         switch state {
         case let .routing(path):
+            if let command = path.bottom as? Command & CommandGroup {
+                return path.droppingLast().appending(command)
+            }
             throw RouteError(partialPath: path, notFound: nil)
         case let .found(command, params):
             if let param = params.next(), !param.satisfied {
@@ -91,7 +94,7 @@ final public class DefaultParser: Parser {
         }
     }
     
-    func parseOption(node: ArgumentNode) throws {
+    public func parseOption(node: ArgumentNode) throws {
         if let flag = optionRegistry.flag(for: node.value) {
             flag.setOn()
         } else if let key = optionRegistry.key(for: node.value) {
@@ -107,7 +110,7 @@ final public class DefaultParser: Parser {
         }
     }
     
-    func route(node: ArgumentNode, path: CommandGroupPath) throws {
+    public func route(node: ArgumentNode, path: CommandGroupPath) throws {
         guard let matching = path.bottom.children.first(where: { $0.name == node.value }) else {
             throw RouteError(partialPath: path, notFound: node.value)
         }
