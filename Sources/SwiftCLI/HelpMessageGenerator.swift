@@ -9,7 +9,7 @@
 public protocol HelpMessageGenerator {
     func generateCommandList(for path: CommandGroupPath) -> String
     func generateUsageStatement(for path: CommandPath) -> String
-    func generateMisusedOptionsStatement(for path: CommandPath, error: OptionRecognizerError) -> String
+    func generateMisusedOptionsStatement(error: Parse.OptionError) -> String
 }
 
 extension HelpMessageGenerator {
@@ -89,8 +89,13 @@ extension HelpMessageGenerator {
         return message
     }
     
-    public func generateMisusedOptionsStatement(for path: CommandPath, error: OptionRecognizerError) -> String {
-        return generateUsageStatement(for: path) + "\n" + error.message + "\n"
+    public func generateMisusedOptionsStatement(error: Parse.OptionError) -> String {
+        var message = ""
+        if let command = error.command {
+            message += generateUsageStatement(for: command)
+        }
+        message += "\n" + error.message + "\n"
+        return message
     }
     
 }

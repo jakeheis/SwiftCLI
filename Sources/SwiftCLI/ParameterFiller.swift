@@ -14,41 +14,121 @@ public protocol ParameterFiller {
 }
 
 public class Parse {
-
-    func parse(arguments: ArgumentList, command: CommandPath) throws {
-        let params = ParameterIterator(command: command.command)
-        let options = OptionRegistry(options: command.options, optionGroups: command.command.optionGroups)
+    
+    public struct RouteError: Swift.Error {
+        public let partialPath: CommandGroupPath
+        public let notFound: String?
+    }
+    
+    public struct OptionError: Swift.Error {
+        let command: CommandPath?
+        let message: String
+    }
+    
+    public struct ParameterError: Swift.Error {
+        let command: CommandPath
+        let message: String
+    }
+    
+    enum State {
+        case routing(path: CommandGroupPath)
+        case fillingParams(path: CommandPath, params: ParameterIterator)
         
-        var cur = arguments.head
-        while let arg = cur {
-            if arg.value.hasPrefix("-") {
-                try handleOption(node: arg, arguments: arguments, optionRegistry: options)
-            } else if let param = params.next() {
-                param.update(value: arg.value)
-            } else {
-                throw CLI.Error(message: "nope")
+        var options: OptionRegistry {
+            switch self {
+            case let .routing(path: path): return OptionRegistry(options: path.sharedOptions, optionGroups: [])
+            case let .fillingParams(path: path, _): return OptionRegistry(options: path.options, optionGroups: path.command.optionGroups)
             }
-            cur = arg.next
-            arguments.remove(node: arg)
+        }
+        
+        var command: CommandPath? {
+            switch self {
+            case .routing: return nil
+            case let .fillingParams(path: path, params: _): return path
+            }
+        }
+    }
+
+    func parse(commandGroup: CommandGroup, arguments: ArgumentList) throws -> CommandPath {
+        var state = State.routing(path: CommandGroupPath(top: commandGroup))
+        while let next = try step(state: state, arguments: arguments) {
+            state = next
+        }
+        
+        switch state {
+        case let .routing(path: path):
+            throw RouteError(partialPath: path, notFound: nil)
+        case let .fillingParams(path: path, params: params):
+            if let param = params.next(), !param.satisfied {
+//                throw ParameterError(command: path, message: <#T##String#>)
+                throw CLI.Error(message: "Not enough params")
+            }
+            if let failingGroup = state.options.failingGroup() {
+                throw OptionError(command: path, message: failingGroup.message)
+            }
+            return path
         }
     }
     
-    private func handleOption(node: ArgumentNode, arguments: ArgumentList, optionRegistry: OptionRegistry) throws {
-        print("handling \(node.value)")
+    func step(state: State, arguments: ArgumentList) throws -> State? {
+        guard let node = arguments.head else {
+            return nil
+        }
+        
+        defer { arguments.remove(node: node) }
+        
+        if node.value.hasPrefix("-") {
+            try handleOption(node: node, arguments: arguments, state: state)
+            return state
+        }
+        
+        switch state {
+        case let .routing(path: path):
+            return try route(path: path, value: node.value)
+        case let .fillingParams(_, params):
+            try fillParameters(params: params, value: node.value)
+            return state
+        }
+    }
+    
+    private func handleOption(node: ArgumentNode, arguments: ArgumentList, state: State) throws {
+        let optionRegistry = state.options
+        
         if let flag = optionRegistry.flag(for: node.value) {
             flag.setOn()
         } else if let key = optionRegistry.key(for: node.value) {
             guard let next = node.next, !next.value.hasPrefix("-") else {
-                throw OptionRecognizerError.noValueForKey(node.value)
+                throw OptionError(command: state.command, message: "Expected a value to follow: \(node.value)")
             }
             guard key.setValue(next.value) else {
-                throw OptionRecognizerError.illegalKeyValue(node.value, next.value)
+                throw OptionError(command: state.command, message: "Illegal type passed to \(key): \(node.value)")
             }
             arguments.remove(node: next)
         } else {
-            throw OptionRecognizerError.unrecognizedOption(node.value)
+            throw OptionError(command: state.command, message:"Unrecognized option: \(node.value)")
         }
-        arguments.remove(node: node)
+    }
+    
+    private func route(path: CommandGroupPath, value: String) throws -> State  {
+        guard let matching = path.bottom.children.first(where: { $0.name == value }) else {
+            throw RouteError(partialPath: path, notFound: value)
+        }
+        
+        if let group = matching as? CommandGroup {
+            return .routing(path: path.appending(group))
+        } else if let cmd = matching as? Command {
+            return .fillingParams(path: path.appending(cmd), params: ParameterIterator(command: cmd))
+        } else {
+            preconditionFailure("Routables must be either CommandGroups or Commands")
+        }
+    }
+    
+    private func fillParameters(params: ParameterIterator, value: String) throws {
+        if let param = params.next() {
+            param.update(value: value)
+        } else {
+            throw CLI.Error(message: "Too many params")
+        }
     }
     
 }

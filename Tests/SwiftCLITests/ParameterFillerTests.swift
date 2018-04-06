@@ -221,13 +221,22 @@ class ParameterFillerTests: XCTestCase {
         XCTAssertEqual(filler.wrongArgCount(signature: signature, got: 1).message, "error: command requires between 2 and 4 arguments, got 1")
     }
     
-    func testParse() {
+    func testParse() throws {
         let cmd = TestCommand()
         let cli = CLI.createTester(commands: [cmd])
-        let path = CommandGroupPath(cli: cli).appending(cmd)
         
-        let args = ArgumentList(argumentsWithoutDrop: ["-s", "favTest", "-t", "3", "SwiftCLI"])
-        try! Parse().parse(arguments: args, command: path)
+        let args = ArgumentList(arguments: ["tester", "test", "-s", "favTest", "-t", "3", "SwiftCLI"])
+        let path: CommandPath
+        do {
+            path = try Parse().parse(commandGroup: cli, arguments: args)
+        } catch let error {
+            print(error)
+            XCTFail()
+            return
+        }
+        
+        XCTAssertEqual(path.joined(), "tester test")
+        XCTAssertTrue(path.command === cmd)
         
         XCTAssertEqual(cmd.testName.value, "favTest")
         XCTAssertEqual(cmd.testerName.value, "SwiftCLI")

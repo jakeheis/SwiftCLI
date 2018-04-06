@@ -23,7 +23,7 @@ class HelpMessageGeneratorTests: XCTestCase {
     let command = TestCommand()
     
     func testCommandListGeneration() {
-        let path = CommandGroupPath(cli: CLI.createTester(commands: [alphaCmd, betaCmd], description: "A tester for SwiftCLI"))
+        let path = CommandGroupPath(top: CLI.createTester(commands: [alphaCmd, betaCmd], description: "A tester for SwiftCLI"))
         var message = DefaultHelpMessageGenerator().generateCommandList(for: path)
         
         var expectedMessage = """
@@ -41,7 +41,7 @@ class HelpMessageGeneratorTests: XCTestCase {
         
         XCTAssertEqual(message, expectedMessage)
         
-        let path2 = CommandGroupPath(cli: CLI.createTester(commands: [alphaCmd, midGroup]))
+        let path2 = CommandGroupPath(top: CLI.createTester(commands: [alphaCmd, midGroup]))
         message = DefaultHelpMessageGenerator().generateCommandList(for: path2)
         
         expectedMessage = """
@@ -62,7 +62,7 @@ class HelpMessageGeneratorTests: XCTestCase {
 
     func testUsageStatementGeneration() {
         let cli = CLI.createTester(commands: [command])
-        let path = CommandGroupPath(cli: cli).appending(command)
+        let path = CommandGroupPath(top: cli).appending(command)
         let message = DefaultHelpMessageGenerator().generateUsageStatement(for: path)
         
         let expectedMessage = """
@@ -82,7 +82,7 @@ class HelpMessageGeneratorTests: XCTestCase {
     func testInheritedUsageStatementGeneration() {
         let cmd = TestInheritedCommand()
         let cli = CLI.createTester(commands: [cmd])
-        let path = CommandGroupPath(cli: cli).appending(cmd)
+        let path = CommandGroupPath(top: cli).appending(cmd)
         let message = DefaultHelpMessageGenerator().generateUsageStatement(for: path)
         
         let expectedMessage = """
@@ -112,7 +112,7 @@ class HelpMessageGeneratorTests: XCTestCase {
             try DefaultOptionRecognizer().recognizeOptions(from: registry, in: arguments)
             XCTFail("Option parser should fail on incorrectly used options")
         } catch let error as OptionRecognizerError {
-            let path = CommandGroupPath(cli: cli).appending(command)
+            let path = CommandGroupPath(top: cli).appending(command)
             let message = DefaultHelpMessageGenerator().generateMisusedOptionsStatement(for: path, error: error)
             
             let expectedMessage = """

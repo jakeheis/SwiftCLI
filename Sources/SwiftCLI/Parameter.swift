@@ -8,6 +8,7 @@
 
 public protocol AnyParameter: class {
     var required: Bool { get }
+    var satisfied: Bool { get }
     
     func update(value: String)
     func signature(for name: String) -> String
@@ -16,6 +17,7 @@ public protocol AnyParameter: class {
 open class Parameter: AnyParameter {
     
     public let required = true
+    private(set) public var satisfied = false
     private var privateValue: String? = nil
     
     public var value: String {
@@ -25,6 +27,7 @@ open class Parameter: AnyParameter {
     public init() {}
     
     open func update(value: String) {
+        satisfied = true
         privateValue = value
     }
     
@@ -37,6 +40,7 @@ open class Parameter: AnyParameter {
 open class OptionalParameter: AnyParameter {
     
     public let required = false
+    public let satisfied = true
     public var value: String? = nil
     
     public init() {}
@@ -80,15 +84,18 @@ public protocol AnyCollectedParameter: AnyParameter {
 open class CollectedParameter: AnyCollectedParameter {
     
     public let required = true
+    private(set) public var satisfied = false
     public var value: [String] = []
     
     public init() {}
     
     open func update(value: [String]) {
+        satisfied = true
         self.value = value
     }
     
     public func update(value: String) {
+        satisfied = true
         self.value.append(value)
     }
     
@@ -101,6 +108,7 @@ open class CollectedParameter: AnyCollectedParameter {
 open class OptionalCollectedParameter: AnyCollectedParameter {
     
     public let required = false
+    public let satisfied = true
     public var value: [String]? = nil
     
     public init() {}

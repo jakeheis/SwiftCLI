@@ -9,16 +9,16 @@ public struct CommandGroupPath {
     
     public let groups: [CommandGroup]
     
-    public var cli: CLI {
-        return groups.first! as! CLI
-    }
-    
     public var bottom: CommandGroup {
         return groups.last!
     }
     
-    public init(cli: CLI, groups: [CommandGroup] = []) {
-        self.init(groups: [cli] + groups)
+    public var sharedOptions: [Option] {
+        return Array(groups.map({ $0.sharedOptions }).joined())
+    }
+    
+    public init(top: CommandGroup, groups: [CommandGroup] = []) {
+        self.init(groups: [top] + groups)
     }
     
     private init(groups: [CommandGroup]) {

@@ -36,7 +36,7 @@ public final class ZshCompletionGenerator: CompletionGenerator {
     public func writeCompletions(into stream: WritableStream) {
         stream <<< "#compdef \(cli.name)"
         
-        writeGroupHeader(for: CommandGroupPath(cli: cli), into: stream)
+        writeGroupHeader(for: CommandGroupPath(top: cli), into: stream)
         
         stream <<< "_\(cli.name)"
     }

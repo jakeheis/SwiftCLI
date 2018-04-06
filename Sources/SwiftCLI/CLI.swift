@@ -56,6 +56,7 @@ public class CLI {
     public var router: Router = DefaultRouter()
     public var optionRecognizer: OptionRecognizer = DefaultOptionRecognizer()
     public var parameterFiller: ParameterFiller = DefaultParameterFiller()
+    public var parser = Parse()
     
     /// Creates a new CLI
     ///
@@ -109,20 +110,12 @@ public class CLI {
         var exitStatus: Int32 = 0
         
         do {
-            // Step 1: route
-            let command = try routeCommand(arguments: arguments)
-            
-            // Step 2: recognize options
-            try recognizeOptions(of: command, in: arguments)
-            if helpFlag?.value ?? false == true {
+            let command = try parse(arguments: arguments)
+            if helpFlag?.value == true {
                 print(helpMessageGenerator.generateUsageStatement(for: command))
                 return exitStatus
             }
             
-            // Step 3: fill parameters
-            try fillParameters(of: command, with: arguments)
-            
-            // Step 4: execute
             try command.command.execute()
         } catch let error as ProcessError {
             if let message = error.message {
@@ -135,6 +128,22 @@ public class CLI {
         }
         
         return exitStatus
+    }
+    
+    private func parse(arguments: ArgumentList) throws -> CommandPath {
+        do {
+            return try parser.parse(commandGroup: self, arguments: arguments)
+        } catch let error as Parse.RouteError {
+            if let notFound = error.notFound {
+                printError("\nCommand \"\(notFound)\" not found")
+            }
+            let list = helpMessageGenerator.generateCommandList(for: error.partialPath)
+            print(list)
+            throw CLI.Error()
+        } catch let error as Parse.OptionError {
+            let message = helpMessageGenerator.generateMisusedOptionsStatement(error: error)
+            throw CLI.Error(message: message)
+        }
     }
     
     private func routeCommand(arguments: ArgumentList) throws -> CommandPath {
@@ -161,10 +170,10 @@ public class CLI {
         do {
             let optionRegistry = OptionRegistry(options: command.options, optionGroups: command.command.optionGroups)
             try optionRecognizer.recognizeOptions(from: optionRegistry, in: arguments)
-        } catch let error as OptionRecognizerError {
-            let message = helpMessageGenerator.generateMisusedOptionsStatement(for: command, error: error)
-            throw CLI.Error(message: message)
-        }
+        } //catch let _ as Parse.OptionError {
+//            let message = helpMessageGenerator.generateMisusedOptionsStatement(for: command, error: error)
+            //throw CLI.Error(message: "")
+        //}
     }
     
     private func fillParameters(of command: CommandPath, with arguments: ArgumentList) throws {

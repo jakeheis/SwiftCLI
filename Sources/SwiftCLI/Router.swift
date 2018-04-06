@@ -22,7 +22,7 @@ public class DefaultRouter: Router {
     public init() {}
     
     public func route(cli: CLI, arguments: ArgumentList) -> RouteResult {
-        var path = CommandGroupPath(cli: cli)
+        var path = CommandGroupPath(top: cli)
         while let node = arguments.head {
             let value = path.bottom.aliases[node.value] ?? node.value
             if let matching = path.bottom.children.first(where: { $0.name == value }) {
@@ -54,7 +54,7 @@ public class SingleCommandRouter: Router {
     }
     
     public func route(cli: CLI, arguments: ArgumentList) -> RouteResult {
-        return .success(CommandGroupPath(cli: cli).appending(command))
+        return .success(CommandGroupPath(top: cli).appending(command))
     }
     
 }

@@ -37,28 +37,56 @@ public class CommandSignature {
 
 }
 
-public class ParameterIterator {
+public class ParameterIterator: IteratorProtocol {
     
     var params: [AnyParameter]
     let collected: AnyCollectedParameter?
     
+    private let minCount: Int
+    private let maxCount: Int?
+    private var gotCount = 0
+    
     init(command: Command) {
         var all = command.parameters.map({ $0.1 })
+        
+        self.minCount = all.filter({ $0.required }).count
+        
         if let collected = all.last as? AnyCollectedParameter {
             self.collected = collected
             all.removeLast()
+            self.maxCount = nil
         } else {
             self.collected = nil
+            self.maxCount = all.count
         }
+        
         self.params = all
     }
     
-    func next() -> AnyParameter? {
+    public func next() -> AnyParameter? {
         if let individual = params.first {
             params.removeFirst()
+            gotCount += 1
             return individual
         }
-        return collected
+        if let collected = collected {
+            gotCount += 1
+            return collected
+        }
+        return nil
+    }
+    
+    public func errorMessage(got: Int) -> String {
+        let plural = minCount == 1 ? "argument" : "arguments"
+        
+        switch maxCount {
+        case nil:
+            return "error: command requires at least \(minCount) \(plural), got \(got)"
+        case let count? where count == minCount:
+            return "error: command requires exactly \(count) \(plural), got \(got)"
+        case let count?:
+            return "error: command requires between \(minCount) and \(count) arguments, got \(got)"
+        }
     }
     
 }
