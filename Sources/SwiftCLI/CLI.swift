@@ -95,7 +95,7 @@ public class CLI {
     /// - Returns: a CLIResult (Int) representing the success of the CLI in routing to and executing the correct
     /// command. Usually should be passed to `exit(result)`
     public func debugGo(with argumentString: String) -> Int32 {
-        print("[Debug Mode]")
+        stdout <<< "[Debug Mode]"
         return go(with: ArgumentList(argumentString: argumentString))
     }
     
@@ -109,18 +109,18 @@ public class CLI {
         do {
             let command = try parse(arguments: arguments)
             if helpFlag?.value == true {
-                print(helpMessageGenerator.generateUsageStatement(for: command))
+                stdout <<< helpMessageGenerator.generateUsageStatement(for: command)
                 return exitStatus
             }
             
             try command.command.execute()
         } catch let error as ProcessError {
             if let message = error.message {
-                printError(message)
+                stderr <<< message
             }
             exitStatus = Int32(error.exitStatus)
         } catch let error {
-            printError("An error occurred: \(error.localizedDescription)")
+            stderr <<< "An error occurred: \(error.localizedDescription)"
             exitStatus = 1
         }
         
