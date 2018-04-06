@@ -135,14 +135,18 @@ public class CLI {
             return try parser.parse(commandGroup: self, arguments: arguments)
         } catch let error as Parse.RouteError {
             if let notFound = error.notFound {
-                printError("\nCommand \"\(notFound)\" not found")
+                WriteStream.stderr <<< "\nCommand \"\(notFound)\" not found"
             }
             let list = helpMessageGenerator.generateCommandList(for: error.partialPath)
-            print(list)
+            WriteStream.stdout <<< list
             throw CLI.Error()
         } catch let error as Parse.OptionError {
             let message = helpMessageGenerator.generateMisusedOptionsStatement(error: error)
             throw CLI.Error(message: message)
+        } catch let error as Parse.ParameterError {
+            WriteStream.stderr <<< error.message
+            WriteStream.stderr <<< "Usage: \(error.command.usage)"
+            throw CLI.Error()
         }
     }
     

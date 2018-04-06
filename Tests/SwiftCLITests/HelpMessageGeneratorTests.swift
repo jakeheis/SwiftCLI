@@ -8,7 +8,7 @@
 
 import XCTest
 @testable import SwiftCLI
-
+/*
 class HelpMessageGeneratorTests: XCTestCase {
     
     static var allTests : [(String, (HelpMessageGeneratorTests) -> () throws -> Void)] {
@@ -133,3 +133,4 @@ class HelpMessageGeneratorTests: XCTestCase {
     }
 
 }
+*/

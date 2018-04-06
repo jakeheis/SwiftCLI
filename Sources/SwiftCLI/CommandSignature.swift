@@ -44,7 +44,6 @@ public class ParameterIterator: IteratorProtocol {
     
     private let minCount: Int
     private let maxCount: Int?
-    private var gotCount = 0
     
     init(command: Command) {
         var all = command.parameters.map({ $0.1 })
@@ -66,26 +65,21 @@ public class ParameterIterator: IteratorProtocol {
     public func next() -> AnyParameter? {
         if let individual = params.first {
             params.removeFirst()
-            gotCount += 1
             return individual
         }
-        if let collected = collected {
-            gotCount += 1
-            return collected
-        }
-        return nil
+        return collected
     }
     
-    public func errorMessage(got: Int) -> String {
+    public func createErrorMessage() -> String {
         let plural = minCount == 1 ? "argument" : "arguments"
         
         switch maxCount {
         case nil:
-            return "error: command requires at least \(minCount) \(plural), got \(got)"
+            return "error: command requires at least \(minCount) \(plural)"
         case let count? where count == minCount:
-            return "error: command requires exactly \(count) \(plural), got \(got)"
+            return "error: command requires exactly \(count) \(plural)"
         case let count?:
-            return "error: command requires between \(minCount) and \(count) arguments, got \(got)"
+            return "error: command requires between \(minCount) and \(count) arguments"
         }
     }
     

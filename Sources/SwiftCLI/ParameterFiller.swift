@@ -41,6 +41,13 @@ public class Parse {
             }
         }
         
+        var groupPath: CommandGroupPath {
+            switch self {
+            case let .routing(path: path): return path;
+            case let .fillingParams(path: path, _): return path.groupPath
+            }
+        }
+        
         var command: CommandPath? {
             switch self {
             case .routing: return nil
@@ -48,6 +55,8 @@ public class Parse {
             }
         }
     }
+    
+    private var parameterCount = 0
 
     func parse(commandGroup: CommandGroup, arguments: ArgumentList) throws -> CommandPath {
         var state = State.routing(path: CommandGroupPath(top: commandGroup))
@@ -60,8 +69,7 @@ public class Parse {
             throw RouteError(partialPath: path, notFound: nil)
         case let .fillingParams(path: path, params: params):
             if let param = params.next(), !param.satisfied {
-//                throw ParameterError(command: path, message: <#T##String#>)
-                throw CLI.Error(message: "Not enough params")
+                throw ParameterError(command: path, message: params.createErrorMessage())
             }
             if let failingGroup = state.options.failingGroup() {
                 throw OptionError(command: path, message: failingGroup.message)
@@ -75,6 +83,10 @@ public class Parse {
             return nil
         }
         
+        if case let .routing(path: path) = state, let alias = path.bottom.aliases[node.value] {
+            node.value = alias
+        }
+        
         defer { arguments.remove(node: node) }
         
         if node.value.hasPrefix("-") {
@@ -84,9 +96,9 @@ public class Parse {
         
         switch state {
         case let .routing(path: path):
-            return try route(path: path, value: node.value)
-        case let .fillingParams(_, params):
-            try fillParameters(params: params, value: node.value)
+            return try route(path: path, node: node.value)
+        case let .fillingParams(path, params):
+            try fillParameters(params: params, value: node.value, path: path)
             return state
         }
     }
@@ -109,7 +121,9 @@ public class Parse {
         }
     }
     
-    private func route(path: CommandGroupPath, value: String) throws -> State  {
+    private func route(path: CommandGroupPath, node: String) throws -> State  {
+        let value = path.bottom.aliases[node] ?? node
+        print("routing for val \(value)")
         guard let matching = path.bottom.children.first(where: { $0.name == value }) else {
             throw RouteError(partialPath: path, notFound: value)
         }
@@ -117,17 +131,18 @@ public class Parse {
         if let group = matching as? CommandGroup {
             return .routing(path: path.appending(group))
         } else if let cmd = matching as? Command {
+            print("returning \(path.appending(cmd))")
             return .fillingParams(path: path.appending(cmd), params: ParameterIterator(command: cmd))
         } else {
             preconditionFailure("Routables must be either CommandGroups or Commands")
         }
     }
     
-    private func fillParameters(params: ParameterIterator, value: String) throws {
+    private func fillParameters(params: ParameterIterator, value: String, path: CommandPath) throws {
         if let param = params.next() {
             param.update(value: value)
         } else {
-            throw CLI.Error(message: "Too many params")
+            throw ParameterError(command: path, message: params.createErrorMessage())
         }
     }
     
