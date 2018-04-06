@@ -8,13 +8,28 @@
 
 public class OptionRegistry {
     
-    private let flags: [String: Flag]
-    private let keys: [String: AnyKey]
-    private let groups: [OptionGroup]
+    private var flags: [String: Flag]
+    private var keys: [String: AnyKey]
+    private var groups: [OptionGroup]
     
-    public init(options: [Option], optionGroups: [OptionGroup]) {
-        var flags: [String: Flag] = [:]
-        var keys: [String: AnyKey] = [:]
+    public init(routable: Routable) {
+        self.flags = [:]
+        self.keys = [:]
+        self.groups = []
+        
+        register(routable)
+    }
+    
+    public func register(_ routable: Routable) {
+        if let command = routable as? Command {
+            addOptions(command.options)
+            self.groups += command.optionGroups
+        } else if let commandGroup = routable as? CommandGroup {
+            addOptions(commandGroup.sharedOptions)
+        }
+    }
+    
+    private func addOptions(_ options: [Option]) {
         for option in options {
             if let flag = option as? Flag {
                 for name in flag.names {
@@ -26,9 +41,6 @@ public class OptionRegistry {
                 }
             }
         }
-        self.flags = flags
-        self.keys = keys
-        self.groups = optionGroups
     }
     
     public func flag(for key: String) -> Flag? {

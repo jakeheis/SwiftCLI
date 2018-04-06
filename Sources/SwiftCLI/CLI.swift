@@ -133,17 +133,17 @@ public class CLI {
     private func parse(arguments: ArgumentList) throws -> CommandPath {
         do {
             return try parser.parse(commandGroup: self, arguments: arguments)
-        } catch let error as Parse.RouteError {
+        } catch let error as RouteError {
             if let notFound = error.notFound {
                 WriteStream.stderr <<< "\nCommand \"\(notFound)\" not found"
             }
             let list = helpMessageGenerator.generateCommandList(for: error.partialPath)
             WriteStream.stdout <<< list
             throw CLI.Error()
-        } catch let error as Parse.OptionError {
+        } catch let error as OptionError {
             let message = helpMessageGenerator.generateMisusedOptionsStatement(error: error)
             throw CLI.Error(message: message)
-        } catch let error as Parse.ParameterError {
+        } catch let error as ParameterError {
             WriteStream.stderr <<< error.message
             WriteStream.stderr <<< "Usage: \(error.command.usage)"
             throw CLI.Error()
@@ -172,8 +172,8 @@ public class CLI {
         }
         
         do {
-            let optionRegistry = OptionRegistry(options: command.options, optionGroups: command.command.optionGroups)
-            try optionRecognizer.recognizeOptions(from: optionRegistry, in: arguments)
+//            let optionRegistry = OptionRegistry(routable: command)
+//            try optionRecognizer.recognizeOptions(from: optionRegistry, in: arguments)
         } //catch let _ as Parse.OptionError {
 //            let message = helpMessageGenerator.generateMisusedOptionsStatement(for: command, error: error)
             //throw CLI.Error(message: "")
