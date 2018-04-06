@@ -54,9 +54,7 @@ public class CLI {
     public var helpMessageGenerator: HelpMessageGenerator = DefaultHelpMessageGenerator()
     public var argumentListManipulators: [ArgumentListManipulator] = [OptionSplitter()]
     public var router: Router = DefaultRouter()
-    public var optionRecognizer: OptionRecognizer = DefaultOptionRecognizer()
-    public var parameterFiller: ParameterFiller = DefaultParameterFiller()
-    public var parser = Parse()
+    public var parser: Parser.Type = DefaultParser.self
     
     /// Creates a new CLI
     ///
@@ -132,67 +130,23 @@ public class CLI {
     
     private func parse(arguments: ArgumentList) throws -> CommandPath {
         do {
-            return try parser.parse(commandGroup: self, arguments: arguments)
+            return try parser.init(commandGroup: self, arguments: arguments).parse()
         } catch let error as RouteError {
             if let notFound = error.notFound {
-                WriteStream.stderr <<< "\nCommand \"\(notFound)\" not found"
+                stderr <<< "\nCommand \"\(notFound)\" not found"
             }
             let list = helpMessageGenerator.generateCommandList(for: error.partialPath)
-            WriteStream.stdout <<< list
+            stdout <<< list
             throw CLI.Error()
         } catch let error as OptionError {
             let message = helpMessageGenerator.generateMisusedOptionsStatement(error: error)
             throw CLI.Error(message: message)
         } catch let error as ParameterError {
-            WriteStream.stderr <<< error.message
-            WriteStream.stderr <<< "Usage: \(error.command.usage)"
+            stderr <<< error.message
+            stderr <<< ""
+            stderr <<< "Usage: \(error.command.usage)"
+            stderr <<< ""
             throw CLI.Error()
-        }
-    }
-    
-    private func routeCommand(arguments: ArgumentList) throws -> CommandPath {
-        let routeResult = router.route(cli: self, arguments: arguments)
-        
-        switch routeResult {
-        case let .success(command):
-            return command
-        case let .failure(partialPath: partialPath, notFound: notFound):
-            if let notFound = notFound {
-                printError("\nCommand \"\(notFound)\" not found")
-            }
-            let list = helpMessageGenerator.generateCommandList(for: partialPath)
-            print(list)
-            throw CLI.Error()
-        }
-    }
-    
-    private func recognizeOptions(of command: CommandPath, in arguments: ArgumentList) throws {
-        if command.command is HelpCommand {
-            return
-        }
-        
-        do {
-//            let optionRegistry = OptionRegistry(routable: command)
-//            try optionRecognizer.recognizeOptions(from: optionRegistry, in: arguments)
-        } //catch let _ as Parse.OptionError {
-//            let message = helpMessageGenerator.generateMisusedOptionsStatement(for: command, error: error)
-            //throw CLI.Error(message: "")
-        //}
-    }
-    
-    private func fillParameters(of command: CommandPath, with arguments: ArgumentList) throws {
-        if command.command is HelpCommand {
-            return
-        }
-        
-        do {
-            try parameterFiller.fillParameters(of: CommandSignature(command: command.command), with: arguments)
-        } catch let error as CLI.Error {
-            if let message = error.message {
-                printError(message)
-            }
-            printError("Usage: \(command.usage)")
-            throw CLI.Error(exitStatus: error.exitStatus)
         }
     }
     

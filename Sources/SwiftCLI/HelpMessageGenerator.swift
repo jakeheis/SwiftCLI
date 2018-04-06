@@ -108,9 +108,3 @@ public class DefaultHelpMessageGenerator: HelpMessageGenerator {
 public protocol UsageStatementGenerator {
     func generateUsageStatement(for command: Command) -> String
 }
-
-@available(*, unavailable, message: "Implement HelpMessageGenerator instead")
-public protocol MisusedOptionsMessageGenerator {
-    func generateMisusedOptionsStatement(for command: Command, error: OptionRecognizerError) -> String
-}
-

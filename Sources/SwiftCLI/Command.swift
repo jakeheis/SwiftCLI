@@ -13,6 +13,15 @@ public protocol Routable: class {
     var shortDescription: String { get }
 }
 
+extension Routable {
+    public var stdout: WriteStream {
+        return WriteStream.stdout
+    }
+    
+    public var stderr: WriteStream {
+        return WriteStream.stderr
+    }
+}
 
 // MARK: -
 
@@ -97,16 +106,6 @@ extension Command {
     
     public var optionGroups: [OptionGroup] {
         return []
-    }
-    
-    // Extras
-    
-    public var stdout: WriteStream {
-        return WriteStream.stdout
-    }
-    
-    public var stderr: WriteStream {
-        return WriteStream.stderr
     }
 
 }

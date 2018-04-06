@@ -76,24 +76,6 @@ extension CLI {
             guardShared().router = newValue
         }
     }
-    @available(*, unavailable, message: "Create a new CLI object: let cli = CLI(..)")
-    public static var optionRecognizer: OptionRecognizer {
-        get {
-            return guardShared().optionRecognizer
-        }
-        set(newValue) {
-            guardShared().optionRecognizer = newValue
-        }
-    }
-    @available(*, unavailable, message: "Create a new CLI object: let cli = CLI(..)")
-    public static var parameterFiller: ParameterFiller {
-        get {
-            return guardShared().parameterFiller
-        }
-        set(newValue) {
-            guardShared().parameterFiller = newValue
-        }
-    }
     
     // MARK: - Setup
     

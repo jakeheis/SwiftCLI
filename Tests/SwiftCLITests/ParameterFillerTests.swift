@@ -228,7 +228,7 @@ class ParameterFillerTests: XCTestCase {
         let args = ArgumentList(arguments: ["tester", "test", "-s", "favTest", "-t", "3", "SwiftCLI"])
         let path: CommandPath
         do {
-            path = try Parse().parse(commandGroup: cli, arguments: args)
+            path = try Parser().parse(commandGroup: cli, arguments: args)
         } catch let error {
             print(error)
             XCTFail()
