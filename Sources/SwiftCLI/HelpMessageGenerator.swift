@@ -30,8 +30,11 @@ extension HelpMessageGenerator {
         var commands: [Command] = []
         var maxNameLength = 12
         for routable in bottom.children {
-            if let commandGroup = routable as? CommandGroup { commandGroups.append(commandGroup) }
-            if let command = routable as? Command { commands.append(command) }
+            if let commandGroup = routable as? CommandGroup {
+                commandGroups.append(commandGroup)
+            } else if let command = routable as? Command {
+                commands.append(command)
+            }
             if routable.name.count > maxNameLength {
                 maxNameLength = routable.name.count
             }

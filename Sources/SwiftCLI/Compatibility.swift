@@ -67,15 +67,6 @@ extension CLI {
             guardShared().argumentListManipulators = newValue
         }
     }
-    @available(*, unavailable, message: "Create a new CLI object: let cli = CLI(..)")
-    public static var router: Router {
-        get {
-            return guardShared().router
-        }
-        set(newValue) {
-            guardShared().router = newValue
-        }
-    }
     
     // MARK: - Setup
     

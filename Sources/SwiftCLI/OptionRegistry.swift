@@ -21,16 +21,7 @@ public class OptionRegistry {
     }
     
     public func register(_ routable: Routable) {
-        if let command = routable as? Command {
-            addOptions(command.options)
-            self.groups += command.optionGroups
-        } else if let commandGroup = routable as? CommandGroup {
-            addOptions(commandGroup.sharedOptions)
-        }
-    }
-    
-    private func addOptions(_ options: [Option]) {
-        for option in options {
+        for option in routable.options {
             if let flag = option as? Flag {
                 for name in flag.names {
                     flags[name] = flag
@@ -41,6 +32,8 @@ public class OptionRegistry {
                 }
             }
         }
+        
+        groups += routable.optionGroups
     }
     
     public func flag(for key: String) -> Flag? {

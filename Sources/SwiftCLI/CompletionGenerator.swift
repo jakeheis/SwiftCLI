@@ -86,10 +86,10 @@ public final class ZshCompletionGenerator: CompletionGenerator {
         
         group.bottom.children.forEach { (routable) in
             if routable is HelpCommand { return }
-            if let command = routable as? Command {
-                self.writeCommand(for: group.appending(command), into: stream)
-            } else if let subGroup = routable as? CommandGroup {
+            if let subGroup = routable as? CommandGroup {
                 self.writeGroupHeader(for: group.appending(subGroup), into: stream)
+            } else if let command = routable as? Command {
+                self.writeCommand(for: group.appending(command), into: stream)
             }
         }
     }

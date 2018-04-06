@@ -14,7 +14,7 @@ public struct CommandGroupPath {
     }
     
     public var sharedOptions: [Option] {
-        return Array(groups.map({ $0.sharedOptions }).joined())
+        return Array(groups.map({ $0.options }).joined())
     }
     
     public init(top: CommandGroup, groups: [CommandGroup] = []) {
@@ -31,6 +31,10 @@ public struct CommandGroupPath {
     
     public func appending(_ command: Command) -> CommandPath {
         return CommandPath(groupPath: self, command: command)
+    }
+    
+    public func droppingLast() -> CommandGroupPath {
+        return CommandGroupPath(groups: Array(groups.dropLast()))
     }
     
     public func joined(separator: String = " ") -> String {
@@ -50,7 +54,7 @@ public struct CommandPath {
     }
     
     public var options: [Option] {
-        let shared = groupPath.groups.map({ $0.sharedOptions }).joined()
+        let shared = groupPath.groups.map({ $0.options }).joined()
         return command.options + shared
     }
     
