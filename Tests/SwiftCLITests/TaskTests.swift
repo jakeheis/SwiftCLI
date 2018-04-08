@@ -22,7 +22,8 @@ class TaskTests: XCTestCase {
             ("testPipe", testPipe),
             ("testCurrentDirectory", testCurrentDirectory),
             ("testEnv", testEnv),
-            ("testSignals", testSignals)
+            ("testSignals", testSignals),
+            ("testTaskLineStream", testTaskLineStream)
         ]
     }
     
@@ -130,6 +131,18 @@ class TaskTests: XCTestCase {
         task3.runAsync()
         task3.terminate()
         XCTAssertEqual(task3.finish(), 15)
+    }
+    
+    func testTaskLineStream() {
+        var count = 0
+        let lineStream = LineStream { (line) in
+            count += 1
+        }
+        let task = Task(executable: "ls", args: ["Tests"], stdout: lineStream)
+        XCTAssertEqual(task.runSync(), 0)
+        
+        lineStream.wait()
+        XCTAssertEqual(count, 3)
     }
     
 }

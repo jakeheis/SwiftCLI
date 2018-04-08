@@ -5,6 +5,7 @@
 //  Created by Jake Heiser on 9/11/17.
 //
 
+import Dispatch
 import Foundation
 
 // MARK: - Writable
@@ -242,6 +243,42 @@ public class PipeStream: ReadableStream, WritableStream {
         self.processObject = pipe
         self.readStream = ReadStream(readHandle: pipe.fileHandleForReading)
         self.writeStream = WriteStream(writeHandle: pipe.fileHandleForWriting)
+    }
+    
+}
+
+public class LineStream: WritableStream {
+    
+    public let processObject: Any
+    public let writeStream: WriteStream
+    public var encoding: String.Encoding {
+        get {
+            return writeStream.encoding
+        }
+        set(newValue) {
+            writeStream.encoding = newValue
+        }
+    }
+    
+    private let queue = DispatchQueue(label: "com.jakeheis.SwiftCLI")
+    private let semaphore = DispatchSemaphore(value: 0)
+    
+    public init(each: @escaping (String) -> ()) {
+        let pipe = Pipe()
+        self.processObject = pipe
+        self.writeStream = WriteStream(writeHandle: pipe.fileHandleForWriting)
+        
+        let readStream = ReadStream(readHandle: pipe.fileHandleForReading)
+        queue.async { [weak self] in
+            while let line = readStream.readLine() {
+                each(line)
+            }
+            self?.semaphore.signal()
+        }
+    }
+    
+    public func wait() {
+        semaphore.wait()
     }
     
 }
