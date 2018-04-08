@@ -39,7 +39,8 @@ class ParserTests: XCTestCase {
             ("testIllegalOptionFormat", testIllegalOptionFormat),
             ("testFlagSplitting", testFlagSplitting),
             ("testGroupRestriction", testGroupRestriction),
-            ("testFullParse", testFullParse)
+            ("testFullParse", testFullParse),
+            ("testCollectedOptions", testCollectedOptions)
         ]
     }
     
@@ -514,6 +515,40 @@ class ParserTests: XCTestCase {
         XCTAssertEqual(cmd.testerName.value, "SwiftCLI")
         XCTAssertTrue(cmd.silent.value)
         XCTAssertEqual(cmd.times.value, 3)
+    }
+    
+    func testCollectedOptions() throws {
+        class RunCmd: Command {
+            let name = "run"
+            let executable = Parameter()
+            let args = OptionalCollectedParameter()
+            let verbose = Flag("-v")
+            func execute() throws {}
+        }
+        
+        let cmd = RunCmd()
+        let cli = CLI.createTester(commands: [cmd])
+        let args = ArgumentList(argumentString: "tester run cli -v arg")
+        
+        let path = try DefaultParser().parse(commandGroup: cli, arguments: args)
+        XCTAssertEqual(path.joined(), "tester run")
+        XCTAssertTrue(path.command === cmd)
+        
+        XCTAssertEqual(cmd.executable.value, "cli")
+        XCTAssertEqual(cmd.args.value, ["-v", "arg"])
+        XCTAssertFalse(cmd.verbose.value)
+        
+        let cmd2 = RunCmd()
+        let cli2 = CLI.createTester(commands: [cmd2])
+        let args2 = ArgumentList(argumentString: "tester run -v cli arg")
+        
+        let path2 = try DefaultParser().parse(commandGroup: cli2, arguments: args2)
+        XCTAssertEqual(path2.joined(), "tester run")
+        XCTAssertTrue(path2.command === cmd2)
+        
+        XCTAssertEqual(cmd2.executable.value, "cli")
+        XCTAssertEqual(cmd2.args.value, ["arg"])
+        XCTAssertTrue(cmd2.verbose.value)
     }
     
 }

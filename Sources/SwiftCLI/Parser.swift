@@ -24,10 +24,10 @@ final public class DefaultParser: Parser {
         let params = ParameterIterator(command: commandPath)
         
         while let node = arguments.head {
-            if isOption(node) {
-                try optionRegistry.parse(node: node, command: commandPath)
-            } else {
+            if params.isCollecting() || !isOption(node) {
                 try params.parse(node: node)
+            } else {
+                try optionRegistry.parse(node: node, command: commandPath)
             }
             
             node.remove()
@@ -39,7 +39,7 @@ final public class DefaultParser: Parser {
         return commandPath
     }
     
-    public func route(commandGroup: CommandGroup, arguments: ArgumentList) throws -> (CommandPath, OptionRegistry) {
+    private func route(commandGroup: CommandGroup, arguments: ArgumentList) throws -> (CommandPath, OptionRegistry) {
         let optionRegistry = OptionRegistry(routable: commandGroup)
         var groupPath = CommandGroupPath(top: commandGroup)
         

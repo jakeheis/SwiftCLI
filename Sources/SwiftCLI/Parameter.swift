@@ -148,6 +148,10 @@ public class ParameterIterator {
         assert(all.index(where: { $0 is OptionalParameter }).flatMap({ $0 >= minCount }) ?? true, "optional parameters must come after all required parameters")
     }
     
+    public func isCollecting() -> Bool {
+        return params.isEmpty && collected != nil
+    }
+    
     public func parse(node: ArgumentNode) throws {
         if let param = next() {
             param.update(value: node.value)
