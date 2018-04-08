@@ -13,20 +13,22 @@ import Foundation
 ///
 /// - Parameters:
 ///   - executable: the executable to run
+///   - directory: the directory to run in
 ///   - args: arguments to pass to the executable
 /// - Throws: RunError if command fails
-public func run(_ executable: String, _ args: String...) throws {
-    try run(executable, args)
+public func run(_ executable: String, directory: String? = nil, _ args: String...) throws {
+    try run(executable, directory: directory, args)
 }
 
 /// Run an executable synchronously; uses this process's stdout, stderr, and stdin
 ///
 /// - Parameters:
 ///   - executable: the executable to run
+///   - directory: the directory to run in
 ///   - args: arguments to pass to the executable
 /// - Throws: RunError if command fails
-public func run(_ executable: String, _ args: [String]) throws {
-    let task = Task(executable: executable, args: args)
+public func run(_ executable: String, directory: String? = nil, _ args: [String]) throws {
+    let task = Task(executable: executable, args: args, currentDirectory: directory)
     let code = task.runSync()
     guard code == 0 else {
         throw RunError(exitStatus: code)
@@ -37,25 +39,27 @@ public func run(_ executable: String, _ args: [String]) throws {
 ///
 /// - Parameters:
 ///   - executable: the executable to run
+///   - directory: the directory to run in
 ///   - args: arguments to pass to the executable
 /// - Returns: the captured data
 /// - Throws: CaptureError if command fails
-public func capture(_ executable: String, _ args: String...) throws -> CaptureResult {
-    return try capture(executable, args)
+public func capture(_ executable: String, directory: String? = nil, _ args: String...) throws -> CaptureResult {
+    return try capture(executable, directory: directory, args)
 }
 
 /// Run an executable synchronously and capture its output
 ///
 /// - Parameters:
 ///   - executable: the executable to run
+///   - directory: the directory to run in
 ///   - args: arguments to pass to the executable
 /// - Returns: the captured data
 /// - Throws: CaptureError if command fails
-public func capture(_ executable: String, _ args: [String]) throws -> CaptureResult {
+public func capture(_ executable: String, directory: String? = nil, _ args: [String]) throws -> CaptureResult {
     let out = PipeStream()
     let err = PipeStream()
     
-    let task = Task(executable: executable, args: args, stdout: out, stderr: err)
+    let task = Task(executable: executable, args: args, currentDirectory: directory, stdout: out, stderr: err)
     let exitCode = task.runSync()
     
     let captured = CaptureResult(rawStdout: out.readAll(), rawStderr: err.readAll())
@@ -68,21 +72,25 @@ public func capture(_ executable: String, _ args: [String]) throws -> CaptureRes
 
 /// Run a bash statement synchronously; uses this process's stdout, stderr, and stdin
 ///
-/// - Parameter bash: the bash statement to run
+/// - Parameters:
+///   - bash: the bash statement to run
+///   - directory: the directory to run in
 /// - Throws: RunError if command fails
 /// - Warning: Do not use this with unsanitized user input, can be dangerous
-public func run(bash: String) throws {
-    try run("/bin/bash", "-c", bash)
+public func run(bash: String, directory: String? = nil) throws {
+    try run("/bin/bash", directory: directory, "-c", bash)
 }
 
 /// Run a bash statement synchronously and capture its output
 ///
-/// - Parameter bash: the bash statement to run
+/// - Parameters:
+///   - bash: the bash statement to run
+///   - directory: the directory to run in
 /// - Returns: the captured data
 /// - Throws: CaptureError if command fails
 /// - Warning: Do not use this with unsanitized user input, can be dangerous
-public func capture(bash: String) throws -> CaptureResult {
-    return try capture("/bin/bash", "-c", bash)
+public func capture(bash: String, directory: String? = nil) throws -> CaptureResult {
+    return try capture("/bin/bash", directory: directory, "-c", bash)
 }
 
 // MARK: -
