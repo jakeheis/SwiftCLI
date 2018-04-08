@@ -39,6 +39,7 @@ class ParserTests: XCTestCase {
             ("testIllegalOptionFormat", testIllegalOptionFormat),
             ("testFlagSplitting", testFlagSplitting),
             ("testGroupRestriction", testGroupRestriction),
+            ("testVaridadicParse", testVaridadicParse),
             ("testFullParse", testFullParse),
             ("testCollectedOptions", testCollectedOptions)
         ]
@@ -497,6 +498,15 @@ class ParserTests: XCTestCase {
         } catch let error as OptionError {
             XCTAssertEqual(error.message, "Must pass exactly one of the following: --alpha --beta")
         }
+    }
+    
+    func testVaridadicParse() throws {
+        let cmd = VariadicKeyCmd()
+        let cli = CLI.createTester(commands: [cmd])
+        let arguments = ArgumentList(argumentString: "tester cmd -f firstFile --file secondFile")
+        
+        _ = try DefaultParser().parse(commandGroup: cli, arguments: arguments)
+        XCTAssertEqual(cmd.files.values, ["firstFile", "secondFile"])
     }
     
     // MARK: - Combined test

@@ -48,7 +48,7 @@ public class OptionRegistry {
             guard let next = node.next, !next.value.hasPrefix("-") else {
                 throw OptionError(command: command, message: "Expected a value to follow: \(node.value)")
             }
-            guard key.setValue(next.value) else {
+            guard key.updateValue(next.value) else {
                 throw OptionError(command: command, message: "Illegal type passed to \(key.names.first!): '\(next.value)'")
             }
             next.remove()

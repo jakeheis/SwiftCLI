@@ -14,7 +14,8 @@ class OptionRegistryTests: XCTestCase {
     static var allTests : [(String, (OptionRegistryTests) -> () throws -> Void)] {
         return [
             ("testFlagDetection", testFlagDetection),
-            ("testKeyDetection", testKeyDetection)
+            ("testKeyDetection", testKeyDetection),
+            ("testVariadicDetection", testVariadicDetection)
         ]
     }
     
@@ -32,6 +33,13 @@ class OptionRegistryTests: XCTestCase {
         XCTAssert(options.key(for: "-a") != nil, "Options should expect keys after a call to onKeys")
         XCTAssert(options.key(for: "--alpha") != nil, "Options should expect keys after a call to onKeys")
         XCTAssert(options.flag(for: "-a") == nil, "Options should parse no flags from only keys")
+    }
+    
+    func testVariadicDetection() {
+        let cmd = VariadicKeyCmd()
+        let options = OptionRegistry(routable: cmd)
+        XCTAssertNotNil(options.key(for: "-f"))
+        XCTAssertNotNil(options.key(for: "--file"))
     }
     
 }

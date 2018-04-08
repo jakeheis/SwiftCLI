@@ -210,3 +210,7 @@ class ExactlyOneCmd: Command {
     }
     
 }
+
+class VariadicKeyCmd: OptionCmd {
+    let files = VariadicKey<String>("-f", "--file")
+}
