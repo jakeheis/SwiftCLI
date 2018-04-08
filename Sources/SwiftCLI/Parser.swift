@@ -13,118 +13,102 @@ public struct RouteError: Swift.Error {
     public let notFound: String?
 }
 
-public struct OptionError: Swift.Error {
-    let command: CommandPath?
-    let message: String
-}
-
-public struct ParameterError: Swift.Error {
-    let command: CommandPath
-    let message: String
-}
-
 public protocol Parser {
-    init(commandGroup: CommandGroup, arguments: ArgumentList)
-    func parse() throws -> CommandPath
+    func parse(commandGroup: CommandGroup, arguments: ArgumentList) throws -> CommandPath
 }
 
 final public class DefaultParser: Parser {
     
-    public enum State {
-        case routing(CommandGroupPath)
-        case found(CommandPath, ParameterIterator)
+    public func parse(commandGroup: CommandGroup, arguments: ArgumentList) throws -> CommandPath {
+        let (commandPath, optionRegistry) = try route(commandGroup: commandGroup, arguments: arguments)
+        let params = ParameterIterator(command: commandPath)
         
-        var command: CommandPath? {
-            if case let .found(path, _) = self {
-                return path
-            }
-            return nil
-        }
-    }
-    
-    public var state: State
-    public let arguments: ArgumentList
-    public let optionRegistry: OptionRegistry
-    
-    public init(commandGroup: CommandGroup, arguments: ArgumentList) {
-        self.state = .routing(CommandGroupPath(top: commandGroup))
-        self.arguments = arguments
-        self.optionRegistry = OptionRegistry(routable: commandGroup)
-    }
-    
-    public func parse() throws -> CommandPath {
         while let node = arguments.head {
-            if case let .routing(path) = state, let alias = path.bottom.aliases[node.value] {
+            if isOption(node) {
+                try optionRegistry.parse(node: node, command: commandPath)
+            } else {
+                try params.parse(node: node)
+            }
+            
+            node.remove()
+        }
+        
+        try params.finish()
+        try optionRegistry.finish(command: commandPath)
+        
+        return commandPath
+    }
+    
+    public func route(commandGroup: CommandGroup, arguments: ArgumentList) throws -> (CommandPath, OptionRegistry) {
+        let optionRegistry = OptionRegistry(routable: commandGroup)
+        var groupPath = CommandGroupPath(top: commandGroup)
+        
+        while let node = arguments.head {
+            if let alias = groupPath.bottom.aliases[node.value] {
                 node.value = alias
             }
             
-            defer { arguments.remove(node: node) }
+            defer { node.remove() }
             
-            if node.value.hasPrefix("-") {
-                try parseOption(node: node)
-                continue
-            }
-            
-            switch state {
-            case let .routing(path):
-                try route(node: node, path: path)
-            case let .found(command, params):
-                if let param = params.next() {
-                    param.update(value: node.value)
+            if isOption(node) {
+                try optionRegistry.parse(node: node, command: nil)
+            } else {
+                guard let matching = groupPath.bottom.children.first(where: { $0.name == node.value }) else {
+                    throw RouteError(partialPath: groupPath, notFound: node.value)
+                }
+                
+                optionRegistry.register(matching)
+                
+                if let group = matching as? CommandGroup {
+                    groupPath = groupPath.appending(group)
+                } else if let cmd = matching as? Command {
+                    return (groupPath.appending(cmd), optionRegistry)
                 } else {
-                    throw ParameterError(command: command, message: params.createErrorMessage())
+                    preconditionFailure("Routables must be either CommandGroups or Commands")
                 }
             }
         }
         
-        switch state {
-        case let .routing(path):
-            if let command = path.bottom as? Command & CommandGroup {
-                return path.droppingLast().appending(command)
-            }
-            throw RouteError(partialPath: path, notFound: nil)
-        case let .found(command, params):
-            if let param = params.next(), !param.satisfied {
-                throw ParameterError(command: command, message: params.createErrorMessage())
-            }
-            if let failingGroup = optionRegistry.failingGroup() {
-                throw OptionError(command: command, message: failingGroup.message)
-            }
-            return command
-        }
-    }
-    
-    public func parseOption(node: ArgumentNode) throws {
-        if let flag = optionRegistry.flag(for: node.value) {
-            flag.setOn()
-        } else if let key = optionRegistry.key(for: node.value) {
-            guard let next = node.next, !next.value.hasPrefix("-") else {
-                throw OptionError(command: state.command, message: "Expected a value to follow: \(node.value)")
-            }
-            guard key.setValue(next.value) else {
-                throw OptionError(command: state.command, message: "Illegal type passed to \(key.names.first!): '\(next.value)'")
-            }
-            arguments.remove(node: next)
-        } else {
-            throw OptionError(command: state.command, message:"Unrecognized option: \(node.value)")
-        }
-    }
-    
-    public func route(node: ArgumentNode, path: CommandGroupPath) throws {
-        guard let matching = path.bottom.children.first(where: { $0.name == node.value }) else {
-            throw RouteError(partialPath: path, notFound: node.value)
+        if let command = groupPath.bottom as? Command & CommandGroup {
+            return (groupPath.droppingLast().appending(command), optionRegistry)
         }
         
-        optionRegistry.register(matching)
+        throw RouteError(partialPath: groupPath, notFound: nil)
+    }
+    
+    private func isOption(_ node: ArgumentNode) -> Bool {
+        return node.value.hasPrefix("-")
+    }
+    
+}
+
+final public class SingleCommandParser: Parser {
+    
+    public let command: Command
+    
+    public init(command: Command) {
+        self.command = command
+    }
+    
+    public func parse(commandGroup: CommandGroup, arguments: ArgumentList) throws -> CommandPath {
+        let path = CommandGroupPath(top: commandGroup).appending(command)
         
-        if let group = matching as? CommandGroup {
-            state = .routing(path.appending(group))
-        } else if let cmd = matching as? Command {
-            let params = ParameterIterator(command: cmd)
-            state = .found(path.appending(cmd), params)
-        } else {
-            preconditionFailure("Routables must be either CommandGroups or Commands")
+        let optionRegistry = OptionRegistry(routable: commandGroup)
+        optionRegistry.register(command)
+        
+        let params = ParameterIterator(command: path)
+        
+        while let node = arguments.head {
+            defer { node.remove() }
+            
+            if node.value.hasPrefix("-") {
+                try optionRegistry.parse(node: node, command: path)
+            } else {
+                try params.parse(node: node)
+            }
         }
+        
+        return path
     }
     
 }

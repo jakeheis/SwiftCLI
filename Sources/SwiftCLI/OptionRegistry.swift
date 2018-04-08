@@ -6,6 +6,11 @@
 //  Copyright (c) 2014 jakeheis. All rights reserved.
 //
 
+public struct OptionError: Swift.Error {
+    let command: CommandPath?
+    let message: String
+}
+
 public class OptionRegistry {
     
     private var flags: [String: Flag]
@@ -36,6 +41,30 @@ public class OptionRegistry {
         groups += routable.optionGroups
     }
     
+    public func parse(node: ArgumentNode, command: CommandPath?) throws {
+        if let flag = flag(for: node.value) {
+            flag.setOn()
+        } else if let key = key(for: node.value) {
+            guard let next = node.next, !next.value.hasPrefix("-") else {
+                throw OptionError(command: command, message: "Expected a value to follow: \(node.value)")
+            }
+            guard key.setValue(next.value) else {
+                throw OptionError(command: command, message: "Illegal type passed to \(key.names.first!): '\(next.value)'")
+            }
+            next.remove()
+        } else {
+            throw OptionError(command: command, message:"Unrecognized option: \(node.value)")
+        }
+    }
+    
+    public func finish(command: CommandPath) throws {
+        if let failingGroup = failingGroup() {
+            throw OptionError(command: command, message: failingGroup.message)
+        }
+    }
+    
+    // MARK: - Helpers
+    
     public func flag(for key: String) -> Flag? {
         if let flag = flags[key] {
             incrementCount(for: flag)
@@ -61,7 +90,7 @@ public class OptionRegistry {
         }
     }
     
-    public func failingGroup() -> OptionGroup? {
+    private func failingGroup() -> OptionGroup? {
         for group in groups {
             if !group.check() {
                 return group

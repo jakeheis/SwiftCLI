@@ -46,19 +46,7 @@ public class ArgumentList {
             let argument = ArgumentNode(value: value)
             current?.next = argument
             argument.previous = current
-            current = argument
-            if head == nil {
-                head = current
-            }
-        }
-    }
-    
-    public init(argumentsWithoutDrop: [String]) {
-        var current: ArgumentNode?
-        for value in argumentsWithoutDrop {
-            let argument = ArgumentNode(value: value)
-            current?.next = argument
-            argument.previous = current
+            argument.list = self
             current = argument
             if head == nil {
                 head = current
@@ -77,6 +65,7 @@ public class ArgumentList {
         let newNode = ArgumentNode(value: value)
         newNode.previous = previous
         newNode.next = previous.next
+        newNode.list = self
         
         previous.next?.previous = newNode
         previous.next = newNode
@@ -128,11 +117,18 @@ public class ArgumentNode {
     /// The node before this node in the list
     weak fileprivate(set) public var previous: ArgumentNode? = nil
     
+    /// The list the node is a part of
+    weak fileprivate var list: ArgumentList? = nil
+    
     /// Creates a new node with the given value
     ///
     /// - Parameter value: value of the new node
     public init(value: String) {
         self.value = value
+    }
+    
+    public func remove() {
+        list?.remove(node: self)
     }
     
 }

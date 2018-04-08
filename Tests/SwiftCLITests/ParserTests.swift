@@ -15,7 +15,7 @@ class ParserTests: XCTestCase {
         return [
             ("testNameRoute", testNameRoute),
             ("testAliasRoute", testAliasRoute),
-//            ("testSingleRouter", testSingleRouter),
+            ("testSingleRouter", testSingleRouter),
             ("testFailedRoute", testFailedRoute),
             ("testGroupPartialRoute", testGroupPartialRoute),
             ("testGroupFailedRoute", testGroupFailedRoute),
@@ -49,7 +49,7 @@ class ParserTests: XCTestCase {
         let args = ArgumentList(argumentString: "tester alpha")
         let cli = CLI.createTester(commands: [alphaCmd, betaCmd])
         
-        let command = try  DefaultParser(commandGroup: cli, arguments: args).parse()
+        let command = try  DefaultParser().parse(commandGroup: cli, arguments: args)
         XCTAssert(command.groupPath.bottom === cli, "Router should generate correct group path")
         XCTAssertEqual(command.groupPath.groups.count, 1, "Router should generate correct group path")
         XCTAssert(command.command === alphaCmd, "Router should route to the command with the given name")
@@ -62,7 +62,7 @@ class ParserTests: XCTestCase {
         let cli = CLI.createTester(commands: [alphaCmd, betaCmd])
         cli.aliases["-b"] = betaCmd.name
         
-        let command = try DefaultParser(commandGroup: cli, arguments: args).parse()
+        let command = try DefaultParser().parse(commandGroup: cli, arguments: args)
         XCTAssertEqual(command.groupPath.bottom.name, cli.name, "Router should generate correct group path")
         XCTAssertEqual(command.groupPath.groups.count, 1, "Router should generate correct group path")
         XCTAssertEqual(command.command.name, betaCmd.name, "Router with enabled shortcut routing should route to the command with the given shortcut")
@@ -70,27 +70,31 @@ class ParserTests: XCTestCase {
         XCTAssert(args.head == nil, "Enabled router should pass on no arguments to the matched command")
     }
     
-//    func testSingleRouter() {
-//        let args = ArgumentList(argumentString: "tester -a")
-//        let cli = CLI.createTester(commands: [alphaCmd])
-//
-//        guard case let .success(command) = SingleCommandRouter(command: alphaCmd).route(cli: cli, arguments: args) else {
-//            XCTFail()
-//            return
-//        }
-//
-//        XCTAssert(command.groupPath.bottom === cli, "Router should generate correct group path")
-//        XCTAssertEqual(command.groupPath.groups.count, 1, "Router should generate correct group path")
-//        XCTAssert(command.command === alphaCmd, "Router should route to the single command")
-//        XCTAssert(args.head?.value == "-a" && args.head?.next == nil, "Router should pass the flag on to the single command")
-//    }
+    func testSingleRouter() throws {
+        let cmd = FlagCmd()
+        let args = ArgumentList(argumentString: "tester -a")
+        let cli = CLI.createTester(commands: [cmd])
+
+        let path: CommandPath
+        do {
+            path = try SingleCommandParser(command: cmd).parse(commandGroup: cli, arguments: args)
+        } catch let error {
+            print(error)
+            throw error
+        }
+
+        XCTAssert(path.groupPath.bottom === cli, "Router should generate correct group path")
+        XCTAssertEqual(path.groupPath.groups.count, 1, "Router should generate correct group path")
+        XCTAssert(path.command === cmd, "Router should route to the single command")
+        XCTAssertTrue(cmd.flag.value)
+    }
     
     func testFailedRoute() throws {
         let args = ArgumentList(argumentString: "tester charlie")
         let cli = CLI.createTester(commands: [alphaCmd, betaCmd])
         
         do {
-            _ = try DefaultParser(commandGroup: cli, arguments: args).parse()
+            _ = try DefaultParser().parse(commandGroup: cli, arguments: args)
             XCTFail()
         } catch let error as RouteError {
             XCTAssert(error.partialPath.bottom === cli, "Router should generate correct group path")
@@ -104,7 +108,7 @@ class ParserTests: XCTestCase {
         let cli = CLI.createTester(commands: [midGroup, intraGroup, Req2Cmd(), Opt2Cmd()])
         
         do {
-            _ = try DefaultParser(commandGroup: cli, arguments: arguments).parse()
+            _ = try DefaultParser().parse(commandGroup: cli, arguments: arguments)
             XCTFail()
         } catch let error as RouteError {
             XCTAssert(error.partialPath.groups[0] === cli, "Router should generate correct group path")
@@ -119,7 +123,7 @@ class ParserTests: XCTestCase {
         let cli = CLI.createTester(commands: [midGroup, intraGroup, Req2Cmd(), Opt2Cmd()])
         
         do {
-            _ = try DefaultParser(commandGroup: cli, arguments: arguments).parse()
+            _ = try DefaultParser().parse(commandGroup: cli, arguments: arguments)
             XCTFail()
         } catch let error as RouteError {
             XCTAssert(error.partialPath.groups[0] === cli, "Router should generate correct group path")
@@ -133,7 +137,7 @@ class ParserTests: XCTestCase {
         let arguments = ArgumentList(argumentString: "tester mid beta")
         let cli = CLI.createTester(commands: [midGroup, intraGroup, Req2Cmd(), Opt2Cmd()])
         
-        let cmd = try DefaultParser(commandGroup: cli, arguments: arguments).parse()
+        let cmd = try DefaultParser().parse(commandGroup: cli, arguments: arguments)
         XCTAssert(cmd.groupPath.groups[0] === cli, "Router should generate correct group path")
         XCTAssert(cmd.groupPath.bottom === midGroup, "Router should generate correct group path")
         XCTAssertEqual(cmd.groupPath.groups.count, 2, "Router should generate correct group path")
@@ -153,7 +157,7 @@ class ParserTests: XCTestCase {
         let cli = CLI.createTester(commands: [nested])
         
         do {
-            _ = try DefaultParser(commandGroup: cli, arguments: arguments).parse()
+            _ = try DefaultParser().parse(commandGroup: cli, arguments: arguments)
             XCTFail()
         } catch let error as RouteError {
             XCTAssert(error.partialPath.groups[0] === cli, "Router should generate correct group path")
@@ -164,7 +168,7 @@ class ParserTests: XCTestCase {
         
         arguments = ArgumentList(argumentString: "tester nested intra")
         do {
-            _ = try DefaultParser(commandGroup: cli, arguments: arguments).parse()
+            _ = try DefaultParser().parse(commandGroup: cli, arguments: arguments)
             XCTFail()
         } catch let error as RouteError {
             XCTAssert(error.partialPath.groups[0] === cli, "Router should generate correct group path")
@@ -175,7 +179,7 @@ class ParserTests: XCTestCase {
         }
         
         arguments = ArgumentList(argumentString: "tester nested intra delta")
-        let cmd = try DefaultParser(commandGroup: cli, arguments: arguments).parse()
+        let cmd = try DefaultParser().parse(commandGroup: cli, arguments: arguments)
         
         XCTAssert(cmd.groupPath.groups[0] === cli, "Router should generate correct group path")
         XCTAssert(cmd.groupPath.groups[1] === nested, "Router should generate correct group path")
@@ -190,7 +194,7 @@ class ParserTests: XCTestCase {
     func parse<T: Command>(command: T, args: [String]) throws -> T {
         let cli = CLI.createTester(commands: [command])
         let arguments = ArgumentList(arguments: ["tester", "cmd"] + args)
-        _ = try DefaultParser(commandGroup: cli, arguments: arguments).parse()
+        _ = try DefaultParser().parse(commandGroup: cli, arguments: arguments)
         return command
     }
     
@@ -363,7 +367,7 @@ class ParserTests: XCTestCase {
         let arguments = ArgumentList(argumentString: "tester cmd -a -b")
         let cli = CLI.createTester(commands: [cmd])
         
-        _ = try DefaultParser(commandGroup: cli, arguments: arguments).parse()
+        _ = try DefaultParser().parse(commandGroup: cli, arguments: arguments)
         XCTAssert(cmd.alpha.value && cmd.beta.value, "Options should update the values of passed flags")
     }
     
@@ -372,7 +376,7 @@ class ParserTests: XCTestCase {
         let arguments = ArgumentList(argumentString: "tester cmd -a apple -b banana")
         let cli = CLI.createTester(commands: [cmd])
         
-        _ = try DefaultParser(commandGroup: cli, arguments: arguments).parse()
+        _ = try DefaultParser().parse(commandGroup: cli, arguments: arguments)
         
         XCTAssertEqual(cmd.alpha.value, "apple", "Options should update the values of passed keys")
         XCTAssertEqual(cmd.beta.value, "banana", "Options should update the values of passed keys")
@@ -383,7 +387,7 @@ class ParserTests: XCTestCase {
         let arguments = ArgumentList(argumentString: "tester cmd -a 7")
         let cli = CLI.createTester(commands: [cmd])
         
-        _ = try DefaultParser(commandGroup: cli, arguments: arguments).parse()
+        _ = try DefaultParser().parse(commandGroup: cli, arguments: arguments)
         
         XCTAssert(cmd.alpha.value == 7, "Options should parse int")
     }
@@ -393,7 +397,7 @@ class ParserTests: XCTestCase {
         let arguments = ArgumentList(argumentString: "tester cmd -a -b banana")
         let cli = CLI.createTester(commands: [cmd])
         
-        _ = try DefaultParser(commandGroup: cli, arguments: arguments).parse()
+        _ = try DefaultParser().parse(commandGroup: cli, arguments: arguments)
         
         XCTAssert(cmd.alpha.value, "Options should execute the closures of passed flags")
         XCTAssertEqual(cmd.beta.value, "banana", "Options should execute the closures of passed keys")
@@ -404,7 +408,7 @@ class ParserTests: XCTestCase {
         let arguments = ArgumentList(argumentString: "tester cmd -a argument -b banana")
         let cli = CLI.createTester(commands: [cmd])
         
-        _ = try DefaultParser(commandGroup: cli, arguments: arguments).parse()
+        _ = try DefaultParser().parse(commandGroup: cli, arguments: arguments)
         
         XCTAssert(cmd.alpha.value, "Options should execute the closures of passed flags")
         XCTAssertEqual(cmd.beta.value, "banana", "Options should execute the closures of passed keys")
@@ -417,7 +421,7 @@ class ParserTests: XCTestCase {
         let cli = CLI.createTester(commands: [cmd])
         
         do {
-            _ = try DefaultParser(commandGroup: cli, arguments: arguments).parse()
+            _ = try DefaultParser().parse(commandGroup: cli, arguments: arguments)
             XCTFail()
         } catch let error as OptionError {
             XCTAssertEqual(error.message, "Unrecognized option: -b")
@@ -430,7 +434,7 @@ class ParserTests: XCTestCase {
         let cli = CLI.createTester(commands: [cmd])
         
         do {
-            _ = try DefaultParser(commandGroup: cli, arguments: arguments).parse()
+            _ = try DefaultParser().parse(commandGroup: cli, arguments: arguments)
             XCTFail()
         } catch let error as OptionError {
             XCTAssertEqual(error.message, "Expected a value to follow: -b")
@@ -443,7 +447,7 @@ class ParserTests: XCTestCase {
         let cli = CLI.createTester(commands: [cmd])
         
         do {
-            _ = try DefaultParser(commandGroup: cli, arguments: arguments).parse()
+            _ = try DefaultParser().parse(commandGroup: cli, arguments: arguments)
             XCTFail()
         } catch let error as OptionError {
             XCTAssertEqual(error.message, "Illegal type passed to -a: 'val'")
@@ -456,7 +460,7 @@ class ParserTests: XCTestCase {
         OptionSplitter().manipulate(arguments: arguments)
         let cli = CLI.createTester(commands: [cmd])
         
-        _ = try DefaultParser(commandGroup: cli, arguments: arguments).parse()
+        _ = try DefaultParser().parse(commandGroup: cli, arguments: arguments)
         
         XCTAssert(cmd.alpha.value && cmd.beta.value, "Options should execute the closures of passed flags")
     }
@@ -466,7 +470,7 @@ class ParserTests: XCTestCase {
         let arguments1 = ArgumentList(argumentString: "tester cmd -a -b")
         
         do {
-            _ = try DefaultParser(commandGroup: CLI.createTester(commands: [cmd1]), arguments: arguments1).parse()
+            _ = try DefaultParser().parse(commandGroup: CLI.createTester(commands: [cmd1]), arguments: arguments1)
             XCTFail()
         } catch let error as OptionError {
             XCTAssertEqual(error.message, "Must pass exactly one of the following: --alpha --beta")
@@ -474,20 +478,20 @@ class ParserTests: XCTestCase {
         
         let cmd2 = ExactlyOneCmd()
         let arguments2 = ArgumentList(argumentString: "tester cmd -a")
-        _ = try DefaultParser(commandGroup: CLI.createTester(commands: [cmd2]), arguments: arguments2).parse()
+        _ = try DefaultParser().parse(commandGroup: CLI.createTester(commands: [cmd2]), arguments: arguments2)
         XCTAssertTrue(cmd2.alpha.value)
         XCTAssertFalse(cmd2.beta.value)
         
         let cmd3 = ExactlyOneCmd()
         let arguments3 = ArgumentList(argumentString: "tester cmd -b")
-        _ = try DefaultParser(commandGroup: CLI.createTester(commands: [cmd3]), arguments: arguments3).parse()
+        _ = try DefaultParser().parse(commandGroup: CLI.createTester(commands: [cmd3]), arguments: arguments3)
         XCTAssertTrue(cmd3.beta.value)
         XCTAssertFalse(cmd3.alpha.value)
         
         let cmd4 = ExactlyOneCmd()
         let arguments4 = ArgumentList(argumentString: "tester cmd")
         do {
-            _ = try DefaultParser(commandGroup: CLI.createTester(commands: [cmd4]), arguments: arguments4).parse()
+            _ = try DefaultParser().parse(commandGroup: CLI.createTester(commands: [cmd4]), arguments: arguments4)
             XCTFail()
         } catch let error as OptionError {
             XCTAssertEqual(error.message, "Must pass exactly one of the following: --alpha --beta")
@@ -501,7 +505,7 @@ class ParserTests: XCTestCase {
         let cli = CLI.createTester(commands: [cmd])
         
         let args = ArgumentList(arguments: ["tester", "test", "-s", "favTest", "-t", "3", "SwiftCLI"])
-        let path = try DefaultParser(commandGroup: cli, arguments: args).parse()
+        let path = try DefaultParser().parse(commandGroup: cli, arguments: args)
         
         XCTAssertEqual(path.joined(), "tester test")
         XCTAssertTrue(path.command === cmd)

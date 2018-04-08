@@ -53,7 +53,7 @@ public class CLI {
     
     public var helpMessageGenerator: HelpMessageGenerator = DefaultHelpMessageGenerator()
     public var argumentListManipulators: [ArgumentListManipulator] = [OptionSplitter()]
-    public var parser: Parser.Type = DefaultParser.self
+    public var parser: Parser = DefaultParser()
     
     /// Creates a new CLI
     ///
@@ -129,7 +129,7 @@ public class CLI {
     
     private func parse(arguments: ArgumentList) throws -> CommandPath {
         do {
-            return try parser.init(commandGroup: self, arguments: arguments).parse()
+            return try parser.parse(commandGroup: self, arguments: arguments)
         } catch let error as RouteError {
             if let notFound = error.notFound {
                 stderr <<< ""

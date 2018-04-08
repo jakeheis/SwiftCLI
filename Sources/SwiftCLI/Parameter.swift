@@ -111,16 +111,25 @@ open class OptionalCollectedParameter: AnyCollectedParameter {
 
 // MARK: - ParameterIterator
 
-public class ParameterIterator: IteratorProtocol {
+public struct ParameterError: Swift.Error {
+    let command: CommandPath
+    let message: String
+}
+
+public class ParameterIterator {
     
-    var params: [AnyParameter]
-    let collected: AnyCollectedParameter?
+    public let command: CommandPath
+    
+    private var params: [AnyParameter]
+    private let collected: AnyCollectedParameter?
     
     private let minCount: Int
     private let maxCount: Int?
     
-    init(command: Command) {
-        var all = command.parameters.map({ $0.1 })
+    public init(command: CommandPath) {
+        self.command = command
+        
+        var all = command.command.parameters.map({ $0.1 })
         
         self.minCount = all.filter({ $0.required }).count
         
@@ -139,7 +148,23 @@ public class ParameterIterator: IteratorProtocol {
         assert(all.index(where: { $0 is OptionalParameter }).flatMap({ $0 >= minCount }) ?? true, "optional parameters must come after all required parameters")
     }
     
-    public func next() -> AnyParameter? {
+    public func parse(node: ArgumentNode) throws {
+        if let param = next() {
+            param.update(value: node.value)
+        } else {
+            throw ParameterError(command: command, message: createErrorMessage())
+        }
+    }
+    
+    public func finish() throws {
+        if let param = next(), !param.satisfied {
+            throw ParameterError(command: command, message: createErrorMessage())
+        }
+    }
+    
+    // MARK: - Helpers
+    
+    private func next() -> AnyParameter? {
         if let individual = params.first {
             params.removeFirst()
             return individual
@@ -147,7 +172,7 @@ public class ParameterIterator: IteratorProtocol {
         return collected
     }
     
-    public func createErrorMessage() -> String {
+    private func createErrorMessage() -> String {
         let plural = minCount == 1 ? "argument" : "arguments"
         
         switch maxCount {
