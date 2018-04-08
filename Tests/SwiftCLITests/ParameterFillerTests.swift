@@ -9,231 +9,201 @@
 import XCTest
 @testable import SwiftCLI
 
-class ParameterFillerTests: XCTestCase {
+extension ParserTests {
     
-    static var allTests : [(String, (ParameterFillerTests) -> () throws -> Void)] {
-        return [
-            ("testEmptySignature", testEmptySignature),
-            ("testRequiredParameters", testRequiredParameters),
-            ("testOptionalParameters", testOptionalParameters),
-            ("testOptionalParametersWithInheritance", testOptionalParametersWithInheritance),
-            ("testExtraneousArguments", testExtraneousArguments),
-            ("testCollectedRequiredParameters", testCollectedRequiredParameters),
-            ("testCollectedOptionalParameters", testCollectedOptionalParameters),
-            ("testCombinedRequiredAndOptionalParameters", testCombinedRequiredAndOptionalParameters),
-            ("testEmptyOptionalCollectedParameter", testEmptyOptionalCollectedParameter),
-            ("testExpectedMessages", testExpectedMessages)
-        ]
-    }
-    
-    private var req1: Req1Cmd { return current as! Req1Cmd }
-    private var req2: Req2Cmd { return current as! Req2Cmd }
-    private var opt1: Opt1Cmd { return current as! Opt1Cmd }
-    private var opt2: Opt2Cmd { return current as! Opt2Cmd }
-    private var opt2Inh: Opt2InhCmd { return current as! Opt2InhCmd }
-    private var reqCollected: ReqCollectedCmd{ return current as! ReqCollectedCmd }
-    private var optCollected: OptCollectedCmd { return current as! OptCollectedCmd }
-    private var req2Collected: Req2CollectedCmd{ return current as! Req2CollectedCmd }
-    private var opt2Collected: Opt2CollectedCmd { return current as! Opt2CollectedCmd }
-    private var req2Opt2: Req2Opt2Cmd { return current as! Req2Opt2Cmd }
-    
-    var current: Command? = nil
-    var arguments: [String] = []
+//    static var allTests : [(String, (ParameterFillerTests) -> () throws -> Void)] {
+//        return [
+//            ("testEmptySignature", testEmptySignature),
+//            ("testRequiredParameters", testRequiredParameters),
+//            ("testOptionalParameters", testOptionalParameters),
+//            ("testOptionalParametersWithInheritance", testOptionalParametersWithInheritance),
+//            ("testExtraneousArguments", testExtraneousArguments),
+//            ("testCollectedRequiredParameters", testCollectedRequiredParameters),
+//            ("testCollectedOptionalParameters", testCollectedOptionalParameters),
+//            ("testCombinedRequiredAndOptionalParameters", testCombinedRequiredAndOptionalParameters),
+//            ("testEmptyOptionalCollectedParameter", testEmptyOptionalCollectedParameter),
+//            ("testExpectedMessages", testExpectedMessages)
+//        ]
+//    }
     
     // MARK: - Tests
     
-    func testEmptySignature() {
-        current = EmptyCmd()
-        arguments = []
-        assertParse(true, assertMessage: "Signature parser should return an empty dictionary for empty signature and empty arguments")
-        
-        current = EmptyCmd()
-        arguments = ["arg"]
-        assertParseFails("Signature parser should fail for empty signature and some arguments")
+    @discardableResult
+    func parse<T: Command>(command: T, args: [String]) throws -> T {
+        let cli = CLI.createTester(commands: [command])
+        let arguments = ArgumentList(arguments: ["tester", "cmd"] + args)
+        _ = try DefaultParser(commandGroup: cli, arguments: arguments).parse()
+        return command
     }
     
-    func testRequiredParameters() {
-        current = Req2Cmd()
-        arguments = ["arg1"]
-        assertParseFails("Signature parser should fail for 2 required arguments and 1 passed argument")
+    func testEmptySignature() throws {
+        try parse(command: EmptyCmd(), args: [])
         
-        current = Req2Cmd()
-        arguments = ["arg1", "arg2"]
-        assertParse(req2.req1.value == "arg1" && req2.req2.value == "arg2",
-                    assertMessage: "Signature parser should succeed for 2 required arguments and 2 passed arguments")
-        
-        current = Req2Cmd()
-        arguments = ["arg1", "arg2", "arg3"]
-        assertParseFails("Signature parser should fail for 2 required arguments and 3 passed arguments")
+        do {
+            try parse(command: EmptyCmd(), args: ["arg"])
+            XCTFail()
+        } catch let error as ParameterError {
+            XCTAssertEqual(error.message, "error: command requires exactly 0 arguments")
+        }
     }
     
-    func testOptionalParameters() {
-        current = Opt2Cmd()
-        arguments = []
-        assertParse(opt2.opt1.value == nil && opt2.opt2.value == nil,
-                    assertMessage: "Signature parser should succeed for 2 optional arguments and 0 passed arguments")
+    func testRequiredParameters() throws {
+        do {
+            try parse(command: Req2Cmd(), args: ["arg1"])
+            XCTFail()
+        } catch let error as ParameterError {
+            XCTAssertEqual(error.message, "error: command requires exactly 2 arguments")
+        }
         
-        current = Opt2Cmd()
-        arguments = ["arg1"]
-        assertParse(opt2.opt1.value == "arg1" && opt2.opt2.value == nil,
-                    assertMessage: "Signature parser should succeed for 2 optional arguments and 1 passed argument")
+        let req2 = try parse(command: Req2Cmd(), args: ["arg1", "arg2"])
+        XCTAssertEqual(req2.req1.value, "arg1")
+        XCTAssertEqual(req2.req2.value, "arg2")
         
-        current = Opt2Cmd()
-        arguments = ["arg1", "arg2"]
-        assertParse(opt2.opt1.value == "arg1" && opt2.opt2.value == "arg2",
-                    assertMessage: "Signature parser should succeed for 2 optional arguments and 2 passed arguments")
-        
-        current = Opt2Cmd()
-        arguments = ["arg1", "arg2", "arg3"]
-        assertParseFails("Signature parser should fail for 2 optional arguments and 3 passed arguments")
+        do {
+            try parse(command: Req2Cmd(), args: ["arg1", "arg2", "arg3"])
+            XCTFail()
+        } catch let error as ParameterError {
+            XCTAssertEqual(error.message, "error: command requires exactly 2 arguments")
+        }
     }
     
-    func testOptionalParametersWithInheritance() {
-        current = Opt2InhCmd()
-        arguments = []
-        assertParse(opt2Inh.opt1.value == nil && opt2Inh.opt2.value == nil,
-                    assertMessage: "Signature parser should succeed for 2 optional arguments and 0 passed arguments")
+    func testOptionalParameters() throws {
+        let cmd1 = try parse(command: Opt2Cmd(), args: [])
+        XCTAssertEqual(cmd1.opt1.value, nil)
+        XCTAssertEqual(cmd1.opt2.value, nil)
         
-        current = Opt2InhCmd()
-        arguments = ["arg1"]
-        assertParse(opt2Inh.opt1.value == "arg1" && opt2Inh.opt2.value == nil,
-                    assertMessage: "Signature parser should succeed for 2 optional arguments and 1 passed argument")
+        let cmd2 = try parse(command: Opt2Cmd(), args: ["arg1"])
+        XCTAssertEqual(cmd2.opt1.value, "arg1")
+        XCTAssertEqual(cmd2.opt2.value, nil)
         
-        current = Opt2InhCmd()
-        arguments = ["arg1", "arg2"]
-        assertParse(opt2Inh.opt1.value == "arg1" && opt2Inh.opt2.value == "arg2",
-                    assertMessage: "Signature parser should succeed for 2 optional arguments and 2 passed arguments")
+        let cmd3 = try parse(command: Opt2Cmd(), args: ["arg1", "arg2"])
+        XCTAssertEqual(cmd3.opt1.value, "arg1")
+        XCTAssertEqual(cmd3.opt2.value, "arg2")
         
-        current = Opt2InhCmd()
-        arguments = ["arg1", "arg2", "arg3"]
-        assertParse(opt2Inh.opt1.value == "arg1" && opt2Inh.opt2.value == "arg2" && opt2Inh.opt3.value == "arg3",
-                    assertMessage: "Signature parser should succeed for 3 optional arguments and 3 passed arguments")
-        
-        current = Opt2InhCmd()
-        arguments = ["arg1", "arg2", "arg3", "arg4"]
-        assertParseFails("Signature parser should fail for 3 optional arguments and 4 passed arguments")
+        do {
+            try parse(command: Opt2Cmd(), args: ["arg1", "arg2", "arg3"])
+            XCTFail()
+        } catch let error as ParameterError {
+            XCTAssertEqual(error.message, "error: command requires between 0 and 2 arguments")
+        }
     }
     
-    func testExtraneousArguments() {
-        arguments = ["arg1", "arg2"]
-        
-        current = Req1Cmd()
-        assertParseFails("Signature parser should fail for 1 required argument and 2 passed arguments")
-        
-        current = Opt1Cmd()
-        assertParseFails("Signature parser should fail for 1 optional argument and 2 passed arguments")
-    }
-    
-    func testCollectedRequiredParameters() {
-        current = ReqCollectedCmd()
-        arguments = []
-        assertParseFails("Signature parser should fail for 1 required argument and 0 passed arguments")
+    func testOptionalParametersWithInheritance() throws {
+        let cmd1 = try parse(command: Opt2InhCmd(), args: [])
+        XCTAssertEqual(cmd1.opt1.value, nil)
+        XCTAssertEqual(cmd1.opt2.value, nil)
+        XCTAssertEqual(cmd1.opt3.value, nil)
 
-        current = Req2CollectedCmd()
-        arguments = ["arg1"]
-        assertParseFails("Signature parser should fail for 2 required argument and 1 passed arguments")
+        let cmd2 = try parse(command: Opt2InhCmd(), args: ["arg1"])
+        XCTAssertEqual(cmd2.opt1.value, "arg1")
+        XCTAssertEqual(cmd2.opt2.value, nil)
+        XCTAssertEqual(cmd2.opt3.value, nil)
         
-        current = Req2CollectedCmd()
-        arguments = ["arg1", "arg2"]
-        assertParse(req2Collected.req1.value == "arg1" && req2Collected.req2.value == ["arg2"],
-                    assertMessage: "Signature parser should succeed for a non-terminal required argument and 2 passed arguments")
+        let cmd3 = try parse(command: Opt2InhCmd(), args: ["arg1", "arg2"])
+        XCTAssertEqual(cmd3.opt1.value, "arg1")
+        XCTAssertEqual(cmd3.opt2.value, "arg2")
+        XCTAssertEqual(cmd3.opt3.value, nil)
         
-        current = Req2CollectedCmd()
-        arguments = ["arg1", "arg2", "arg3"]
-        assertParse(req2Collected.req1.value == "arg1" && req2Collected.req2.value == ["arg2", "arg3"],
-                    assertMessage: "Signature parser should succeed for a non-terminal required argument and 3 passed arguments")
+        let cmd4 = try parse(command: Opt2InhCmd(), args: ["arg1", "arg2", "arg3"])
+        XCTAssertEqual(cmd4.opt1.value, "arg1")
+        XCTAssertEqual(cmd4.opt2.value, "arg2")
+        XCTAssertEqual(cmd4.opt3.value, "arg3")
+        
+        do {
+            try parse(command: Opt2InhCmd(), args: ["arg1", "arg2", "arg3", "arg4"])
+            XCTFail()
+        } catch let error as ParameterError {
+            XCTAssertEqual(error.message, "error: command requires between 0 and 3 arguments")
+        }
     }
     
-    func testCollectedOptionalParameters() {
-        current = Opt2CollectedCmd()
-        arguments = []
-        assertParse(opt2Collected.opt1.value == nil && opt2Collected.opt2.value == nil,
-                    assertMessage: "Signature parser should succeed for a non-terminal optional argument and 2 passed arguments")
+    func testCollectedRequiredParameters() throws {
+        do {
+            try parse(command: ReqCollectedCmd(), args: [])
+            XCTFail()
+        } catch let error as ParameterError {
+            XCTAssertEqual(error.message, "error: command requires at least 1 argument")
+        }
         
-        current = Opt2CollectedCmd()
-        arguments = ["arg1"]
-        assertParse(opt2Collected.opt1.value == "arg1" && opt2Collected.opt2.value == nil,
-                    assertMessage: "Signature parser should succeed for a non-terminal optional argument and 2 passed arguments")
-        
-        current = Opt2CollectedCmd()
-        arguments = ["arg1", "arg2"]
-        assertParse(opt2Collected.opt1.value == "arg1" && opt2Collected.opt2.value! == ["arg2"],
-                    assertMessage: "Signature parser should succeed for a non-terminal optional argument and 2 passed arguments")
-        
-        current = Opt2CollectedCmd()
-        arguments = ["arg1", "arg2", "arg3"]
-        assertParse(opt2Collected.opt1.value == "arg1" && opt2Collected.opt2.value! == ["arg2", "arg3"],
-                    assertMessage: "Signature parser should succeed for a non-terminal optional argument and 3 passed arguments")
-    }
-    
-    func testCombinedRequiredAndOptionalParameters() {
-        current = Req2Opt2Cmd()
-        arguments = ["arg1"]
-        assertParseFails("Signature parser should fail for 2 required argument and 1 passed arguments")
-        
-        current = Req2Opt2Cmd()
-        arguments = ["arg1", "arg2"]
-        assertParse(
-            req2Opt2.req1.value == "arg1" && req2Opt2.req2.value == "arg2" &&
-            req2Opt2.opt1.value == nil && req2Opt2.opt2.value == nil,
-            assertMessage: "Signature parser should succeed for combined signature and 3 passed arguments")
-        
-        current = Req2Opt2Cmd()
-        arguments = ["arg1", "arg2", "arg3"]
-        assertParse(
-            req2Opt2.req1.value == "arg1" && req2Opt2.req2.value == "arg2" &&
-            req2Opt2.opt1.value == "arg3" && req2Opt2.opt2.value == nil,
-            assertMessage: "Signature parser should succeed for combined signature and 3 passed arguments")
-        
-        current = Req2Opt2Cmd()
-        arguments = ["arg1", "arg2", "arg3", "arg4"]
-        assertParse(
-            req2Opt2.req1.value == "arg1" && req2Opt2.req2.value == "arg2" &&
-            req2Opt2.opt1.value == "arg3" && req2Opt2.opt2.value == "arg4",
-            assertMessage: "Signature parser should succeed for combined signature and 4 passed arguments")
-        
-        current = Req2Opt2Cmd()
-        arguments = ["arg1", "arg2", "arg3", "arg4", "arg5"]
-        assertParseFails("Signature parser should fail for 2 required arguments, 2 optional arguments and 5 passed arguments")
-    }
-    
-    func testEmptyOptionalCollectedParameter() { // Tests regression
-        current = OptCollectedCmd()
-        arguments = []
-        assertParse(true, assertMessage: "Signature parser should succeed with empty optional collected parameters")
-    }
-    
-    func testExpectedMessages() {
-        let filler = DefaultParameterFiller()
-        
-        var signature = CommandSignature(command: Req2Cmd())
-        XCTAssertEqual(filler.wrongArgCount(signature: signature, got: 1).message, "error: command requires exactly 2 arguments, got 1")
-        XCTAssertEqual(filler.wrongArgCount(signature: signature, got: 3).message, "error: command requires exactly 2 arguments, got 3")
-        
-        signature = CommandSignature(command: ReqCollectedCmd())
-        XCTAssertEqual(filler.wrongArgCount(signature: signature, got: 0).message, "error: command requires at least 1 argument, got 0")
+        do {
+            try parse(command: Req2CollectedCmd(), args: ["arg1"])
+            XCTFail()
+        } catch let error as ParameterError {
+            XCTAssertEqual(error.message, "error: command requires at least 2 arguments")
+        }
 
-        signature = CommandSignature(command: Req2CollectedCmd())
-        XCTAssertEqual(filler.wrongArgCount(signature: signature, got: 0).message, "error: command requires at least 2 arguments, got 0")
-        XCTAssertEqual(filler.wrongArgCount(signature: signature, got: 1).message, "error: command requires at least 2 arguments, got 1")
+        let cmd1 = try parse(command: Req2CollectedCmd(), args: ["arg1", "arg2"])
+        XCTAssertEqual(cmd1.req1.value, "arg1")
+        XCTAssertEqual(cmd1.req2.value, ["arg2"])
         
-        signature = CommandSignature(command: Req2Opt2Cmd())
-        XCTAssertEqual(filler.wrongArgCount(signature: signature, got: 1).message, "error: command requires between 2 and 4 arguments, got 1")
+        let cmd2 = try parse(command: Req2CollectedCmd(), args: ["arg1", "arg2", "arg3"])
+        XCTAssertEqual(cmd2.req1.value, "arg1")
+        XCTAssertEqual(cmd2.req2.value, ["arg2", "arg3"])
     }
     
-    func testParse() throws {
+    func testCollectedOptionalParameters() throws {
+        let cmd1 = try parse(command: Opt2CollectedCmd(), args: [])
+        XCTAssertEqual(cmd1.opt1.value, nil)
+        XCTAssertEqual(cmd1.opt2.value, [])
+        
+        let cmd2 = try parse(command: Opt2CollectedCmd(), args: ["arg1"])
+        XCTAssertEqual(cmd2.opt1.value, "arg1")
+        XCTAssertEqual(cmd2.opt2.value, [])
+        
+        let cmd3 = try parse(command: Opt2CollectedCmd(), args: ["arg1", "arg2"])
+        XCTAssertEqual(cmd3.opt1.value, "arg1")
+        XCTAssertEqual(cmd3.opt2.value, ["arg2"])
+        
+        let cmd4 = try parse(command: Opt2CollectedCmd(), args: ["arg1", "arg2", "arg3"])
+        XCTAssertEqual(cmd4.opt1.value, "arg1")
+        XCTAssertEqual(cmd4.opt2.value, ["arg2", "arg3"])
+    }
+    
+    func testCombinedRequiredAndOptionalParameters() throws {
+        do {
+            try parse(command: Req2Opt2Cmd(), args: ["arg1"])
+            XCTFail()
+        } catch let error as ParameterError {
+            XCTAssertEqual(error.message, "error: command requires between 2 and 4 arguments")
+        }
+        
+        let cmd1 = try parse(command: Req2Opt2Cmd(), args: ["arg1", "arg2"])
+        XCTAssertEqual(cmd1.req1.value, "arg1")
+        XCTAssertEqual(cmd1.req2.value, "arg2")
+        XCTAssertEqual(cmd1.opt1.value, nil)
+        XCTAssertEqual(cmd1.opt2.value, nil)
+        
+        let cmd2 = try parse(command: Req2Opt2Cmd(), args: ["arg1", "arg2", "arg3"])
+        XCTAssertEqual(cmd2.req1.value, "arg1")
+        XCTAssertEqual(cmd2.req2.value, "arg2")
+        XCTAssertEqual(cmd2.opt1.value, "arg3")
+        XCTAssertEqual(cmd2.opt2.value, nil)
+        
+        let cmd3 = try parse(command: Req2Opt2Cmd(), args: ["arg1", "arg2", "arg3", "arg4"])
+        XCTAssertEqual(cmd3.req1.value, "arg1")
+        XCTAssertEqual(cmd3.req2.value, "arg2")
+        XCTAssertEqual(cmd3.opt1.value, "arg3")
+        XCTAssertEqual(cmd3.opt2.value, "arg4")
+        
+        do {
+            try parse(command: Req2Opt2Cmd(), args: ["arg1", "arg2", "arg3", "arg4", "arg5"])
+            XCTFail()
+        } catch let error as ParameterError {
+            XCTAssertEqual(error.message, "error: command requires between 2 and 4 arguments")
+        }
+    }
+    
+    func testEmptyOptionalCollectedParameter() throws { // Tests regression
+        let cmd = try parse(command: OptCollectedCmd(), args: [])
+        XCTAssertEqual(cmd.opt1.value, [])
+    }
+    
+    func testFullParse() throws {
         let cmd = TestCommand()
         let cli = CLI.createTester(commands: [cmd])
         
         let args = ArgumentList(arguments: ["tester", "test", "-s", "favTest", "-t", "3", "SwiftCLI"])
-        let path: CommandPath
-        do {
-            path = try Parser().parse(commandGroup: cli, arguments: args)
-        } catch let error {
-            print(error)
-            XCTFail()
-            return
-        }
+        let path = try DefaultParser(commandGroup: cli, arguments: args).parse()
         
         XCTAssertEqual(path.joined(), "tester test")
         XCTAssertTrue(path.command === cmd)
@@ -244,30 +214,4 @@ class ParameterFillerTests: XCTestCase {
         XCTAssertEqual(cmd.times.value, 3)
     }
     
-    // MARK: - Helpers
-    
-    private func parse() throws {
-        let stringArguments = arguments.joined(separator: " ")
-        let argumentList = ArgumentList(argumentString: "tester \(stringArguments)")
-        
-        try DefaultParameterFiller().fillParameters(of: CommandSignature(command: current!), with: argumentList)
-    }
-    
-    private func assertParse(_ test: @autoclosure () -> Bool, assertMessage: String) {
-        do {
-            try parse()
-            
-            XCTAssert(test(), assertMessage)
-        } catch {
-            XCTFail(assertMessage)
-        }
-    }
-    
-    private func assertParseFails(_ assertMessage: String) {
-        do {
-            try parse()
-            XCTFail("\(assertMessage); mistakenly passed and returned \(arguments)")
-        } catch {}
-    }
-    
-}
+ }

@@ -14,6 +14,8 @@ public protocol AnyParameter: class {
     func signature(for name: String) -> String
 }
 
+// MARK: - Single parameters
+
 open class Parameter: AnyParameter {
     
     public let required = true
@@ -61,26 +63,6 @@ public protocol AnyCollectedParameter: AnyParameter {
     func update(value: [String])
 }
 
-//public class DynamicParameter: AnyCollectedParameter {
-//
-//    public let required: Bool
-//    public let reaction: ([String]) -> ()
-//
-//    public init(required: Bool, reaction: @escaping ([String]) -> ()) {
-//        self.required = required
-//        self.reaction = reaction
-//    }
-//
-//    public func update(value: [String]) {
-//        reaction(value)
-//    }
-//
-//    public func signature(for name: String) -> String {
-//        return (required ? "<\(name)>" : "[<\(name)>]") + " ..."
-//    }
-//
-//}
-
 open class CollectedParameter: AnyCollectedParameter {
     
     public let required = true
@@ -109,7 +91,7 @@ open class OptionalCollectedParameter: AnyCollectedParameter {
     
     public let required = false
     public let satisfied = true
-    public var value: [String]? = nil
+    public var value: [String] = []
     
     public init() {}
     
@@ -118,7 +100,7 @@ open class OptionalCollectedParameter: AnyCollectedParameter {
     }
     
     public func update(value: String) {
-        self.value?.append(value)
+        self.value.append(value)
     }
     
     open func signature(for name: String) -> String {
@@ -126,3 +108,57 @@ open class OptionalCollectedParameter: AnyCollectedParameter {
     }
     
 }
+
+// MARK: - ParameterIterator
+
+public class ParameterIterator: IteratorProtocol {
+    
+    var params: [AnyParameter]
+    let collected: AnyCollectedParameter?
+    
+    private let minCount: Int
+    private let maxCount: Int?
+    
+    init(command: Command) {
+        var all = command.parameters.map({ $0.1 })
+        
+        self.minCount = all.filter({ $0.required }).count
+        
+        if let collected = all.last as? AnyCollectedParameter {
+            self.collected = collected
+            all.removeLast()
+            self.maxCount = nil
+        } else {
+            self.collected = nil
+            self.maxCount = all.count
+        }
+        
+        self.params = all
+        
+        assert(all.index(where: { $0 is AnyCollectedParameter }) == nil, "can only have one collected parameter, and it must be the last parameter")
+        assert(all.index(where: { $0 is OptionalParameter }).flatMap({ $0 >= minCount }) ?? true, "optional parameters must come after all required parameters")
+    }
+    
+    public func next() -> AnyParameter? {
+        if let individual = params.first {
+            params.removeFirst()
+            return individual
+        }
+        return collected
+    }
+    
+    public func createErrorMessage() -> String {
+        let plural = minCount == 1 ? "argument" : "arguments"
+        
+        switch maxCount {
+        case nil:
+            return "error: command requires at least \(minCount) \(plural)"
+        case let count? where count == minCount:
+            return "error: command requires exactly \(count) \(plural)"
+        case let count?:
+            return "error: command requires between \(minCount) and \(count) arguments"
+        }
+    }
+    
+}
+

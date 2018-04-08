@@ -102,7 +102,7 @@ final public class DefaultParser: Parser {
                 throw OptionError(command: state.command, message: "Expected a value to follow: \(node.value)")
             }
             guard key.setValue(next.value) else {
-                throw OptionError(command: state.command, message: "Illegal type passed to \(key): \(node.value)")
+                throw OptionError(command: state.command, message: "Illegal type passed to \(key.names.first!): '\(next.value)'")
             }
             arguments.remove(node: next)
         } else {

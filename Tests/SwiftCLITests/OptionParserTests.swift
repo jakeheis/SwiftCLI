@@ -9,166 +9,162 @@
 import XCTest
 @testable import SwiftCLI
 
-class OptionParserTests: XCTestCase {
+
+extension ParserTests {
     
-   static var allTests : [(String, (OptionParserTests) -> () throws -> Void)] {
-        return [
-            ("testSimpleFlagParsing", testSimpleFlagParsing),
-            ("testSimpleKeyParsing", testSimpleKeyParsing),
-            ("testKeyValueParsing", testKeyValueParsing),
-            ("testCombinedFlagsAndKeysParsing", testCombinedFlagsAndKeysParsing),
-            ("testCombinedFlagsAndKeysAndArgumentsParsing", testCombinedFlagsAndKeysAndArgumentsParsing),
-            ("testUnrecognizedOptions", testUnrecognizedOptions),
-            ("testKeysNotGivenValues", testKeysNotGivenValues),
-            ("testIllegalOptionFormat", testIllegalOptionFormat),
-            ("testFlagSplitting", testFlagSplitting),
-            ("testGroupRestriction", testGroupRestriction)
-        ]
-    }
-    
-    override func setUp() {
-        super.setUp()
-    }
+//   static var allTests : [(String, (OptionParserTests) -> () throws -> Void)] {
+//        return [
+//            ("testSimpleFlagParsing", testSimpleFlagParsing),
+//            ("testSimpleKeyParsing", testSimpleKeyParsing),
+//            ("testKeyValueParsing", testKeyValueParsing),
+//            ("testCombinedFlagsAndKeysParsing", testCombinedFlagsAndKeysParsing),
+//            ("testCombinedFlagsAndKeysAndArgumentsParsing", testCombinedFlagsAndKeysAndArgumentsParsing),
+//            ("testUnrecognizedOptions", testUnrecognizedOptions),
+//            ("testKeysNotGivenValues", testKeysNotGivenValues),
+//            ("testIllegalOptionFormat", testIllegalOptionFormat),
+//            ("testFlagSplitting", testFlagSplitting),
+//            ("testGroupRestriction", testGroupRestriction)
+//        ]
+//    }
     
     // MARK: - Tests
     
-    func testSimpleFlagParsing() {
+    func testSimpleFlagParsing() throws {
         let cmd = DoubleFlagCmd()
-        let arguments = ArgumentList(argumentString: "tester -a -b")
-        assertParseSuccess(arguments: arguments, with: cmd)
+        let arguments = ArgumentList(argumentString: "tester cmd -a -b")
+        let cli = CLI.createTester(commands: [cmd])
 
-        XCTAssert(arguments.head == nil, "Options should classify all option arguments as options")
-        
-        XCTAssert(cmd.alpha.value && cmd.beta.value, "Options should execute the closures of passed flags")
+        _ = try DefaultParser(commandGroup: cli, arguments: arguments).parse()
+        XCTAssert(cmd.alpha.value && cmd.beta.value, "Options should update the values of passed flags")
     }
     
-    func testSimpleKeyParsing() {
+    func testSimpleKeyParsing() throws {
         let cmd = DoubleKeyCmd()
-        let arguments = ArgumentList(argumentString: "tester -a apple -b banana")
-        assertParseSuccess(arguments: arguments, with: cmd)
+        let arguments = ArgumentList(argumentString: "tester cmd -a apple -b banana")
+        let cli = CLI.createTester(commands: [cmd])
         
-        XCTAssert(arguments.head == nil, "Options should classify all option arguments as options")
+        _ = try DefaultParser(commandGroup: cli, arguments: arguments).parse()
         
-        XCTAssertEqual(cmd.alpha.value, "apple", "Options should execute the closures of passed keys")
-        XCTAssertEqual(cmd.beta.value, "banana", "Options should execute the closures of passed keys")
+        XCTAssertEqual(cmd.alpha.value, "apple", "Options should update the values of passed keys")
+        XCTAssertEqual(cmd.beta.value, "banana", "Options should update the values of passed keys")
     }
     
-    func testKeyValueParsing() {
+    func testKeyValueParsing() throws {
         let cmd = IntKeyCmd()
-        let arguments = ArgumentList(argumentString: "tester -a 7")
-        assertParseSuccess(arguments: arguments, with: cmd)
+        let arguments = ArgumentList(argumentString: "tester cmd -a 7")
+        let cli = CLI.createTester(commands: [cmd])
+        
+        _ = try DefaultParser(commandGroup: cli, arguments: arguments).parse()
         
         XCTAssert(cmd.alpha.value == 7, "Options should parse int")
     }
     
-    func testCombinedFlagsAndKeysParsing() {
+    func testCombinedFlagsAndKeysParsing() throws {
         let cmd = FlagKeyCmd()
-        let arguments = ArgumentList(argumentString: "tester -a -b banana")
+        let arguments = ArgumentList(argumentString: "tester cmd -a -b banana")
+        let cli = CLI.createTester(commands: [cmd])
         
-        assertParseSuccess(arguments: arguments, with: cmd)
-        
-        XCTAssert(arguments.head == nil, "Options should classify all option arguments as options")
+        _ = try DefaultParser(commandGroup: cli, arguments: arguments).parse()
         
         XCTAssert(cmd.alpha.value, "Options should execute the closures of passed flags")
         XCTAssertEqual(cmd.beta.value, "banana", "Options should execute the closures of passed keys")
     }
     
-    func testCombinedFlagsAndKeysAndArgumentsParsing() {
-        let cmd = FlagKeyCmd()
-        let arguments = ArgumentList(argumentString: "tester -a argument -b banana")
+    func testCombinedFlagsAndKeysAndArgumentsParsing() throws {
+        let cmd = FlagKeyParamCmd()
+        let arguments = ArgumentList(argumentString: "tester cmd -a argument -b banana")
+        let cli = CLI.createTester(commands: [cmd])
         
-        assertParseSuccess(arguments: arguments, with: cmd)
-        
-        XCTAssert(arguments.head?.value ==  "argument" && arguments.head?.next == nil, "Options should classify all option arguments as options")
+        _ = try DefaultParser(commandGroup: cli, arguments: arguments).parse()
         
         XCTAssert(cmd.alpha.value, "Options should execute the closures of passed flags")
         XCTAssertEqual(cmd.beta.value, "banana", "Options should execute the closures of passed keys")
+        XCTAssertEqual(cmd.param.value, "argument")
     }
     
-    func testUnrecognizedOptions() {
+    func testUnrecognizedOptions() throws {
         let cmd = FlagCmd()
-        let arguments = ArgumentList(argumentString: "tester -a -b")
+        let arguments = ArgumentList(argumentString: "tester cmd -a -b")
+        let cli = CLI.createTester(commands: [cmd])
         
-        assertParseFailure(arguments: arguments, with: cmd, error: .unrecognizedOption("-b"))
+        do {
+            _ = try DefaultParser(commandGroup: cli, arguments: arguments).parse()
+            XCTFail()
+        } catch let error as OptionError {
+            XCTAssertEqual(error.message, "Unrecognized option: -b")
+        }
     }
     
-    func testKeysNotGivenValues() {
+    func testKeysNotGivenValues() throws {
         let cmd = FlagKeyCmd()
-        let arguments = ArgumentList(argumentString: "tester -b -a")
+        let arguments = ArgumentList(argumentString: "tester cmd -b -a")
+        let cli = CLI.createTester(commands: [cmd])
         
-        assertParseFailure(arguments: arguments, with: cmd, error: .noValueForKey("-b"))
+        do {
+            _ = try DefaultParser(commandGroup: cli, arguments: arguments).parse()
+            XCTFail()
+        } catch let error as OptionError {
+            XCTAssertEqual(error.message, "Expected a value to follow: -b")
+        }
     }
     
-    func testIllegalOptionFormat() {
+    func testIllegalOptionFormat() throws {
         let cmd = IntKeyCmd()
-        let arguments = ArgumentList(argumentString: "tester -a val")
+        let arguments = ArgumentList(argumentString: "tester cmd -a val")
+        let cli = CLI.createTester(commands: [cmd])
         
-        assertParseFailure(arguments: arguments, with: cmd, error: .illegalKeyValue("-a", "val"))
+        do {
+            _ = try DefaultParser(commandGroup: cli, arguments: arguments).parse()
+            XCTFail()
+        } catch let error as OptionError {
+            XCTAssertEqual(error.message, "Illegal type passed to -a: 'val'")
+        }
     }
 
-    func testFlagSplitting() {
+    func testFlagSplitting() throws {
         let cmd = DoubleFlagCmd()
-        let arguments = ArgumentList(argumentString: "tester -ab")
+        let arguments = ArgumentList(argumentString: "tester cmd -ab")
         OptionSplitter().manipulate(arguments: arguments)
+        let cli = CLI.createTester(commands: [cmd])
         
-        assertParseSuccess(arguments: arguments, with: cmd)
-        
-        XCTAssert(arguments.head == nil, "Options should classify all option arguments as options")
+        _ = try DefaultParser(commandGroup: cli, arguments: arguments).parse()
         
         XCTAssert(cmd.alpha.value && cmd.beta.value, "Options should execute the closures of passed flags")
     }
     
-    func testGroupRestriction() {
+    func testGroupRestriction() throws {
         let cmd1 = ExactlyOneCmd()
-        let arguments1 = ArgumentList(argumentString: "tester -a -b")
-        assertParseFailure(arguments: arguments1, with: cmd1, error: .groupRestrictionFailed(cmd1.optionGroups[0]))
+        let arguments1 = ArgumentList(argumentString: "tester cmd -a -b")
+        
+        do {
+            _ = try DefaultParser(commandGroup: CLI.createTester(commands: [cmd1]), arguments: arguments1).parse()
+            XCTFail()
+        } catch let error as OptionError {
+            XCTAssertEqual(error.message, "Must pass exactly one of the following: --alpha --beta")
+        }
         
         let cmd2 = ExactlyOneCmd()
-        let arguments2 = ArgumentList(argumentString: "tester -a")
-        assertParseSuccess(arguments: arguments2, with: cmd2)
+        let arguments2 = ArgumentList(argumentString: "tester cmd -a")
+        _ = try DefaultParser(commandGroup: CLI.createTester(commands: [cmd2]), arguments: arguments2).parse()
+        XCTAssertTrue(cmd2.alpha.value)
+        XCTAssertFalse(cmd2.beta.value)
         
         let cmd3 = ExactlyOneCmd()
-        let arguments3 = ArgumentList(argumentString: "tester -b")
-        assertParseSuccess(arguments: arguments3, with: cmd3)
+        let arguments3 = ArgumentList(argumentString: "tester cmd -b")
+        _ = try DefaultParser(commandGroup: CLI.createTester(commands: [cmd3]), arguments: arguments3).parse()
+        XCTAssertTrue(cmd3.beta.value)
+        XCTAssertFalse(cmd3.alpha.value)
         
         let cmd4 = ExactlyOneCmd()
-        let arguments4 = ArgumentList(argumentString: "tester")
-        assertParseFailure(arguments: arguments4, with: cmd4, error: .groupRestrictionFailed(cmd4.optionGroups[0]))
-    }
-    
-    // MARK: - Helpers
-    
-    private func assertParseSuccess(arguments: ArgumentList, with cmd: Command) {
+        let arguments4 = ArgumentList(argumentString: "tester cmd")
         do {
-            let registry = OptionRegistry(options: cmd.options, optionGroups: cmd.optionGroups)
-            try DefaultOptionRecognizer().recognizeOptions(from: registry, in: arguments)
-        } catch {
+            _ = try DefaultParser(commandGroup: CLI.createTester(commands: [cmd4]), arguments: arguments4).parse()
             XCTFail()
-        }
-    }
-    
-    private func assertParseFailure(arguments: ArgumentList, with cmd: Command, error expectedError: OptionRecognizerError) {
-        do {
-            let registry = OptionRegistry(options: cmd.options, optionGroups: cmd.optionGroups)
-            try DefaultOptionRecognizer().recognizeOptions(from: registry, in: arguments)
-            XCTFail()
-        } catch let error as OptionRecognizerError {
-            switch (error, expectedError) {
-            case (.unrecognizedOption(let option1), .unrecognizedOption(let option2)) where option1 == option2:
-                break
-            case (.illegalKeyValue(let k1, let v1), .illegalKeyValue(let k2, let v2)) where k1 == k2 && v1 == v2:
-                break
-            case (.noValueForKey(let k1), .noValueForKey(let k2)) where k1 == k2:
-                break
-            case (.groupRestrictionFailed(let g1), .groupRestrictionFailed(let g2))
-                where g1.options.reduce("", { $0 + $1.names.joined() }) == g2.options.reduce("", { $0 + $1.names.joined() }):
-                break
-            default:
-                XCTFail()
-            }
-        } catch {
-            XCTFail()
+        } catch let error as OptionError {
+            XCTAssertEqual(error.message, "Must pass exactly one of the following: --alpha --beta")
         }
     }
     
 }
+
+

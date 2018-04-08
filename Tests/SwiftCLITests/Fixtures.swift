@@ -82,7 +82,7 @@ class DeltaCmd: Command {
 }
 
 class EmptyCmd: Command {
-    let name = "req"
+    let name = "cmd"
     func execute() throws {}
 }
 
@@ -182,6 +182,12 @@ class DoubleKeyCmd: OptionCmd {
 class FlagKeyCmd: OptionCmd {
     let alpha = Flag("-a", "--alpha")
     let beta = Key<String>("-b", "--beta")
+}
+
+class FlagKeyParamCmd: OptionCmd {
+    let alpha = Flag("-a", "--alpha")
+    let beta = Key<String>("-b", "--beta")
+    let param = Parameter()
 }
 
 class IntKeyCmd: OptionCmd {
