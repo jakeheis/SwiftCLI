@@ -13,10 +13,6 @@ public struct CommandGroupPath {
         return groups.last!
     }
     
-    public var sharedOptions: [Option] {
-        return Array(groups.map({ $0.options }).joined())
-    }
-    
     public init(top: CommandGroup, groups: [CommandGroup] = []) {
         self.init(groups: [top] + groups)
     }
@@ -46,12 +42,7 @@ public struct CommandGroupPath {
 public struct CommandPath {
     
     public let groupPath: CommandGroupPath
-    
     public let command: Command
-    
-    public var groups: [CommandGroup] {
-        return groupPath.groups
-    }
     
     public var options: [Option] {
         let shared = groupPath.groups.map({ $0.options }).joined()
