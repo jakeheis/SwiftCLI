@@ -37,7 +37,7 @@ final public class DefaultParser: Parser {
         return commandPath
     }
     
-    private func route(commandGroup: CommandGroup, arguments: ArgumentList) throws -> (CommandPath, OptionRegistry) {
+    public func route(commandGroup: CommandGroup, arguments: ArgumentList) throws -> (CommandPath, OptionRegistry) {
         let optionRegistry = OptionRegistry(routable: commandGroup)
         var groupPath = CommandGroupPath(top: commandGroup)
         
