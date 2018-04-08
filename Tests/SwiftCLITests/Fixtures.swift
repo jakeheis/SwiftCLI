@@ -33,9 +33,6 @@ class TestCommand: Command {
         if silent.value {
             executionString += ", silently"
         }
-        if verbose.value {
-            executionString += ", verbosely"
-        }
 
         completion?(executionString)
     }

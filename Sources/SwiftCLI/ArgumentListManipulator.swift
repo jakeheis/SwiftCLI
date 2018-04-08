@@ -18,18 +18,24 @@ public class OptionSplitter: ArgumentListManipulator {
     public init() {}
     
     public func manipulate(arguments: ArgumentList) {
-        let iterator = arguments.iterator()
-        while let node = iterator.next() {
-            if node.value.hasPrefix("--"), let equalsIndex = node.value.index(of: "=") {
-                arguments.insert(value: String(node.value[node.value.index(after: equalsIndex)...]), after: node)
-                node.value = String(node.value[..<equalsIndex])
-            } else if node.value.hasPrefix("-") && !node.value.hasPrefix("--") {
-                var previous = node
-                node.value.dropFirst().forEach {
-                    previous = arguments.insert(value: "-\($0)", after: previous)
+        arguments.manipulate { (args) in
+            var unsplit = args
+            var split: [String] = []
+            while let first = unsplit.first {
+                unsplit.removeFirst()
+                
+                if first.hasPrefix("--"), let equalsIndex = first.index(of: "=") {
+                    split.append(String(first[..<equalsIndex]))
+                    split.append(String(first[first.index(after: equalsIndex)...]))
+                } else if first.hasPrefix("-") && !first.hasPrefix("--") {
+                    first.dropFirst().forEach {
+                        split.append("-\($0)")
+                    }
+                } else {
+                    split.append(first)
                 }
-                arguments.remove(node: node)
             }
+            return split
         }
     }
     

@@ -20,24 +20,22 @@ class ArgumentListManipulatorTests: XCTestCase {
     
     func testOptionSplitter() {
         let splitter = OptionSplitter()
-        let result = assertManipulation(start: "tester -ab", manipulator: splitter)
-        XCTAssertEqual(result, "tester -a -b")
+        
+        let args = ArgumentList(argumentString: "tester -ab")
+        splitter.manipulate(arguments: args)
+        XCTAssertEqual(args.pop(), "-a")
+        XCTAssertEqual(args.pop(), "-b")
+        XCTAssertFalse(args.hasNext())
     }
     
     func testEqualsSplit() {
         let splitter = OptionSplitter()
         
-        var result = assertManipulation(start: "tester --key=value", manipulator: splitter)
-        XCTAssertEqual(result, "tester --key value")
-        
-        result = assertManipulation(start: "tester --key value", manipulator: splitter)
-        XCTAssertEqual(result, "tester --key value")
-    }
-    
-    func assertManipulation(start: String, manipulator: ArgumentListManipulator) -> String {
-        let arguments = ArgumentList(argumentString: start)
-        manipulator.manipulate(arguments: arguments)
-        return "tester " + IteratorSequence(arguments.iterator()).map({ $0.value }).joined(separator: " ")
+        let args = ArgumentList(argumentString: "tester --key=value")
+        splitter.manipulate(arguments: args)
+        XCTAssertEqual(args.pop(), "--key")
+        XCTAssertEqual(args.pop(), "value")
+        XCTAssertFalse(args.hasNext())
     }
     
 }

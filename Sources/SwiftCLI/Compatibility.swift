@@ -174,11 +174,6 @@ extension Input {
     
 }
 
-@available(*, unavailable, message: "Use myCLI.aliases instead")
-public class CommandAliaser: ArgumentListManipulator {
-    public func manipulate(arguments: ArgumentList) {}
-}
-
 extension Sequence {
     func optMap<T>(_ transform: (Element) -> T?) -> [T] {
         #if swift(>=4.1)
@@ -244,3 +239,14 @@ extension Term {
         return WriteStream.stderr
     }
 }
+
+#if os(Linux)
+#if swift(>=3.1)
+typealias Regex = NSRegularExpression
+#else
+typealias Regex = RegularExpression
+#endif
+#else
+typealias Regex = NSRegularExpression
+
+#endif

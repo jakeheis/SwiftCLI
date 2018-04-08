@@ -152,9 +152,9 @@ public class ParameterIterator {
         return params.isEmpty && collected != nil
     }
     
-    public func parse(node: ArgumentNode) throws {
+    public func parse(args: ArgumentList) throws {
         if let param = next() {
-            param.update(value: node.value)
+            param.update(value: args.pop())
         } else {
             throw ParameterError(command: command, message: createErrorMessage())
         }

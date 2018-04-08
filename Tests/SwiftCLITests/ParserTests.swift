@@ -55,7 +55,6 @@ class ParserTests: XCTestCase {
         XCTAssert(command.groupPath.bottom === cli, "Router should generate correct group path")
         XCTAssertEqual(command.groupPath.groups.count, 1, "Router should generate correct group path")
         XCTAssert(command.command === alphaCmd, "Router should route to the command with the given name")
-        XCTAssert(args.head == nil, "Router should leave no arguments for the command")
     }
     
     func testAliasRoute() throws {
@@ -68,8 +67,6 @@ class ParserTests: XCTestCase {
         XCTAssertEqual(command.groupPath.bottom.name, cli.name, "Router should generate correct group path")
         XCTAssertEqual(command.groupPath.groups.count, 1, "Router should generate correct group path")
         XCTAssertEqual(command.command.name, betaCmd.name, "Router with enabled shortcut routing should route to the command with the given shortcut")
-        
-        XCTAssert(args.head == nil, "Enabled router should pass on no arguments to the matched command")
     }
     
     func testSingleRouter() throws {

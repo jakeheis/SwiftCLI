@@ -41,19 +41,21 @@ public class OptionRegistry {
         groups += routable.optionGroups
     }
     
-    public func parse(node: ArgumentNode, command: CommandPath?) throws {
-        if let flag = flag(for: node.value) {
+    public func parse(args: ArgumentList, command: CommandPath?) throws {
+        let opt = args.pop()
+        
+        if let flag = flag(for: opt) {
             flag.setOn()
-        } else if let key = key(for: node.value) {
-            guard let next = node.next, !next.value.hasPrefix("-") else {
-                throw OptionError(command: command, message: "Expected a value to follow: \(node.value)")
+        } else if let key = key(for: opt) {
+             guard args.hasNext(), !args.nextIsOption() else {
+                throw OptionError(command: command, message: "Expected a value to follow: \(opt)")
             }
-            guard key.updateValue(next.value) else {
-                throw OptionError(command: command, message: "Illegal type passed to \(key.names.first!): '\(next.value)'")
+            let value = args.pop()
+            guard key.updateValue(value) else {
+                throw OptionError(command: command, message: "Illegal type passed to \(key.names.first!): '\(value)'")
             }
-            next.remove()
         } else {
-            throw OptionError(command: command, message:"Unrecognized option: \(node.value)")
+            throw OptionError(command: command, message: "Unrecognized option: \(opt)")
         }
     }
     
