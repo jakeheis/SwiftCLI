@@ -8,7 +8,7 @@
 
 import XCTest
 @testable import SwiftCLI
-/*
+
 class HelpMessageGeneratorTests: XCTestCase {
     
     static var allTests : [(String, (HelpMessageGeneratorTests) -> () throws -> Void)] {
@@ -19,8 +19,6 @@ class HelpMessageGeneratorTests: XCTestCase {
             ("testMisusedOptionsStatementGeneration", testMisusedOptionsStatementGeneration)
         ]
     }
-    
-    let command = TestCommand()
     
     func testCommandListGeneration() {
         let path = CommandGroupPath(top: CLI.createTester(commands: [alphaCmd, betaCmd], description: "A tester for SwiftCLI"))
@@ -61,6 +59,7 @@ class HelpMessageGeneratorTests: XCTestCase {
     }
 
     func testUsageStatementGeneration() {
+        let command = TestCommand()
         let cli = CLI.createTester(commands: [command])
         let path = CommandGroupPath(top: cli).appending(command)
         let message = DefaultHelpMessageGenerator().generateUsageStatement(for: path)
@@ -101,21 +100,14 @@ class HelpMessageGeneratorTests: XCTestCase {
     }
     
     func testMisusedOptionsStatementGeneration() {
-        let arguments = ArgumentList(argumentString: "tester test -s -a --times")
-        arguments.remove(node: arguments.head!)
-        arguments.remove(node: arguments.head!)
-        
+        let command = TestCommand()
         let cli = CLI.createTester(commands: [command])
-        let registry = OptionRegistry(options: command.options, optionGroups: command.optionGroups)
+        let path = CommandGroupPath(top: cli).appending(command)
+        let error = OptionError(command: path, message: "Unrecognized option: -a")
         
-        do {
-            try DefaultOptionRecognizer().recognizeOptions(from: registry, in: arguments)
-            XCTFail("Option parser should fail on incorrectly used options")
-        } catch let error as OptionRecognizerError {
-            let path = CommandGroupPath(top: cli).appending(command)
-            let message = DefaultHelpMessageGenerator().generateMisusedOptionsStatement(for: path, error: error)
-            
-            let expectedMessage = """
+        let message = DefaultHelpMessageGenerator().generateMisusedOptionsStatement(error: error)
+        
+        let expectedMessage = """
             
             Usage: tester test <testName> [<testerName>] [options]
             
@@ -127,10 +119,8 @@ class HelpMessageGeneratorTests: XCTestCase {
             Unrecognized option: -a
 
             """
-            
-            XCTAssertEqual(message, expectedMessage, "Should generate the correct misused options statement")
-        } catch {}
+        
+        XCTAssertEqual(message, expectedMessage, "Should generate the correct misused options statement")
     }
 
 }
-*/

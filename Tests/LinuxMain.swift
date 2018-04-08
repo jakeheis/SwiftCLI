@@ -7,10 +7,8 @@ XCTMain([
     testCase(CompletionGeneratorTests.allTests),
     testCase(HelpMessageGeneratorTests.allTests),
     testCase(InputTests.allTests),
-    testCase(OptionParserTests.allTests),
     testCase(OptionRegistryTests.allTests),
-    testCase(ParameterFillerTests.allTests),
-    testCase(RouterTests.allTests),
+    testCase(ParserTests.allTests),
     testCase(StreamTests.allTests),
     testCase(SwiftCLITests.allTests),
     testCase(TaskTests.allTests)
