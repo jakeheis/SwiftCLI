@@ -16,7 +16,7 @@ public protocol AnyParameter: class {
 
 // MARK: - Single parameters
 
-open class Parameter: AnyParameter {
+public class Parameter: AnyParameter {
     
     public let required = true
     private(set) public var satisfied = false
@@ -28,18 +28,18 @@ open class Parameter: AnyParameter {
 
     public init() {}
     
-    open func update(value: String) {
+    public func update(value: String) {
         satisfied = true
         privateValue = value
     }
     
-    open func signature(for name: String) -> String {
+    public func signature(for name: String) -> String {
         return "<\(name)>"
     }
 
 }
 
-open class OptionalParameter: AnyParameter {
+public class OptionalParameter: AnyParameter {
     
     public let required = false
     public let satisfied = true
@@ -47,11 +47,11 @@ open class OptionalParameter: AnyParameter {
     
     public init() {}
     
-    open func update(value: String) {
+    public func update(value: String) {
         self.value = value
     }
     
-    open func signature(for name: String) -> String {
+    public func signature(for name: String) -> String {
         return "[<\(name)>]"
     }
     
@@ -59,11 +59,9 @@ open class OptionalParameter: AnyParameter {
 
 // MARK: - Collected parameters
 
-public protocol AnyCollectedParameter: AnyParameter {
-    func update(value: [String])
-}
+public protocol AnyCollectedParameter: AnyParameter {}
 
-open class CollectedParameter: AnyCollectedParameter {
+public class CollectedParameter: AnyCollectedParameter {
     
     public let required = true
     private(set) public var satisfied = false
@@ -71,23 +69,18 @@ open class CollectedParameter: AnyCollectedParameter {
     
     public init() {}
     
-    open func update(value: [String]) {
-        satisfied = true
-        self.value = value
-    }
-    
     public func update(value: String) {
         satisfied = true
         self.value.append(value)
     }
     
-    open func signature(for name: String) -> String {
+    public func signature(for name: String) -> String {
         return "<\(name)> ..."
     }
 
 }
 
-open class OptionalCollectedParameter: AnyCollectedParameter {
+public class OptionalCollectedParameter: AnyCollectedParameter {
     
     public let required = false
     public let satisfied = true
@@ -95,15 +88,11 @@ open class OptionalCollectedParameter: AnyCollectedParameter {
     
     public init() {}
     
-    open func update(value: [String]) {
-        self.value = value
-    }
-    
     public func update(value: String) {
         self.value.append(value)
     }
     
-    open func signature(for name: String) -> String {
+    public func signature(for name: String) -> String {
         return "[<\(name)>] ..."
     }
     
