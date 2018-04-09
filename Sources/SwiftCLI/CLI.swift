@@ -81,7 +81,7 @@ public class CLI {
     /// Uses the arguments passed in the command line.
     ///
     /// - SeeAlso: `debugGoWithArgumentString()` when debugging
-    /// - Returns: a CLIResult (Int32) representing the success of the CLI in routing to and executing the correct
+    /// - Returns: an Int32 representing the success of the CLI in routing to and executing the correct
     /// command. Usually should be passed to `exit(result)`
     public func go() -> Int32 {
         return go(with: ArgumentList())
@@ -92,8 +92,7 @@ public class CLI {
     ///
     /// - SeeAlso: `go()` when running from the command line
     /// - Parameter argumentString: the arguments to use when running the CLI
-    /// - Returns: a CLIResult (Int) representing the success of the CLI in routing to and executing the correct
-    /// command. Usually should be passed to `exit(result)`
+    /// - Returns: an Int32 representing the success of the CLI in routing to and executing the correct command. Usually should be passed to `exit(result)`
     public func debugGo(with argumentString: String) -> Int32 {
         stdout <<< "[Debug Mode]"
         return go(with: ArgumentList(argumentString: argumentString))
@@ -107,13 +106,7 @@ public class CLI {
         var exitStatus: Int32 = 0
         
         do {
-            let command = try parse(arguments: arguments)
-            if helpFlag?.value == true {
-                stdout <<< helpMessageGenerator.generateUsageStatement(for: command)
-                return exitStatus
-            }
-            
-            try command.command.execute()
+            try parse(arguments: arguments).command.execute()
         } catch let error as ProcessError {
             if let message = error.message {
                 stderr <<< message
@@ -134,20 +127,31 @@ public class CLI {
             if let notFound = error.notFound {
                 stderr <<< ""
                 stderr <<< "Command \"\(notFound)\" not found"
-                stderr <<< ""
             }
             
             let list = helpMessageGenerator.generateCommandList(for: error.partialPath)
             stdout <<< list
             throw CLI.Error()
         } catch let error as OptionError {
+            if let command = error.command, command.command is HelpCommand {
+                return command
+            }
+            
             let message = helpMessageGenerator.generateMisusedOptionsStatement(error: error)
             throw CLI.Error(message: message)
         } catch let error as ParameterError {
+            if error.command.command is HelpCommand {
+                return error.command
+            }
+            
             stderr <<< error.message
             stderr <<< ""
             stderr <<< "Usage: \(error.command.usage)"
             stderr <<< ""
+            
+            if helpFlag?.value == true {
+                stdout <<< helpMessageGenerator.generateUsageStatement(for: error.command)
+            }
             throw CLI.Error()
         }
     }
