@@ -137,8 +137,13 @@ public class Task {
     ///   - stdin: the stream which the task should use as it's standard input; defaults to the current process's stdin
     public init(executable: String, args: [String] = [], currentDirectory: String? = nil, stdout: WritableStream = WriteStream.stdout, stderr: WritableStream = WriteStream.stderr, stdin: ReadableStream = ReadStream.stdin) {
         self.process = Process()
-        self.process.launchPath = Task.findExecutable(named: executable) ?? executable
-        self.process.arguments = args
+        if executable.hasPrefix("/") || executable.hasPrefix(".") {
+            self.process.launchPath = executable
+            self.process.arguments = args
+        } else {
+            self.process.launchPath = "/usr/bin/env"
+            self.process.arguments = [executable] + args
+        }
         if let currentDirectory = currentDirectory {
             self.process.currentDirectoryPath = currentDirectory
         }
