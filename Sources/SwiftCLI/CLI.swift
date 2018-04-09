@@ -144,14 +144,15 @@ public class CLI {
                 return error.command
             }
             
-            stderr <<< error.message
-            stderr <<< ""
-            stderr <<< "Usage: \(error.command.usage)"
-            stderr <<< ""
-            
             if helpFlag?.value == true {
                 stdout <<< helpMessageGenerator.generateUsageStatement(for: error.command)
+            } else {
+                stderr <<< error.message
+                stderr <<< ""
+                stderr <<< "Usage: \(error.command.usage)"
+                stderr <<< ""
             }
+            
             throw CLI.Error()
         }
     }
