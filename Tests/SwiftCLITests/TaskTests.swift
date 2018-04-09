@@ -13,10 +13,10 @@ class TaskTests: XCTestCase {
     
     static var allTests : [(String, (TaskTests) -> () throws -> Void)] {
         return [
-            ("testExec", testExec),
+            ("testRun", testRun),
             ("testCapture", testCapture),
             ("testExecutableFind", testExecutableFind),
-            ("testBashExec", testBashExec),
+            ("testBashRun", testBashRun),
             ("testBashCapture", testBashCapture),
             ("testIn", testIn),
             ("testPipe", testPipe),
@@ -26,7 +26,7 @@ class TaskTests: XCTestCase {
         ]
     }
     
-    func testExec() throws {
+    func testRun() throws {
         let file = "file.txt"
         try SwiftCLI.run("/usr/bin/touch", file)
         
@@ -48,7 +48,7 @@ class TaskTests: XCTestCase {
         XCTAssertEqual(output.stderr, "")
     }
     
-    func testBashExec() throws {
+    func testBashRun() throws {
         let file = "file.txt"
         try SwiftCLI.run(bash: "touch \(file)")
         
