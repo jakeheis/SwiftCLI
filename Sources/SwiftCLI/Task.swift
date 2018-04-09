@@ -108,6 +108,43 @@ public class Task {
         return try? capture(bash: "which \(named)").stdout
     }
     
+    /// Run the given executable, replacing the current process with it
+    ///
+    /// - Parameters:
+    ///   - executable: executable to run
+    ///   - args: arguments to the executable
+    /// - Returns: Never
+    /// - Throws: CLI.Error if the executable could not be found
+    public static func execvp(_ executable: String, directory: String? = nil, _ args: String...) throws -> Never {
+        try execvp(executable, directory: directory,  args)
+    }
+    
+    /// Run the given executable, replacing the current process with it
+    ///
+    /// - Parameters:
+    ///   - executable: executable to run
+    ///   - args: arguments to the executable
+    /// - Returns: Never
+    /// - Throws: CLI.Error if the executable could not be found
+    public static func execvp(_ executable: String, directory: String? = nil, _ args: [String]) throws -> Never {
+        let argv = ([executable] + args).map({ $0.withCString(strdup) })
+        defer { argv.forEach { free($0)} }
+        
+        var priorDir: String? = nil
+        if let directory = directory {
+            priorDir = FileManager.default.currentDirectoryPath
+            FileManager.default.changeCurrentDirectoryPath(directory)
+        }
+        
+        Foundation.execvp(executable, argv + [nil])
+        
+        if let priorDir = priorDir {
+            FileManager.default.changeCurrentDirectoryPath(priorDir)
+        }
+        
+        throw CLI.Error(message: "\(executable) not found")
+    }
+    
     private let process: Process
     
     /// Block to execute when command terminates; default nil
