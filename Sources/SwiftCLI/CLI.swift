@@ -53,7 +53,7 @@ public class CLI {
     
     public var helpMessageGenerator: HelpMessageGenerator = DefaultHelpMessageGenerator()
     public var argumentListManipulators: [ArgumentListManipulator] = [OptionSplitter()]
-    public var parser: Parser = DefaultParser()
+    public var parser = Parser()
     
     /// Creates a new CLI
     ///
