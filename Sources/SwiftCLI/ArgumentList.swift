@@ -75,3 +75,9 @@ public class ArgumentList {
     }
     
 }
+
+extension ArgumentList: CustomStringConvertible {
+    public var description: String {
+        return storage.description
+    }
+}
