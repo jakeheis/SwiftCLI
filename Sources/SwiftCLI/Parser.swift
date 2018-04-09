@@ -22,6 +22,11 @@ final public class DefaultParser: Parser {
     
     public func parse(commandGroup: CommandGroup, arguments: ArgumentList) throws -> CommandPath {
         let (commandPath, optionRegistry) = try router.route(commandGroup: commandGroup, arguments: arguments)
+        try finish(commandPath: commandPath, optionRegistry: optionRegistry, arguments: arguments)
+        return commandPath
+    }
+    
+    public func finish(commandPath: CommandPath, optionRegistry: OptionRegistry, arguments: ArgumentList) throws {
         let params = ParameterIterator(command: commandPath)
         
         while arguments.hasNext() {
@@ -34,8 +39,6 @@ final public class DefaultParser: Parser {
         
         try params.finish()
         try optionRegistry.finish(command: commandPath)
-        
-        return commandPath
     }
     
 }
