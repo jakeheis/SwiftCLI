@@ -119,7 +119,7 @@ public class Task {
         let argv = ([executable] + args).map({ $0.withCString(strdup) })
         defer { argv.forEach { free($0)} }
         
-        Foundation.execvp(argv[0], argv + [nil])
+        Foundation.execvp(executable, argv + [nil])
         
         throw CLI.Error(message: "\(executable) not found")
     }
