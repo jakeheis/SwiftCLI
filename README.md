@@ -259,6 +259,18 @@ class GreetCommand: Command {
 }
 ```
 
+A related option type is `VariadicKey`, which allows the user to pass the same key multiples times with different values. For example, with a key declaration like:
+
+```swift
+class GreetCommand: Command {
+    ...
+    let locations = VariadicKey<String>("-l", "--location", usage: "Say the greeting in a certain location")
+    ...
+}
+```
+
+the user can write `greeter greet -l Chicago -l NYC`, and `locations.value` will then be set to `["Chicago", "NYC"]`.
+
 #### Option groups
 
 The relationship between multiple options can be specified through option groups. Option groups allow a command to specify that the user must pass at most one option of a group (passing more than one is an error), must pass exactly one option of a group (passing zero or more than one is an error), or must pass one or more options of a group (passing zero is an error). 
