@@ -100,11 +100,6 @@ public class OptionalCollectedParameter: AnyCollectedParameter {
 
 // MARK: - ParameterIterator
 
-public struct ParameterError: Swift.Error {
-    let command: CommandPath
-    let message: String
-}
-
 public class ParameterIterator {
     
     public let command: CommandPath

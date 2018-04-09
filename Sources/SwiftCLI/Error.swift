@@ -49,6 +49,38 @@ extension CLI {
 
 // MARK: -
 
+public struct RouteError: Swift.Error {
+    public let partialPath: CommandGroupPath
+    public let notFound: String?
+    
+    public init(partialPath: CommandGroupPath, notFound: String?) {
+        self.partialPath = partialPath
+        self.notFound = notFound
+    }
+}
+
+public struct OptionError: Swift.Error {
+    let command: CommandPath?
+    let message: String
+    
+    public init(command: CommandPath?, message: String) {
+        self.command = command
+        self.message = message
+    }
+}
+
+public struct ParameterError: Swift.Error {
+    let command: CommandPath
+    let message: String
+    
+    public init(command: CommandPath, message: String) {
+        self.command = command
+        self.message = message
+    }
+}
+
+// MARK: -
+
 @available(*, unavailable, message: "use CLI.Error instead")
 public enum CLIError: Error {
     case error(String)

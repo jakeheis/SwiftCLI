@@ -8,16 +8,13 @@
 
 // MARK: - Parser
 
-public struct RouteError: Swift.Error {
-    public let partialPath: CommandGroupPath
-    public let notFound: String?
-}
-
 public protocol Parser {
     func parse(commandGroup: CommandGroup, arguments: ArgumentList) throws -> CommandPath
 }
 
 final public class DefaultParser: Parser {
+    
+    public init() {}
     
     public func parse(commandGroup: CommandGroup, arguments: ArgumentList) throws -> CommandPath {
         let (commandPath, optionRegistry) = try route(commandGroup: commandGroup, arguments: arguments)

@@ -6,11 +6,6 @@
 //  Copyright (c) 2014 jakeheis. All rights reserved.
 //
 
-public struct OptionError: Swift.Error {
-    let command: CommandPath?
-    let message: String
-}
-
 public class OptionRegistry {
     
     private var flags: [String: Flag]
