@@ -127,7 +127,17 @@ public class Task {
     /// - Returns: Never
     /// - Throws: CLI.Error if the executable could not be found
     public static func execvp(_ executable: String, directory: String? = nil, _ args: [String]) throws -> Never {
-        let argv = ([executable] + args).map({ $0.withCString(strdup) })
+        let exec: String
+        var swiftArgs: [String] = []
+        if executable.hasPrefix("/") || executable.hasPrefix(".") {
+            exec = executable
+            swiftArgs = args
+        } else {
+            exec = "/usr/bin/env"
+            swiftArgs = [executable] + args
+        }
+        
+        let argv = ([exec] + swiftArgs).map({ $0.withCString(strdup) })
         defer { argv.forEach { free($0)} }
         
         var priorDir: String? = nil
@@ -136,7 +146,7 @@ public class Task {
             FileManager.default.changeCurrentDirectoryPath(directory)
         }
         
-        Foundation.execvp(executable, argv + [nil])
+        Foundation.execvp(exec, argv + [nil])
         
         if let priorDir = priorDir {
             FileManager.default.changeCurrentDirectoryPath(priorDir)
