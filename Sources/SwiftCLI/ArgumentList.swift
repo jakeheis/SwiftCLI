@@ -42,7 +42,7 @@ public class ArgumentList {
     
     /// Creates a list of the arguments from given array
     public init(arguments: [String]) {
-        self.storage = Array(arguments.dropFirst())
+        self.storage = arguments
     }
     
     /// Checks if list has another argument
@@ -56,6 +56,7 @@ public class ArgumentList {
     ///
     /// - Returns: the next argument
     /// - Precondition: list must not be empty
+    @discardableResult
     public func pop() -> String {
         return storage.removeFirst()
     }

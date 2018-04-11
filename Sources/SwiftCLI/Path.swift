@@ -41,12 +41,14 @@ public struct CommandGroupPath {
 
 public struct CommandPath {
     
-    public let groupPath: CommandGroupPath
+    public let groupPath: CommandGroupPath?
     public let command: Command
     
     public var options: [Option] {
-        let shared = groupPath.groups.map({ $0.options }).joined()
-        return command.options + shared
+        if let shared = groupPath?.groups.map({ $0.options }).joined() {
+            return command.options + shared
+        }
+        return command.options
     }
     
     var usage: String {
@@ -64,13 +66,16 @@ public struct CommandPath {
         return message
     }
     
-    fileprivate init(groupPath: CommandGroupPath, command: Command) {
+    public init(groupPath: CommandGroupPath? = nil, command: Command) {
         self.groupPath = groupPath
         self.command = command
     }
     
     public func joined(separator: String = " ") -> String {
-        return groupPath.joined(separator: separator) + separator + command.name
+        if let group = groupPath?.joined(separator: separator) {
+            return group + separator + command.name
+        }
+        return command.name
     }
     
 }

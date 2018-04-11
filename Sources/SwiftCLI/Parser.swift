@@ -10,17 +10,17 @@
 
 public class Parser {
     
-    public let router: Router
-    public let filler: ParseFinisher
+    public let starter: ParseStarter
+    public let finisher: ParseFinisher
     
-    public init(router: Router = DefaultRouter(), filler: ParseFinisher = DefaultParseFinisher()) {
-        self.router = router
-        self.filler = filler
+    public init(starter: ParseStarter = DefaultParseStarter(), finisher: ParseFinisher = DefaultParseFinisher()) {
+        self.starter = starter
+        self.finisher = finisher
     }
     
     public func parse(commandGroup: CommandGroup, arguments: ArgumentList) throws -> CommandPath {
-        let (commandPath, optionRegistry) = try router.route(commandGroup: commandGroup, arguments: arguments)
-        try filler.finish(commandPath: commandPath, optionRegistry: optionRegistry, arguments: arguments)
+        let (commandPath, optionRegistry) = try starter.parse(commandGroup: commandGroup, arguments: arguments)
+        try finisher.parse(commandPath: commandPath, optionRegistry: optionRegistry, arguments: arguments)
         try optionRegistry.finish(command: commandPath)
         return commandPath
     }
@@ -29,15 +29,15 @@ public class Parser {
 
 // MARK: - Router
 
-public protocol Router {
-    func route(commandGroup: CommandGroup, arguments: ArgumentList) throws -> (CommandPath, OptionRegistry)
+public protocol ParseStarter {
+    func parse(commandGroup: CommandGroup, arguments: ArgumentList) throws -> (CommandPath, OptionRegistry)
 }
 
-public class DefaultRouter: Router {
+public class DefaultParseStarter: ParseStarter {
     
     public init() {}
     
-    public func route(commandGroup: CommandGroup, arguments: ArgumentList) throws -> (CommandPath, OptionRegistry) {
+    public func parse(commandGroup: CommandGroup, arguments: ArgumentList) throws -> (CommandPath, OptionRegistry) {
         let optionRegistry = OptionRegistry(routable: commandGroup)
         var groupPath = CommandGroupPath(top: commandGroup)
         
@@ -79,7 +79,7 @@ public class DefaultRouter: Router {
     
 }
 
-public class SingleCommandRouter: Router {
+public class SingleCommandParseStarter: ParseStarter {
     
     public let command: Command
     
@@ -87,7 +87,7 @@ public class SingleCommandRouter: Router {
         self.command = command
     }
     
-    public func route(commandGroup: CommandGroup, arguments: ArgumentList) throws -> (CommandPath, OptionRegistry) {
+    public func parse(commandGroup: CommandGroup, arguments: ArgumentList) throws -> (CommandPath, OptionRegistry) {
         let path = CommandGroupPath(top: commandGroup).appending(command)
         
         let optionRegistry = OptionRegistry(routable: commandGroup)
@@ -101,14 +101,14 @@ public class SingleCommandRouter: Router {
 // MARK: - ParseFinisher
 
 public protocol ParseFinisher {
-    func finish(commandPath: CommandPath, optionRegistry: OptionRegistry, arguments: ArgumentList) throws
+    func parse(commandPath: CommandPath, optionRegistry: OptionRegistry, arguments: ArgumentList) throws
 }
 
 public class DefaultParseFinisher: ParseFinisher {
     
     public init() {}
     
-    public func finish(commandPath: CommandPath, optionRegistry: OptionRegistry, arguments: ArgumentList) throws {
+    public func parse(commandPath: CommandPath, optionRegistry: OptionRegistry, arguments: ArgumentList) throws {
         let params = ParameterIterator(command: commandPath)
         
         while arguments.hasNext() {

@@ -95,7 +95,7 @@ public final class ZshCompletionGenerator: CompletionGenerator {
     }
     
     func writeCommand(for command: CommandPath, into stream: WritableStream) {
-        let prefix = groupName(for: command.groupPath)
+        let prefix = groupName(for: command.groupPath!)
         stream <<< """
         _\(prefix)_\(command.command.name)() {
             _arguments -C \\

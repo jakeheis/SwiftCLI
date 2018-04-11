@@ -101,6 +101,8 @@ public class CLI {
     // MARK: - Privates
     
     private func go(with arguments: ArgumentList) -> Int32 {
+        arguments.pop() // Pop off cli name (always first arg)
+        
         argumentListManipulators.forEach { $0.manipulate(arguments: arguments) }
         
         var exitStatus: Int32 = 0
@@ -129,16 +131,15 @@ public class CLI {
                 stderr <<< "Command \"\(notFound)\" not found"
             }
             
-            let list = helpMessageGenerator.generateCommandList(for: error.partialPath)
-            stdout <<< list
+            stdout <<< helpMessageGenerator.generateCommandList(for: error.partialPath)
             throw CLI.Error()
         } catch let error as OptionError {
             if let command = error.command, command.command is HelpCommand {
                 return command
             }
             
-            let message = helpMessageGenerator.generateMisusedOptionsStatement(error: error)
-            throw CLI.Error(message: message)
+            stderr <<< helpMessageGenerator.generateMisusedOptionsStatement(error: error)
+            throw CLI.Error()
         } catch let error as ParameterError {
             if error.command.command is HelpCommand {
                 return error.command

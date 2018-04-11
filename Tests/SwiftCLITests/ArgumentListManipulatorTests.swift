@@ -23,6 +23,7 @@ class ArgumentListManipulatorTests: XCTestCase {
         
         let args = ArgumentList(argumentString: "tester -ab")
         splitter.manipulate(arguments: args)
+        XCTAssertEqual(args.pop(), "tester")
         XCTAssertEqual(args.pop(), "-a")
         XCTAssertEqual(args.pop(), "-b")
         XCTAssertFalse(args.hasNext())
@@ -33,6 +34,7 @@ class ArgumentListManipulatorTests: XCTestCase {
         
         let args = ArgumentList(argumentString: "tester --key=value")
         splitter.manipulate(arguments: args)
+        XCTAssertEqual(args.pop(), "tester")
         XCTAssertEqual(args.pop(), "--key")
         XCTAssertEqual(args.pop(), "value")
         XCTAssertFalse(args.hasNext())
