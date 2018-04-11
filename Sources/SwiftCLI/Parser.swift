@@ -10,17 +10,17 @@
 
 public class Parser {
     
-    public let starter: ParseStarter
-    public let finisher: ParseFinisher
+    public let router: Router
+    public let parameterFiller: ParameterFiller
     
-    public init(starter: ParseStarter = DefaultParseStarter(), finisher: ParseFinisher = DefaultParseFinisher()) {
-        self.starter = starter
-        self.finisher = finisher
+    public init(router: Router = DefaultRouter(), parameterFiller: ParameterFiller = DefaultParameterFiller()) {
+        self.router = router
+        self.parameterFiller = parameterFiller
     }
     
     public func parse(commandGroup: CommandGroup, arguments: ArgumentList) throws -> CommandPath {
-        let (commandPath, optionRegistry) = try starter.parse(commandGroup: commandGroup, arguments: arguments)
-        try finisher.parse(commandPath: commandPath, optionRegistry: optionRegistry, arguments: arguments)
+        let (commandPath, optionRegistry) = try router.parse(commandGroup: commandGroup, arguments: arguments)
+        try parameterFiller.parse(commandPath: commandPath, optionRegistry: optionRegistry, arguments: arguments)
         try optionRegistry.finish(command: commandPath)
         return commandPath
     }
@@ -29,11 +29,12 @@ public class Parser {
 
 // MARK: - Router
 
-public protocol ParseStarter {
+/// Implements a func which uses the first few args to recognize options and route to the appropriate command
+public protocol Router {
     func parse(commandGroup: CommandGroup, arguments: ArgumentList) throws -> (CommandPath, OptionRegistry)
 }
 
-public class DefaultParseStarter: ParseStarter {
+public class DefaultRouter: Router {
     
     public init() {}
     
@@ -79,7 +80,7 @@ public class DefaultParseStarter: ParseStarter {
     
 }
 
-public class SingleCommandParseStarter: ParseStarter {
+public class SingleCommandRouter: Router {
     
     public let command: Command
     
@@ -100,11 +101,12 @@ public class SingleCommandParseStarter: ParseStarter {
 
 // MARK: - ParseFinisher
 
-public protocol ParseFinisher {
+/// Implements a func which uses the remaining args to fill the given command's parameters and options
+public protocol ParameterFiller {
     func parse(commandPath: CommandPath, optionRegistry: OptionRegistry, arguments: ArgumentList) throws
 }
 
-public class DefaultParseFinisher: ParseFinisher {
+public class DefaultParameterFiller: ParameterFiller {
     
     public init() {}
     

@@ -76,7 +76,7 @@ class ParserTests: XCTestCase {
 
         let path: CommandPath
         do {
-            path = try Parser(starter: SingleCommandParseStarter(command: cmd)).parse(commandGroup: cli, arguments: args)
+            path = try Parser(router: SingleCommandRouter(command: cmd)).parse(commandGroup: cli, arguments: args)
         } catch let error {
             print(error)
             throw error
