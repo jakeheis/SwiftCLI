@@ -102,8 +102,6 @@ public class OptionalCollectedParameter: AnyCollectedParameter {
 
 public class ParameterIterator {
     
-    public let command: CommandPath
-    
     private var params: [AnyParameter]
     private let collected: AnyCollectedParameter?
     
@@ -111,8 +109,6 @@ public class ParameterIterator {
     private let maxCount: Int?
     
     public init(command: CommandPath) {
-        self.command = command
-        
         var all = command.command.parameters.map({ $0.1 })
         
         self.minCount = all.filter({ $0.required }).count
@@ -132,27 +128,11 @@ public class ParameterIterator {
         assert(all.index(where: { $0 is OptionalParameter }).flatMap({ $0 >= minCount }) ?? true, "optional parameters must come after all required parameters")
     }
     
-    public func isCollecting() -> Bool {
+    public func nextIsCollection() -> Bool {
         return params.isEmpty && collected != nil
     }
-    
-    public func parse(args: ArgumentList) throws {
-        if let param = next() {
-            param.update(value: args.pop())
-        } else {
-            throw ParameterError(command: command, message: createErrorMessage())
-        }
-    }
-    
-    public func finish() throws {
-        if let param = next(), !param.satisfied {
-            throw ParameterError(command: command, message: createErrorMessage())
-        }
-    }
-    
-    // MARK: - Helpers
-    
-    private func next() -> AnyParameter? {
+
+    public func next() -> AnyParameter? {
         if let individual = params.first {
             params.removeFirst()
             return individual
@@ -160,7 +140,7 @@ public class ParameterIterator {
         return collected
     }
     
-    private func createErrorMessage() -> String {
+    public func createErrorMessage() -> String {
         let plural = minCount == 1 ? "argument" : "arguments"
         
         switch maxCount {

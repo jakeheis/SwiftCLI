@@ -52,7 +52,7 @@ public class DefaultRouter: Router {
             }
             
             if arguments.nextIsOption() {
-                try optionRegistry.parse(args: arguments, command: nil)
+                try optionRegistry.parseOneOption(args: arguments, command: nil)
             } else {
                 let name = arguments.pop()
                 guard let matching = groupPath.bottom.children.first(where: { $0.name == name }) else {
@@ -114,14 +114,20 @@ public class DefaultParameterFiller: ParameterFiller {
         let params = ParameterIterator(command: commandPath)
         
         while arguments.hasNext() {
-            if params.isCollecting() || !arguments.nextIsOption() {
-                try params.parse(args: arguments)
+            if params.nextIsCollection() || !arguments.nextIsOption() {
+                if let param = params.next() {
+                    param.update(value: arguments.pop())
+                } else {
+                    throw ParameterError(command: commandPath, message: params.createErrorMessage())
+                }
             } else {
-                try optionRegistry.parse(args: arguments, command: commandPath)
+                try optionRegistry.parseOneOption(args: arguments, command: commandPath)
             }
         }
         
-        try params.finish()
+        if let param = params.next(), !param.satisfied {
+            throw ParameterError(command: commandPath, message: params.createErrorMessage())
+        }
     }
     
 }

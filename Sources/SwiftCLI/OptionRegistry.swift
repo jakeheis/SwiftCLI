@@ -36,7 +36,7 @@ public class OptionRegistry {
         groups += routable.optionGroups
     }
     
-    public func parse(args: ArgumentList, command: CommandPath?) throws {
+    public func parseOneOption(args: ArgumentList, command: CommandPath?) throws {
         let opt = args.pop()
         
         if let flag = flag(for: opt) {
