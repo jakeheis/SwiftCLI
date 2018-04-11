@@ -115,7 +115,7 @@ public class CLI {
             }
             exitStatus = Int32(error.exitStatus)
         } catch let error {
-            stderr <<< "An error occurred: \(error.localizedDescription)"
+            stderr <<< "An error occurred: \(error)"
             exitStatus = 1
         }
         
@@ -149,9 +149,7 @@ public class CLI {
                 stdout <<< helpMessageGenerator.generateUsageStatement(for: error.command)
             } else {
                 stderr <<< error.message
-                stderr <<< ""
                 stderr <<< "Usage: \(error.command.usage)"
-                stderr <<< ""
             }
             
             throw CLI.Error()
