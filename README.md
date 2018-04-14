@@ -502,18 +502,18 @@ SwiftCLI was designed with sensible defaults but also the ability to be customiz
 
 ### `parser`
 
-The `Parser` steps through arguments to find the corresponding command, update its parameter values, and recognize options. SwiftCLI supplies a default implementation of `Parser` with `DefaultParser`. `DefaultParser` finds commands based on the first passed argument (or, in the case of command groups, the first several arguments). For example, `greeter greet` would search for commands with the `name` of "greet".
+The `Parser` steps through arguments to find the corresponding command, update its parameter values, and recognizes options. `Parser` has two stages, the first driven by its `Router` and the second by its `ParameterFiller`. SwiftCLI supplies default implementations of these two stages with `DefaultRouter` and `DefaultParameterFiller`. `DefaultRouter` finds commands based on the first passed argument (or, in the case of command groups, the first several arguments), and `DefaultParameterFiller` uses the remaining arguments which don't start with a dash to satisfy the command's parameters.
 
-SwiftCLI also supplies an implementation of `Parser` called `SingleCommandParser` which should be used if your command is only a single command. For example, if you were implementing the `ln` command, you would say `myCLI.parser = SingleCommandParser(command: LinkCommand())`. This parser will then always return the same command.
+SwiftCLI also supplies an implementation of `Router` called `SingleCommandRouter` which should be used if your CLI is composed of a single command. For example, if you were implementing the `ln` command, you would say `myCLI.parser = SingleCommandParser(command: LinkCommand())`. This router will then always return the same command.
 
-You can implement `Parser` on your own type and update CLI's property:
+You can implement `Router` or `ParameterFiller` on your own types and update your CLI's property to use them:
 
 ```swift
-public var parser: Parser = DefaultParser()
+myCLI.parser = Parser(router: MyRouter(), parameterFiller: MyParameterFiller())
 ```
 
 #### Aliases
-Aliases can be made through the the `aliases` property on CLI. `DefaultParser` will take these aliases into account while routing to the matching command. For example, if you write:
+Aliases can be made through the the `aliases` property on CLI. `DefaultRouter` will take these aliases into account while routing to the matching command. For example, if you write:
 
 ```swift
 myCLI.aliases["-c"] = "command"
