@@ -103,6 +103,26 @@ extension CLI {
         return guardShared().debugGo(with: argumentString)
     }
     
+    @available(*, unavailable, message: "Use a custom parser instead: cli.parser = Parser(router: MyRouter())")
+    public var router: Router {
+        get {
+            return parser.router
+        }
+        set(newValue) {
+            parser = Parser(router: newValue)
+        }
+    }
+    
+    @available(*, unavailable, message: "Use a custom parser instead: cli.parser = Parser(parameterFiller: ParameterFiller())")
+    public var parameterFiller: ParameterFiller {
+        get {
+            return parser.parameterFiller
+        }
+        set(newValue) {
+            parser = Parser(parameterFiller: newValue)
+        }
+    }
+    
 }
 
 extension Input {
