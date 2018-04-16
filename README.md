@@ -504,7 +504,7 @@ SwiftCLI was designed with sensible defaults but also the ability to be customiz
 
 The `Parser` steps through arguments to find the corresponding command, update its parameter values, and recognizes options. `Parser` has two stages, the first driven by its `Router` and the second by its `ParameterFiller`. SwiftCLI supplies default implementations of these two stages with `DefaultRouter` and `DefaultParameterFiller`. `DefaultRouter` finds commands based on the first passed argument (or, in the case of command groups, the first several arguments), and `DefaultParameterFiller` uses the remaining arguments which don't start with a dash to satisfy the command's parameters.
 
-SwiftCLI also supplies an implementation of `Router` called `SingleCommandRouter` which should be used if your CLI is composed of a single command. For example, if you were implementing the `ln` command, you would say `myCLI.parser = SingleCommandParser(command: LinkCommand())`. This router will then always return the same command.
+SwiftCLI also supplies an implementation of `Router` called `SingleCommandRouter` which should be used if your CLI is composed of a single command. For example, if you were implementing the `ln` command, you would say `myCLI.parser = DefaultParser(router: SingleCommandRouter(command: LinkCommand())`. This router will then always return the same command and will leave all arguments to the `ParameterFiller`. If a user wrote `cli my.txt`, the `DefaultRouter` would look for a command named `my.txt` which takes no arguments, while `SingleCommandRouter` would treat 'my.txt' as an argument to the single command.
 
 You can implement `Router` or `ParameterFiller` on your own types and update your CLI's property to use them:
 
