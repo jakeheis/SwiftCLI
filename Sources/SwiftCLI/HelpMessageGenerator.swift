@@ -7,25 +7,23 @@
 //
 
 public protocol HelpMessageGenerator {
-    func generateCommandList(for path: CommandGroupPath) -> String
-    func generateUsageStatement(for path: CommandPath) -> String
-    func generateMisusedOptionsStatement(error: OptionError) -> String
+    func writeCommandList(for path: CommandGroupPath, to out: WritableStream)
+    func writeUsageStatement(for path: CommandPath, to out: WritableStream)
+    func writeMisusedOptionsStatement(for error: OptionError, to out: WritableStream)
 }
 
 extension HelpMessageGenerator {
     
-    public func generateCommandList(for path: CommandGroupPath) -> String {
-        var lines = [
-            "",
-            "Usage: \(path.joined()) <command> [options]"
-        ]
+    public func writeCommandList(for path: CommandGroupPath, to out: WritableStream) {
+        out <<< ""
+        out <<< "Usage: \(path.joined()) <command> [options]"
+        
         let bottom = path.bottom
         if !bottom.shortDescription.isEmpty {
-            lines += [
-                "",
-                bottom.shortDescription
-            ]
+            out <<< ""
+            out <<< bottom.shortDescription
         }
+        
         var commandGroups: [CommandGroup] = []
         var commands: [Command] = []
         var maxNameLength = 12
@@ -40,38 +38,32 @@ extension HelpMessageGenerator {
             }
         }
         
-        func toLine(_ routable: Routable) -> String {
+        func write(_ routable: Routable) {
             let spacing = String(repeating: " ", count: maxNameLength + 4 - routable.name.count)
-            return "  \(routable.name)\(spacing)\(routable.shortDescription)"
+            out <<< "  \(routable.name)\(spacing)\(routable.shortDescription)"
         }
         
         if !commandGroups.isEmpty {
-            lines += [
-                "",
-                "Groups:"
-            ]
-            lines += commandGroups.map(toLine)
+            out <<< ""
+            out <<< "Groups:"
+            commandGroups.forEach(write)
         }
         
         if !commands.isEmpty {
-            lines += [
-                "",
-                "Commands:"
-            ]
-            lines += commands.map(toLine)
+            out <<< ""
+            out <<< "Commands:"
+            commands.forEach(write)
         }
-        
-        lines.append("")
-        
-        return lines.joined(separator: "\n");
     }
     
-    public func generateUsageStatement(for path: CommandPath) -> String {
-        var message = "\nUsage: \(path.usage)\n"
+    public func writeUsageStatement(for path: CommandPath, to out: WritableStream) {
+        out <<< ""
+        out <<< "Usage: \(path.usage)"
         
         let options = path.options
         if !options.isEmpty {
-            message += "\nOptions:"
+            out <<< ""
+            out <<< "Options:"
             let sortedOptions = options.sorted { (lhs, rhs) in
                 return lhs.names.first! < rhs.names.first!
             }
@@ -83,22 +75,17 @@ extension HelpMessageGenerator {
             }
             for option in sortedOptions {
                 let usage = option.usage(padding: maxOptionLength + 4)
-                message += "\n  \(usage)"
+                out <<< "  \(usage)"
             }
-            
-            message += "\n"
         }
-        
-        return message
     }
     
-    public func generateMisusedOptionsStatement(error: OptionError) -> String {
-        var message = ""
+    public func writeMisusedOptionsStatement(for error: OptionError, to out: WritableStream) {
         if let command = error.command {
-            message += generateUsageStatement(for: command)
+            writeUsageStatement(for: command, to: out)
         }
-        message += "\n" + error.message + "\n"
-        return message
+        out <<< ""
+        out <<< error.message
     }
     
 }

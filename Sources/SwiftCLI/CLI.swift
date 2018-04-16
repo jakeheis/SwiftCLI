@@ -131,14 +131,14 @@ public class CLI {
                 stderr <<< "Command \"\(notFound)\" not found"
             }
             
-            stdout <<< helpMessageGenerator.generateCommandList(for: error.partialPath)
+            helpMessageGenerator.writeCommandList(for: error.partialPath, to: stdout)
             throw CLI.Error()
         } catch let error as OptionError {
             if let command = error.command, command.command is HelpCommand {
                 return command
             }
             
-            stderr <<< helpMessageGenerator.generateMisusedOptionsStatement(error: error)
+            helpMessageGenerator.writeMisusedOptionsStatement(for: error, to: stderr)
             throw CLI.Error()
         } catch let error as ParameterError {
             if error.command.command is HelpCommand {
@@ -146,7 +146,7 @@ public class CLI {
             }
             
             if helpFlag?.value == true {
-                stdout <<< helpMessageGenerator.generateUsageStatement(for: error.command)
+                helpMessageGenerator.writeUsageStatement(for: error.command, to: stdout)
             } else {
                 stderr <<< error.message
                 stderr <<< "Usage: \(error.command.usage)"
