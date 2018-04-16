@@ -46,7 +46,9 @@ public class CLI {
     /// A map of command name aliases; by default, maps "-h" to help and "-v" to version
     public var aliases: [String : String] = [
         "-h": "help",
-        "-v": "version"
+        "--help": "help",
+        "-v": "version",
+        "--version": "version"
     ]
     
     public var helpMessageGenerator: HelpMessageGenerator = DefaultHelpMessageGenerator()
