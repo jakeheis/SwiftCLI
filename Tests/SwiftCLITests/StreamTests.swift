@@ -6,6 +6,7 @@
 //
 
 import XCTest
+import Dispatch
 @testable import SwiftCLI
 
 class StreamTests: XCTestCase {
@@ -19,6 +20,7 @@ class StreamTests: XCTestCase {
             ("testReadAll", testReadAll),
             ("testReadLine", testReadLine),
             ("testReadLines", testReadLines),
+            ("testLineStream", testLineStream)
         ]
     }
     
@@ -99,9 +101,6 @@ class StreamTests: XCTestCase {
         XCTAssertEqual(pipe.readLine(), "")
         XCTAssertEqual(pipe.readLine(), nil)
         
-        // DispatchQueue errors on Linux on Swifts < 4.1
-        #if os(macOS) || swift(>=4.1)
-        
         let pipe2 = PipeStream()
         
         pipe2.write("first ")
@@ -118,12 +117,6 @@ class StreamTests: XCTestCase {
         XCTAssertEqual(pipe2.readLine(), "first line")
         XCTAssertEqual(pipe2.readLine(), "last line")
         XCTAssertEqual(pipe2.readLine(), nil)
-        
-        #else
-        
-        print("Note: not running Dispatch test")
-        
-        #endif
     }
     
     func testReadLines() {
@@ -138,6 +131,21 @@ class StreamTests: XCTestCase {
         pipe.closeWrite()
         
         XCTAssertEqual(Array(pipe.readLines()), ["first line", "", "second line", ""])
+    }
+    
+    func testLineStream() {
+        let firstLine = expectation(description: "first line")
+        let stream = LineStream { (line) in
+            if line == "first" {
+                firstLine.fulfill()
+            }
+        }
+        
+        stream <<< "first"
+        waitForExpectations(timeout: 1)
+        
+        stream.closeWrite()
+        stream.wait()
     }
     
 }
