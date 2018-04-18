@@ -125,5 +125,18 @@ class HelpMessageGeneratorTests: XCTestCase {
         
         """)
     }
+    
+    func testNoCommandMisusedOption() {
+        let pipe = PipeStream()
+        DefaultHelpMessageGenerator().writeMisusedOptionsStatement(for: OptionError(command: nil, message: "Unrecognized option: -a"), to: pipe)
+        pipe.closeWrite()
+        
+        XCTAssertEqual(pipe.readAll(), """
+        
+        Unrecognized option: -a
+        
+        
+        """)
+    }
 
 }

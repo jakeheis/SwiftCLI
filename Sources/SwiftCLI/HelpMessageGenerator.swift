@@ -85,6 +85,8 @@ extension HelpMessageGenerator {
     public func writeMisusedOptionsStatement(for error: OptionError, to out: WritableStream) {
         if let command = error.command {
             writeUsageStatement(for: command, to: out)
+        } else {
+            out <<< ""
         }
         out <<< error.message
         out <<< ""
