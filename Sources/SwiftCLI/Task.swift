@@ -115,8 +115,8 @@ public class Task {
     ///   - args: arguments to the executable
     /// - Returns: Never
     /// - Throws: CLI.Error if the executable could not be found
-    public static func execvp(_ executable: String, directory: String? = nil, _ args: String...) throws -> Never {
-        try execvp(executable, directory: directory,  args)
+    public static func execvp(_ executable: String, directory: String? = nil, _ args: String..., env: [String: String]? = nil) throws -> Never {
+        try execvp(executable, directory: directory,  args, env: env)
     }
     
     /// Run the given executable, replacing the current process with it
@@ -126,7 +126,7 @@ public class Task {
     ///   - args: arguments to the executable
     /// - Returns: Never
     /// - Throws: CLI.Error if the executable could not be found
-    public static func execvp(_ executable: String, directory: String? = nil, _ args: [String]) throws -> Never {
+    public static func execvp(_ executable: String, directory: String? = nil, _ args: [String], env: [String: String]? = nil) throws -> Never {
         let exec: String
         var swiftArgs: [String] = []
         if executable.hasPrefix("/") || executable.hasPrefix(".") {
@@ -145,8 +145,22 @@ public class Task {
             priorDir = FileManager.default.currentDirectoryPath
             FileManager.default.changeCurrentDirectoryPath(directory)
         }
-        
-        Foundation.execvp(exec, argv + [nil])
+
+        if let env = env {
+            let envp = UnsafeMutablePointer<UnsafeMutablePointer<Int8>?>.allocate(capacity: env.count + 1)
+            envp.initialize(from: env.map { strdup("\($0)=\($1)") }, count: env.count)
+            envp[env.count] = nil
+            defer {
+                for pair in envp ..< envp + env.count {
+                    free(UnsafeMutableRawPointer(pair.pointee))
+                }
+                envp.deallocate()
+            }
+            
+            Foundation.execve(exec, argv + [nil], envp)
+        } else {
+            Foundation.execvp(exec, argv + [nil])
+        }
         
         if let priorDir = priorDir {
             FileManager.default.changeCurrentDirectoryPath(priorDir)
