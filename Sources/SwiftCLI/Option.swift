@@ -10,7 +10,6 @@ public protocol Option {
     var names: [String] { get }
     var shortDescription: String { get }
     var identifier: String { get }
-    func usage(padding: Int) -> String
 }
 
 public extension Option {
@@ -20,13 +19,13 @@ public extension Option {
     }
 }
 
-open class Flag: Option {
+public class Flag: Option {
     
     public let names: [String]
     public let shortDescription: String
     public private(set) var value: Bool
     
-    open var identifier: String {
+    public var identifier: String {
         return names.joined(separator: ", ")
     }
     
@@ -43,19 +42,23 @@ open class Flag: Option {
         self.shortDescription = description
     }
     
-    open func setOn() {
+    public func setOn() {
         value = true
     }
     
 }
 
-open class Key<T: ConvertibleFromString>: Option {
+public protocol AnyKey: Option {
+    func updateValue(_ value: String) -> Bool
+}
+
+public class Key<T: ConvertibleFromString>: AnyKey {
     
     public let names: [String]
     public let shortDescription: String
     public private(set) var value: T?
     
-    open var identifier: String {
+    public var identifier: String {
         return names.joined(separator: ", ") + " <value>"
     }
     
@@ -70,7 +73,7 @@ open class Key<T: ConvertibleFromString>: Option {
         self.shortDescription = description
     }
     
-    open func setValue(_ value: String) -> Bool {
+    public func updateValue(_ value: String) -> Bool {
         guard let value = T.convert(from: value) else {
             return false
         }
@@ -80,13 +83,31 @@ open class Key<T: ConvertibleFromString>: Option {
     
 }
 
-// MARK: - AnyKey
-
-public protocol AnyKey: Option {
-    func setValue(_ value: String) -> Bool
+public class VariadicKey<T: ConvertibleFromString>: AnyKey {
+    
+    public let names: [String]
+    public let shortDescription: String
+    public private(set) var values: [T]
+    
+    public var identifier: String {
+        return names.joined(separator: ", ") + " <value>"
+    }
+    
+    public init(_ names: String ..., description: String = "") {
+        self.names = names
+        self.shortDescription = description
+        self.values = []
+    }
+    
+    public func updateValue(_ value: String) -> Bool {
+        guard let value = T.convert(from: value) else {
+            return false
+        }
+        values.append(value)
+        return true
+    }
+    
 }
-
-extension Key: AnyKey {}
 
 // MARK: - ConvertibleFromString
 

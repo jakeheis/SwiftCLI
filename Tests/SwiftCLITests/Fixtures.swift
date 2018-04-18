@@ -33,9 +33,6 @@ class TestCommand: Command {
         if silent.value {
             executionString += ", silently"
         }
-        if verbose.value {
-            executionString += ", verbosely"
-        }
 
         completion?(executionString)
     }
@@ -82,7 +79,7 @@ class DeltaCmd: Command {
 }
 
 class EmptyCmd: Command {
-    let name = "req"
+    let name = "cmd"
     func execute() throws {}
 }
 
@@ -184,6 +181,12 @@ class FlagKeyCmd: OptionCmd {
     let beta = Key<String>("-b", "--beta")
 }
 
+class FlagKeyParamCmd: OptionCmd {
+    let alpha = Flag("-a", "--alpha")
+    let beta = Key<String>("-b", "--beta")
+    let param = Parameter()
+}
+
 class IntKeyCmd: OptionCmd {
     let alpha = Key<Int>("-a", "--alpha")
 }
@@ -203,4 +206,8 @@ class ExactlyOneCmd: Command {
         optionGroups = [OptionGroup(options: [alpha, beta], restriction: .exactlyOne)]
     }
     
+}
+
+class VariadicKeyCmd: OptionCmd {
+    let files = VariadicKey<String>("-f", "--file")
 }

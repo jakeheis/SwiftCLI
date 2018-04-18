@@ -29,7 +29,7 @@ class CompletionGeneratorTests: XCTestCase {
         
         let generator = ZshCompletionGenerator(cli: cli)
         let capture = PipeStream()
-        generator.writeCommandList(for: CommandGroupPath(cli: cli), into: capture)
+        generator.writeCommandList(for: CommandGroupPath(top: cli), into: capture)
         capture.closeWrite()
         
         XCTAssertEqual(capture.readAll(), """
@@ -65,7 +65,7 @@ class CompletionGeneratorTests: XCTestCase {
         
         let generator = ZshCompletionGenerator(cli: cli)
         let capture = PipeStream()
-        let path = CommandGroupPath(cli: cli).appending(cmd)
+        let path = CommandGroupPath(top: cli).appending(cmd)
         generator.writeCommand(for: path, into: capture)
         capture.closeWrite()
         

@@ -20,13 +20,13 @@ class HelpMessageGeneratorTests: XCTestCase {
         ]
     }
     
-    let command = TestCommand()
-    
     func testCommandListGeneration() {
-        let path = CommandGroupPath(cli: CLI.createTester(commands: [alphaCmd, betaCmd], description: "A tester for SwiftCLI"))
-        var message = DefaultHelpMessageGenerator().generateCommandList(for: path)
+        let pipe = PipeStream()
+        let path = CommandGroupPath(top: CLI.createTester(commands: [alphaCmd, betaCmd], description: "A tester for SwiftCLI"))
+        DefaultHelpMessageGenerator().writeCommandList(for: path, to: pipe)
+        pipe.closeWrite()
         
-        var expectedMessage = """
+        XCTAssertEqual(pipe.readAll(), """
         
         Usage: tester <command> [options]
         
@@ -37,14 +37,15 @@ class HelpMessageGeneratorTests: XCTestCase {
           beta            A beta command
           help            Prints this help information
         
-        """
         
-        XCTAssertEqual(message, expectedMessage)
+        """)
         
-        let path2 = CommandGroupPath(cli: CLI.createTester(commands: [alphaCmd, midGroup]))
-        message = DefaultHelpMessageGenerator().generateCommandList(for: path2)
+        let pipe2 = PipeStream()
+        let path2 = CommandGroupPath(top: CLI.createTester(commands: [alphaCmd, midGroup]))
+        DefaultHelpMessageGenerator().writeCommandList(for: path2, to: pipe2)
+        pipe2.closeWrite()
         
-        expectedMessage = """
+        XCTAssertEqual(pipe2.readAll(), """
         
         Usage: tester <command> [options]
         
@@ -55,17 +56,19 @@ class HelpMessageGeneratorTests: XCTestCase {
           alpha           The alpha command
           help            Prints this help information
         
-        """
         
-        XCTAssertEqual(message, expectedMessage)
+        """)
     }
 
     func testUsageStatementGeneration() {
+        let pipe = PipeStream()
+        let command = TestCommand()
         let cli = CLI.createTester(commands: [command])
-        let path = CommandGroupPath(cli: cli).appending(command)
-        let message = DefaultHelpMessageGenerator().generateUsageStatement(for: path)
+        let path = CommandGroupPath(top: cli).appending(command)
+        DefaultHelpMessageGenerator().writeUsageStatement(for: path, to: pipe)
+        pipe.closeWrite()
         
-        let expectedMessage = """
+        XCTAssertEqual(pipe.readAll(), """
         
         Usage: tester test <testName> [<testerName>] [options]
         
@@ -74,18 +77,19 @@ class HelpMessageGeneratorTests: XCTestCase {
           -s, --silent           Silence all test output
           -t, --times <value>    Number of times to run the test
         
-        """
         
-        XCTAssertEqual(message, expectedMessage, "Should generate the correct usage statement")
+        """)
     }
     
     func testInheritedUsageStatementGeneration() {
+        let pipe = PipeStream()
         let cmd = TestInheritedCommand()
         let cli = CLI.createTester(commands: [cmd])
-        let path = CommandGroupPath(cli: cli).appending(cmd)
-        let message = DefaultHelpMessageGenerator().generateUsageStatement(for: path)
+        let path = CommandGroupPath(top: cli).appending(cmd)
+        DefaultHelpMessageGenerator().writeUsageStatement(for: path, to: pipe)
+        pipe.closeWrite()
         
-        let expectedMessage = """
+        XCTAssertEqual(pipe.readAll(), """
         
         Usage: tester test <testName> [<testerName>] [options]
         
@@ -95,41 +99,44 @@ class HelpMessageGeneratorTests: XCTestCase {
           -t, --times <value>    Number of times to run the test
           -v, --verbose          Show more output information
         
-        """
-        
-        XCTAssertEqual(message, expectedMessage, "Should generate the correct usage statement")
+
+        """)
     }
     
     func testMisusedOptionsStatementGeneration() {
-        let arguments = ArgumentList(argumentString: "tester test -s -a --times")
-        arguments.remove(node: arguments.head!)
-        arguments.remove(node: arguments.head!)
-        
+        let pipe = PipeStream()
+        let command = TestCommand()
         let cli = CLI.createTester(commands: [command])
-        let registry = OptionRegistry(options: command.options, optionGroups: command.optionGroups)
+        let path = CommandGroupPath(top: cli).appending(command)
+        DefaultHelpMessageGenerator().writeMisusedOptionsStatement(for: OptionError(command: path, message: "Unrecognized option: -a"), to: pipe)
+        pipe.closeWrite()
         
-        do {
-            try DefaultOptionRecognizer().recognizeOptions(from: registry, in: arguments)
-            XCTFail("Option parser should fail on incorrectly used options")
-        } catch let error as OptionRecognizerError {
-            let path = CommandGroupPath(cli: cli).appending(command)
-            let message = DefaultHelpMessageGenerator().generateMisusedOptionsStatement(for: path, error: error)
-            
-            let expectedMessage = """
-            
-            Usage: tester test <testName> [<testerName>] [options]
-            
-            Options:
-              -h, --help             Show help information for this command
-              -s, --silent           Silence all test output
-              -t, --times <value>    Number of times to run the test
-            
-            Unrecognized option: -a
-
-            """
-            
-            XCTAssertEqual(message, expectedMessage, "Should generate the correct misused options statement")
-        } catch {}
+        XCTAssertEqual(pipe.readAll(), """
+        
+        Usage: tester test <testName> [<testerName>] [options]
+        
+        Options:
+          -h, --help             Show help information for this command
+          -s, --silent           Silence all test output
+          -t, --times <value>    Number of times to run the test
+        
+        Unrecognized option: -a
+        
+        
+        """)
+    }
+    
+    func testNoCommandMisusedOption() {
+        let pipe = PipeStream()
+        DefaultHelpMessageGenerator().writeMisusedOptionsStatement(for: OptionError(command: nil, message: "Unrecognized option: -a"), to: pipe)
+        pipe.closeWrite()
+        
+        XCTAssertEqual(pipe.readAll(), """
+        
+        Unrecognized option: -a
+        
+        
+        """)
     }
 
 }

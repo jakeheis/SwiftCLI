@@ -9,16 +9,12 @@ public struct CommandGroupPath {
     
     public let groups: [CommandGroup]
     
-    public var cli: CLI {
-        return groups.first! as! CLI
-    }
-    
     public var bottom: CommandGroup {
         return groups.last!
     }
     
-    public init(cli: CLI, groups: [CommandGroup] = []) {
-        self.init(groups: [cli] + groups)
+    public init(top: CommandGroup, groups: [CommandGroup] = []) {
+        self.init(groups: [top] + groups)
     }
     
     private init(groups: [CommandGroup]) {
@@ -33,6 +29,10 @@ public struct CommandGroupPath {
         return CommandPath(groupPath: self, command: command)
     }
     
+    public func droppingLast() -> CommandGroupPath {
+        return CommandGroupPath(groups: Array(groups.dropLast()))
+    }
+    
     public func joined(separator: String = " ") -> String {
         return groups.map({ $0.name }).joined(separator: separator)
     }
@@ -41,17 +41,14 @@ public struct CommandGroupPath {
 
 public struct CommandPath {
     
-    public let groupPath: CommandGroupPath
-    
+    public let groupPath: CommandGroupPath?
     public let command: Command
     
-    public var groups: [CommandGroup] {
-        return groupPath.groups
-    }
-    
     public var options: [Option] {
-        let shared = groupPath.groups.map({ $0.sharedOptions }).joined()
-        return command.options + shared
+        if let shared = groupPath?.groups.map({ $0.options }).joined() {
+            return command.options + shared
+        }
+        return command.options
     }
     
     var usage: String {
@@ -69,13 +66,16 @@ public struct CommandPath {
         return message
     }
     
-    fileprivate init(groupPath: CommandGroupPath, command: Command) {
+    public init(groupPath: CommandGroupPath? = nil, command: Command) {
         self.groupPath = groupPath
         self.command = command
     }
     
     public func joined(separator: String = " ") -> String {
-        return groupPath.joined(separator: separator) + separator + command.name
+        if let group = groupPath?.joined(separator: separator) {
+            return group + separator + command.name
+        }
+        return command.name
     }
     
 }

@@ -36,7 +36,7 @@ public final class ZshCompletionGenerator: CompletionGenerator {
     public func writeCompletions(into stream: WritableStream) {
         stream <<< "#compdef \(cli.name)"
         
-        writeGroupHeader(for: CommandGroupPath(cli: cli), into: stream)
+        writeGroupHeader(for: CommandGroupPath(top: cli), into: stream)
         
         stream <<< "_\(cli.name)"
     }
@@ -86,16 +86,16 @@ public final class ZshCompletionGenerator: CompletionGenerator {
         
         group.bottom.children.forEach { (routable) in
             if routable is HelpCommand { return }
-            if let command = routable as? Command {
-                self.writeCommand(for: group.appending(command), into: stream)
-            } else if let subGroup = routable as? CommandGroup {
+            if let subGroup = routable as? CommandGroup {
                 self.writeGroupHeader(for: group.appending(subGroup), into: stream)
+            } else if let command = routable as? Command {
+                self.writeCommand(for: group.appending(command), into: stream)
             }
         }
     }
     
     func writeCommand(for command: CommandPath, into stream: WritableStream) {
-        let prefix = groupName(for: command.groupPath)
+        let prefix = groupName(for: command.groupPath!)
         stream <<< """
         _\(prefix)_\(command.command.name)() {
             _arguments -C \\

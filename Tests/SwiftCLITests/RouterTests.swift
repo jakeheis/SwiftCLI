@@ -1,19 +1,17 @@
 //
 //  RouterTests.swift
-//  SwiftCLI
+//  SwiftCLITests
 //
-//  Created by Jake Heiser on 1/7/15.
-//  Copyright (c) 2015 jakeheis. All rights reserved.
+//  Created by Jake Heiser on 4/18/18.
 //
 
 import XCTest
-@testable import SwiftCLI
+import SwiftCLI
 
 class RouterTests: XCTestCase {
     
     static var allTests : [(String, (RouterTests) -> () throws -> Void)] {
         return [
-            ("testNoRoute", testNoRoute),
             ("testNameRoute", testNameRoute),
             ("testAliasRoute", testAliasRoute),
             ("testSingleRouter", testSingleRouter),
@@ -21,132 +19,104 @@ class RouterTests: XCTestCase {
             ("testGroupPartialRoute", testGroupPartialRoute),
             ("testGroupFailedRoute", testGroupFailedRoute),
             ("testGroupSuccessRoute", testGroupSuccessRoute),
-            ("testNestedGroup", testNestedGroup)
+            ("testNestedGroup", testNestedGroup),
         ]
     }
-    
-    let cli = CLI.createTester(commands: [alphaCmd, betaCmd])
-    
-    // MARK: - Tests
-    
-    func testNoRoute() {
-        let args = ArgumentList(argumentString: "tester")
+
+    func testNameRoute() throws {
+        let args = ArgumentList(testString: "tester alpha")
+        let cli = CLI.createTester(commands: [alphaCmd, betaCmd])
         
-        let command = routeCmd(args)
-        XCTAssert(command == nil)
+        let (command, _) = try DefaultRouter().parse(commandGroup: cli, arguments: args)
+        XCTAssert(command.groupPath?.bottom === cli, "Router should generate correct group path")
+        XCTAssertEqual(command.groupPath?.groups.count, 1, "Router should generate correct group path")
+        XCTAssert(command.command === alphaCmd, "Router should route to the command with the given name")
+        XCTAssertFalse(args.hasNext())
     }
     
-    func testNameRoute() {
-        let args = ArgumentList(argumentString: "tester alpha")
-        
-        guard let command = routeCmd(args) else {
-            XCTFail()
-            return
-        }
-        XCTAssertEqual(command.groupPath.bottom.name, cli.name, "Router should generate correct group path")
-        XCTAssertEqual(command.groupPath.groups.count, 1, "Router should generate correct group path")
-        XCTAssertEqual(command.command.name, alphaCmd.name, "Router should route to the command with the given name")
-        XCTAssert(args.head == nil, "Router should leave no arguments for the command")
-    }
-    
-    func testAliasRoute() {
-        let args = ArgumentList(argumentString: "tester -b")
+    func testAliasRoute() throws {
+        let args = ArgumentList(testString: "tester -b")
         
         let cli = CLI.createTester(commands: [alphaCmd, betaCmd])
         cli.aliases["-b"] = betaCmd.name
         
-        let result = DefaultRouter().route(cli: cli, arguments: args)
-        guard case let .success(command) = result else {
-            XCTFail()
-            return
-        }
-        
-        XCTAssertEqual(command.groupPath.bottom.name, cli.name, "Router should generate correct group path")
-        XCTAssertEqual(command.groupPath.groups.count, 1, "Router should generate correct group path")
+        let (command, _) = try DefaultRouter().parse(commandGroup: cli, arguments: args)
+        XCTAssertEqual(command.groupPath?.bottom.name, cli.name, "Router should generate correct group path")
+        XCTAssertEqual(command.groupPath?.groups.count, 1, "Router should generate correct group path")
         XCTAssertEqual(command.command.name, betaCmd.name, "Router with enabled shortcut routing should route to the command with the given shortcut")
-        
-        XCTAssert(args.head == nil, "Enabled router should pass on no arguments to the matched command")
+        XCTAssertFalse(args.hasNext())
     }
     
-    func testSingleRouter() {
-        let args = ArgumentList(argumentString: "tester -a")
+    func testSingleRouter() throws {
+        let cmd = FlagCmd()
+        let args = ArgumentList(testString: "tester -a")
+        let cli = CLI.createTester(commands: [cmd])
         
-        guard let command = routeCmd(args, router: SingleCommandRouter(command: alphaCmd)) else {
-            XCTFail()
-            return
-        }
+        let (path, _) = try SingleCommandRouter(command: cmd).parse(commandGroup: cli, arguments: args)
         
-        XCTAssertEqual(command.groupPath.bottom.name, cli.name, "Router should generate correct group path")
-        XCTAssertEqual(command.groupPath.groups.count, 1, "Router should generate correct group path")
-        XCTAssertEqual(command.command.name, alphaCmd.name, "Router should route to the single command")
-        XCTAssert(args.head?.value == "-a" && args.head?.next == nil, "Router should pass the flag on to the single command")
+        XCTAssert(path.groupPath?.bottom === cli, "Router should generate correct group path")
+        XCTAssertEqual(path.groupPath?.groups.count, 1, "Router should generate correct group path")
+        XCTAssert(path.command === cmd, "Router should route to the single command")
+        XCTAssertEqual(args.pop(), "-a")
     }
     
-    func testFailedRoute() {
-        let args = ArgumentList(argumentString: "tester charlie")
+    func testFailedRoute() throws {
+        let args = ArgumentList(testString: "tester charlie")
+        let cli = CLI.createTester(commands: [alphaCmd, betaCmd])
         
-        let result = route(args)
-        if case let .failure(partialPath: partialPath, notFound: notFound) = result {
-            XCTAssertEqual(partialPath.bottom.name, cli.name, "Router should generate correct group path")
-            XCTAssertEqual(partialPath.groups.count, 1, "Router should generate correct group path")
-            XCTAssertEqual(notFound, "charlie")
-        } else {
+        do {
+            _ = try DefaultRouter().parse(commandGroup: cli, arguments: args)
             XCTFail()
-        }
-    }
-    
-    func testGroupPartialRoute() {
-        let router = DefaultRouter()
-        let routables: [Routable] = [midGroup, intraGroup, Req2Cmd(), Opt2Cmd()]
-        
-        let arguments = ArgumentList(argumentString: "tester mid")
-        let result = router.route(cli: CLI.createTester(commands: routables), arguments: arguments)
-        
-        if case let .failure(partialPath: partialPath, notFound: notFound) = result {
-            XCTAssertEqual(partialPath.cli.name, cli.name, "Router should generate correct group path")
-            XCTAssertEqual(partialPath.bottom.name, midGroup.name, "Router should generate correct group path")
-            XCTAssertEqual(partialPath.groups.count, 2, "Router should generate correct group path")
-            XCTAssertNil(notFound)
-        } else {
-            XCTFail()
+        } catch let error as RouteError {
+            XCTAssert(error.partialPath.bottom === cli, "Router should generate correct group path")
+            XCTAssertEqual(error.partialPath.groups.count, 1, "Router should generate correct group path")
+            XCTAssertEqual(error.notFound, "charlie")
         }
     }
     
-    func testGroupFailedRoute() {
-        let router = DefaultRouter()
-        let routables: [Routable] = [midGroup, intraGroup, Req2Cmd(), Opt2Cmd()]
+    func testGroupPartialRoute() throws {
+        let arguments = ArgumentList(testString: "tester mid")
+        let cli = CLI.createTester(commands: [midGroup, intraGroup, Req2Cmd(), Opt2Cmd()])
         
-        let arguments = ArgumentList(argumentString: "tester mid charlie")
-        let result = router.route(cli: CLI.createTester(commands: routables), arguments: arguments)
-        
-        if case let .failure(partialPath: partialPath, notFound: notFound) = result {
-            XCTAssertEqual(partialPath.cli.name, cli.name, "Router should generate correct group path")
-            XCTAssertEqual(partialPath.bottom.name, midGroup.name, "Router should generate correct group path")
-            XCTAssertEqual(partialPath.groups.count, 2, "Router should generate correct group path")
-            XCTAssertEqual(notFound, "charlie")
-        } else {
+        do {
+            _ = try DefaultRouter().parse(commandGroup: cli, arguments: arguments)
             XCTFail()
+        } catch let error as RouteError {
+            XCTAssert(error.partialPath.groups[0] === cli, "Router should generate correct group path")
+            XCTAssert(error.partialPath.groups[1] === midGroup, "Router should generate correct group path")
+            XCTAssertEqual(error.partialPath.groups.count, 2, "Router should generate correct group path")
+            XCTAssertNil(error.notFound)
         }
     }
     
-    func testGroupSuccessRoute() {
-        let router = DefaultRouter()
-        let routables: [Routable] = [midGroup, intraGroup, Req2Cmd(), Opt2Cmd()]
+    func testGroupFailedRoute() throws {
+        let arguments = ArgumentList(testString: "tester mid charlie")
+        let cli = CLI.createTester(commands: [midGroup, intraGroup, Req2Cmd(), Opt2Cmd()])
         
-        let arguments = ArgumentList(argumentString: "tester mid beta")
-        let result = router.route(cli: CLI.createTester(commands: routables), arguments: arguments)
-        
-        if case let .success(cmd) = result {
-            XCTAssertEqual(cmd.groupPath.cli.name, cli.name, "Router should generate correct group path")
-            XCTAssertEqual(cmd.groupPath.bottom.name, midGroup.name, "Router should generate correct group path")
-            XCTAssertEqual(cmd.groupPath.groups.count, 2, "Router should generate correct group path")
-            XCTAssert(cmd.command === betaCmd)
-        } else {
+        do {
+            _ = try DefaultRouter().parse(commandGroup: cli, arguments: arguments)
             XCTFail()
+        } catch let error as RouteError {
+            XCTAssert(error.partialPath.groups[0] === cli, "Router should generate correct group path")
+            XCTAssert(error.partialPath.groups[1] === midGroup, "Router should generate correct group path")
+            XCTAssertEqual(error.partialPath.groups.count, 2, "Router should generate correct group path")
+            XCTAssertEqual(error.notFound, "charlie")
         }
     }
     
-    func testNestedGroup() {
+    func testGroupSuccessRoute() throws {
+        let arguments = ArgumentList(testString: "tester mid beta")
+        let cli = CLI.createTester(commands: [midGroup, intraGroup, Req2Cmd(), Opt2Cmd()])
+        
+        let (cmd, _) = try DefaultRouter().parse(commandGroup: cli, arguments: arguments)
+        XCTAssert(cmd.groupPath?.groups[0] === cli, "Router should generate correct group path")
+        XCTAssert(cmd.groupPath?.bottom === midGroup, "Router should generate correct group path")
+        XCTAssertEqual(cmd.groupPath?.groups.count, 2, "Router should generate correct group path")
+        XCTAssert(cmd.command === betaCmd)
+        XCTAssertFalse(arguments.hasNext())
+    }
+    
+    func testNestedGroup() throws {
         class Nested: CommandGroup {
             let name = "nested"
             let shortDescription = "Nested group"
@@ -154,56 +124,41 @@ class RouterTests: XCTestCase {
         }
         
         let nested = Nested()
-        let router = DefaultRouter()
         
-        var arguments = ArgumentList(argumentString: "tester nested")
-        var result = router.route(cli: CLI.createTester(commands: [nested]), arguments: arguments)
-        if case let .failure(partialPath: partialPath, notFound: notFound) = result {
-            XCTAssertEqual(partialPath.cli.name, cli.name, "Router should generate correct group path")
-            XCTAssertEqual(partialPath.bottom.name, nested.name, "Router should generate correct group path")
-            XCTAssertEqual(partialPath.groups.count, 2, "Router should generate correct group path")
-            XCTAssertNil(notFound)
-        } else {
-            XCTFail()
-        }
+        var arguments = ArgumentList(testString: "tester nested")
+        let cli = CLI.createTester(commands: [nested])
         
-        arguments = ArgumentList(argumentString: "tester nested intra")
-        result = router.route(cli: CLI.createTester(commands: [nested]), arguments: arguments)
-        if case let .failure(partialPath: partialPath, notFound: notFound) = result {
-            XCTAssertEqual(partialPath.cli.name, cli.name, "Router should generate correct group path")
-            XCTAssertEqual(partialPath.groups[1].name, nested.name, "Router should generate correct group path")
-            XCTAssertEqual(partialPath.bottom.name, intraGroup.name, "Router should generate correct group path")
-            XCTAssertEqual(partialPath.groups.count, 3, "Router should generate correct group path")
-            XCTAssertNil(notFound)
-        } else {
+        do {
+            _ = try DefaultRouter().parse(commandGroup: cli, arguments: arguments)
             XCTFail()
+        } catch let error as RouteError {
+            XCTAssert(error.partialPath.groups[0] === cli, "Router should generate correct group path")
+            XCTAssert(error.partialPath.bottom === nested, "Router should generate correct group path")
+            XCTAssertEqual(error.partialPath.groups.count, 2, "Router should generate correct group path")
+            XCTAssertNil(error.notFound)
         }
         
-        arguments = ArgumentList(argumentString: "tester nested intra delta")
-        result = router.route(cli: CLI.createTester(commands: [nested]), arguments: arguments)
-        if case let .success(cmd) = result {
-            XCTAssertEqual(cmd.groupPath.cli.name, cli.name, "Router should generate correct group path")
-            XCTAssertEqual(cmd.groupPath.groups[1].name, nested.name, "Router should generate correct group path")
-            XCTAssertEqual(cmd.groupPath.bottom.name, intraGroup.name, "Router should generate correct group path")
-            XCTAssertEqual(cmd.groupPath.groups.count, 3, "Router should generate correct group path")
-            XCTAssert(cmd.command === deltaCmd)
-        } else {
+        arguments = ArgumentList(testString: "tester nested intra")
+        do {
+            _ = try DefaultRouter().parse(commandGroup: cli, arguments: arguments)
             XCTFail()
+        } catch let error as RouteError {
+            XCTAssert(error.partialPath.groups[0] === cli, "Router should generate correct group path")
+            XCTAssert(error.partialPath.groups[1] === nested, "Router should generate correct group path")
+            XCTAssert(error.partialPath.bottom === intraGroup, "Router should generate correct group path")
+            XCTAssertEqual(error.partialPath.groups.count, 3, "Router should generate correct group path")
+            XCTAssertNil(error.notFound)
         }
+        
+        arguments = ArgumentList(testString: "tester nested intra delta")
+        let (cmd, _) = try DefaultRouter().parse(commandGroup: cli, arguments: arguments)
+        
+        XCTAssert(cmd.groupPath?.groups[0] === cli, "Router should generate correct group path")
+        XCTAssert(cmd.groupPath?.groups[1] === nested, "Router should generate correct group path")
+        XCTAssert(cmd.groupPath?.bottom === intraGroup, "Router should generate correct group path")
+        XCTAssertEqual(cmd.groupPath?.groups.count, 3, "Router should generate correct group path")
+        XCTAssert(cmd.command === deltaCmd)
+        XCTAssertFalse(arguments.hasNext())
     }
-    
-    // MARK: - Helper
-    
-    private func routeCmd(_ arguments: ArgumentList, router: Router? = nil) -> CommandPath? {
-        if case let .success(cmd) = route(arguments, router: router) {
-            return cmd
-        }
-        return nil
-    }
-    
-    private func route(_ arguments: ArgumentList, router: Router? = nil) -> RouteResult {
-        let router = router ?? DefaultRouter()
-        return router.route(cli: cli, arguments: arguments)
-    }
-    
+
 }

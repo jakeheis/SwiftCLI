@@ -16,27 +16,31 @@ public class OptionGroup {
     
     public let options: [Option]
     public let restriction: Restriction
-    
-    public var message: String {
-        let names = options.optMap({ $0.names.last }).joined(separator: " ")
-        var str: String
-        switch restriction {
-        case .exactlyOne:
-            str = "Must pass exactly one of the following"
-        case .atLeastOne:
-            str = "Must pass at least one of the following"
-        case .atMostOne:
-            str = "Cannot pass more than most one of the following"
-        }
-        str += ": \(names)"
-        return str
-    }
-    
-    public var count: Int = 0
+    public var message: String
+    internal(set) public var count: Int = 0
     
     public init(options: [Option], restriction: Restriction) {
+        precondition(!options.isEmpty, "must pass one or more options")
+        if options.count == 1 {
+            precondition(restriction == .exactlyOne, "cannot use atMostOne or atLeastOne when passing one option")
+        }
+        
         self.options = options
         self.restriction = restriction
+        
+        if options.count == 1 {
+            self.message = "Must pass the following option"
+        } else {
+            switch restriction {
+            case .exactlyOne:
+                self.message = "Must pass exactly one of the following"
+            case .atLeastOne:
+                self.message = "Must pass at least one of the following"
+            case .atMostOne:
+                self.message = "Cannot pass more than most one of the following"
+            }
+        }
+        self.message += ": \(options.optMap({ $0.names.last }).joined(separator: " "))"
     }
     
     public func check() -> Bool  {

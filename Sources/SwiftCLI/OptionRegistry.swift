@@ -8,14 +8,20 @@
 
 public class OptionRegistry {
     
-    private let flags: [String: Flag]
-    private let keys: [String: AnyKey]
-    private let groups: [OptionGroup]
+    private var flags: [String: Flag]
+    private var keys: [String: AnyKey]
+    private var groups: [OptionGroup]
     
-    public init(options: [Option], optionGroups: [OptionGroup]) {
-        var flags: [String: Flag] = [:]
-        var keys: [String: AnyKey] = [:]
-        for option in options {
+    public init(routable: Routable) {
+        self.flags = [:]
+        self.keys = [:]
+        self.groups = []
+        
+        register(routable)
+    }
+    
+    public func register(_ routable: Routable) {
+        for option in routable.options {
             if let flag = option as? Flag {
                 for name in flag.names {
                     flags[name] = flag
@@ -26,10 +32,35 @@ public class OptionRegistry {
                 }
             }
         }
-        self.flags = flags
-        self.keys = keys
-        self.groups = optionGroups
+        
+        groups += routable.optionGroups
     }
+    
+    public func parseOneOption(args: ArgumentList, command: CommandPath?) throws {
+        let opt = args.pop()
+        
+        if let flag = flag(for: opt) {
+            flag.setOn()
+        } else if let key = key(for: opt) {
+             guard args.hasNext(), !args.nextIsOption() else {
+                throw OptionError(command: command, message: "Expected a value to follow: \(opt)")
+            }
+            let value = args.pop()
+            guard key.updateValue(value) else {
+                throw OptionError(command: command, message: "Illegal type passed to \(key.names.first!): '\(value)'")
+            }
+        } else {
+            throw OptionError(command: command, message: "Unrecognized option: \(opt)")
+        }
+    }
+    
+    public func finish(command: CommandPath) throws {
+        if let failingGroup = failingGroup() {
+            throw OptionError(command: command, message: failingGroup.message)
+        }
+    }
+    
+    // MARK: - Helpers
     
     public func flag(for key: String) -> Flag? {
         if let flag = flags[key] {
@@ -56,7 +87,7 @@ public class OptionRegistry {
         }
     }
     
-    public func failingGroup() -> OptionGroup? {
+    private func failingGroup() -> OptionGroup? {
         for group in groups {
             if !group.check() {
                 return group

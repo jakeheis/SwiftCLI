@@ -53,9 +53,7 @@ public class CLI {
     
     public var helpMessageGenerator: HelpMessageGenerator = DefaultHelpMessageGenerator()
     public var argumentListManipulators: [ArgumentListManipulator] = [OptionSplitter()]
-    public var router: Router = DefaultRouter()
-    public var optionRecognizer: OptionRecognizer = DefaultOptionRecognizer()
-    public var parameterFiller: ParameterFiller = DefaultParameterFiller()
+    public var parser = Parser()
     
     /// Creates a new CLI
     ///
@@ -83,7 +81,7 @@ public class CLI {
     /// Uses the arguments passed in the command line.
     ///
     /// - SeeAlso: `debugGoWithArgumentString()` when debugging
-    /// - Returns: a CLIResult (Int32) representing the success of the CLI in routing to and executing the correct
+    /// - Returns: an Int32 representing the success of the CLI in routing to and executing the correct
     /// command. Usually should be passed to `exit(result)`
     public func go() -> Int32 {
         return go(with: ArgumentList())
@@ -94,92 +92,68 @@ public class CLI {
     ///
     /// - SeeAlso: `go()` when running from the command line
     /// - Parameter argumentString: the arguments to use when running the CLI
-    /// - Returns: a CLIResult (Int) representing the success of the CLI in routing to and executing the correct
-    /// command. Usually should be passed to `exit(result)`
+    /// - Returns: an Int32 representing the success of the CLI in routing to and executing the correct command. Usually should be passed to `exit(result)`
     public func debugGo(with argumentString: String) -> Int32 {
-        print("[Debug Mode]")
+        stdout <<< "[Debug Mode]"
         return go(with: ArgumentList(argumentString: argumentString))
     }
     
     // MARK: - Privates
     
     private func go(with arguments: ArgumentList) -> Int32 {
+        arguments.pop() // Pop off cli name (always first arg)
+        
         argumentListManipulators.forEach { $0.manipulate(arguments: arguments) }
         
         var exitStatus: Int32 = 0
         
         do {
-            // Step 1: route
-            let command = try routeCommand(arguments: arguments)
-            
-            // Step 2: recognize options
-            try recognizeOptions(of: command, in: arguments)
-            if helpFlag?.value ?? false == true {
-                print(helpMessageGenerator.generateUsageStatement(for: command))
-                return exitStatus
+            let path = try parse(arguments: arguments)
+            if helpFlag?.value == true {
+                helpMessageGenerator.writeUsageStatement(for: path, to: stdout)
+            } else {
+                try path.command.execute()
             }
-            
-            // Step 3: fill parameters
-            try fillParameters(of: command, with: arguments)
-            
-            // Step 4: execute
-            try command.command.execute()
         } catch let error as ProcessError {
             if let message = error.message {
-                printError(message)
+                stderr <<< message
             }
             exitStatus = Int32(error.exitStatus)
         } catch let error {
-            printError("An error occurred: \(error.localizedDescription)")
+            stderr <<< "An error occurred: \(error)"
             exitStatus = 1
         }
         
         return exitStatus
     }
     
-    private func routeCommand(arguments: ArgumentList) throws -> CommandPath {
-        let routeResult = router.route(cli: self, arguments: arguments)
-        
-        switch routeResult {
-        case let .success(command):
-            return command
-        case let .failure(partialPath: partialPath, notFound: notFound):
-            if let notFound = notFound {
-                printError("\nCommand \"\(notFound)\" not found")
+    private func parse(arguments: ArgumentList) throws -> CommandPath {
+        do {
+            return try parser.parse(commandGroup: self, arguments: arguments)
+        } catch let error as RouteError {
+            if let notFound = error.notFound {
+                stderr <<< ""
+                stderr <<< "Command \"\(notFound)\" not found"
             }
-            let list = helpMessageGenerator.generateCommandList(for: partialPath)
-            print(list)
+            
+            helpMessageGenerator.writeCommandList(for: error.partialPath, to: stdout)
             throw CLI.Error()
-        }
-    }
-    
-    private func recognizeOptions(of command: CommandPath, in arguments: ArgumentList) throws {
-        if command.command is HelpCommand {
-            return
-        }
-        
-        do {
-            let optionRegistry = OptionRegistry(options: command.options, optionGroups: command.command.optionGroups)
-            try optionRecognizer.recognizeOptions(from: optionRegistry, in: arguments)
-        } catch let error as OptionRecognizerError {
-            let message = helpMessageGenerator.generateMisusedOptionsStatement(for: command, error: error)
-            throw CLI.Error(message: message)
-        }
-    }
-    
-    private func fillParameters(of command: CommandPath, with arguments: ArgumentList) throws {
-        if command.command is HelpCommand {
-            return
-        }
-        
-        do {
-            try parameterFiller.fillParameters(of: CommandSignature(command: command.command), with: arguments)
-        } catch let error as CLI.Error {
-            if let message = error.message {
-                printError(message)
+        } catch let error as OptionError {
+            if let command = error.command, command.command is HelpCommand {
+                return command
             }
-            printError("Usage: \(command.usage)")
-            throw CLI.Error(exitStatus: error.exitStatus)
+            
+            helpMessageGenerator.writeMisusedOptionsStatement(for: error, to: stderr)
+            throw CLI.Error()
+        } catch let error as ParameterError {
+            if error.command.command is HelpCommand || helpFlag?.value == true {
+                return error.command
+            }
+            
+            stderr <<< error.message
+            stderr <<< "Usage: \(error.command.usage)"
+            
+            throw CLI.Error()
         }
     }
     
@@ -202,7 +176,7 @@ extension CLI: CommandGroup {
         return commands + extra
     }
     
-    public var sharedOptions: [Option] {
+    public var options: [Option] {
         if let helpFlag = helpFlag {
             return globalOptions + [helpFlag]
         }

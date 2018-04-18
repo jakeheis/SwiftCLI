@@ -8,17 +8,18 @@
 
 import Foundation
 
-/// A linked list of the arguments passed by the user
 public class ArgumentList {
     
-    public var head: ArgumentNode?
+    private var storage: [String]
     
     /// Creates a list of the arguments passed from the command line
     public convenience init() {
         self.init(arguments: CommandLine.arguments)
     }
-    
-    /// Creates a list of the arguments from the given string
+
+    /// Creates a list of the arguments from the given string; parses similar to how shell parses arguments
+    ///
+    /// - Parameter argumentString: string from which to parse argument
     public convenience init(argumentString: String) {
         let regex = try! Regex(pattern: "(\"[^\"]*\")|[^\"\\s]+", options: [])
         
@@ -41,121 +42,43 @@ public class ArgumentList {
     
     /// Creates a list of the arguments from given array
     public init(arguments: [String]) {
-        var current: ArgumentNode?
-        for value in arguments.dropFirst() {
-            let argument = ArgumentNode(value: value)
-            current?.next = argument
-            argument.previous = current
-            current = argument
-            if head == nil {
-                head = current
-            }
-        }
+        self.storage = arguments
     }
     
-    /// Inserts a new argument node with the given value before given node
+    /// Checks if list has another argument
     ///
-    /// - Parameters:
-    ///   - value: the value of the new node
-    ///   - previous: the node which the new should should be inserted after
-    /// - Returns: the newly inserted node
+    /// - Returns: whether list has another argument
+    public func hasNext() -> Bool {
+        return !storage.isEmpty
+    }
+    
+    /// Pops off the next argument
+    ///
+    /// - Returns: the next argument
+    /// - Precondition: list must not be empty
     @discardableResult
-    public func insert(value: String, after previous: ArgumentNode) -> ArgumentNode {
-        let newNode = ArgumentNode(value: value)
-        newNode.previous = previous
-        newNode.next = previous.next
-        
-        previous.next?.previous = newNode
-        previous.next = newNode
-        return newNode
+    public func pop() -> String {
+        return storage.removeFirst()
     }
     
-    
-    /// Removes the given argument node from the list
+    /// Checks if the next argument is an option argument
     ///
-    /// - Parameter node: the node to remove
-    public func remove(node: ArgumentNode) {
-        node.previous?.next = node.next
-        node.next?.previous = node.previous
-        if node.previous == nil { // Is head
-            head = node.next
-        }
+    /// - Returns: whether next argument is an option
+    public func nextIsOption() -> Bool {
+        return storage.first?.hasPrefix("-") ?? false
     }
     
-    /// Creates an iterator of the nodes within the list
+    /// Manipulate the argument list with the given closure
     ///
-    /// - Returns: a new argument node iterator
-    public func iterator() -> ArgumentListIterator {
-        return ArgumentListIterator(arguments: self)
-    }
-    
-    /// Counts the number of nodes in the list
-    ///
-    /// - Returns: the count of nodes
-    public func count() -> Int {
-        let iter = iterator()
-        var count = 0
-        while iter.next() != nil {
-            count += 1
-        }
-        return count
+    /// - Parameter manipiulation: closure which takes in current array of arguments, returns manipulated array of args
+    public func manipulate(_ manipiulation: ([String]) -> [String]) {
+        storage = manipiulation(storage)
     }
     
 }
 
-/// A node representing a single argument within the ArgumentList
-public class ArgumentNode {
-    
-    /// The value of this node
-    public var value: String
-    
-    /// The node following this node in the list
-    fileprivate(set) public var next: ArgumentNode? = nil
-    
-    /// The node before this node in the list
-    weak fileprivate(set) public var previous: ArgumentNode? = nil
-    
-    /// Creates a new node with the given value
-    ///
-    /// - Parameter value: value of the new node
-    public init(value: String) {
-        self.value = value
+extension ArgumentList: CustomStringConvertible {
+    public var description: String {
+        return storage.description
     }
-    
 }
-
-/// An iterator the argument nodes within an ArgumentList
-public class ArgumentListIterator: IteratorProtocol {
-    
-    private var current: ArgumentNode?
-    
-    /// Creates a new iterator for the given list
-    ///
-    /// - Parameter arguments: the arguments list to iterate
-    public init(arguments: ArgumentList) {
-        current = arguments.head
-    }
-    
-    /// Yields the next sequential node
-    ///
-    /// - Returns: next sequential node
-    public func next() -> ArgumentNode? {
-        let this = current
-        current = current?.next
-        return this
-    }
-    
-}
-
-// MARK: - Regex
-
-#if os(Linux)
-#if swift(>=3.1)
-    typealias Regex = NSRegularExpression
-#else
-    typealias Regex = RegularExpression
-#endif
-#else
-    typealias Regex = NSRegularExpression
-    
-#endif

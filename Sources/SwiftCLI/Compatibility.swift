@@ -67,33 +67,6 @@ extension CLI {
             guardShared().argumentListManipulators = newValue
         }
     }
-    @available(*, unavailable, message: "Create a new CLI object: let cli = CLI(..)")
-    public static var router: Router {
-        get {
-            return guardShared().router
-        }
-        set(newValue) {
-            guardShared().router = newValue
-        }
-    }
-    @available(*, unavailable, message: "Create a new CLI object: let cli = CLI(..)")
-    public static var optionRecognizer: OptionRecognizer {
-        get {
-            return guardShared().optionRecognizer
-        }
-        set(newValue) {
-            guardShared().optionRecognizer = newValue
-        }
-    }
-    @available(*, unavailable, message: "Create a new CLI object: let cli = CLI(..)")
-    public static var parameterFiller: ParameterFiller {
-        get {
-            return guardShared().parameterFiller
-        }
-        set(newValue) {
-            guardShared().parameterFiller = newValue
-        }
-    }
     
     // MARK: - Setup
     
@@ -128,6 +101,26 @@ extension CLI {
     @available(*, unavailable, message: "Create a new CLI object: let cli = CLI(..)")
     public static func debugGo(with argumentString: String) -> Int32 {
         return guardShared().debugGo(with: argumentString)
+    }
+    
+    @available(*, unavailable, message: "Use a custom parser instead: cli.parser = Parser(router: MyRouter())")
+    public var router: Router {
+        get {
+            return parser.router
+        }
+        set(newValue) {
+            parser = Parser(router: newValue)
+        }
+    }
+    
+    @available(*, unavailable, message: "Use a custom parser instead: cli.parser = Parser(parameterFiller: ParameterFiller())")
+    public var parameterFiller: ParameterFiller {
+        get {
+            return parser.parameterFiller
+        }
+        set(newValue) {
+            parser = Parser(parameterFiller: newValue)
+        }
     }
     
 }
@@ -201,11 +194,6 @@ extension Input {
     
 }
 
-@available(*, unavailable, message: "Use myCLI.aliases instead")
-public class CommandAliaser: ArgumentListManipulator {
-    public func manipulate(arguments: ArgumentList) {}
-}
-
 extension Sequence {
     func optMap<T>(_ transform: (Element) -> T?) -> [T] {
         #if swift(>=4.1)
@@ -271,3 +259,20 @@ extension Term {
         return WriteStream.stderr
     }
 }
+
+@available(*, unavailable, message: "use CLI.Error instead")
+public enum CLIError: Error {
+    case error(String)
+    case emptyError
+}
+
+#if os(Linux)
+#if swift(>=3.1)
+typealias Regex = NSRegularExpression
+#else
+typealias Regex = RegularExpression
+#endif
+#else
+typealias Regex = NSRegularExpression
+
+#endif

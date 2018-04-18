@@ -50,13 +50,12 @@ Table of Contents
       * [Option groups](#option-groups)
       * [Global options](#global-options)
   * [Command groups](#command-groups)
-  * [Routing commands](#routing-commands)
-    * [Aliases](#aliases)
   * [Shell completions](#shell-completions)
   * [Built-in commands](#built-in-commands)
   * [Input](#input)
   * [External tasks](#external-tasks)
   * [Customization](#customization)
+    * [Aliases](#aliases)
   * [Running your CLI](#running-your-cli)
   * [Example](#example)
 
@@ -75,6 +74,9 @@ dependencies: [
 ```
 
 `4.0.0` has a number of breaking changes. Use `3.1.0` if you wish to use the new features without the breaking changes.
+
+## Updating to SwiftCLI 5.0
+See [migration information](MIGRATION.md).
 
 ## Creating a CLI
 
@@ -252,13 +254,25 @@ class GreetCommand: Command {
     let numberOfTimes = Key<Int>("-n", "--number-of-times", usage: "Say the greeting a certain number of times")
 
     func execute() throws {
-        for i in 0..<(numberOfTimes ?? 1) {
+        for i in 0..<(numberOfTimes.value ?? 1) {
             ...
         }
     }
 
 }
 ```
+
+A related option type is `VariadicKey`, which allows the user to pass the same key multiples times with different values. For example, with a key declaration like:
+
+```swift
+class GreetCommand: Command {
+    ...
+    let locations = VariadicKey<String>("-l", "--location", usage: "Say the greeting in a certain location")
+    ...
+}
+```
+
+the user can write `greeter greet -l Chicago -l NYC`, and `locations.value` will then be set to `["Chicago", "NYC"]`.
 
 #### Option groups
 
@@ -314,19 +328,21 @@ myCli.helpFlag = nil
 ```
 
 #### Usage of options
-As seen in the above examples, `Flag()` and `Key()` both take an optional `description` parameter. A concise description of what the option does should be included here. This allows the `UsageStatementGenerator` to generate a fully informative usage statement for the command.
+As seen in the above examples, `Flag()` and `Key()` both take an optional `description` parameter. A concise description of what the option does should be included here. This allows the `HelpMessageGenerator` to generate a fully informative usage statement for the command.
 
 A command's usage statement is shown in two situations:
 - The user passed an option that the command does not support -- ```greeter greet -z```
 - The command's help was invoked -- `greeter greet -h`
 
 ```bash
+
 ~ > greeter greet -h
 Usage: greeter greet <person> [options]
 
 -l, --loudly                             Say the greeting loudly
 -n, --number-of-times <value>            Say the greeting a certain number of times
 -h, --help                               Show help information for this command
+
 ```
 
 ## Command groups
@@ -365,42 +381,6 @@ Commands:
 
 > greeter config set
 > greeter config get
-```
-
-## Routing commands
-Command routing is done by an object implementing `Router`, which is just one simple method:
-
-```swift
-func route(cli: [CLI], arguments: ArgumentList) -> RouteResult
-```
-
-SwiftCLI supplies a default implementation of `Router` with `DefaultRouter`. `DefaultRouter` finds commands based on the first passed argument (or, in the case of command groups, the first several arguments). For example, `greeter greet` would search for commands with the `name` of "greet". 
-
-SwiftCLI also supplies an implementation of `Router` called `SingleCommandRouter` which should be used if your command is only a single command. For example, if you were implementing the `ln` command, you would say `CLI.router = SingleCommandRouter(command: LinkCommand())`. This router will then always returns the same command.
-
-If a command is not found, `CLI` outputs a help message.
-```bash
-~ > greeter
-Greeter - your own personal greeter
-
-Available commands:
-- greet                Greets the given person
-- help                 Prints this help information
-```
-
-### Aliases
-Aliases can be made through the the `aliases` property on CLI. `Router` will take these aliases into account while routing to the matching command. For example, if you write:
-
-```swift
-myCLI.aliases["-c"] = "command"
-```
-
-And the user makes the call `myapp -c`, the router will search for a command with the name "command" because of the alias, not a command with the name "-c".
-
-By default, "-h" is aliased to "help" and "-v" to "version", but you can remove these if they're not wanted:
-
-```swift
-myCLI.aliases["-h"] = nil
 ```
 
 ## Shell completions
@@ -521,60 +501,52 @@ See `Sources/SwiftCLI/Task.swift` for full documentation on `Task`.
 
 ## Customization
 
-SwiftCLI was designed with sensible defaults but also the ability to be customized at every level. ``CLI`` has five properties that can be changed from the default implementations to customized implementations.
+SwiftCLI was designed with sensible defaults but also the ability to be customized at every level. `CLI` has three properties that can be changed from the default implementations to customized implementations.
 
-Given a call like
-```bash
-~> baker bake cake -qt frosting
-```
+### `parser`
 
-the flow of the CLI is as such:
+The `Parser` steps through arguments to find the corresponding command, update its parameter values, and recognizes options. `Parser` has two stages, the first driven by its `Router` and the second by its `ParameterFiller`. SwiftCLI supplies default implementations of these two stages with `DefaultRouter` and `DefaultParameterFiller`. `DefaultRouter` finds commands based on the first passed argument (or, in the case of command groups, the first several arguments), and `DefaultParameterFiller` uses the remaining arguments which don't start with a dash to satisfy the command's parameters.
 
-```
-User calls "baker bake cake -qt frosting"
-    Command: ?
-    Parameters: ?
-    Options: ?
-    Arguments: Node(bake) -> Node(cake) -> Node(-qt) -> Node(frosting)
-ArgumentListManipulators() (including OptionSplitter()) manipulate the nodes
-    Command: ?
-    Parameters: ?
-    Options: ?
-    Arguments: Node(bake) -> Node(cake) -> Node(-q) -> Node(-t) -> Node(frosting)
-Router() uses the argument nodes to find the appropriate command
-    Command: bake
-    Parameters: ?
-    Options: ?
-    Arguments: Node(cake) -> Node(-q) -> Node(-t) -> Node(frosting)
-OptionRecognizer() recognizes the options present within the argument nodes
-    Command: bake
-    Parameters: ?
-    Options: quietly, topped with frosting
-    Arguments: Node(cake)
-ParameterFiller() fills the parameters of the routed command with the remaining arguments
-    Command: bake
-    Parameters: cake
-    Options: quietly, topped with frosting
-    Arguments: (none)
-```
-All four of these steps can be customized:
+SwiftCLI also supplies an implementation of `Router` called `SingleCommandRouter` which should be used if your CLI is composed of a single command. For example, if you were implementing the `ln` command, you would say `myCLI.parser = DefaultParser(router: SingleCommandRouter(command: LinkCommand())`. This router will then always return the same command and will leave all arguments to the `ParameterFiller`. If a user wrote `cli my.txt`, the `DefaultRouter` would look for a command named `my.txt` which takes no arguments, while `SingleCommandRouter` would treat 'my.txt' as an argument to the single command.
+
+You can implement `Router` or `ParameterFiller` on your own types and update your CLI's property to use them:
+
 ```swift
-public static var argumentListManipulators: [ArgumentListManipulator] = [OptionSplitter()]
-
-public static var router: Router = DefaultRouter()
-
-public static var optionRecognizer: OptionRecognizer = DefaultOptionRecognizer()
-
-public static var parameterFiller: ParameterFiller = DefaultParameterFiller()
+myCLI.parser = Parser(router: MyRouter(), parameterFiller: MyParameterFiller())
 ```
+
+#### Aliases
+Aliases can be made through the the `aliases` property on CLI. `DefaultRouter` will take these aliases into account while routing to the matching command. For example, if you write:
+
+```swift
+myCLI.aliases["-c"] = "command"
+```
+
+And the user makes the call `myapp -c`, the parser will search for a command with the name "command" because of the alias, not a command with the name "-c".
+
+By default, "-h" is aliased to "help" and "-v" to "version", but you can remove these if they're not wanted:
+
+```swift
+myCLI.aliases["-h"] = nil
+```
+
+### `argumentListManipulators`
+
+`ArgumentListManipulator`s act before the `Parser` begins. They take in the arguments as given by the user and can change them slightly. By default, the only argument list manipulator used is `OptionSplitter` which splits options like `-am` into `-a -m`.
+
+You can implement `ArgumentListManipulator` on your own type and update CLI's property:
+
+```swift
+public var argumentListManipulators: [ArgumentListManipulator] = [OptionSplitter()]
+```
+
+### `helpMessageGenerator`
 
 The messages formed by SwiftCLI can also be customized:
 
 ```swift
 public var helpMessageGenerator: HelpMessageGenerator = DefaultHelpMessageGenerator()
 ```
-
-See the individual files of each of these protocols in order to see how to provide a custom implementation.
 
 ## Running your CLI
 

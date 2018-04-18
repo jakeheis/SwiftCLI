@@ -1,118 +1,32 @@
-# SwiftCLI 3.0
-In SwiftCLI 3.0, arguments and options have been completely overhauled. They are now much easier to implement, with less boilerplate and increased clarity.
+# SwiftCLI 5.0
+In SwiftCLI 5.0, much of the internal parsing logic has been reworked to allow for greater flexibility.
 
-## Command
-Command and OptionCommand have been unified in SwiftCLI 3.0. The way in which commands handle both argument and options has improved significantly.
+## Breaking changes
 
-### Arguments
-Before, Commands would specify their parameters through the `signature` property, parameters are now specified in the command itself:
-```swift
-// Before
-class GreetCommand: OptionCommand {
-    let name = "greet"
-    let signature = "<person>"
-    ...
-}
+### `Command`
 
-// Now:
-class GreetCommand: Command {
-    let name = "greet"
-    let person = Parameter()
-    ...
-}
-```
+- The `value` property of `OptionalCollectedParameter` is no longer of type `[String]?` but rather just `[String]`. If the user does not pass any arguments for that parameter, the value will be an empty array rather than `nil`.
+- Once the parser encouters a `CollectedParameter`, options will no longer be recognized and all arguments will be passed to the collected parameter. For example, given this command:
 
-The available classes for parameters are: `Parameter`, `OptionalParameter`, `CollectedParameter`, and `OptionalCollectedParameter`.
-```swift
-// Before:
-class GreetCommand: OptionCommand {
-    let name = "greet"
-    let signature = "<person> [<greeting>] [<otherWords>] ..."
-    ...
-}
-
-// Now:
-class GreetCommand: Command {
-    let name = "greet"
-    let person = Parameter()
-    let greeting = OptionalParameter()
-    let otherWords = OptionalCollectedParameter()
-    ...
-}
-```
-
-When it comes to accessing the values passed to these parameters, rather than using a type-unsafe string, use the `Parameter`s specified earlier:
-```swift
-// Before:
-class GreetCommand: OptionCommand {
-    let name = "greet"
-    let signature = "<person>"
-    func execute(arguments: CommandArguments) throws {
-        let person = arguments.requiredArgument("person")
-        print("Hi \(person)")
+    ```swift
+    class RunCommand: Command {
+        let name = "run"
+        let silent = Flag("-s")
+        let executable = Parameter()
+        let args = OptionalCollectedParameter()
     }
-}
+    ```
+    
+    If the user calls `cli run executable arg1 -s arg2`, then `args.value` will be `["arg1", "-s", "arg2]` and `silent.value` will remain false.
 
-// Now:
-class GreetCommand: Command {
-    let name = "greet"
-    let person = Parameter()
-    func execute() throws {
-        print("Hi \(person.value)")
-    }
-}
-```
+### `CommandGroup`
 
-### Options
-As mentioned earlier, Command and OptionCommand have been unified, so all commands now can have options. Rather than adding the options in a `setupOptions` function, options should be specified as instance variables on the command itself, using instances of the classes `Flag` and `Key<T>`:
+- `sharedOptions` has been renamed `options`
 
+### Customization
 
-```swift
-// Before:
-class GreetCommand: OptionCommand {
-    let name = "greet"
-    let signature = "<person>"
-
-    var loudly = false
-    var times = 1
-
-    func setupOptions(options: OptionRegistry) {
-        options.add(flags: ["-l", "--loudly"], usage: "") {
-            self.loudly = true
-        }
-        options.add(keys: ["-t", "--times"], usage: "", valueSignature: "") { (value) in
-            self.times = Int(value) ?? self.times
-        }
-    }
-
-    func execute(arguments: CommandArguments) throws {
-        let person = arguments.requiredArgument("person")
-        for i in 0..<times {
-            if loudly {
-                print("HI \(person)!!!!!!")
-            } else {
-                print("Hi \(person)")
-            }
-        }
-    }
-}
-
-// Now:
-class GreetCommand: Command {
-    let name = "greet"
-    let person = Parameter()
-
-    let loudly = Flag("-l", "--loudly")
-    let times = Key<Int>("-t", "--times")
-
-    func execute() throws {
-        for i in 0..<(times.value ?? 1) {
-            if loudly.value {
-                print("HI \(person.value)!!!!!!")
-            } else {
-                print("Hi \(person.value)")
-            }
-        }
-    }
-}
-```
+- CLI properties `router`, `optionRecognzier`, and `parameterFiller` have been combined into the `parser` property.
+- `Router` and `ParameterFiller` have been completely reworked; see `Parser.swift` for more details
+- `OptionRecognizer` was removed
+- `HelpMessageGenerator` functions now use SwiftCLI streams for simplicity's sake
+- `ArgumentList` has been dramatically simplified, and `ArgumentListManipulator`s must be updated to work with the simplified implementation
