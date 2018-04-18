@@ -13,5 +13,6 @@ install:
 - export SWIFTENV_ROOT="$HOME/.swiftenv"
 - export PATH="$SWIFTENV_ROOT/bin:$PATH"
 - eval "$(swiftenv init -)"
+- swiftenv install "$SWIFT_VERSION" || true
 script:
 - swift test
