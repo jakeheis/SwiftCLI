@@ -37,6 +37,7 @@ class HelpMessageGeneratorTests: XCTestCase {
           beta            A beta command
           help            Prints this help information
         
+        
         """)
         
         let pipe2 = PipeStream()
@@ -54,6 +55,7 @@ class HelpMessageGeneratorTests: XCTestCase {
         Commands:
           alpha           The alpha command
           help            Prints this help information
+        
         
         """)
     }
@@ -74,6 +76,7 @@ class HelpMessageGeneratorTests: XCTestCase {
           -h, --help             Show help information for this command
           -s, --silent           Silence all test output
           -t, --times <value>    Number of times to run the test
+        
         
         """)
     }
@@ -96,6 +99,7 @@ class HelpMessageGeneratorTests: XCTestCase {
           -t, --times <value>    Number of times to run the test
           -v, --verbose          Show more output information
         
+
         """)
     }
     
@@ -117,6 +121,7 @@ class HelpMessageGeneratorTests: XCTestCase {
           -t, --times <value>    Number of times to run the test
         
         Unrecognized option: -a
+        
         
         """)
     }

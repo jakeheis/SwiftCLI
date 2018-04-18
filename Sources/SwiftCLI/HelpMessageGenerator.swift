@@ -54,6 +54,7 @@ extension HelpMessageGenerator {
             out <<< "Commands:"
             commands.forEach(write)
         }
+        out <<< ""
     }
     
     public func writeUsageStatement(for path: CommandPath, to out: WritableStream) {
@@ -78,14 +79,15 @@ extension HelpMessageGenerator {
                 out <<< "  \(usage)"
             }
         }
+        out <<< ""
     }
     
     public func writeMisusedOptionsStatement(for error: OptionError, to out: WritableStream) {
         if let command = error.command {
             writeUsageStatement(for: command, to: out)
         }
-        out <<< ""
         out <<< error.message
+        out <<< ""
     }
     
 }
