@@ -75,6 +75,9 @@ dependencies: [
 
 `4.0.0` has a number of breaking changes. Use `3.1.0` if you wish to use the new features without the breaking changes.
 
+## Updating to SwiftCLI 5.0
+See [migration information](MIGRATION.md).
+
 ## Creating a CLI
 
 When creating a `CLI`, a `name` is required, and a `version` and `description` are both optional.
