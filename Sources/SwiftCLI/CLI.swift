@@ -108,8 +108,12 @@ public class CLI {
         var exitStatus: Int32 = 0
         
         do {
-            let command = try parse(arguments: arguments)
-            try command.execute()
+            let path = try parse(arguments: arguments)
+            if helpFlag?.value == true {
+                helpMessageGenerator.writeUsageStatement(for: path, to: stdout)
+            } else {
+                try path.command.execute()
+            }
         } catch let error as ProcessError {
             if let message = error.message {
                 stderr <<< message
@@ -123,7 +127,7 @@ public class CLI {
         return exitStatus
     }
     
-    private func parse(arguments: ArgumentList) throws -> Command {
+    private func parse(arguments: ArgumentList) throws -> CommandPath {
         do {
             return try parser.parse(commandGroup: self, arguments: arguments)
         } catch let error as RouteError {
@@ -135,23 +139,19 @@ public class CLI {
             helpMessageGenerator.writeCommandList(for: error.partialPath, to: stdout)
             throw CLI.Error()
         } catch let error as OptionError {
-            if let command = error.command?.command as? HelpCommand {
+            if let command = error.command, command.command is HelpCommand {
                 return command
             }
             
             helpMessageGenerator.writeMisusedOptionsStatement(for: error, to: stderr)
             throw CLI.Error()
         } catch let error as ParameterError {
-            if let command = error.command.command as? HelpCommand {
-                return command
+            if error.command.command is HelpCommand || helpFlag?.value == true {
+                return error.command
             }
             
-            if helpFlag?.value == true {
-                helpMessageGenerator.writeUsageStatement(for: error.command, to: stdout)
-            } else {
-                stderr <<< error.message
-                stderr <<< "Usage: \(error.command.usage)"
-            }
+            stderr <<< error.message
+            stderr <<< "Usage: \(error.command.usage)"
             
             throw CLI.Error()
         }

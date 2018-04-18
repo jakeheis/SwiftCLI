@@ -200,7 +200,7 @@ class ParserTests: XCTestCase {
         let args = ArgumentList(arguments: ["test", "-s", "favTest", "-t", "3", "SwiftCLI"])
         let result = try Parser().parse(commandGroup: cli, arguments: args)
         
-        XCTAssertTrue(result === cmd)
+        XCTAssertTrue(result.command === cmd)
         
         XCTAssertEqual(cmd.testName.value, "favTest")
         XCTAssertEqual(cmd.testerName.value, "SwiftCLI")
@@ -222,7 +222,7 @@ class ParserTests: XCTestCase {
         let args = ArgumentList(testString: "tester run cli -v arg")
         
         let result = try Parser().parse(commandGroup: cli, arguments: args)
-        XCTAssertTrue(result === cmd)
+        XCTAssertTrue(result.command === cmd)
         
         XCTAssertEqual(cmd.executable.value, "cli")
         XCTAssertEqual(cmd.args.value, ["-v", "arg"])
@@ -233,7 +233,7 @@ class ParserTests: XCTestCase {
         let args2 = ArgumentList(testString: "tester run -v cli arg")
         
         let result2 = try Parser().parse(commandGroup: cli2, arguments: args2)
-        XCTAssertTrue(result2 === cmd2)
+        XCTAssertTrue(result2.command === cmd2)
         
         XCTAssertEqual(cmd2.executable.value, "cli")
         XCTAssertEqual(cmd2.args.value, ["arg"])
