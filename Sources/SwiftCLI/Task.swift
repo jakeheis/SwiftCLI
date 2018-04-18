@@ -112,7 +112,9 @@ public class Task {
     ///
     /// - Parameters:
     ///   - executable: executable to run
+    ///   - directory: the directory to run in; default current directory
     ///   - args: arguments to the executable
+    ///   - env: the environment in which to execute the task; default same env as current process
     /// - Returns: Never
     /// - Throws: CLI.Error if the executable could not be found
     public static func execvp(_ executable: String, directory: String? = nil, _ args: String..., env: [String: String]? = nil) throws -> Never {
@@ -123,7 +125,9 @@ public class Task {
     ///
     /// - Parameters:
     ///   - executable: executable to run
+    ///   - directory: the directory to run in; default current directory
     ///   - args: arguments to the executable
+    ///   - env: the environment in which to execute the task; default same env as current process
     /// - Returns: Never
     /// - Throws: CLI.Error if the executable could not be found
     public static func execvp(_ executable: String, directory: String? = nil, _ args: [String], env: [String: String]? = nil) throws -> Never {

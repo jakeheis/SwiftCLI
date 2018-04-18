@@ -9,7 +9,10 @@
 // MARK: - Routables
 
 public protocol Routable: class {
+    /// The name of the command or command group
     var name: String { get }
+    
+    /// A concise description of what this command or group is
     var shortDescription: String { get }
     
     /// The options this command accepts; dervied automatically, don't implement unless custom functionality needed
@@ -20,10 +23,13 @@ public protocol Routable: class {
 }
 
 extension Routable {
+    
+    /// Standard out stream
     public var stdout: WriteStream {
         return WriteStream.stdout
     }
     
+    /// Standard error stream
     public var stderr: WriteStream {
         return WriteStream.stderr
     }
@@ -32,7 +38,7 @@ extension Routable {
         return optionsFromMirror(Mirror(reflecting: self))
     }
     
-    func optionsFromMirror(_ mirror: Mirror) -> [Option] {
+    private func optionsFromMirror(_ mirror: Mirror) -> [Option] {
         var options: [Option] = []
         if let superMirror = mirror.superclassMirror {
             options = optionsFromMirror(superMirror)
@@ -55,18 +61,10 @@ extension Routable {
 
 public protocol Command: Routable {
     
-    //
-    // Required:
-    //
-    
     /// Executes the command
     ///
-    /// - Throws: CLIError if command cannot execute successfully
+    /// - Throws: CLI.Error if command cannot execute successfully
     func execute() throws
-
-    //
-    // Optional:
-    //
     
     /// The paramters this command accepts; dervied automatically, don't implement unless custom functionality needed
     var parameters: [(String, AnyParameter)] { get }
@@ -79,7 +77,7 @@ extension Command {
         return parametersFromMirror(Mirror(reflecting: self))
     }
     
-    func parametersFromMirror(_ mirror: Mirror) -> [(String, AnyParameter)] {
+    private func parametersFromMirror(_ mirror: Mirror) -> [(String, AnyParameter)] {
         var parameters: [(String, AnyParameter)] = []
         if let superMirror = mirror.superclassMirror {
             parameters = parametersFromMirror(superMirror)
@@ -102,7 +100,10 @@ extension Command {
 // MARK: -
 
 public protocol CommandGroup: Routable {
+    /// The sub-commands and sub-groups of this group
     var children: [Routable] { get }
+    
+    /// Aliases for chlidren, e.g. "--help" for "help"; default empty dictionary
     var aliases: [String: String] { get }
 }
 

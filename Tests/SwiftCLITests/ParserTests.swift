@@ -191,6 +191,18 @@ class ParserTests: XCTestCase {
         XCTAssertTrue(yes.value)
     }
     
+    func testDefaultFlagValue() throws {
+        let cmd = ReverseFlagCmd()
+        
+        XCTAssertTrue(cmd.flag.value)
+        
+        let cli = CLI.createTester(commands: [cmd])
+        let arguments = ArgumentList(testString: "tester cmd -r")
+        _ = try Parser().parse(commandGroup: cli, arguments: arguments)
+        
+        XCTAssertFalse(cmd.flag.value)
+    }
+    
     // MARK: - Combined test
     
     func testFullParse() throws {

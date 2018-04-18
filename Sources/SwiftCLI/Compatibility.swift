@@ -150,3 +150,14 @@ public enum CLIError: Error {
     case error(String)
     case emptyError
 }
+
+@available(*, unavailable, message: "Implement HelpMessageGenerator instead")
+public protocol UsageStatementGenerator {
+    func generateUsageStatement(for command: Command) -> String
+}
+
+@available(*, unavailable, renamed: "WriteStream.stderr.print")
+public func printError(_ error: String) {}
+
+@available(*, unavailable, renamed: "WriteStream.stderr.print")
+public func printError(_ error: String, terminator: String) {}

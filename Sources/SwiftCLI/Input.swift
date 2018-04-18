@@ -137,7 +137,7 @@ public class InputReader<T: ConvertibleFromString> {
 
 // MARK: - ReadInput
 
-// Internal struct which enables testing of Input
+/// Internal struct which enables testing of Input
 struct ReadInput {
     static var read: () -> String? = normalRead
     

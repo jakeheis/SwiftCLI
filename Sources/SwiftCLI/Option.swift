@@ -29,21 +29,21 @@ public class Flag: Option {
         return names.joined(separator: ", ")
     }
     
-    @available(*, unavailable, renamed: "init(_:description:defaultValue:)")
-    public init(_ names: String ..., usage: String = "", defaultValue: Bool = false) {
-        self.names = names
-        self.value = defaultValue
-        self.shortDescription = usage
-    }
-    
+    /// Creates a new flag
+    ///
+    /// - Parameters:
+    ///   - names: the names for the flag; convention is to include a short name (-a) and a long name (--all)
+    ///   - description: A short description of what this flag does for usage statements
+    ///   - defaultValue: the default value of this flag; default false
     public init(_ names: String ..., description: String = "", defaultValue: Bool = false) {
         self.names = names
         self.value = defaultValue
         self.shortDescription = description
     }
     
-    public func setOn() {
-        value = true
+    /// Toggles the flag's value; don't call directly
+    public func toggle() {
+        value = !value
     }
     
 }
@@ -62,17 +62,17 @@ public class Key<T: ConvertibleFromString>: AnyKey {
         return names.joined(separator: ", ") + " <value>"
     }
     
-    @available(*, unavailable, renamed: "init(_:description:)")
-    public init(_ names: String ..., usage: String = "") {
-        self.names = names
-        self.shortDescription = usage
-    }
-    
+    /// Creates a new key
+    ///
+    /// - Parameters:
+    ///   - names: the names for the key; convention is to include a short name (-m) and a long name (--message)
+    ///   - description: A short description of what this key does for usage statements
     public init(_ names: String ..., description: String = "") {
         self.names = names
         self.shortDescription = description
     }
     
+    /// Toggles the key's value; don't call directly
     public func updateValue(_ value: String) -> Bool {
         guard let value = T.convert(from: value) else {
             return false
@@ -93,12 +93,18 @@ public class VariadicKey<T: ConvertibleFromString>: AnyKey {
         return names.joined(separator: ", ") + " <value>"
     }
     
+    /// Creates a new variadic key
+    ///
+    /// - Parameters:
+    ///   - names: the names for the key; convention is to include a short name (-m) and a long name (--message)
+    ///   - description: A short description of what this key does for usage statements
     public init(_ names: String ..., description: String = "") {
         self.names = names
         self.shortDescription = description
         self.values = []
     }
     
+    /// Toggles the key's value; don't call directly
     public func updateValue(_ value: String) -> Bool {
         guard let value = T.convert(from: value) else {
             return false

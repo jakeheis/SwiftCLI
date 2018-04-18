@@ -162,6 +162,10 @@ class FlagCmd: OptionCmd {
     let flag = Flag("-a", "--alpha")
 }
 
+class ReverseFlagCmd: OptionCmd {
+    let flag = Flag("-r", "--reverse", defaultValue: true)
+}
+
 class KeyCmd: OptionCmd {
     let key = Key<String>("-a", "--alpha")
 }

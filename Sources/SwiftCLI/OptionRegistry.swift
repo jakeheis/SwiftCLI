@@ -40,7 +40,7 @@ public class OptionRegistry {
         let opt = args.pop()
         
         if let flag = flag(for: opt) {
-            flag.setOn()
+            flag.toggle()
         } else if let key = key(for: opt) {
              guard args.hasNext(), !args.nextIsOption() else {
                 throw OptionError(command: command, message: "Expected a value to follow: \(opt)")

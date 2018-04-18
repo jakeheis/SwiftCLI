@@ -238,6 +238,7 @@ public class PipeStream: ReadableStream, WritableStream {
         }
     }
     
+    /// Creates a new pipe stream
     public init() {
         let pipe = Pipe()
         self.processObject = pipe
@@ -263,6 +264,9 @@ public class LineStream: WritableStream {
     private let queue = DispatchQueue(label: "com.jakeheis.SwiftCLI")
     private let semaphore = DispatchSemaphore(value: 0)
     
+    /// Creates a new stream which can be written to
+    ///
+    /// - Parameter each: called every time a line of text is written to the stream
     public init(each: @escaping (String) -> ()) {
         let pipe = Pipe()
         self.processObject = pipe
@@ -277,6 +281,7 @@ public class LineStream: WritableStream {
         }
     }
     
+    /// Wait for the line stream to call the 'each' closure on every line of text until it reaches EOF
     public func wait() {
         semaphore.wait()
     }
