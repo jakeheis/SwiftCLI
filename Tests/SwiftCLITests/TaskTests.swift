@@ -122,6 +122,7 @@ class TaskTests: XCTestCase {
         sleep(2)
         XCTAssertFalse(task.isRunning)
         
+        // Travis errors when calling interrupt on Linux for unknown reason
         #if os(macOS)
         let task2 = Task(executable: "/bin/sleep", args: ["3"])
         task2.runAsync()
