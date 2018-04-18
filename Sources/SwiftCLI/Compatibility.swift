@@ -260,6 +260,12 @@ extension Term {
     }
 }
 
+@available(*, unavailable, message: "use CLI.Error instead")
+public enum CLIError: Error {
+    case error(String)
+    case emptyError
+}
+
 #if os(Linux)
 #if swift(>=3.1)
 typealias Regex = NSRegularExpression

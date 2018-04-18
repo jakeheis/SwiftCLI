@@ -108,7 +108,8 @@ public class CLI {
         var exitStatus: Int32 = 0
         
         do {
-            try parse(arguments: arguments).command.execute()
+            let command = try parse(arguments: arguments)
+            try command.execute()
         } catch let error as ProcessError {
             if let message = error.message {
                 stderr <<< message
@@ -122,7 +123,7 @@ public class CLI {
         return exitStatus
     }
     
-    private func parse(arguments: ArgumentList) throws -> CommandPath {
+    private func parse(arguments: ArgumentList) throws -> Command {
         do {
             return try parser.parse(commandGroup: self, arguments: arguments)
         } catch let error as RouteError {
@@ -134,15 +135,15 @@ public class CLI {
             helpMessageGenerator.writeCommandList(for: error.partialPath, to: stdout)
             throw CLI.Error()
         } catch let error as OptionError {
-            if let command = error.command, command.command is HelpCommand {
+            if let command = error.command?.command as? HelpCommand {
                 return command
             }
             
             helpMessageGenerator.writeMisusedOptionsStatement(for: error, to: stderr)
             throw CLI.Error()
         } catch let error as ParameterError {
-            if error.command.command is HelpCommand {
-                return error.command
+            if let command = error.command.command as? HelpCommand {
+                return command
             }
             
             if helpFlag?.value == true {

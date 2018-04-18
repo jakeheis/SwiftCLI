@@ -60,8 +60,8 @@ public struct RouteError: Swift.Error {
 }
 
 public struct OptionError: Swift.Error {
-    let command: CommandPath?
-    let message: String
+    public let command: CommandPath?
+    public let message: String
     
     public init(command: CommandPath?, message: String) {
         self.command = command
@@ -70,19 +70,11 @@ public struct OptionError: Swift.Error {
 }
 
 public struct ParameterError: Swift.Error {
-    let command: CommandPath
-    let message: String
+    public let command: CommandPath
+    public let message: String
     
     public init(command: CommandPath, message: String) {
         self.command = command
         self.message = message
     }
-}
-
-// MARK: -
-
-@available(*, unavailable, message: "use CLI.Error instead")
-public enum CLIError: Error {
-    case error(String)
-    case emptyError
 }
