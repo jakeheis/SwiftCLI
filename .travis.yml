@@ -9,6 +9,9 @@ env:
 - SWIFT_VERSION=4.0
 - SWIFT_VERSION=4.1
 install:
-- eval "$(curl -sL https://swiftenv.fuller.li/install.sh)"
+- git clone https://github.com/kylef/swiftenv.git ~/.swiftenv
+- export SWIFTENV_ROOT="$HOME/.swiftenv"
+- export PATH="$SWIFTENV_ROOT/bin:$PATH"
+- eval "$(swiftenv init -)"
 script:
 - swift test

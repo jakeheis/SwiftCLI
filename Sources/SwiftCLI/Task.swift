@@ -154,7 +154,11 @@ public class Task {
                 for pair in envp ..< envp + env.count {
                     free(UnsafeMutableRawPointer(pair.pointee))
                 }
+                #if swift(>=4.1)
                 envp.deallocate()
+                #else
+                envp.deallocate(capacity: env.count + 1)
+                #endif
             }
             
             Foundation.execve(exec, argv + [nil], envp)
