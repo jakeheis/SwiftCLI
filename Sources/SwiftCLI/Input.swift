@@ -117,7 +117,7 @@ public class InputReader<T: ConvertibleFromString> {
                 if let errorResponse = errorResponse {
                     errorResponse(input)
                 } else {
-                    printError("Invalid input")
+                    WriteStream.stderr <<< "Invalid input"
                 }
             }
         }
