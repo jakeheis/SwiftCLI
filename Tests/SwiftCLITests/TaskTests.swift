@@ -115,20 +115,24 @@ class TaskTests: XCTestCase {
         let task = Task(executable: "/bin/sleep", args: ["1"])
         task.runAsync()
         
+        print("SUSPENDING")
         XCTAssertTrue(task.suspend())
         sleep(2)
         XCTAssertTrue(task.isRunning)
+        print("RESUMING")
         XCTAssertTrue(task.resume())
         sleep(2)
         XCTAssertFalse(task.isRunning)
         
         let task2 = Task(executable: "/bin/sleep", args: ["3"])
         task2.runAsync()
+        print("INTERRUPTING")
         task2.interrupt()
         XCTAssertEqual(task2.finish(), 2)
         
         let task3 = Task(executable: "/bin/sleep", args: ["3"])
         task3.runAsync()
+        print("TERMINATING")
         task3.terminate()
         XCTAssertEqual(task3.finish(), 15)
     }
