@@ -25,6 +25,7 @@ class ParserTests: XCTestCase {
             ("testGroupRestriction", testGroupRestriction),
             ("testVaridadicParse", testVaridadicParse),
             ("testBeforeCommand", testBeforeCommand),
+            ("testDefaultFlagValue", testDefaultFlagValue),
             ("testFullParse", testFullParse),
             ("testCollectedOptions", testCollectedOptions)
         ]
