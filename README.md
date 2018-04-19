@@ -12,7 +12,7 @@ class GreetCommand: Command {
     let name = "greet"
     let person = Parameter()
     func execute() throws {
-        print("Hello \(person.value)!")
+        stdout <<< "Hello \(person.value)!"
     }
 }
 
@@ -114,7 +114,7 @@ class GreetCommand: Command {
     let shortDescription = "Says hello to the world"
 
     func execute() throws  {
-        print("Hello world!")
+        stdout <<< "Hello world!"
     }
 
 }
@@ -142,7 +142,7 @@ class GreetCommand: Command {
     let greeting = Parameter()
 
     func execute() throws {
-        print("\(greeting.value), \(person.value)!")
+        stdout <<< "\(greeting.value), \(person.value)!"
     }
 }
 ```
@@ -167,7 +167,7 @@ class GreetCommand: Command {
 
     func execute() throws {
         let greet = greeting.value ?? "Hey there"
-        print("\(greet), \(person.value)!")
+        stdout <<< "\(greet), \(person.value)!"
     }
 }
 ```
@@ -191,7 +191,7 @@ class GreetCommand: Command {
 
     func execute() throws {
         let peopleString = people.value.joined(separator: ", ")
-        print("Hey there, \(peopleString)!")
+        stdout <<< "Hey there, \(peopleString)!"
     }
 }
 ```
@@ -451,7 +451,7 @@ let percentage = Input.readDouble(
     prompt: "Percentage:",
     validation: { $0 >= 0 && $0 <= 100 },
     errorResponse: { (input) in
-        print("'\(input)' is invalid; must be a number between 0 and 100")
+        stderr <<< "'\(input)' is invalid; must be a number between 0 and 100"
     }
 )
 ```
