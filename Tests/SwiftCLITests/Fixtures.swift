@@ -207,7 +207,7 @@ class ExactlyOneCmd: Command {
     let optionGroups: [OptionGroup]
     
     init() {
-        optionGroups = [OptionGroup(options: [alpha, beta], restriction: .exactlyOne)]
+        optionGroups = [.exactlyOne(alpha, beta)]
     }
     
 }

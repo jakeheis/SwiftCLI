@@ -62,18 +62,16 @@ Table of Contents
 ## Installation
 ### [Ice Package Manager](https://github.com/jakeheis/Ice)
 ```shell
-> ice add jakeheis/Ice
+> ice add jakeheis/SwiftCLI
 ```
 ### Swift Package Manager
 Add SwiftCLI as a dependency to your project:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/jakeheis/SwiftCLI", from: "4.0.0")
+    .package(url: "https://github.com/jakeheis/SwiftCLI", from: "5.0.0")
 ]
 ```
-
-`4.0.0` has a number of breaking changes. Use `3.1.0` if you wish to use the new features without the breaking changes.
 
 ## Updating to SwiftCLI 5.0
 See [migration information](MIGRATION.md).
@@ -251,7 +249,7 @@ class GreetCommand: Command {
 
     ...
 
-    let numberOfTimes = Key<Int>("-n", "--number-of-times", usage: "Say the greeting a certain number of times")
+    let numberOfTimes = Key<Int>("-n", "--number-of-times", description: "Say the greeting a certain number of times")
 
     func execute() throws {
         for i in 0..<(numberOfTimes.value ?? 1) {
@@ -267,7 +265,7 @@ A related option type is `VariadicKey`, which allows the user to pass the same k
 ```swift
 class GreetCommand: Command {
     ...
-    let locations = VariadicKey<String>("-l", "--location", usage: "Say the greeting in a certain location")
+    let locations = VariadicKey<String>("-l", "--location", description: "Say the greeting in a certain location")
     ...
 }
 ```

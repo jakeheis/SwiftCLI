@@ -14,6 +14,30 @@ public class OptionGroup {
         case atLeastOne // 1 or more
     }
     
+    public static func atMostOne(_ options: Option...) -> OptionGroup {
+        return .atMostOne(options)
+    }
+    
+    public static func atMostOne(_ options: [Option]) -> OptionGroup {
+        return .init(options: options, restriction: .atMostOne)
+    }
+    
+    public static func exactlyOne(_ options: Option...) -> OptionGroup {
+        return .exactlyOne(options)
+    }
+    
+    public static func exactlyOne(_ options: [Option]) -> OptionGroup {
+        return .init(options: options, restriction: .exactlyOne)
+    }
+    
+    public static func atLeastOne(_ options: Option...) -> OptionGroup {
+        return .atLeastOne(options)
+    }
+    
+    public static func atLeastOne(_ options: [Option]) -> OptionGroup {
+        return .init(options: options, restriction: .atLeastOne)
+    }
+    
     public let options: [Option]
     public let restriction: Restriction
     public var message: String
