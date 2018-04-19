@@ -17,7 +17,8 @@ class SwiftCLITests: XCTestCase {
             ("testCLIHelp", testCLIHelp),
             ("testGlobalOptions", testGlobalOptions),
             ("testOptionSplit", testOptionSplit),
-            ("testCommandHelp", testCommandHelp)
+            ("testCommandHelp", testCommandHelp),
+            ("testSingleCommand", testSingleCommand),
         ]
     }
     
@@ -65,6 +66,15 @@ class SwiftCLITests: XCTestCase {
         let result = cli.debugGo(with: "tester test aTest -h")
         XCTAssertEqual(result, 0)
         XCTAssertEqual(executionString, "")
+    }
+    
+    func testSingleCommand() {
+        let cmd = TestCommand { (executionString) in
+            self.executionString = executionString
+        }
+        let cli = CLI(singleCommand: cmd)
+        XCTAssertEqual(cli.debugGo(with: "test aTest"), 0)
+        XCTAssertEqual(executionString, "defaultTester will test aTest, 1 times")
     }
     
     func createCLI() -> CLI {

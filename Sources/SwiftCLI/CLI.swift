@@ -67,6 +67,14 @@ public class CLI {
         self.commands = commands
     }
     
+    /// Create a single-command CLI; useful for example if you were implementing the 'ln' command
+    ///
+    /// - Parameter singleCommand: the single command
+    public convenience init(singleCommand: Command) {
+        self.init(name: singleCommand.name, commands: [singleCommand])
+        parser = Parser(router: SingleCommandRouter(command: singleCommand))
+    }
+    
     /// Kicks off the entire CLI process, routing to and executing the command specified by the passed arguments.
     /// Uses the arguments passed in the command line. Exits the program upon completion.
     ///
