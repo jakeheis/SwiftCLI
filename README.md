@@ -287,7 +287,7 @@ class GreetCommand: Command {
     let whisper = Flag("-w", "--whisper", description: "Whisper the greeting")
     
     var optionGroups: [OptionGroup] {
-        let volume = OptionGroup(options: [loudly, whisper], restriction: .atMostOne)
+        let volume: OptionGroup = .atMostOne(loudly, whipser)
         return [volume]
     }
 
