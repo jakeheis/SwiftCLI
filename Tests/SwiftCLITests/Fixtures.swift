@@ -39,6 +39,20 @@ class TestCommand: Command {
 
 }
 
+class MultilineCommand: Command {
+
+    let name = "test"
+    let shortDescription = "A command that has multiline comments.\nNew line"
+
+    let silent = Flag("-s", "--silent", description: "Silence all test output\nNewline")
+    let times = Key<Int>("-t", "--times", description: "Number of times to run the test")
+
+    func execute() throws {
+
+    }
+
+}
+
 class TestInheritedCommand: TestCommand {
     let verbose = Flag("-v", "--verbose", description: "Show more output information")
 }

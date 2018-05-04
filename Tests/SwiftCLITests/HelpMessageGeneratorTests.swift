@@ -140,4 +140,48 @@ class HelpMessageGeneratorTests: XCTestCase {
         """)
     }
 
+    func testMutlineUsageStatementGeneration() {
+        let pipe = PipeStream()
+        let command = MultilineCommand()
+        let cli = CLI.createTester(commands: [command])
+        let path = CommandGroupPath(top: cli).appending(command)
+        DefaultHelpMessageGenerator().writeUsageStatement(for: path, to: pipe)
+        pipe.closeWrite()
+
+        XCTAssertEqual(pipe.readAll(), """
+
+        Usage: tester test [options]
+
+        Options:
+          -h, --help             Show help information for this command
+          -s, --silent           Silence all test output
+                                 Newline
+          -t, --times <value>    Number of times to run the test
+
+
+        """)
+    }
+
+    func testMutlineCommandListGeneration() {
+        let pipe = PipeStream()
+        let path = CommandGroupPath(top: CLI.createTester(commands: [MultilineCommand(), betaCmd], description: "A tester for SwiftCLI"))
+        DefaultHelpMessageGenerator().writeCommandList(for: path, to: pipe)
+        pipe.closeWrite()
+
+        XCTAssertEqual(pipe.readAll(), """
+
+        Usage: tester <command> [options]
+
+        A tester for SwiftCLI
+
+        Commands:
+          test            A command that has multiline comments.
+                          New line
+          beta            A beta command
+          help            Prints this help information
+
+
+        """)
+    }
+
 }

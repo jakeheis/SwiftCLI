@@ -15,7 +15,9 @@ public protocol Option {
 public extension Option {
     func usage(padding: Int) -> String {
         let spacing = String(repeating: " ", count: padding - identifier.count)
-        return "\(identifier)\(spacing)\(shortDescription)"
+        let descriptionNewlineSpacing = String(repeating: " ", count: padding)
+        let description = shortDescription.replacingOccurrences(of: "\n", with: "\n\(descriptionNewlineSpacing)")
+        return "\(identifier)\(spacing)\(description)"
     }
 }
 
