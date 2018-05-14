@@ -61,8 +61,14 @@ extension HelpMessageGenerator {
     
     public func writeUsageStatement(for path: CommandPath, to out: WritableStream) {
         out <<< ""
-        out <<< "Usage: \(path.usage)"
         
+        if !path.command.shortDescription.isEmpty {
+            out <<< path.command.shortDescription
+            out <<< ""
+        }
+
+        out <<< "Usage: \(path.usage)"
+
         let options = path.options
         if !options.isEmpty {
             out <<< ""
