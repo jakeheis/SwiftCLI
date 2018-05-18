@@ -40,7 +40,9 @@ extension HelpMessageGenerator {
         
         func write(_ routable: Routable) {
             let spacing = String(repeating: " ", count: maxNameLength + 4 - routable.name.count)
-            out <<< "  \(routable.name)\(spacing)\(routable.shortDescription)"
+            let multilineSpacing = String(repeating: " ", count: maxNameLength + 4 + 2)
+            let description = routable.shortDescription.replacingOccurrences(of: "\n", with: "\n\(multilineSpacing)")
+            out <<< "  \(routable.name)\(spacing)\(description)"
         }
         
         if !commandGroups.isEmpty {
@@ -76,7 +78,7 @@ extension HelpMessageGenerator {
             }
             for option in sortedOptions {
                 let usage = option.usage(padding: maxOptionLength + 4)
-                out <<< "  \(usage)"
+                out <<< "  \(usage)".replacingOccurrences(of: "\n", with: "\n  ")
             }
         }
         out <<< ""
