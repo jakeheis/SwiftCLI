@@ -334,13 +334,14 @@ A command's usage statement is shown in two situations:
 - The command's help was invoked -- `greeter greet -h`
 
 ```bash
-
 ~ > greeter greet -h
+
 Usage: greeter greet <person> [options]
 
--l, --loudly                             Say the greeting loudly
--n, --number-of-times <value>            Say the greeting a certain number of times
--h, --help                               Show help information for this command
+Options:
+  -l, --loudly                          Say the greeting loudly
+  -n, --number-of-times <value>         Say the greeting a certain number of times
+  -h, --help                            Show help information for this command
 
 ```
 
@@ -401,11 +402,15 @@ The `HelpCommand` can be invoked with `myapp help` or `myapp -h`. The `HelpComma
 
 ```bash
 ~ > greeter help
+
+Usage: greeter <command> [options]
+
 Greeter - your own personal greeter
 
-Available commands:
-- greet                Greets the given person
-- help                 Prints this help information
+Commands:
+  greet        Greets the given person
+  help         Prints this help information
+
 ```
 
 If you don't want this command to be automatically included, set the `helpCommand` property to nil:

@@ -66,7 +66,7 @@ public protocol Command: Routable {
     /// - Throws: CLI.Error if command cannot execute successfully
     func execute() throws
     
-    /// The paramters this command accepts; dervied automatically, don't implement unless custom functionality needed
+    /// The paramters this command accepts; derived automatically, don't implement unless custom functionality needed
     var parameters: [(String, AnyParameter)] { get }
     
 }
