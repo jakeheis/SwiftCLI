@@ -89,12 +89,9 @@ public class SingleCommandRouter: Router {
     }
     
     public func parse(commandGroup: CommandGroup, arguments: ArgumentList) throws -> (CommandPath, OptionRegistry) {
-        let path = CommandGroupPath(top: commandGroup).appending(command)
-        
-        let optionRegistry = OptionRegistry(routable: commandGroup)
+        let optionRegistry = OptionRegistry(routable: commandGroup) // Still include default -h flag
         optionRegistry.register(command)
-        
-        return (path, optionRegistry)
+        return (CommandPath(command: command), optionRegistry)
     }
     
 }

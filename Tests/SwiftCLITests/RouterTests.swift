@@ -54,8 +54,7 @@ class RouterTests: XCTestCase {
         
         let (path, _) = try SingleCommandRouter(command: cmd).parse(commandGroup: cli, arguments: args)
         
-        XCTAssert(path.groupPath?.bottom === cli, "Router should generate correct group path")
-        XCTAssertEqual(path.groupPath?.groups.count, 1, "Router should generate correct group path")
+        XCTAssertNil(path.groupPath, "Router should generate correct group path")
         XCTAssert(path.command === cmd, "Router should route to the single command")
         XCTAssertEqual(args.pop(), "-a")
     }

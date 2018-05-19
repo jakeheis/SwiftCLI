@@ -54,6 +54,7 @@ Table of Contents
   * [Built-in commands](#built-in-commands)
   * [Input](#input)
   * [External tasks](#external-tasks)
+  * [Single command CLIs](#single-command-clis)
   * [Customization](#customization)
     * [Aliases](#aliases)
   * [Running your CLI](#running-your-cli)
@@ -497,6 +498,24 @@ output.readAll() // will be alpha\nbeta\n
 
 See `Sources/SwiftCLI/Task.swift` for full documentation on `Task`.
 
+## Single command CLIs
+
+If your CLI only contains a single command, you may want to execute the command simply by calling `cli`, rather than `cli command`. In this case, you can create your CLI as such:
+
+```swift
+class Ln: Command {
+    let name = "ln"
+    func execute() throws { ... }
+}
+
+let ln = CLI(singleCommand: Ln())
+ln.go()
+```
+
+In this case, if the user writes `ln myFile newLocation`, rather than searching for a command with the name "myFile", `SwiftCLI` will execute the `Ln` command and pass on "myFile` as the first argument to that command.
+
+Keep in mind that when creating a single command CLI, you lose the default `VersionCommand`. This means that `cli -v` will not work automatically, and that if you want to print your CLI version you will need to manually implement a `Flag("-v")` on your single command.
+
 ## Customization
 
 SwiftCLI was designed with sensible defaults but also the ability to be customized at every level. `CLI` has three properties that can be changed from the default implementations to customized implementations.
@@ -505,7 +524,7 @@ SwiftCLI was designed with sensible defaults but also the ability to be customiz
 
 The `Parser` steps through arguments to find the corresponding command, update its parameter values, and recognizes options. `Parser` has two stages, the first driven by its `Router` and the second by its `ParameterFiller`. SwiftCLI supplies default implementations of these two stages with `DefaultRouter` and `DefaultParameterFiller`. `DefaultRouter` finds commands based on the first passed argument (or, in the case of command groups, the first several arguments), and `DefaultParameterFiller` uses the remaining arguments which don't start with a dash to satisfy the command's parameters.
 
-SwiftCLI also supplies an implementation of `Router` called `SingleCommandRouter` which should be used if your CLI is composed of a single command. For example, if you were implementing the `ln` command, you would say `myCLI.parser = DefaultParser(router: SingleCommandRouter(command: LinkCommand())`. This router will then always return the same command and will leave all arguments to the `ParameterFiller`. If a user wrote `cli my.txt`, the `DefaultRouter` would look for a command named `my.txt` which takes no arguments, while `SingleCommandRouter` would treat 'my.txt' as an argument to the single command.
+SwiftCLI also supplies an implementation of `Router` called `SingleCommandRouter` which is automatically used if you create your CLI using `CLI(singleCommand: myCmd)`. For example, if you were implementing the `ln` command, you could manually write `myCLI.parser = DefaultParser(router: SingleCommandRouter(command: LinkCommand())`. This router will then always return the same command and will leave all arguments to the `ParameterFiller`. If a user wrote `cli my.txt`, the `DefaultRouter` would look for a command named `my.txt` which takes no arguments, while `SingleCommandRouter` would treat 'my.txt' as an argument to the single command.
 
 You can implement `Router` or `ParameterFiller` on your own types and update your CLI's property to use them:
 
