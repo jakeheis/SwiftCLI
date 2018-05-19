@@ -36,15 +36,25 @@ class TaskTests: XCTestCase {
     }
     
     func testCapture() throws {
-        let output = try capture("/bin/ls", "Sources")
+        let path = "/tmp/_swiftcli"
+        try FileManager.default.createDirectory(atPath: path, withIntermediateDirectories: false, attributes: nil)
+        FileManager.default.createFile(atPath: path + "/SwiftCLI", contents: nil, attributes: nil)
+        defer { try! FileManager.default.removeItem(atPath: path) }
+        
+        let output = try capture("/bin/ls", path)
         XCTAssertEqual(output.stdout, "SwiftCLI")
         XCTAssertEqual(output.stderr, "")
     }
     
     func testExecutableFind() throws {
+        let path = "/tmp/_swiftcli"
+        try FileManager.default.createDirectory(atPath: path, withIntermediateDirectories: false, attributes: nil)
+        FileManager.default.createFile(atPath: path + "/SwiftCLI", contents: nil, attributes: nil)
+        defer { try! FileManager.default.removeItem(atPath: path) }
+        
         XCTAssertEqual(Task.findExecutable(named: "ls"), "/bin/ls")
         
-        let output = try capture("ls", "Sources")
+        let output = try capture("ls", path)
         XCTAssertEqual(output.stdout, "SwiftCLI")
         XCTAssertEqual(output.stderr, "")
     }
@@ -58,7 +68,12 @@ class TaskTests: XCTestCase {
     }
     
     func testBashCapture() throws {
-        let output = try capture(bash: "ls Sources")
+        let path = "/tmp/_swiftcli"
+        try FileManager.default.createDirectory(atPath: path, withIntermediateDirectories: false, attributes: nil)
+        FileManager.default.createFile(atPath: path + "/SwiftCLI", contents: nil, attributes: nil)
+        defer { try! FileManager.default.removeItem(atPath: path) }
+        
+        let output = try capture(bash: "ls \(path)")
         XCTAssertEqual(output.stdout, "SwiftCLI")
         XCTAssertEqual(output.stderr, "")
     }
@@ -79,11 +94,18 @@ class TaskTests: XCTestCase {
         XCTAssertEqual(output.readAll(), "alpha\nbeta\n")
     }
     
-    func testPipe() {
+    func testPipe() throws {
+        let path = "/tmp/_swiftcli"
+        try FileManager.default.createDirectory(atPath: path, withIntermediateDirectories: false, attributes: nil)
+        FileManager.default.createFile(atPath: path + "/Info.plist", contents: nil, attributes: nil)
+        FileManager.default.createFile(atPath: path + "/LinuxMain.swift", contents: nil, attributes: nil)
+        FileManager.default.createFile(atPath: path + "/SwiftCLITests", contents: nil, attributes: nil)
+        defer { try! FileManager.default.removeItem(atPath: path) }
+        
         let connector = PipeStream()
         let output = PipeStream()
         
-        let ls = Task(executable: "ls", args: ["Tests"], stdout: connector)
+        let ls = Task(executable: "ls", args: [path], stdout: connector)
         let grep = Task(executable: "grep", args: ["Swift"], stdout: output, stdin: connector)
         
         ls.runAsync()
@@ -92,10 +114,15 @@ class TaskTests: XCTestCase {
         XCTAssertEqual(output.readAll(), "SwiftCLITests\n")
     }
     
-    func testCurrentDirectory() {
+    func testCurrentDirectory() throws {
+        let path = "/tmp/_swiftcli"
+        try FileManager.default.createDirectory(atPath: path, withIntermediateDirectories: false, attributes: nil)
+        FileManager.default.createFile(atPath: path + "/SwiftCLI", contents: nil, attributes: nil)
+        defer { try! FileManager.default.removeItem(atPath: path) }
+        
         let capture = PipeStream()
         
-        let ls = Task(executable: "ls", currentDirectory: "Sources", stdout: capture)
+        let ls = Task(executable: "ls", currentDirectory: path, stdout: capture)
         ls.runSync()
         
         XCTAssertEqual(capture.readAll(), "SwiftCLI\n")
@@ -136,12 +163,19 @@ class TaskTests: XCTestCase {
         XCTAssertEqual(task3.finish(), 15)
     }
     
-    func testTaskLineStream() {
+    func testTaskLineStream() throws {
+        let path = "/tmp/_swiftcli"
+        try FileManager.default.createDirectory(atPath: path, withIntermediateDirectories: false, attributes: nil)
+        FileManager.default.createFile(atPath: path + "/Info.plist", contents: nil, attributes: nil)
+        FileManager.default.createFile(atPath: path + "/LinuxMain.swift", contents: nil, attributes: nil)
+        FileManager.default.createFile(atPath: path + "/SwiftCLITests", contents: nil, attributes: nil)
+        defer { try! FileManager.default.removeItem(atPath: path) }
+        
         var count = 0
         let lineStream = LineStream { (line) in
             count += 1
         }
-        let task = Task(executable: "ls", args: ["Tests"], stdout: lineStream)
+        let task = Task(executable: "ls", args: [path], stdout: lineStream)
         XCTAssertEqual(task.runSync(), 0)
         
         lineStream.wait()
