@@ -172,6 +172,10 @@ extension CLI: CommandGroup {
     public var shortDescription: String {
         return description ?? ""
     }
+
+    public var longDescription: String {
+        return description ?? ""
+    }
     
     public var children: [Routable] {
         var extra: [Routable] = []

@@ -83,6 +83,28 @@ class HelpMessageGeneratorTests: XCTestCase {
         
         """)
     }
+
+    func testLongDescriptionGeneration() {
+        let pipe = PipeStream()
+        let command = TestCommandWithLongDescription()
+        let cli = CLI.createTester(commands: [command])
+        let path = CommandGroupPath(top: cli).appending(command)
+        DefaultHelpMessageGenerator().writeUsageStatement(for: path, to: pipe)
+        pipe.closeWrite()
+
+        XCTAssertEqual(pipe.readAll(), """
+
+        Usage: tester test [options]
+
+        This is a long
+        multiline description
+
+        Options:
+          -h, --help      Show help information for this command
+
+
+        """)
+    }
     
     func testInheritedUsageStatementGeneration() {
         let pipe = PipeStream()

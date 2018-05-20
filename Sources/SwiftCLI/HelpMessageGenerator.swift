@@ -64,7 +64,10 @@ extension HelpMessageGenerator {
 
         out <<< "Usage: \(path.usage)"
 
-        if !path.command.shortDescription.isEmpty {
+        if !path.command.longDescription.isEmpty {
+            out <<< ""
+            out <<< path.command.longDescription
+        } else if !path.command.shortDescription.isEmpty {
             out <<< ""
             out <<< path.command.shortDescription
         }

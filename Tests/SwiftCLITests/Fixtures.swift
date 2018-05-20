@@ -13,7 +13,7 @@ class TestCommand: Command {
 
     let name = "test"
     let shortDescription = "A command to test stuff"
-    
+
     var executionString = ""
 
     let testName = Parameter()
@@ -37,6 +37,16 @@ class TestCommand: Command {
         completion?(executionString)
     }
 
+}
+
+class TestCommandWithLongDescription: Command {
+
+    let name = "test"
+    let shortDescription = "A command to test stuff"
+    let longDescription = "This is a long\nmultiline description"
+
+    func execute() throws {
+    }
 }
 
 class MultilineCommand: Command {
