@@ -71,9 +71,9 @@ class HelpMessageGeneratorTests: XCTestCase {
         
         XCTAssertEqual(pipe.readAll(), """
         
-        A command to test stuff
-
         Usage: tester test <testName> [<testerName>] [options]
+
+        A command to test stuff
         
         Options:
           -h, --help             Show help information for this command
@@ -94,9 +94,9 @@ class HelpMessageGeneratorTests: XCTestCase {
         
         XCTAssertEqual(pipe.readAll(), """
         
-        A command to test stuff
-
         Usage: tester test <testName> [<testerName>] [options]
+
+        A command to test stuff
         
         Options:
           -h, --help             Show help information for this command
@@ -118,9 +118,9 @@ class HelpMessageGeneratorTests: XCTestCase {
         
         XCTAssertEqual(pipe.readAll(), """
         
-        A command to test stuff
-
         Usage: tester test <testName> [<testerName>] [options]
+
+        A command to test stuff
         
         Options:
           -h, --help             Show help information for this command
