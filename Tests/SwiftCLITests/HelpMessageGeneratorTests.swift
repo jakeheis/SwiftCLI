@@ -180,6 +180,9 @@ class HelpMessageGeneratorTests: XCTestCase {
 
         Usage: tester test [options]
 
+        A command that has multiline comments.
+        New line
+
         Options:
           -h, --help             Show help information for this command
           -s, --silent           Silence all test output
