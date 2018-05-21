@@ -72,6 +72,8 @@ class HelpMessageGeneratorTests: XCTestCase {
         XCTAssertEqual(pipe.readAll(), """
         
         Usage: tester test <testName> [<testerName>] [options]
+
+        A command to test stuff
         
         Options:
           -h, --help             Show help information for this command
@@ -79,6 +81,28 @@ class HelpMessageGeneratorTests: XCTestCase {
           -t, --times <value>    Number of times to run the test
         
         
+        """)
+    }
+
+    func testLongDescriptionGeneration() {
+        let pipe = PipeStream()
+        let command = TestCommandWithLongDescription()
+        let cli = CLI.createTester(commands: [command])
+        let path = CommandGroupPath(top: cli).appending(command)
+        DefaultHelpMessageGenerator().writeUsageStatement(for: path, to: pipe)
+        pipe.closeWrite()
+
+        XCTAssertEqual(pipe.readAll(), """
+
+        Usage: tester test [options]
+
+        This is a long
+        multiline description
+
+        Options:
+          -h, --help      Show help information for this command
+
+
         """)
     }
     
@@ -93,6 +117,8 @@ class HelpMessageGeneratorTests: XCTestCase {
         XCTAssertEqual(pipe.readAll(), """
         
         Usage: tester test <testName> [<testerName>] [options]
+
+        A command to test stuff
         
         Options:
           -h, --help             Show help information for this command
@@ -115,6 +141,8 @@ class HelpMessageGeneratorTests: XCTestCase {
         XCTAssertEqual(pipe.readAll(), """
         
         Usage: tester test <testName> [<testerName>] [options]
+
+        A command to test stuff
         
         Options:
           -h, --help             Show help information for this command
@@ -151,6 +179,9 @@ class HelpMessageGeneratorTests: XCTestCase {
         XCTAssertEqual(pipe.readAll(), """
 
         Usage: tester test [options]
+
+        A command that has multiline comments.
+        New line
 
         Options:
           -h, --help             Show help information for this command

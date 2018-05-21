@@ -14,6 +14,9 @@ public protocol Routable: class {
     
     /// A concise description of what this command or group is
     var shortDescription: String { get }
+
+    /// A longer description of how to use this command or group is
+    var longDescription: String { get }
     
     /// The options this command accepts; dervied automatically, don't implement unless custom functionality needed
     var options: [Option] { get }
@@ -95,6 +98,10 @@ extension Command {
         return ""
     }
 
+    public var longDescription: String {
+        return ""
+    }
+
 }
 
 // MARK: -
@@ -110,5 +117,9 @@ public protocol CommandGroup: Routable {
 public extension CommandGroup {
     var aliases: [String: String] {
         return [:]
+    }
+
+    public var longDescription: String {
+        return ""
     }
 }
