@@ -15,9 +15,12 @@ class HelpMessageGeneratorTests: XCTestCase {
         return [
             ("testCommandListGeneration", testCommandListGeneration),
             ("testUsageStatementGeneration", testUsageStatementGeneration),
+            ("testLongDescriptionGeneration", testLongDescriptionGeneration),
             ("testInheritedUsageStatementGeneration", testInheritedUsageStatementGeneration),
             ("testMisusedOptionsStatementGeneration", testMisusedOptionsStatementGeneration),
             ("testNoCommandMisusedOption", testNoCommandMisusedOption),
+            ("testMutlineUsageStatementGeneration", testMutlineUsageStatementGeneration),
+            ("testMutlineCommandListGeneration", testMutlineCommandListGeneration)
         ]
     }
     

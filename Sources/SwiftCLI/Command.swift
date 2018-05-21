@@ -15,7 +15,7 @@ public protocol Routable: class {
     /// A concise description of what this command or group is
     var shortDescription: String { get }
 
-    /// A longer description of how to use this command or group is
+    /// A longer description of how to use this command or group
     var longDescription: String { get }
     
     /// The options this command accepts; dervied automatically, don't implement unless custom functionality needed
