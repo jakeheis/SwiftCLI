@@ -18,6 +18,8 @@ class TaskTests: XCTestCase {
             ("testExecutableFind", testExecutableFind),
             ("testBashRun", testBashRun),
             ("testBashCapture", testBashCapture),
+            ("testRunDirectory", testRunDirectory),
+            ("testCaptureDirectory", testCaptureDirectory),
             ("testIn", testIn),
             ("testPipe", testPipe),
             ("testCurrentDirectory", testCurrentDirectory),
@@ -78,6 +80,27 @@ class TaskTests: XCTestCase {
         XCTAssertEqual(output.stderr, "")
     }
     
+    func testRunDirectory() throws {
+        let path = "/tmp/_swiftcli"
+        try FileManager.default.createDirectory(atPath: path, withIntermediateDirectories: false, attributes: nil)
+        defer { try! FileManager.default.removeItem(atPath: path) }
+        
+        try SwiftCLI.run("touch", arguments: ["SwiftCLI"], directory: path)
+        
+        XCTAssertTrue(FileManager.default.fileExists(atPath: path + "/SwiftCLI"))
+    }
+    
+    func testCaptureDirectory() throws {
+        let path = "/tmp/_swiftcli"
+        try FileManager.default.createDirectory(atPath: path, withIntermediateDirectories: false, attributes: nil)
+        FileManager.default.createFile(atPath: path + "/SwiftCLI", contents: nil, attributes: nil)
+        defer { try! FileManager.default.removeItem(atPath: path) }
+        
+        let output = try capture("ls", arguments: [], directory: path)
+        XCTAssertEqual(output.stdout, "SwiftCLI")
+        XCTAssertEqual(output.stderr, "")
+    }
+    
     func testIn() throws {
         let input = PipeStream()
         
@@ -105,8 +128,8 @@ class TaskTests: XCTestCase {
         let connector = PipeStream()
         let output = PipeStream()
         
-        let ls = Task(executable: "ls", args: [path], stdout: connector)
-        let grep = Task(executable: "grep", args: ["Swift"], stdout: output, stdin: connector)
+        let ls = Task(executable: "ls", arguments: [path], stdout: connector)
+        let grep = Task(executable: "grep", arguments: ["Swift"], stdout: output, stdin: connector)
         
         ls.runAsync()
         grep.runAsync()
@@ -122,7 +145,7 @@ class TaskTests: XCTestCase {
         
         let capture = PipeStream()
         
-        let ls = Task(executable: "ls", currentDirectory: path, stdout: capture)
+        let ls = Task(executable: "ls", directory: path, stdout: capture)
         ls.runSync()
         
         XCTAssertEqual(capture.readAll(), "SwiftCLI\n")
@@ -131,7 +154,7 @@ class TaskTests: XCTestCase {
     func testEnv() {
         let capture = PipeStream()
         
-        let echo = Task(executable: "bash", args: ["-c", "echo $MY_VAR"], stdout: capture)
+        let echo = Task(executable: "bash", arguments: ["-c", "echo $MY_VAR"], stdout: capture)
         echo.env["MY_VAR"] = "aVal"
         echo.runSync()
         
@@ -139,7 +162,7 @@ class TaskTests: XCTestCase {
     }
     
     func testSignals() {
-        let task = Task(executable: "/bin/sleep", args: ["1"])
+        let task = Task(executable: "/bin/sleep", arguments: ["1"])
         task.runAsync()
         
         XCTAssertTrue(task.suspend())
@@ -151,13 +174,13 @@ class TaskTests: XCTestCase {
         
         // Travis errors when calling interrupt on Linux for unknown reason
         #if os(macOS)
-        let task2 = Task(executable: "/bin/sleep", args: ["3"])
+        let task2 = Task(executable: "/bin/sleep", arguments: ["3"])
         task2.runAsync()
         task2.interrupt()
         XCTAssertEqual(task2.finish(), 2)
         #endif
         
-        let task3 = Task(executable: "/bin/sleep", args: ["3"])
+        let task3 = Task(executable: "/bin/sleep", arguments: ["3"])
         task3.runAsync()
         task3.terminate()
         XCTAssertEqual(task3.finish(), 15)
@@ -175,7 +198,7 @@ class TaskTests: XCTestCase {
         let lineStream = LineStream { (line) in
             count += 1
         }
-        let task = Task(executable: "ls", args: [path], stdout: lineStream)
+        let task = Task(executable: "ls", arguments: [path], stdout: lineStream)
         XCTAssertEqual(task.runSync(), 0)
         
         lineStream.wait()

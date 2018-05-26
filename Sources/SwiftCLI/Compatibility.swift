@@ -7,6 +7,57 @@
 
 import Foundation
 
+// MARK: Minor version deprecations
+
+@available(*, deprecated, renamed: "run(_:arguments:)")
+public func run(_ executable: String, _ args: [String]) throws {
+    try run(executable, arguments: args)
+}
+
+@available(*, deprecated, message: "Use run(_:arguments:directory:) instead")
+public func run(_ executable: String, directory: String, _ args: String...) throws {
+    try run(executable, arguments: args, directory: directory)
+}
+
+@available(*, deprecated, message: "Use run(_:arguments:directory:) instead")
+public func run(_ executable: String, directory: String, _ args: [String]) throws {
+    try run(executable, arguments: args, directory: directory)
+}
+
+@available(*, deprecated, renamed: "capture(_:arguments:)")
+public func capture(_ executable: String, _ args: [String]) throws -> CaptureResult {
+    return try capture(executable, arguments: args)
+}
+
+@available(*, deprecated, message: "Use capture(_:arguments:directory:) instead")
+public func capture(_ executable: String, directory: String, _ args: String...) throws -> CaptureResult {
+    return try capture(executable, arguments: args, directory: directory)
+}
+
+@available(*, deprecated, message: "Use capture(_:arguments:directory:) instead")
+public func capture(_ executable: String, directory: String?, _ args: [String]) throws -> CaptureResult {
+    return try capture(executable, arguments: args, directory: directory)
+}
+
+extension Task {
+    
+    @available(*, deprecated, message: "Use Task.execvp(_:arguments:directory:env) instead")
+    public static func execvp(_ executable: String, directory: String? = nil, _ args: String..., env: [String: String]? = nil) throws -> Never {
+        try execvp(executable, arguments: args, directory: directory, env: env)
+    }
+    
+    @available(*, deprecated, message: "Use Task.execvp(_:arguments:directory:env) instead")
+    public static func execvp(_ executable: String, directory: String? = nil, _ args: [String], env: [String: String]? = nil) throws -> Never {
+        try execvp(executable, arguments: args, directory: directory, env: env)
+    }
+    
+    @available(*, deprecated, renamed: "init(executable:arguments:directory:stdout:stderr:stdin:)")
+    public convenience init(executable: String, args: [String] = [], currentDirectory: String? = nil, stdout: WritableStream = WriteStream.stdout, stderr: WritableStream = WriteStream.stderr, stdin: ReadableStream = ReadStream.stdin) {
+        self.init(executable: executable, arguments: args, directory: currentDirectory, stdout: stdout, stderr: stderr, stdin: stdin)
+    }
+    
+}
+
 // MARK: - Swift versions
 
 extension Sequence {
