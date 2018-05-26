@@ -78,7 +78,6 @@ public class CLI {
     /// Kicks off the entire CLI process, routing to and executing the command specified by the passed arguments.
     /// Uses the arguments passed in the command line. Exits the program upon completion.
     ///
-    /// - SeeAlso: `debugGoWithArgumentString()` when debugging
     /// - Returns: Never
     public func goAndExit() -> Never {
         let result = go()
@@ -88,7 +87,6 @@ public class CLI {
     /// Kicks off the entire CLI process, routing to and executing the command specified by the passed arguments.
     /// Uses the arguments passed in the command line.
     ///
-    /// - SeeAlso: `debugGoWithArgumentString()` when debugging
     /// - Returns: an Int32 representing the success of the CLI in routing to and executing the correct
     /// command. Usually should be passed to `exit(result)`
     public func go() -> Int32 {
@@ -96,9 +94,16 @@ public class CLI {
     }
     
     /// Kicks off the entire CLI process, routing to and executing the command specified by the passed arguments.
-    /// Uses the argument string passed to this function.
     ///
-    /// - SeeAlso: `go()` when running from the command line
+    /// - Parameter arguments: the arguments to execute with; should not include CLI name (i.e. if you wanted to execute "greeter greet world", 'arguments' should be ["greet", "world"])
+    /// - Returns: an Int32 representing the success of the CLI in routing to and executing the correct command. Usually should be passed to `exit(result)`
+    public func go(with arguments: [String]) -> Int32 {
+        return go(with: ArgumentList(arguments: [name] + arguments))
+    }
+    
+    /// Kicks off the entire CLI process, routing to and executing the command specified by the passed arguments.
+    /// Uses the argument string passed to this function. Use go() or go(with:) instead of this function in a production app
+    ///
     /// - Parameter argumentString: the arguments to use when running the CLI
     /// - Returns: an Int32 representing the success of the CLI in routing to and executing the correct command. Usually should be passed to `exit(result)`
     public func debugGo(with argumentString: String) -> Int32 {
@@ -106,7 +111,7 @@ public class CLI {
         return go(with: ArgumentList(argumentString: argumentString))
     }
     
-    // MARK: - Privates
+    // MARK: - Private
     
     private func go(with arguments: ArgumentList) -> Int32 {
         arguments.pop() // Pop off cli name (always first arg)

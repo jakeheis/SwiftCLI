@@ -14,6 +14,7 @@ class SwiftCLITests: XCTestCase {
     static var allTests : [(String, (SwiftCLITests) -> () throws -> Void)] {
         return [
             ("testCLIGo", testCLIGo),
+            ("testGoWithArguments", testGoWithArguments),
             ("testCLIHelp", testCLIHelp),
             ("testGlobalOptions", testGlobalOptions),
             ("testOptionSplit", testOptionSplit),
@@ -29,6 +30,13 @@ class SwiftCLITests: XCTestCase {
     func testCLIGo() {
         let cli = createCLI()
         let result = cli.debugGo(with: "tester test firstTest MyTester -t 5 -s")
+        XCTAssertEqual(result, 0, "Command should have succeeded")
+        XCTAssertEqual(self.executionString, "MyTester will test firstTest, 5 times, silently", "Command should have produced accurate output")
+    }
+    
+    func testGoWithArguments() {
+        let cli = createCLI()
+        let result = cli.go(with: ["test", "firstTest", "MyTester", "-t", "5", "-s"])
         XCTAssertEqual(result, 0, "Command should have succeeded")
         XCTAssertEqual(self.executionString, "MyTester will test firstTest, 5 times, silently", "Command should have produced accurate output")
     }

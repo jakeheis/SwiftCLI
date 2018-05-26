@@ -25,7 +25,7 @@ public class ArgumentList {
         
         let argumentMatches = regex.matches(in: argumentString, options: [], range: NSRange(location: 0, length: argumentString.utf8.count))
         
-        let arguments: [String] = argumentMatches.map {(match) in
+        let arguments: [String] = argumentMatches.map { (match) in
             let matchRange = match.range
             let startIndex = argumentString.index(argumentString.startIndex, offsetBy: matchRange.location)
             let endIndex = argumentString.index(argumentString.startIndex, offsetBy: matchRange.location + matchRange.length)
