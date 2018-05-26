@@ -144,12 +144,11 @@ public class CLI {
         do {
             return try parser.parse(commandGroup: self, arguments: arguments)
         } catch let error as RouteError {
-            if let notFound = error.notFound {
-                stderr <<< ""
-                stderr <<< "Command \"\(notFound)\" not found"
-            }
-            
             helpMessageGenerator.writeCommandList(for: error.partialPath, to: stdout)
+            if let notFound = error.notFound {
+                stderr <<< "Command \"\(notFound)\" not found"
+                stderr <<< ""
+            }
             throw CLI.Error()
         } catch let error as OptionError {
             if let command = error.command, command.command is HelpCommand {
