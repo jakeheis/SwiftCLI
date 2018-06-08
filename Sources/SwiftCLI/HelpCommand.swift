@@ -11,6 +11,8 @@ public class HelpCommand: Command {
     public let name = "help"
     public let shortDescription = "Prints this help information"
     
+    public let command = OptionalCollectedParameter()
+    
     let cli: CLI
     
     init(cli: CLI) {
@@ -18,7 +20,19 @@ public class HelpCommand: Command {
     }
     
     public func execute() throws {
-        cli.helpMessageGenerator.writeCommandList(for: CommandGroupPath(top: cli), to: stdout)
+        var path = CommandGroupPath(top: cli)
+        
+        for pathSegment in command.value {
+            let child = path.bottom.children.first(where:  { $0.name == pathSegment })
+            if let group = child as? CommandGroup {
+                path = path.appending(group)
+            } else if let command = child as? Command {
+                cli.helpMessageGenerator.writeUsageStatement(for: path.appending(command), to: stdout)
+                return
+            }
+        }
+        
+        cli.helpMessageGenerator.writeCommandList(for: path, to: stdout)
     }
     
 }
