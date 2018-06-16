@@ -20,7 +20,8 @@ class StreamTests: XCTestCase {
             ("testReadAll", testReadAll),
             ("testReadLine", testReadLine),
             ("testReadLines", testReadLines),
-            ("testLineStream", testLineStream)
+            ("testLineStream", testLineStream),
+            ("testCaptureStream", testCaptureStream),
         ]
     }
     
@@ -146,6 +147,22 @@ class StreamTests: XCTestCase {
         
         stream.closeWrite()
         stream.wait()
+    }
+    
+    func testCaptureStream() {
+        let capture = CaptureStream()
+        
+        capture <<< "first"
+        capture <<< ""
+        capture <<< "second"
+        capture.closeWrite()
+        
+        XCTAssertEqual(capture.readAll(), """
+        first
+
+        second
+        
+        """)
     }
     
 }

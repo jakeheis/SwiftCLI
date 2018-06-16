@@ -261,7 +261,7 @@ public class LineStream: WritableStream {
         }
     }
     
-    private let queue = DispatchQueue(label: "com.jakeheis.SwiftCLI")
+    private let queue = DispatchQueue(label: "com.jakeheis.SwiftCLI.LineStream")
     private let semaphore = DispatchSemaphore(value: 0)
     
     /// Creates a new stream which can be written to
@@ -284,6 +284,44 @@ public class LineStream: WritableStream {
     /// Wait for the line stream to call the 'each' closure on every line of text until it reaches EOF
     public func wait() {
         semaphore.wait()
+    }
+    
+}
+
+public class CaptureStream: WritableStream {
+    
+    public let processObject: Any
+    public let writeStream: WriteStream
+    public var encoding: String.Encoding {
+        get {
+            return writeStream.encoding
+        }
+        set(newValue) {
+            writeStream.encoding = newValue
+        }
+    }
+    
+    private var content = ""
+    private let queue = DispatchQueue(label: "com.jakeheis.SwiftCLI.CaptureStream")
+    private let semaphore = DispatchSemaphore(value: 0)
+    
+    public init() {
+        let pipe = Pipe()
+        self.processObject = pipe
+        self.writeStream = WriteStream(writeHandle: pipe.fileHandleForWriting)
+        
+        let readStream = ReadStream(readHandle: pipe.fileHandleForReading)
+        queue.async { [weak self] in
+            while let chunk = readStream.read() {
+                self?.content += chunk
+            }
+            self?.semaphore.signal()
+        }
+    }
+    
+    public func readAll() -> String {
+        semaphore.wait()
+        return content
     }
     
 }

@@ -55,8 +55,8 @@ public func capture(_ executable: String, _ arguments: String...) throws -> Capt
 /// - Returns: the captured data
 /// - Throws: CaptureError if command fails
 public func capture(_ executable: String, arguments: [String], directory: String? = nil) throws -> CaptureResult {
-    let out = PipeStream()
-    let err = PipeStream()
+    let out = CaptureStream()
+    let err = CaptureStream()
     
     let task = Task(executable: executable, arguments: arguments, directory: directory, stdout: out, stderr: err)
     let exitCode = task.runSync()

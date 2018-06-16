@@ -104,7 +104,7 @@ class TaskTests: XCTestCase {
     func testIn() throws {
         let input = PipeStream()
         
-        let output = PipeStream()
+        let output = CaptureStream()
         let task = Task(executable: "/usr/bin/sort", stdout: output, stdin: input)
         task.runAsync()
         
@@ -126,7 +126,7 @@ class TaskTests: XCTestCase {
         defer { try! FileManager.default.removeItem(atPath: path) }
         
         let connector = PipeStream()
-        let output = PipeStream()
+        let output = CaptureStream()
         
         let ls = Task(executable: "ls", arguments: [path], stdout: connector)
         let grep = Task(executable: "grep", arguments: ["Swift"], stdout: output, stdin: connector)
@@ -143,7 +143,7 @@ class TaskTests: XCTestCase {
         FileManager.default.createFile(atPath: path + "/SwiftCLI", contents: nil, attributes: nil)
         defer { try! FileManager.default.removeItem(atPath: path) }
         
-        let capture = PipeStream()
+        let capture = CaptureStream()
         
         let ls = Task(executable: "ls", directory: path, stdout: capture)
         ls.runSync()
@@ -152,7 +152,7 @@ class TaskTests: XCTestCase {
     }
     
     func testEnv() {
-        let capture = PipeStream()
+        let capture = CaptureStream()
         
         let echo = Task(executable: "bash", arguments: ["-c", "echo $MY_VAR"], stdout: capture)
         echo.env["MY_VAR"] = "aVal"

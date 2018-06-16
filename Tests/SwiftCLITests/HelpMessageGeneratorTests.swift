@@ -25,12 +25,12 @@ class HelpMessageGeneratorTests: XCTestCase {
     }
     
     func testCommandListGeneration() {
-        let pipe = PipeStream()
+        let capture = CaptureStream()
         let path = CommandGroupPath(top: CLI.createTester(commands: [alphaCmd, betaCmd], description: "A tester for SwiftCLI"))
-        DefaultHelpMessageGenerator().writeCommandList(for: path, to: pipe)
-        pipe.closeWrite()
+        DefaultHelpMessageGenerator().writeCommandList(for: path, to: capture)
+        capture.closeWrite()
         
-        XCTAssertEqual(pipe.readAll(), """
+        XCTAssertEqual(capture.readAll(), """
         
         Usage: tester <command> [options]
         
@@ -44,12 +44,12 @@ class HelpMessageGeneratorTests: XCTestCase {
         
         """)
         
-        let pipe2 = PipeStream()
+        let capture2 = CaptureStream()
         let path2 = CommandGroupPath(top: CLI.createTester(commands: [alphaCmd, midGroup]))
-        DefaultHelpMessageGenerator().writeCommandList(for: path2, to: pipe2)
-        pipe2.closeWrite()
+        DefaultHelpMessageGenerator().writeCommandList(for: path2, to: capture2)
+        capture2.closeWrite()
         
-        XCTAssertEqual(pipe2.readAll(), """
+        XCTAssertEqual(capture2.readAll(), """
         
         Usage: tester <command> [options]
         
@@ -65,14 +65,14 @@ class HelpMessageGeneratorTests: XCTestCase {
     }
 
     func testUsageStatementGeneration() {
-        let pipe = PipeStream()
+        let capture = CaptureStream()
         let command = TestCommand()
         let cli = CLI.createTester(commands: [command])
         let path = CommandGroupPath(top: cli).appending(command)
-        DefaultHelpMessageGenerator().writeUsageStatement(for: path, to: pipe)
-        pipe.closeWrite()
+        DefaultHelpMessageGenerator().writeUsageStatement(for: path, to: capture)
+        capture.closeWrite()
         
-        XCTAssertEqual(pipe.readAll(), """
+        XCTAssertEqual(capture.readAll(), """
         
         Usage: tester test <testName> [<testerName>] [options]
 
@@ -88,14 +88,14 @@ class HelpMessageGeneratorTests: XCTestCase {
     }
 
     func testLongDescriptionGeneration() {
-        let pipe = PipeStream()
+        let capture = CaptureStream()
         let command = TestCommandWithLongDescription()
         let cli = CLI.createTester(commands: [command])
         let path = CommandGroupPath(top: cli).appending(command)
-        DefaultHelpMessageGenerator().writeUsageStatement(for: path, to: pipe)
-        pipe.closeWrite()
+        DefaultHelpMessageGenerator().writeUsageStatement(for: path, to: capture)
+        capture.closeWrite()
 
-        XCTAssertEqual(pipe.readAll(), """
+        XCTAssertEqual(capture.readAll(), """
 
         Usage: tester test [options]
 
@@ -110,14 +110,14 @@ class HelpMessageGeneratorTests: XCTestCase {
     }
     
     func testInheritedUsageStatementGeneration() {
-        let pipe = PipeStream()
+        let capture = CaptureStream()
         let cmd = TestInheritedCommand()
         let cli = CLI.createTester(commands: [cmd])
         let path = CommandGroupPath(top: cli).appending(cmd)
-        DefaultHelpMessageGenerator().writeUsageStatement(for: path, to: pipe)
-        pipe.closeWrite()
+        DefaultHelpMessageGenerator().writeUsageStatement(for: path, to: capture)
+        capture.closeWrite()
         
-        XCTAssertEqual(pipe.readAll(), """
+        XCTAssertEqual(capture.readAll(), """
         
         Usage: tester test <testName> [<testerName>] [options]
 
@@ -134,14 +134,14 @@ class HelpMessageGeneratorTests: XCTestCase {
     }
     
     func testMisusedOptionsStatementGeneration() {
-        let pipe = PipeStream()
+        let capture = CaptureStream()
         let command = TestCommand()
         let cli = CLI.createTester(commands: [command])
         let path = CommandGroupPath(top: cli).appending(command)
-        DefaultHelpMessageGenerator().writeMisusedOptionsStatement(for: OptionError(command: path, message: "Unrecognized option: -a"), to: pipe)
-        pipe.closeWrite()
+        DefaultHelpMessageGenerator().writeMisusedOptionsStatement(for: OptionError(command: path, message: "Unrecognized option: -a"), to: capture)
+        capture.closeWrite()
         
-        XCTAssertEqual(pipe.readAll(), """
+        XCTAssertEqual(capture.readAll(), """
         
         Usage: tester test <testName> [<testerName>] [options]
 
@@ -159,11 +159,11 @@ class HelpMessageGeneratorTests: XCTestCase {
     }
     
     func testNoCommandMisusedOption() {
-        let pipe = PipeStream()
-        DefaultHelpMessageGenerator().writeMisusedOptionsStatement(for: OptionError(command: nil, message: "Unrecognized option: -a"), to: pipe)
-        pipe.closeWrite()
+        let capture = CaptureStream()
+        DefaultHelpMessageGenerator().writeMisusedOptionsStatement(for: OptionError(command: nil, message: "Unrecognized option: -a"), to: capture)
+        capture.closeWrite()
         
-        XCTAssertEqual(pipe.readAll(), """
+        XCTAssertEqual(capture.readAll(), """
         
         Unrecognized option: -a
         
@@ -172,14 +172,14 @@ class HelpMessageGeneratorTests: XCTestCase {
     }
 
     func testMutlineUsageStatementGeneration() {
-        let pipe = PipeStream()
+        let capture = CaptureStream()
         let command = MultilineCommand()
         let cli = CLI.createTester(commands: [command])
         let path = CommandGroupPath(top: cli).appending(command)
-        DefaultHelpMessageGenerator().writeUsageStatement(for: path, to: pipe)
-        pipe.closeWrite()
+        DefaultHelpMessageGenerator().writeUsageStatement(for: path, to: capture)
+        capture.closeWrite()
 
-        XCTAssertEqual(pipe.readAll(), """
+        XCTAssertEqual(capture.readAll(), """
 
         Usage: tester test [options]
 
@@ -197,12 +197,12 @@ class HelpMessageGeneratorTests: XCTestCase {
     }
 
     func testMutlineCommandListGeneration() {
-        let pipe = PipeStream()
+        let capture = CaptureStream()
         let path = CommandGroupPath(top: CLI.createTester(commands: [MultilineCommand(), betaCmd], description: "A tester for SwiftCLI"))
-        DefaultHelpMessageGenerator().writeCommandList(for: path, to: pipe)
-        pipe.closeWrite()
+        DefaultHelpMessageGenerator().writeCommandList(for: path, to: capture)
+        capture.closeWrite()
 
-        XCTAssertEqual(pipe.readAll(), """
+        XCTAssertEqual(capture.readAll(), """
 
         Usage: tester <command> [options]
 

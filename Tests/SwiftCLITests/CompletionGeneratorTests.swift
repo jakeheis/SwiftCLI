@@ -28,7 +28,7 @@ class CompletionGeneratorTests: XCTestCase {
         let cli = CLI.createTester(commands: [alphaCmd, betaCmd])
         
         let generator = ZshCompletionGenerator(cli: cli)
-        let capture = PipeStream()
+        let capture = CaptureStream()
         generator.writeCommandList(for: CommandGroupPath(top: cli), into: capture)
         capture.closeWrite()
         
@@ -64,7 +64,7 @@ class CompletionGeneratorTests: XCTestCase {
         let cli = CLI.createTester(commands: [cmd])
         
         let generator = ZshCompletionGenerator(cli: cli)
-        let capture = PipeStream()
+        let capture = CaptureStream()
         let path = CommandGroupPath(top: cli).appending(cmd)
         generator.writeCommand(for: path, into: capture)
         capture.closeWrite()
@@ -84,7 +84,7 @@ class CompletionGeneratorTests: XCTestCase {
         let cli = CLI.createTester(commands: [alphaCmd, betaCmd, intraGroup])
         
         let generator = ZshCompletionGenerator(cli: cli)
-        let capture = PipeStream()
+        let capture = CaptureStream()
         generator.writeCompletions(into: capture)
         capture.closeWrite()
         
