@@ -61,7 +61,7 @@ public class OptionGroup {
             case .atLeastOne:
                 self.message = "Must pass at least one of the following"
             case .atMostOne:
-                self.message = "Cannot pass more than most one of the following"
+                self.message = "Must not pass more than one of the following"
             }
         }
         self.message += ": \(options.optMap({ $0.names.last }).joined(separator: " "))"
