@@ -230,7 +230,7 @@ class HelpMessageGeneratorTests: XCTestCase {
           beta            A beta command
           help            Prints this help information
         
-        error: command 'nope' not found
+        Error: command 'nope' not found
 
         
         """)
@@ -257,7 +257,7 @@ class HelpMessageGeneratorTests: XCTestCase {
           -s, --silent           Silence all test output
           -t, --times <value>    Number of times to run the test
         
-        error: unrecognized option '-a'
+        Error: unrecognized option '-a'
         
         
         """)
@@ -271,7 +271,7 @@ class HelpMessageGeneratorTests: XCTestCase {
         
         XCTAssertEqual(capture.readAll(), """
         
-        error: unrecognized option '-a'
+        Error: unrecognized option '-a'
         
         
         """)
@@ -296,7 +296,7 @@ class HelpMessageGeneratorTests: XCTestCase {
           -s, --silent           Silence all test output
           -t, --times <value>    Number of times to run the test
         
-        error: expected a value to follow '-t'
+        Error: expected a value to follow '-t'
         
         
         """)
@@ -321,7 +321,7 @@ class HelpMessageGeneratorTests: XCTestCase {
           -s, --silent           Silence all test output
           -t, --times <value>    Number of times to run the test
         
-        error: illegal value passed to '-t' (expected Int)
+        Error: illegal value passed to '-t' (expected Int)
         
         
         """)
@@ -345,7 +345,7 @@ class HelpMessageGeneratorTests: XCTestCase {
           -b, --beta      the beta flag
           -h, --help      Show help information for this command
 
-        error: must pass exactly one of the following: --alpha --beta
+        Error: must pass exactly one of the following: --alpha --beta
         
         
         """)
@@ -364,8 +364,14 @@ class HelpMessageGeneratorTests: XCTestCase {
         capture.closeWrite()
         
         XCTAssertEqual(capture.readAll(), """
-        error: command requires between 2 and 4 arguments
-        usage: tester cmd <req1> <req2> [<opt1>] [<opt2>] [options]
+
+        Usage: tester cmd <req1> <req2> [<opt1>] [<opt2>] [options]
+
+        Options:
+          -h, --help      Show help information for this command
+
+        Error: command requires between 2 and 4 arguments
+        
         
         """)
     }

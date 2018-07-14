@@ -98,7 +98,7 @@ extension HelpMessageGenerator {
     public func writeRouteErrorMessage(for error: RouteError, to out: WritableStream) {
         writeCommandList(for: error.partialPath, to: out)
         if let notFound = error.notFound {
-            out <<< "error: command '\(notFound)' not found"
+            out <<< "Error: command '\(notFound)' not found"
             out <<< ""
         }
     }
@@ -109,13 +109,14 @@ extension HelpMessageGenerator {
         } else {
             out <<< ""
         }
-        out <<< "error: " + error.kind.message
+        out <<< "Error: " + error.kind.message
         out <<< ""
     }
     
     public func writeParameterErrorMessage(for error: ParameterError, to out: WritableStream) {
-        out <<< "error: " + error.message
-        out <<< "usage: \(error.command.usage)"
+        writeUsageStatement(for: error.command, to: out)
+        out <<< "Error: " + error.message
+        out <<< ""
     }
     
 }
