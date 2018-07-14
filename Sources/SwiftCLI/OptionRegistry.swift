@@ -43,20 +43,20 @@ public class OptionRegistry {
             flag.toggle()
         } else if let key = key(for: opt) {
              guard args.hasNext(), !args.nextIsOption() else {
-                throw OptionError(command: command, message: "Expected a value to follow: \(opt)")
+                throw OptionError(command: command, kind: .expectedValueAfterKey(opt))
             }
             let value = args.pop()
             guard key.updateValue(value) else {
-                throw OptionError(command: command, message: "Illegal type passed to \(key.names.first!): '\(value)'")
+                throw OptionError(command: command, kind: .illegalTypeForKey(opt, key.valueType))
             }
         } else {
-            throw OptionError(command: command, message: "Unrecognized option: \(opt)")
+            throw OptionError(command: command, kind: .unrecognizedOption(opt))
         }
     }
     
     public func finish(command: CommandPath) throws {
         if let failingGroup = failingGroup() {
-            throw OptionError(command: command, message: failingGroup.message)
+            throw OptionError(command: command, kind: .optionGroupMisuse(failingGroup))
         }
     }
     

@@ -96,7 +96,10 @@ class ParserTests: XCTestCase {
             _ = try Parser().parse(commandGroup: cli, arguments: arguments)
             XCTFail()
         } catch let error as OptionError {
-            XCTAssertEqual(error.message, "Unrecognized option: -b")
+            guard case let .unrecognizedOption(key) = error.kind, key == "-b" else {
+                XCTFail()
+                return
+            }
         }
     }
     
@@ -109,7 +112,10 @@ class ParserTests: XCTestCase {
             _ = try Parser().parse(commandGroup: cli, arguments: arguments)
             XCTFail()
         } catch let error as OptionError {
-            XCTAssertEqual(error.message, "Expected a value to follow: -b")
+            guard case let .expectedValueAfterKey(key) = error.kind, key == "-b" else {
+                XCTFail()
+                return
+            }
         }
     }
     
@@ -122,7 +128,10 @@ class ParserTests: XCTestCase {
             _ = try Parser().parse(commandGroup: cli, arguments: arguments)
             XCTFail()
         } catch let error as OptionError {
-            XCTAssertEqual(error.message, "Illegal type passed to -a: 'val'")
+            guard case let .illegalTypeForKey(key, type) = error.kind, key == "-a", type == Int.self else {
+                XCTFail()
+                return
+            }
         }
     }
     
@@ -146,7 +155,11 @@ class ParserTests: XCTestCase {
             _ = try Parser().parse(commandGroup: CLI.createTester(commands: [cmd1]), arguments: arguments1)
             XCTFail()
         } catch let error as OptionError {
-            XCTAssertEqual(error.message, "Must pass exactly one of the following: --alpha --beta")
+            guard case let .optionGroupMisuse(group) = error.kind else {
+                XCTFail()
+                return
+            }
+            XCTAssert(group === cmd1.optionGroups[0])
         }
         
         let cmd2 = ExactlyOneCmd()
@@ -167,7 +180,11 @@ class ParserTests: XCTestCase {
             _ = try Parser().parse(commandGroup: CLI.createTester(commands: [cmd4]), arguments: arguments4)
             XCTFail()
         } catch let error as OptionError {
-            XCTAssertEqual(error.message, "Must pass exactly one of the following: --alpha --beta")
+            guard case let .optionGroupMisuse(group) = error.kind else {
+                XCTFail()
+                return
+            }
+            XCTAssert(group === cmd4.optionGroups[0])
         }
     }
     

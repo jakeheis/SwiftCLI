@@ -40,7 +40,6 @@ public class OptionGroup {
     
     public let options: [Option]
     public let restriction: Restriction
-    public var message: String
     internal(set) public var count: Int = 0
     
     public init(options: [Option], restriction: Restriction) {
@@ -51,20 +50,6 @@ public class OptionGroup {
         
         self.options = options
         self.restriction = restriction
-        
-        if options.count == 1 {
-            self.message = "Must pass the following option"
-        } else {
-            switch restriction {
-            case .exactlyOne:
-                self.message = "Must pass exactly one of the following"
-            case .atLeastOne:
-                self.message = "Must pass at least one of the following"
-            case .atMostOne:
-                self.message = "Must not pass more than one of the following"
-            }
-        }
-        self.message += ": \(options.optMap({ $0.names.last }).joined(separator: " "))"
     }
     
     public func check() -> Bool  {

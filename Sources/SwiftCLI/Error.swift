@@ -47,7 +47,7 @@ extension CLI {
     
 }
 
-// MARK: -
+// MARK: - Parse errors
 
 public struct RouteError: Swift.Error {
     public let partialPath: CommandGroupPath
@@ -60,21 +60,71 @@ public struct RouteError: Swift.Error {
 }
 
 public struct OptionError: Swift.Error {
-    public let command: CommandPath?
-    public let message: String
     
-    public init(command: CommandPath?, message: String) {
+    public enum Kind {
+        case expectedValueAfterKey(String)
+        case illegalTypeForKey(String, Any.Type)
+        case unrecognizedOption(String)
+        case optionGroupMisuse(OptionGroup)
+        
+        public var message: String {
+            switch self {
+            case let .expectedValueAfterKey(key):
+                return "expected a value to follow '\(key)'"
+            case let .illegalTypeForKey(key, type):
+                return "illegal value passed to '\(key)' (expected \(type))"
+            case let .unrecognizedOption(opt):
+                return "unrecognized option '\(opt)'"
+            case let .optionGroupMisuse(group):
+                let condition: String
+                if group.options.count == 1 {
+                    condition = "must pass the following option"
+                } else {
+                    switch group.restriction {
+                    case .exactlyOne:
+                        condition = "must pass exactly one of the following"
+                    case .atLeastOne:
+                        condition = "must pass at least one of the following"
+                    case .atMostOne:
+                        condition = "must not pass more than one of the following"
+                    }
+                }
+                return condition + ": \(group.options.optMap({ $0.names.last }).joined(separator: " "))"
+            }
+        }
+    }
+    
+    public let command: CommandPath?
+    public let kind: Kind
+    
+    public init(command: CommandPath?, kind: Kind) {
         self.command = command
-        self.message = message
+        self.kind = kind
     }
 }
 
 public struct ParameterError: Swift.Error {
-    public let command: CommandPath
-    public let message: String
     
-    public init(command: CommandPath, message: String) {
+    public let command: CommandPath
+    public let minCount: Int
+    public let maxCount: Int?
+    
+    public var message: String {
+        let plural = minCount == 1 ? "argument" : "arguments"
+        
+        switch maxCount {
+        case .none:
+            return "command requires at least \(minCount) \(plural)"
+        case let .some(max) where max == minCount:
+            return "command requires exactly \(max) \(plural)"
+        case let .some(max):
+            return "command requires between \(minCount) and \(max) arguments"
+        }
+    }
+    
+    public init(command: CommandPath, paramIterator: ParameterIterator) {
         self.command = command
-        self.message = message
+        self.minCount = paramIterator.minCount
+        self.maxCount = paramIterator.maxCount
     }
 }

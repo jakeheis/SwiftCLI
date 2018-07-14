@@ -9,7 +9,9 @@
 public protocol HelpMessageGenerator {
     func writeCommandList(for path: CommandGroupPath, to out: WritableStream)
     func writeUsageStatement(for path: CommandPath, to out: WritableStream)
+    func writeRouteErrorMessage(for error: RouteError, to out: WritableStream)
     func writeMisusedOptionsStatement(for error: OptionError, to out: WritableStream)
+    func writeParameterErrorMessage(for error: ParameterError, to out: WritableStream)
 }
 
 extension HelpMessageGenerator {
@@ -93,14 +95,27 @@ extension HelpMessageGenerator {
         out <<< ""
     }
     
+    public func writeRouteErrorMessage(for error: RouteError, to out: WritableStream) {
+        writeCommandList(for: error.partialPath, to: out)
+        if let notFound = error.notFound {
+            out <<< "error: command '\(notFound)' not found"
+            out <<< ""
+        }
+    }
+    
     public func writeMisusedOptionsStatement(for error: OptionError, to out: WritableStream) {
         if let command = error.command {
             writeUsageStatement(for: command, to: out)
         } else {
             out <<< ""
         }
-        out <<< error.message
+        out <<< "error: " + error.kind.message
         out <<< ""
+    }
+    
+    public func writeParameterErrorMessage(for error: ParameterError, to out: WritableStream) {
+        out <<< "error: " + error.message
+        out <<< "usage: \(error.command.usage)"
     }
     
 }

@@ -225,8 +225,8 @@ class ExactlyOneCmd: Command {
     var helpFlag: Flag? = nil
     func execute() throws {}
     
-    let alpha = Flag("-a", "--alpha")
-    let beta = Flag("-b", "--beta")
+    let alpha = Flag("-a", "--alpha", description: "the alpha flag")
+    let beta = Flag("-b", "--beta", description: "the beta flag")
     
     let optionGroups: [OptionGroup]
     

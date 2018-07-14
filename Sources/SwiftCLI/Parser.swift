@@ -115,7 +115,7 @@ public class DefaultParameterFiller: ParameterFiller {
                 if let param = params.next() {
                     param.update(value: arguments.pop())
                 } else {
-                    throw ParameterError(command: commandPath, message: params.createErrorMessage())
+                    throw ParameterError(command: commandPath, paramIterator: params)
                 }
             } else {
                 try optionRegistry.parseOneOption(args: arguments, command: commandPath)
@@ -123,7 +123,7 @@ public class DefaultParameterFiller: ParameterFiller {
         }
         
         if let param = params.next(), !param.satisfied {
-            throw ParameterError(command: commandPath, message: params.createErrorMessage())
+            throw ParameterError(command: commandPath, paramIterator: params)
         }
     }
     

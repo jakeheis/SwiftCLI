@@ -39,7 +39,8 @@ class ParameterFillerTests: XCTestCase {
             try parse(command: EmptyCmd(), args: ["arg"])
             XCTFail()
         } catch let error as ParameterError {
-            XCTAssertEqual(error.message, "error: command requires exactly 0 arguments")
+            XCTAssertEqual(error.minCount, 0)
+            XCTAssertEqual(error.maxCount, 0)
         }
     }
     
@@ -48,7 +49,8 @@ class ParameterFillerTests: XCTestCase {
             try parse(command: Req2Cmd(), args: ["arg1"])
             XCTFail()
         } catch let error as ParameterError {
-            XCTAssertEqual(error.message, "error: command requires exactly 2 arguments")
+            XCTAssertEqual(error.minCount, 2)
+            XCTAssertEqual(error.maxCount, 2)
         }
         
         let req2 = try parse(command: Req2Cmd(), args: ["arg1", "arg2"])
@@ -59,7 +61,8 @@ class ParameterFillerTests: XCTestCase {
             try parse(command: Req2Cmd(), args: ["arg1", "arg2", "arg3"])
             XCTFail()
         } catch let error as ParameterError {
-            XCTAssertEqual(error.message, "error: command requires exactly 2 arguments")
+            XCTAssertEqual(error.minCount, 2)
+            XCTAssertEqual(error.maxCount, 2)
         }
     }
     
@@ -80,7 +83,8 @@ class ParameterFillerTests: XCTestCase {
             try parse(command: Opt2Cmd(), args: ["arg1", "arg2", "arg3"])
             XCTFail()
         } catch let error as ParameterError {
-            XCTAssertEqual(error.message, "error: command requires between 0 and 2 arguments")
+            XCTAssertEqual(error.minCount, 0)
+            XCTAssertEqual(error.maxCount, 2)
         }
     }
     
@@ -109,7 +113,8 @@ class ParameterFillerTests: XCTestCase {
             try parse(command: Opt2InhCmd(), args: ["arg1", "arg2", "arg3", "arg4"])
             XCTFail()
         } catch let error as ParameterError {
-            XCTAssertEqual(error.message, "error: command requires between 0 and 3 arguments")
+            XCTAssertEqual(error.minCount, 0)
+            XCTAssertEqual(error.maxCount, 3)
         }
     }
     
@@ -118,14 +123,16 @@ class ParameterFillerTests: XCTestCase {
             try parse(command: ReqCollectedCmd(), args: [])
             XCTFail()
         } catch let error as ParameterError {
-            XCTAssertEqual(error.message, "error: command requires at least 1 argument")
+            XCTAssertEqual(error.minCount, 1)
+            XCTAssertNil(error.maxCount)
         }
         
         do {
             try parse(command: Req2CollectedCmd(), args: ["arg1"])
             XCTFail()
         } catch let error as ParameterError {
-            XCTAssertEqual(error.message, "error: command requires at least 2 arguments")
+            XCTAssertEqual(error.minCount, 2)
+            XCTAssertNil(error.maxCount)
         }
         
         let cmd1 = try parse(command: Req2CollectedCmd(), args: ["arg1", "arg2"])
@@ -160,7 +167,8 @@ class ParameterFillerTests: XCTestCase {
             try parse(command: Req2Opt2Cmd(), args: ["arg1"])
             XCTFail()
         } catch let error as ParameterError {
-            XCTAssertEqual(error.message, "error: command requires between 2 and 4 arguments")
+            XCTAssertEqual(error.minCount, 2)
+            XCTAssertEqual(error.maxCount, 4)
         }
         
         let cmd1 = try parse(command: Req2Opt2Cmd(), args: ["arg1", "arg2"])
@@ -185,7 +193,8 @@ class ParameterFillerTests: XCTestCase {
             try parse(command: Req2Opt2Cmd(), args: ["arg1", "arg2", "arg3", "arg4", "arg5"])
             XCTFail()
         } catch let error as ParameterError {
-            XCTAssertEqual(error.message, "error: command requires between 2 and 4 arguments")
+            XCTAssertEqual(error.minCount, 2)
+            XCTAssertEqual(error.maxCount, 4)
         }
     }
     

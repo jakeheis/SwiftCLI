@@ -105,8 +105,8 @@ public class ParameterIterator {
     private var params: [AnyParameter]
     private let collected: AnyCollectedParameter?
     
-    private let minCount: Int
-    private let maxCount: Int?
+    let minCount: Int
+    let maxCount: Int?
     
     public init(command: CommandPath) {
         var all = command.command.parameters.map({ $0.1 })
@@ -138,19 +138,6 @@ public class ParameterIterator {
             return individual
         }
         return collected
-    }
-    
-    public func createErrorMessage() -> String {
-        let plural = minCount == 1 ? "argument" : "arguments"
-        
-        switch maxCount {
-        case nil:
-            return "error: command requires at least \(minCount) \(plural)"
-        case let count? where count == minCount:
-            return "error: command requires exactly \(count) \(plural)"
-        case let count?:
-            return "error: command requires between \(minCount) and \(count) arguments"
-        }
     }
     
 }

@@ -51,6 +51,8 @@ public class Flag: Option {
 }
 
 public protocol AnyKey: Option {
+    var valueType: Any.Type { get }
+    
     func updateValue(_ value: String) -> Bool
 }
 
@@ -59,6 +61,10 @@ public class Key<T: ConvertibleFromString>: AnyKey {
     public let names: [String]
     public let shortDescription: String
     public private(set) var value: T?
+    
+    public var valueType: Any.Type {
+        return T.self
+    }
     
     public var identifier: String {
         return names.joined(separator: ", ") + " <value>"
@@ -90,6 +96,10 @@ public class VariadicKey<T: ConvertibleFromString>: AnyKey {
     public let names: [String]
     public let shortDescription: String
     public private(set) var values: [T]
+    
+    public var valueType: Any.Type {
+        return T.self
+    }
     
     public var identifier: String {
         return names.joined(separator: ", ") + " <value>"
