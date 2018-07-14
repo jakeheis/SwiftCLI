@@ -51,7 +51,7 @@ public struct CommandPath {
         return command.options
     }
     
-    var usage: String {
+    public var usage: String {
         var message = joined()
         
         if !command.parameters.isEmpty {
