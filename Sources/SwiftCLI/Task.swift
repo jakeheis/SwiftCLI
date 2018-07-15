@@ -306,6 +306,17 @@ public class Task {
     
 }
 
+extension Task: CustomStringConvertible {
+    public var description: String {
+        var str = "Task(" + process.launchPath! + " " + process.arguments!.joined(separator: " ")
+        if process.currentDirectoryPath != FileManager.default.currentDirectoryPath {
+            str += " , directory: " + process.currentDirectoryPath
+        }
+        str += ")"
+        return str
+    }
+}
+
 // MARK: -
 
 /// The error thrown by run(...) and run(bash:)
