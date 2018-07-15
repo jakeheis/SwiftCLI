@@ -22,6 +22,7 @@ class StreamTests: XCTestCase {
             ("testReadLines", testReadLines),
             ("testLineStream", testLineStream),
             ("testCaptureStream", testCaptureStream),
+            ("testNullStream", testNullStream),
         ]
     }
     
@@ -163,6 +164,14 @@ class StreamTests: XCTestCase {
         second
         
         """)
+    }
+    
+    func testNullStream() {
+        let nullWrite = WriteStream.null
+        
+        nullWrite <<< "into"
+        nullWrite <<< "the"
+        nullWrite <<< "void"
     }
     
 }

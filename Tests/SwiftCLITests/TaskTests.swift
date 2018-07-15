@@ -25,7 +25,8 @@ class TaskTests: XCTestCase {
             ("testCurrentDirectory", testCurrentDirectory),
             ("testEnv", testEnv),
             ("testSignals", testSignals),
-            ("testTaskLineStream", testTaskLineStream)
+            ("testTaskLineStream", testTaskLineStream),
+            ("testTaskNullStream", testTaskNullStream),
         ]
     }
     
@@ -203,6 +204,11 @@ class TaskTests: XCTestCase {
         
         lineStream.wait()
         XCTAssertEqual(count, 3)
+    }
+    
+    func testTaskNullStream() throws {
+        let task = Task(executable: "ls", stdout: WriteStream.null)
+        task.runSync()
     }
     
 }

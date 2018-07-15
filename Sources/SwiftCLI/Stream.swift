@@ -60,7 +60,7 @@ public class WriteStream: WritableStream {
     public static let stderr = WriteStream(writeHandle: .standardError)
     
     /// A stream which does nothing upon write
-    public static let null = WriteStream(writeHandle: .nullDevice)
+    public static let null = WriteStream(path: "/dev/null")!
     
     // WritableStream
     public var writeStream: WriteStream { return self }
