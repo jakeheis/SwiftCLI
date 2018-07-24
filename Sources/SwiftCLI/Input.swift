@@ -66,7 +66,7 @@ public struct Input {
     ///   - validation: predicate defining whether the given input is valid
     ///   - errorResponse: what to do if the input is invalid; default prints "Invalid input"
     /// - Returns: input
-    public static func readObject<T: ConvertibleFromString>(prompt: String? = nil, secure: Bool = false, validation: InputReader<T>.Validation? = nil, errorResponse: InputReader<T>.ErrorResponse? = nil) -> T {
+    public static func readObject<T: LosslessStringConvertible>(prompt: String? = nil, secure: Bool = false, validation: InputReader<T>.Validation? = nil, errorResponse: InputReader<T>.ErrorResponse? = nil) -> T {
         return InputReader<T>(prompt: prompt, secure: secure, validation: validation, errorResponse: errorResponse).read()
     }
     
@@ -76,7 +76,7 @@ public struct Input {
 
 // MARK: InputReader
 
-public class InputReader<T: ConvertibleFromString> {
+public class InputReader<T: LosslessStringConvertible> {
     
     public typealias Validation = (T) -> Bool
     public typealias ErrorResponse = (_ input: String) -> ()
@@ -111,7 +111,7 @@ public class InputReader<T: ConvertibleFromString> {
                 exit(1)
             }
             
-            if let converted = T.convert(from: input), validation?(converted) ?? true {
+            if let converted = T(input), validation?(converted) ?? true {
                 return converted
             } else {
                 if let errorResponse = errorResponse {
