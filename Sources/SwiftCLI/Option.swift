@@ -56,7 +56,7 @@ public protocol AnyKey: Option {
     func updateValue(_ value: String) -> Bool
 }
 
-public class Key<T: ConvertibleFromString>: AnyKey {
+public class Key<T: LosslessStringConvertible>: AnyKey {
     
     public let names: [String]
     public let shortDescription: String
@@ -82,16 +82,14 @@ public class Key<T: ConvertibleFromString>: AnyKey {
     
     /// Toggles the key's value; don't call directly
     public func updateValue(_ value: String) -> Bool {
-        guard let value = T.convert(from: value) else {
-            return false
-        }
+        guard let value = T(value) else {return false}
         self.value = value
         return true
     }
     
 }
 
-public class VariadicKey<T: ConvertibleFromString>: AnyKey {
+public class VariadicKey<T: LosslessStringConvertible>: AnyKey {
     
     public let names: [String]
     public let shortDescription: String
@@ -118,61 +116,27 @@ public class VariadicKey<T: ConvertibleFromString>: AnyKey {
     
     /// Toggles the key's value; don't call directly
     public func updateValue(_ value: String) -> Bool {
-        guard let value = T.convert(from: value) else {
-            return false
-        }
+        guard let value = T(value) else {return false}
         values.append(value)
         return true
     }
     
 }
 
-// MARK: - ConvertibleFromString
+// MARK: - LosslessStringConvertible
 
-public protocol ConvertibleFromString {
-    static func convert(from: String) -> Self?
-}
-
-extension String: ConvertibleFromString {
-    public static func convert(from: String) -> String? {
-        return from
-    }
-}
-
-extension Int: ConvertibleFromString {
-    public static func convert(from: String) -> Int? {
-        return Int(from)
-    }
-}
-
-extension Float: ConvertibleFromString {
-    public static func convert(from: String) -> Float? {
-        return Float(from)
-    }
-}
-
-extension Double: ConvertibleFromString {
-    public static func convert(from: String) -> Double? {
-        return Double(from)
-    }
-}
-
-extension Bool: ConvertibleFromString {
-    public static func convert(from: String) -> Bool? {
-        let lowercased = from.lowercased()
-        
-        if ["y", "yes", "t", "true"].contains(lowercased) { return true }
-        if ["n", "no", "f", "false"].contains(lowercased) { return false }
-        
+extension Bool {
+    public init?(_ description: String) {
+        let lowercased = description.lowercased()
+        if ["y", "yes", "t", "true"].contains(lowercased) {self.init(true)}
+        if ["n", "no", "f", "false"].contains(lowercased) {self.init(false)}
         return nil
     }
 }
 
-extension RawRepresentable where RawValue: ConvertibleFromString {
-    public static func convert(from: String) -> Self? {
-        guard let val = RawValue.convert(from: from) else {
-            return nil
-        }
-        return Self.init(rawValue: val)
+extension RawRepresentable where RawValue: LosslessStringConvertible {
+    public init?(_ description: String) {
+        guard let val = RawValue(description) else {return nil}
+      self.init(rawValue: val)
     }
 }
