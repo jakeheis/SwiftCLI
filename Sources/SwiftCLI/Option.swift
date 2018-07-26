@@ -133,29 +133,16 @@ public protocol ConvertibleFromString {
     static func convert(from: String) -> Self?
 }
 
-extension String: ConvertibleFromString {
-    public static func convert(from: String) -> String? {
-        return from
-    }
+extension ConvertibleFromString where Self: LosslessStringConvertible {
+  public static func convert(from: String) -> Self? {
+    return Self(from)
+  }
 }
 
-extension Int: ConvertibleFromString {
-    public static func convert(from: String) -> Int? {
-        return Int(from)
-    }
-}
-
-extension Float: ConvertibleFromString {
-    public static func convert(from: String) -> Float? {
-        return Float(from)
-    }
-}
-
-extension Double: ConvertibleFromString {
-    public static func convert(from: String) -> Double? {
-        return Double(from)
-    }
-}
+extension String: ConvertibleFromString {}
+extension Int: ConvertibleFromString {}
+extension Float: ConvertibleFromString {}
+extension Double: ConvertibleFromString {}
 
 extension Bool: ConvertibleFromString {
     public static func convert(from: String) -> Bool? {
@@ -168,11 +155,11 @@ extension Bool: ConvertibleFromString {
     }
 }
 
-extension RawRepresentable where RawValue: ConvertibleFromString {
-    public static func convert(from: String) -> Self? {
-        guard let val = RawValue.convert(from: from) else {
-            return nil
-        }
-        return Self.init(rawValue: val)
+extension ConvertibleFromString where Self: RawRepresentable, Self.RawValue: ConvertibleFromString {
+  public static func convert(from: String) -> Self? {
+    guard let val = RawValue.convert(from: from) else {
+      return nil
     }
+    return Self.init(rawValue: val)
+  }
 }
