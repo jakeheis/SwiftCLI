@@ -129,30 +129,16 @@ public class VariadicKey<T: ConvertibleFromString>: AnyKey {
 
 // MARK: - ConvertibleFromString
 
+/// A type that can be created from a string
 public protocol ConvertibleFromString {
-    static func convert(from: String) -> Self?
+  /// Returns an instance of the conforming type from a string representation
+  static func convert(from: String) -> Self?
 }
 
 extension ConvertibleFromString where Self: LosslessStringConvertible {
   public static func convert(from: String) -> Self? {
     return Self(from)
   }
-}
-
-extension String: ConvertibleFromString {}
-extension Int: ConvertibleFromString {}
-extension Float: ConvertibleFromString {}
-extension Double: ConvertibleFromString {}
-
-extension Bool: ConvertibleFromString {
-    public static func convert(from: String) -> Bool? {
-        let lowercased = from.lowercased()
-        
-        if ["y", "yes", "t", "true"].contains(lowercased) { return true }
-        if ["n", "no", "f", "false"].contains(lowercased) { return false }
-        
-        return nil
-    }
 }
 
 extension ConvertibleFromString where Self: RawRepresentable, Self.RawValue: ConvertibleFromString {
@@ -162,4 +148,30 @@ extension ConvertibleFromString where Self: RawRepresentable, Self.RawValue: Con
     }
     return Self.init(rawValue: val)
   }
+}
+
+extension String: ConvertibleFromString {}
+extension Int: ConvertibleFromString {}
+extension Float: ConvertibleFromString {}
+extension Double: ConvertibleFromString {}
+
+extension Bool: ConvertibleFromString {
+  /// Returns a bool from a string representation
+  ///
+  /// - parameter from: A string representation of a bool value
+  ///
+  /// This is case insensitive and recognizes several representations:
+  ///
+  /// - true/false
+  /// - t/f
+  /// - yes/no
+  /// - y/n
+  public static func convert(from: String) -> Bool? {
+        let lowercased = from.lowercased()
+        
+        if ["y", "yes", "t", "true"].contains(lowercased) { return true }
+        if ["n", "no", "f", "false"].contains(lowercased) { return false }
+        
+        return nil
+    }
 }
