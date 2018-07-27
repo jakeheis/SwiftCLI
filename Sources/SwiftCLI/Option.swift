@@ -129,50 +129,49 @@ public class VariadicKey<T: ConvertibleFromString>: AnyKey {
 
 // MARK: - ConvertibleFromString
 
+/// A type that can be created from a string
 public protocol ConvertibleFromString {
-    static func convert(from: String) -> Self?
+  /// Returns an instance of the conforming type from a string representation
+  static func convert(from: String) -> Self?
 }
 
-extension String: ConvertibleFromString {
-    public static func convert(from: String) -> String? {
-        return from
-    }
+extension ConvertibleFromString where Self: LosslessStringConvertible {
+  public static func convert(from: String) -> Self? {
+    return Self(from)
+  }
 }
 
-extension Int: ConvertibleFromString {
-    public static func convert(from: String) -> Int? {
-        return Int(from)
+extension ConvertibleFromString where Self: RawRepresentable, Self.RawValue: ConvertibleFromString {
+  public static func convert(from: String) -> Self? {
+    guard let val = RawValue.convert(from: from) else {
+      return nil
     }
+    return Self.init(rawValue: val)
+  }
 }
 
-extension Float: ConvertibleFromString {
-    public static func convert(from: String) -> Float? {
-        return Float(from)
-    }
-}
-
-extension Double: ConvertibleFromString {
-    public static func convert(from: String) -> Double? {
-        return Double(from)
-    }
-}
+extension String: ConvertibleFromString {}
+extension Int: ConvertibleFromString {}
+extension Float: ConvertibleFromString {}
+extension Double: ConvertibleFromString {}
 
 extension Bool: ConvertibleFromString {
-    public static func convert(from: String) -> Bool? {
+  /// Returns a bool from a string representation
+  ///
+  /// - parameter from: A string representation of a bool value
+  ///
+  /// This is case insensitive and recognizes several representations:
+  ///
+  /// - true/false
+  /// - t/f
+  /// - yes/no
+  /// - y/n
+  public static func convert(from: String) -> Bool? {
         let lowercased = from.lowercased()
         
         if ["y", "yes", "t", "true"].contains(lowercased) { return true }
         if ["n", "no", "f", "false"].contains(lowercased) { return false }
         
         return nil
-    }
-}
-
-extension RawRepresentable where RawValue: ConvertibleFromString {
-    public static func convert(from: String) -> Self? {
-        guard let val = RawValue.convert(from: from) else {
-            return nil
-        }
-        return Self.init(rawValue: val)
     }
 }
