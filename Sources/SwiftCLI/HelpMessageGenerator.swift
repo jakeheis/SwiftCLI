@@ -12,6 +12,7 @@ public protocol HelpMessageGenerator {
     func writeRouteErrorMessage(for error: RouteError, to out: WritableStream)
     func writeMisusedOptionsStatement(for error: OptionError, to out: WritableStream)
     func writeParameterErrorMessage(for error: ParameterError, to out: WritableStream)
+    func writeUnrecognizedErrorMessage(for error: Error, to out: WritableStream)
 }
 
 extension HelpMessageGenerator {
@@ -117,6 +118,10 @@ extension HelpMessageGenerator {
         writeUsageStatement(for: error.command, to: out)
         out <<< "Error: " + error.message
         out <<< ""
+    }
+    
+    public func writeUnrecognizedErrorMessage(for error: Error, to out: WritableStream) {
+        out <<< "An error occurred: \(error)"
     }
     
 }
