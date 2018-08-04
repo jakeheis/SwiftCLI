@@ -133,7 +133,7 @@ public class CLI {
             }
             exitStatus = Int32(error.exitStatus)
         } catch let error {
-            helpMessageGenerator.writeUnrecognizedErrorMessage(for: Error, to: stderr)
+            helpMessageGenerator.writeUnrecognizedErrorMessage(for: error, to: stderr)
             exitStatus = 1
         }
         

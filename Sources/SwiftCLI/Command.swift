@@ -28,12 +28,12 @@ public protocol Routable: class {
 extension Routable {
     
     /// Standard out stream
-    public var stdout: WriteStream {
+    public var stdout: WritableStream {
         return WriteStream.stdout
     }
     
     /// Standard error stream
-    public var stderr: WriteStream {
+    public var stderr: WritableStream {
         return WriteStream.stderr
     }
     

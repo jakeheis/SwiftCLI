@@ -8,12 +8,12 @@
 import Dispatch
 import Foundation
 
-// MARK: - Writable
+// MARK: - WritableStream
 
-public protocol WritableStream {
-    var writeStream: WriteStream { get }
-    var encoding: String.Encoding { get }
+public protocol WritableStream: class {
+    var writeHandle: FileHandle { get }
     var processObject: Any { get }
+    var encoding: String.Encoding { get }
 }
 
 extension WritableStream {
@@ -22,7 +22,7 @@ extension WritableStream {
     ///
     /// - Parameter data: the data to write
     public func writeData(_ data: Data) {
-        writeStream.writeHandle.write(data)
+        writeHandle.write(data)
     }
     
     /// Write the given content to the stream without any terminator
@@ -46,51 +46,136 @@ extension WritableStream {
     
     /// Close the stream
     public func closeWrite() {
-        writeStream.writeHandle.closeFile()
+        writeHandle.closeFile()
     }
     
 }
 
-public class WriteStream: WritableStream {
+public enum WriteStream {
     
     /// A stream which writes to the current process's standard output
-    public static let stdout = WriteStream(writeHandle: .standardOutput)
+    public static let stdout: WritableStream = WriteStream.for(fileHandle: .standardOutput)
     
     /// A stream which writes to the current process's standard error
-    public static let stderr = WriteStream(writeHandle: .standardError)
+    public static let stderr: WritableStream = WriteStream.for(fileHandle: .standardError)
     
     /// A stream which does nothing upon write
-    public static let null = WriteStream(path: "/dev/null")!
-    
-    // WritableStream
-    public var writeStream: WriteStream { return self }
-    public var encoding: String.Encoding = .utf8
-    public var processObject: Any { return writeHandle }
-    
-    // private
-    fileprivate let writeHandle: FileHandle
-    
-    /// Create a stream which writes to the given file handle
-    ///
-    /// - Parameter writeHandle: the file handle to write to
-    public init(writeHandle: FileHandle) {
-        self.writeHandle = writeHandle
-    }
+    public static let null: WritableStream = WriteStream.for(path: "/dev/null")!
     
     /// Create a stream which writes to the given path
     ///
-    /// - Parameter path: the path to write to
-    public convenience init?(path: String) {
-        guard let fileHandle = FileHandle(forWritingAtPath: path) else {
-            return nil
-        }
-        fileHandle.seekToEndOfFile()
-        self.init(writeHandle: fileHandle)
+    /// - Parameters:
+    ///   - path: the path to write to
+    ///   - appending: whether written data should be appended to the end of the file if the file already exists; default true
+    /// - Returns: a new FileStream if the path exists and can be written to
+    public static func `for`(path: String, appending: Bool = true) -> FileStream? {
+        return FileStream(path: path, appending: appending)
     }
     
-    /// Close the stream
-    public func close() {
-        closeWrite()
+    /// Create a stream which writes to the given file handle
+    ///
+    /// - Parameter fileHandle: the file handle to write to
+    /// - Returns: a new FileHandleStream
+    public static func `for`(fileHandle: FileHandle) -> FileHandleStream {
+        return FileHandleStream(writeHandle: fileHandle)
+    }
+    
+    /// Create a stream which writes to the given file descriptor
+    ///
+    /// - Parameter fileDescriptor: the file descriptor to write to
+    /// - Returns: a new FileHandleStream
+    public static func `for`(fileDescriptor: Int32) -> FileHandleStream {
+        return FileHandleStream(writeHandle: FileHandle(fileDescriptor: fileDescriptor))
+    }
+    
+    public class FileStream: WritableStream {
+        
+        public let writeHandle: FileHandle
+        public let processObject: Any
+        public let encoding: String.Encoding
+        
+        /// The position of the file pointer within the file
+        public var offset: UInt64 {
+            return writeHandle.offsetInFile
+        }
+        
+        /// Create a stream which writes to the given path
+        ///
+        /// - Parameters:
+        ///   - path: the path to write to
+        ///   - appending: whether written data should be appended to the end of the file if the file already exists; default true
+        ///   - encoding: the encoding with which to write strings; default .utf8
+        public init?(path: String, appending: Bool = true, createIfNecessary: Bool = true, encoding: String.Encoding = .utf8) {
+            if !FileManager.default.fileExists(atPath: path) && createIfNecessary {
+                guard FileManager.default.createFile(atPath: path, contents: nil, attributes: nil) else {
+                    return nil
+                }
+            }
+            guard let fileHandle = FileHandle(forWritingAtPath: path) else {
+                return nil
+            }
+            if appending {
+                fileHandle.seekToEndOfFile()
+            }
+            self.writeHandle = fileHandle
+            self.processObject = fileHandle
+            self.encoding = encoding
+        }
+        
+        /// Create a file stream from the given file handle stream
+        ///
+        /// - Parameter stream: the file handle stream to convert to a file stream
+        /// - Warning: This init should only be used if it is guaranteed that the file handle wrapped by the FileHandleStream is backed by a file,
+        ///            not a pipe or a socket
+        public init(unsafeFileHandleStream stream: FileHandleStream) {
+            self.writeHandle = stream.writeHandle
+            self.processObject = stream.processObject
+            self.encoding = stream.encoding
+        }
+        
+        /// Moves the file pointer to the specified offset within the file
+        ///
+        /// - Parameter offset: the offset to seek to
+        public func seek(to offset: UInt64) {
+            writeHandle.seek(toFileOffset: offset)
+        }
+        
+        /// Puts the file pointer at the end of the file referenced by the receiver
+        public func seekToEnd() {
+            writeHandle.seekToEndOfFile()
+        }
+        
+        /// Truncate the file represented by this stream after the given byte offset
+        ///
+        /// - Parameter offset: the byte offset after which to truncate
+        public func truncate(at offset: UInt64) {
+            // Use C func rather than writeHandle.truncateFile due to the latter not working on Linux
+            ftruncate(writeHandle.fileDescriptor, off_t(offset))
+        }
+        
+        /// Truncate the file represented by this stream after the current byte offset
+        public func truncateRemaining() {
+            truncate(at: offset)
+            writeHandle.synchronizeFile()
+        }
+        
+    }
+    
+    public class FileHandleStream: WritableStream {
+        
+        public let writeHandle: FileHandle
+        public let processObject: Any
+        public let encoding: String.Encoding
+        
+        /// Create a stream which writes to the given file handle
+        ///
+        /// - Parameter writeHandle: the file handle to write to
+        public init(writeHandle: FileHandle, encoding: String.Encoding = .utf8) {
+            self.writeHandle = writeHandle
+            self.processObject = writeHandle
+            self.encoding = encoding
+        }
+        
     }
     
 }
@@ -98,9 +183,10 @@ public class WriteStream: WritableStream {
 // MARK: - Readable
 
 public protocol ReadableStream: class {
-    var readStream: ReadStream { get }
-    var encoding: String.Encoding { get }
+    var readHandle: FileHandle { get }
     var processObject: Any { get }
+    var encoding: String.Encoding { get }
+    var readBuffer: ReadBuffer { get }
 }
 
 extension ReadableStream {
@@ -109,7 +195,7 @@ extension ReadableStream {
     ///
     /// - Returns: the read data
     public func readData() -> Data? {
-        let data = readStream.readHandle.availableData
+        let data = readHandle.availableData
         return data.isEmpty ? nil : data
     }
     
@@ -117,8 +203,7 @@ extension ReadableStream {
     ///
     /// - Returns: the read text
     public func read() -> String? {
-        let unread = readStream.unreadBuffer
-        readStream.unreadBuffer = ""
+        let unread = readBuffer.clear()
         
         guard let data = readData() else {
             return unread.isEmpty ? nil : unread
@@ -148,7 +233,7 @@ extension ReadableStream {
         
         if let index = accumluated.index(of: delimiter) {
             let remainder = String(accumluated[accumluated.index(after: index)...])
-            readStream.unreadBuffer = remainder.isEmpty ? "" : remainder
+            readBuffer.fill(with: remainder)
             return String(accumluated[..<index])
         } else {
             return accumluated
@@ -178,88 +263,132 @@ extension ReadableStream {
     
     /// Close the stream
     public func closeRead() {
-        readStream.readHandle.closeFile()
+        readHandle.closeFile()
     }
     
 }
 
-public class ReadStream: ReadableStream {
+public class ReadBuffer {
+    
+    private var buffer = ""
+    
+    public init() {}
+    
+    fileprivate func fill(with content: String) {
+        buffer = content
+    }
+    
+    @discardableResult
+    fileprivate func clear() -> String {
+        defer { buffer = "" }
+        return buffer
+    }
+    
+}
+
+public enum ReadStream {
     
     /// A stream which reads from the current process's standard input
     /// - Warning: do not call readLine on this stream and also call Swift.readLine() or Input.readLine()
-    public static let stdin = ReadStream(readHandle: .standardInput)
+    public static let stdin: ReadableStream = FileHandleStream(readHandle: .standardInput)
     
-    fileprivate let readHandle: FileHandle
-    fileprivate var unreadBuffer = ""
-    
-    // ReadableStream
-    public var readStream: ReadStream { return self }
-    public var encoding: String.Encoding = .utf8
-    public var processObject: Any { return readHandle }
-    
-    /// Create a stream which reads from the given file handle
-    ///
-    /// - Parameter path: the file handle to read from
-    public init(readHandle: FileHandle) {
-        self.readHandle = readHandle
+    public static func `for`(path: String) -> FileStream? {
+        return FileStream(path: path)
     }
     
-    /// Create a stream which reads from the given path
-    ///
-    /// - Parameter path: the path to read from
-    public convenience init?(path: String) {
-        guard let readHandle = FileHandle(forReadingAtPath: path) else {
-            return nil
+    public static func `for`(fileHandle: FileHandle) -> FileHandleStream {
+        return FileHandleStream(readHandle: fileHandle)
+    }
+    
+    public static func `for`(fileDescriptor: Int32) -> FileHandleStream {
+        return FileHandleStream(readHandle: FileHandle(fileDescriptor: fileDescriptor))
+    }
+    
+    public class FileStream: ReadableStream {
+        
+        public let readHandle: FileHandle
+        public let processObject: Any
+        public let encoding: String.Encoding
+        public let readBuffer = ReadBuffer()
+        
+        /// The position of the file pointer within the file
+        public var offset: UInt64 {
+            return readHandle.offsetInFile
         }
-        self.init(readHandle: readHandle)
+        
+        /// Create a stream which reads from the given path
+        ///
+        /// - Parameter path: the path to read from
+        public init?(path: String, encoding: String.Encoding = .utf8) {
+            guard let readHandle = FileHandle(forReadingAtPath: path) else {
+                return nil
+            }
+            self.readHandle = readHandle
+            self.processObject = readHandle
+            self.encoding = encoding
+        }
+        
+        /// Moves the file pointer to the specified offset within the file
+        ///
+        /// - Parameter offset: the offset to seek to
+        public func seek(to offset: UInt64) {
+            readHandle.seek(toFileOffset: offset)
+            readBuffer.clear()
+        }
+        
+        /// Puts the file pointer at the end of the file referenced by the receiver
+        public func seekToEnd() {
+            readHandle.seekToEndOfFile()
+            readBuffer.clear()
+        }
+        
     }
     
-    /// Close the stream
-    public func close() {
-        closeRead()
+    public class FileHandleStream: ReadableStream {
+        
+        public let readHandle: FileHandle
+        public let processObject: Any
+        public let encoding: String.Encoding
+        public let readBuffer = ReadBuffer()
+        
+        /// Create a stream which reads from the given file handle
+        ///
+        /// - Parameter readHandle: the file handle to read from
+        public init(readHandle: FileHandle, encoding: String.Encoding = .utf8) {
+            self.readHandle = readHandle
+            self.processObject = readHandle
+            self.encoding = encoding
+        }
+        
     }
     
 }
 
-// MARK: - Pipe
+// MARK: - Pipe based streams
 
 public class PipeStream: ReadableStream, WritableStream {
     
+    public let readHandle: FileHandle
+    public let writeHandle: FileHandle
     public let processObject: Any
-    public let readStream: ReadStream
-    public let writeStream: WriteStream
-    public var encoding: String.Encoding {
-        get {
-            return readStream.encoding
-        }
-        set(newValue) {
-            readStream.encoding = newValue
-            writeStream.encoding = newValue
-        }
-    }
+    public var encoding: String.Encoding = .utf8
+    public let readBuffer = ReadBuffer()
     
     /// Creates a new pipe stream
     public init() {
         let pipe = Pipe()
         self.processObject = pipe
-        self.readStream = ReadStream(readHandle: pipe.fileHandleForReading)
-        self.writeStream = WriteStream(writeHandle: pipe.fileHandleForWriting)
+        self.readHandle = pipe.fileHandleForReading
+        self.writeHandle = pipe.fileHandleForWriting
     }
     
 }
 
 public class LineStream: WritableStream {
     
+    public let writeHandle: FileHandle
     public let processObject: Any
-    public let writeStream: WriteStream
-    public var encoding: String.Encoding {
-        get {
-            return writeStream.encoding
-        }
-        set(newValue) {
-            writeStream.encoding = newValue
-        }
-    }
+    public var encoding: String.Encoding = .utf8
     
     private let queue = DispatchQueue(label: "com.jakeheis.SwiftCLI.LineStream")
     private let semaphore = DispatchSemaphore(value: 0)
@@ -270,9 +399,9 @@ public class LineStream: WritableStream {
     public init(each: @escaping (String) -> ()) {
         let pipe = Pipe()
         self.processObject = pipe
-        self.writeStream = WriteStream(writeHandle: pipe.fileHandleForWriting)
+        self.writeHandle = pipe.fileHandleForWriting
         
-        let readStream = ReadStream(readHandle: pipe.fileHandleForReading)
+        let readStream = ReadStream.for(fileHandle: pipe.fileHandleForReading)
         queue.async { [weak self] in
             while let line = readStream.readLine() {
                 each(line)
@@ -291,26 +420,20 @@ public class LineStream: WritableStream {
 public class CaptureStream: WritableStream {
     
     public let processObject: Any
-    public let writeStream: WriteStream
-    public var encoding: String.Encoding {
-        get {
-            return writeStream.encoding
-        }
-        set(newValue) {
-            writeStream.encoding = newValue
-        }
-    }
+    public let writeHandle: FileHandle
+    public var encoding: String.Encoding = .utf8
     
     private var content = ""
     private let queue = DispatchQueue(label: "com.jakeheis.SwiftCLI.CaptureStream")
     private let semaphore = DispatchSemaphore(value: 0)
     
+    /// Creates a new stream which collects all data written to it
     public init() {
         let pipe = Pipe()
         self.processObject = pipe
-        self.writeStream = WriteStream(writeHandle: pipe.fileHandleForWriting)
+        self.writeHandle = pipe.fileHandleForWriting
         
-        let readStream = ReadStream(readHandle: pipe.fileHandleForReading)
+        let readStream = ReadStream.for(fileHandle: pipe.fileHandleForReading)
         queue.async { [weak self] in
             while let chunk = readStream.read() {
                 self?.content += chunk

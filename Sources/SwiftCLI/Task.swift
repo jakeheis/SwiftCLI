@@ -202,14 +202,14 @@ public class Task {
         if let directory = directory {
             self.process.currentDirectoryPath = directory
         }
-
-        if (stdout as? WriteStream) !== WriteStream.stdout {
+        
+        if stdout !== WriteStream.stdout {
             self.process.standardOutput = stdout.processObject
         }
-        if (stderr as? WriteStream) !== WriteStream.stderr {
+        if stderr !== WriteStream.stderr {
             self.process.standardError = stderr.processObject
         }
-        if (stdin as? ReadStream) !== ReadStream.stdin {
+        if stdin !== ReadStream.stdin {
             self.process.standardInput = stdin.processObject
         }
     }

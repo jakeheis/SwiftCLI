@@ -167,13 +167,13 @@ extension Input {
 public typealias OutputByteStream = WritableStream
 
 @available(*, unavailable, message: "Use WriteStream.stdout instead")
-public class StdoutStream: WriteStream {}
+public class StdoutStream {}
 
 @available(*, unavailable, message: "Use WriteStream.stderr instead")
-public class StderrStream: WriteStream {}
+public class StderrStream {}
 
 @available(*, unavailable, message: "Use WriteStream.null instead")
-public class NullStream: WriteStream {}
+public class NullStream {}
 
 @available(*, unavailable, renamed: "WriteStream")
 public typealias FileStream = WriteStream
@@ -190,10 +190,10 @@ extension WritableStream {
 
 extension Term {
     @available(*, unavailable, message: "Use WriteStream.stdout instead")
-    public static var stdout: WriteStream { return WriteStream.stdout }
+    public static var stdout: WritableStream { return WriteStream.stdout }
     
     @available(*, unavailable, message: "Use WriteStream.stderr instead")
-    public static var stderr: WriteStream { return WriteStream.stderr }
+    public static var stderr: WritableStream { return WriteStream.stderr }
 }
 
 @available(*, unavailable, message: "use CLI.Error instead")
@@ -212,3 +212,53 @@ public func printError(_ error: String) {}
 
 @available(*, unavailable, renamed: "WriteStream.stderr.print")
 public func printError(_ error: String, terminator: String) {}
+
+extension WriteStream {
+    @available(*, unavailable, renamed: "WriteStream.for(path:)")
+    public init?(path: String) {
+        return nil
+    }
+    
+    @available(*, unavailable, renamed: "WriteStream.for(fileHandle:)")
+    public init(writeHandle: FileHandle) {
+        fatalError()
+    }
+    
+    @available(*, unavailable, renamed: "closeWrite")
+    public func close() {}
+}
+
+extension WriteStream.FileStream {
+    @available(*, unavailable, renamed: "closeWrite")
+    public func close() {}
+}
+
+extension WriteStream.FileHandleStream {
+    @available(*, unavailable, renamed: "closeWrite")
+    public func close() {}
+}
+
+extension ReadStream {
+    @available(*, unavailable, renamed: "ReadStream.for(path:)")
+    public init?(path: String) {
+        return nil
+    }
+    
+    @available(*, unavailable, renamed: "ReadStream.for(fileHandle:)")
+    public init(readHandle: FileHandle) {
+        fatalError()
+    }
+    
+    @available(*, unavailable, renamed: "closeRead")
+    public func close() {}
+}
+
+extension ReadStream.FileStream {
+    @available(*, unavailable, renamed: "closeRead")
+    public func close() {}
+}
+
+extension ReadStream.FileHandleStream {
+    @available(*, unavailable, renamed: "closeRead")
+    public func close() {}
+}

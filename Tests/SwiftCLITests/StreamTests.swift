@@ -23,6 +23,8 @@ class StreamTests: XCTestCase {
             ("testLineStream", testLineStream),
             ("testCaptureStream", testCaptureStream),
             ("testNullStream", testNullStream),
+            ("testReadFile", testReadFile),
+            ("testWriteFile", testWriteFile),
         ]
     }
     
@@ -32,10 +34,10 @@ class StreamTests: XCTestCase {
         let text = "first line\nsecond line"
         
         let pipe = Pipe()
-        let write = WriteStream(writeHandle: pipe.fileHandleForWriting)
+        let write = WriteStream.for(fileHandle: pipe.fileHandleForWriting)
         
         write.write(text)
-        write.close()
+        write.closeWrite()
         
         let data = pipe.fileHandleForReading.readDataToEndOfFile()
         XCTAssertEqual(String(data: data, encoding: .utf8), text)
@@ -45,9 +47,9 @@ class StreamTests: XCTestCase {
         let data = "someString".data(using: .utf8)!
         
         let pipe = Pipe()
-        let write = WriteStream(writeHandle: pipe.fileHandleForWriting)
+        let write = WriteStream.for(fileHandle: pipe.fileHandleForWriting)
         write.writeData(data)
-        write.close()
+        write.closeWrite()
         
         XCTAssertEqual(pipe.fileHandleForReading.readDataToEndOfFile(), data)
     }
@@ -56,7 +58,7 @@ class StreamTests: XCTestCase {
     
     func testRead() {
         let pipe = Pipe()
-        let read = ReadStream(readHandle: pipe.fileHandleForReading)
+        let read = ReadStream.for(fileHandle: pipe.fileHandleForReading)
         
         let first = "first line\n"
         pipe.fileHandleForWriting.write(first.data(using: .utf8)!)
@@ -71,7 +73,7 @@ class StreamTests: XCTestCase {
         let data = "someString".data(using: .utf8)!
         
         let pipe = Pipe()
-        let read = ReadStream(readHandle: pipe.fileHandleForReading)
+        let read = ReadStream.for(fileHandle: pipe.fileHandleForReading)
         pipe.fileHandleForWriting.write(data)
         XCTAssertEqual(read.readData(), data)
     }
@@ -172,6 +174,56 @@ class StreamTests: XCTestCase {
         nullWrite <<< "into"
         nullWrite <<< "the"
         nullWrite <<< "void"
+    }
+    
+    func testReadFile() {
+        let stream = ReadStream.for(path: #file)
+        XCTAssertEqual(stream?.readLine(), "//")
+        XCTAssertEqual(stream?.readLine(), "//  StreamTests.swift")
+        
+        stream?.seek(to: 0)
+        XCTAssertEqual(stream?.readLine(), "//")
+        XCTAssertEqual(stream?.readLine(), "//  StreamTests.swift")
+        
+        stream?.seekToEnd()
+        XCTAssertNil(stream?.readLine())
+    }
+    
+    func testWriteFile() {
+        let path = "/tmp/SwiftCLI.test"
+        defer { try? FileManager.default.removeItem(atPath: path) }
+        
+        guard let stream = WriteStream.for(path: path) else {
+            XCTFail()
+            return
+        }
+        
+        stream <<< "first line"
+        stream <<< "second line"
+        
+        XCTAssertEqual(String(data: FileManager.default.contents(atPath: path)!, encoding: .utf8), """
+        first line
+        second line
+        
+        """)
+        
+        guard let secondStream = WriteStream.for(path: path, appending: false) else {
+            XCTFail()
+            return
+        }
+        secondStream.write("newww text")
+        
+        XCTAssertEqual(String(data: FileManager.default.contents(atPath: path)!, encoding: .utf8), """
+        newww text
+        second line
+        
+        """)
+        
+        secondStream.truncateRemaining()
+        
+        XCTAssertEqual(String(data: FileManager.default.contents(atPath: path)!, encoding: .utf8), """
+        newww text
+        """)
     }
     
 }
