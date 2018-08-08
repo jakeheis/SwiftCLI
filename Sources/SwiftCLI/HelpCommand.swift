@@ -9,9 +9,9 @@
 public class HelpCommand: Command {
     
     public let name = "help"
-    public let shortDescription = "Prints this help information"
+    public let shortDescription = "Prints help information"
     
-    public let command = OptionalCollectedParameter()
+    public let command = OptionalCollectedParameter(completion: .none)
     
     let cli: CLI
     

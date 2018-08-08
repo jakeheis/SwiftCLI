@@ -47,7 +47,7 @@ class HelpMessageGeneratorTests: XCTestCase {
         Commands:
           alpha           The alpha command
           beta            A beta command
-          help            Prints this help information
+          help            Prints help information
         
         
         """)
@@ -66,7 +66,7 @@ class HelpMessageGeneratorTests: XCTestCase {
         
         Commands:
           alpha           The alpha command
-          help            Prints this help information
+          help            Prints help information
         
         
         """)
@@ -88,7 +88,7 @@ class HelpMessageGeneratorTests: XCTestCase {
           test            A command that has multiline comments.
                           New line
           beta            A beta command
-          help            Prints this help information
+          help            Prints help information
 
 
         """)
@@ -111,7 +111,7 @@ class HelpMessageGeneratorTests: XCTestCase {
         A command to test stuff
         
         Options:
-          -h, --help             Show help information for this command
+          -h, --help             Show help information
           -s, --silent           Silence all test output
           -t, --times <value>    Number of times to run the test
         
@@ -135,7 +135,7 @@ class HelpMessageGeneratorTests: XCTestCase {
         multiline description
 
         Options:
-          -h, --help      Show help information for this command
+          -h, --help      Show help information
 
 
         """)
@@ -156,7 +156,7 @@ class HelpMessageGeneratorTests: XCTestCase {
         A command to test stuff
         
         Options:
-          -h, --help             Show help information for this command
+          -h, --help             Show help information
           -s, --silent           Silence all test output
           -t, --times <value>    Number of times to run the test
           -v, --verbose          Show more output information
@@ -181,7 +181,7 @@ class HelpMessageGeneratorTests: XCTestCase {
         New line
 
         Options:
-          -h, --help             Show help information for this command
+          -h, --help             Show help information
           -s, --silent           Silence all test output
                                  Newline
           -t, --times <value>    Number of times to run the test
@@ -207,7 +207,7 @@ class HelpMessageGeneratorTests: XCTestCase {
         Commands:
           alpha           The alpha command
           beta            A beta command
-          help            Prints this help information
+          help            Prints help information
         
         
         """)
@@ -228,7 +228,7 @@ class HelpMessageGeneratorTests: XCTestCase {
         Commands:
           alpha           The alpha command
           beta            A beta command
-          help            Prints this help information
+          help            Prints help information
         
         Error: command 'nope' not found
 
@@ -253,7 +253,7 @@ class HelpMessageGeneratorTests: XCTestCase {
         A command to test stuff
         
         Options:
-          -h, --help             Show help information for this command
+          -h, --help             Show help information
           -s, --silent           Silence all test output
           -t, --times <value>    Number of times to run the test
         
@@ -292,7 +292,7 @@ class HelpMessageGeneratorTests: XCTestCase {
         A command to test stuff
         
         Options:
-          -h, --help             Show help information for this command
+          -h, --help             Show help information
           -s, --silent           Silence all test output
           -t, --times <value>    Number of times to run the test
         
@@ -317,7 +317,7 @@ class HelpMessageGeneratorTests: XCTestCase {
         A command to test stuff
         
         Options:
-          -h, --help             Show help information for this command
+          -h, --help             Show help information
           -s, --silent           Silence all test output
           -t, --times <value>    Number of times to run the test
         
@@ -343,7 +343,7 @@ class HelpMessageGeneratorTests: XCTestCase {
         Options:
           -a, --alpha     the alpha flag
           -b, --beta      the beta flag
-          -h, --help      Show help information for this command
+          -h, --help      Show help information
 
         Error: must pass exactly one of the following: --alpha --beta
         
@@ -368,7 +368,7 @@ class HelpMessageGeneratorTests: XCTestCase {
         Usage: tester cmd <req1> <req2> [<opt1>] [<opt2>] [options]
 
         Options:
-          -h, --help      Show help information for this command
+          -h, --help      Show help information
 
         Error: command requires between 2 and 4 arguments
         

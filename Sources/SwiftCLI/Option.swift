@@ -6,10 +6,11 @@
 //  Copyright © 2017 jakeheis. All rights reserved.
 //
 
-public protocol Option {
+public protocol Option: class {
     var names: [String] { get }
     var shortDescription: String { get }
     var identifier: String { get }
+    var isVariadic: Bool { get }
 }
 
 public extension Option {
@@ -26,6 +27,7 @@ public class Flag: Option {
     public let names: [String]
     public let shortDescription: String
     public private(set) var value: Bool
+    public let isVariadic = false
     
     public var identifier: String {
         return names.joined(separator: ", ")
@@ -61,6 +63,7 @@ public class Key<T: ConvertibleFromString>: AnyKey {
     public let names: [String]
     public let shortDescription: String
     public private(set) var value: T?
+    public let isVariadic = false
     
     public var valueType: Any.Type {
         return T.self
@@ -96,6 +99,7 @@ public class VariadicKey<T: ConvertibleFromString>: AnyKey {
     public let names: [String]
     public let shortDescription: String
     public private(set) var values: [T]
+    public let isVariadic = true
     
     public var valueType: Any.Type {
         return T.self

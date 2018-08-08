@@ -16,6 +16,7 @@ public protocol CompletionGenerator {
     var shell: Shell { get }
     
     init(cli: CLI)
+    init(cli: CLI, functions: [String: String])
     func writeCompletions()
     func writeCompletions(into stream: WritableStream)
 }
@@ -24,9 +25,15 @@ public final class ZshCompletionGenerator: CompletionGenerator {
     
     public let cli: CLI
     public let shell = Shell.zsh
+    public let functions: [String: String]
     
-    public init(cli: CLI) {
+    public convenience init(cli: CLI) {
+        self.init(cli: cli, functions: [:])
+    }
+    
+    public init(cli: CLI, functions: [String: String]) {
         self.cli = cli
+        self.functions = functions
     }
     
     public func writeCompletions() {
@@ -34,60 +41,68 @@ public final class ZshCompletionGenerator: CompletionGenerator {
     }
     
     public func writeCompletions(into stream: WritableStream) {
-        stream <<< "#compdef \(cli.name)"
+        stream <<< """
+        #compdef \(cli.name)
+        local context state state_descr line
+        typeset -A opt_args
         
-        writeGroupHeader(for: CommandGroupPath(top: cli), into: stream)
+        """
+        
+        writeGroup(for: CommandGroupPath(top: cli), into: stream)
+        
+        functions.forEach { writeFunction(name: $0.key, body: $0.value, into: stream) }
         
         stream <<< "_\(cli.name)"
     }
     
-    func writeGroupHeader(for group: CommandGroupPath, into stream: WritableStream) {
-        let name = groupName(for: group)
+    func writeGroup(for group: CommandGroupPath, into stream: WritableStream) {
+        let name = functionName(for: group)
+        
+        let options = genOptionArgs(for: group.bottom).joined(separator: " \\\n")
+        let commandList = group.bottom.children.map { (child) in
+            return "            \"\(child.name):\(escapeDescription(child.shortDescription))\""
+        }.joined(separator: "\n")
+        
+        
+        let subcommands = group.bottom.children.map { (child) -> String in
+            let indentation = "                "
+            return """
+            \(indentation)(\(child.name))
+            \(indentation)    _\(functionName(for: group.appending(child)))
+            \(indentation)    ;;
+            """
+        }.joined(separator: "\n")
+        
         stream <<< """
         _\(name)() {
-            local context state line
-            if (( CURRENT > 2 )); then
-                (( CURRENT-- ))
-                shift words
-                _call_function - "_\(name)_${words[1]}" || _nothing
-            else
-                __\(name)_commands
-            fi
-        }
+            _arguments -C \\
         """
-        writeCommandList(for: group, into: stream)
-    }
-    
-    func writeCommandList(for group: CommandGroupPath, into stream: WritableStream) {
-        let name = groupName(for: group)
-        stream <<< """
-        __\(name)_commands() {
-             _arguments -C \\
-               ': :->command'
-             case "$state" in
-                  command)
-                       local -a commands
-                       commands=(
-        """
-        
-        for routable in group.bottom.children {
-            if routable is HelpCommand { continue }
-            let info = escapeDescription(routable.shortDescription.isEmpty ? routable.name : routable.shortDescription)
-            stream <<< "               \(routable.name)\"[\(info)]\""
+        if !options.isEmpty {
+            stream <<< options + " \\"
         }
-        
         stream <<< """
-                       )
-                       _values 'command' $commands
-                       ;;
-             esac
+              '(-): :->command' \\
+              '(-)*:: :->arg' && return
+            case $state in
+                (command)
+                    local commands
+                    commands=(
+        \(commandList)
+                    )
+                    _describe 'command' commands
+                    ;;
+                (arg)
+                    case ${words[1]} in
+        \(subcommands)
+                    esac
+                    ;;
+            esac
         }
         """
         
         group.bottom.children.forEach { (routable) in
-            if routable is HelpCommand { return }
             if let subGroup = routable as? CommandGroup {
-                self.writeGroupHeader(for: group.appending(subGroup), into: stream)
+                self.writeGroup(for: group.appending(subGroup), into: stream)
             } else if let command = routable as? Command {
                 self.writeCommand(for: group.appending(command), into: stream)
             }
@@ -95,37 +110,120 @@ public final class ZshCompletionGenerator: CompletionGenerator {
     }
     
     func writeCommand(for command: CommandPath, into stream: WritableStream) {
-        let prefix = groupName(for: command.groupPath!)
-        stream <<< """
-        _\(prefix)_\(command.command.name)() {
-            _arguments -C \\
-        """
-        
-        let lines: [String] = command.options.map { (option) in
-            let first = "(" + option.names.joined(separator: " ") + ")"
-            let middle = "{" + option.names.joined(separator: ",") + "}"
-            let end: String
-            if option.shortDescription.isEmpty {
-                let sortedNames = option.names.sorted(by: {$0.count > $1.count})
-                end = "[" + sortedNames.first!.trimmingCharacters(in: CharacterSet(charactersIn: "-")) + "]"
-            } else {
-                end = "[" + escapeDescription(option.shortDescription) + "]"
+        let optionArgs = genOptionArgs(for: command.command).joined(separator: " \\\n")
+        let paramArgs = command.command.parameters.map { (paramName, param) -> String in
+            var line = "      \""
+            if param is AnyCollectedParameter {
+                line += "*"
             }
-            return "      '\(first)'\(middle)\"\(end)\""
-        }
-        stream <<< lines.joined(separator: " \\\n")
+            line += ":"
+            if !param.required {
+                line += ":"
+            }
+            line += "\(paramName):"
+            switch param.completion {
+            case .filename:
+                line += "_files"
+            case .none:
+                line += " "
+            case .values(let vals):
+                let valPortion = vals.map { "'\($0.0)[\($0.1)]'" }.joined(separator: " ")
+                line += "{_values '' \(valPortion)}"
+            case .function(let function):
+                line += function
+            }
+            line += "\""
+            return line
+        }.joined(separator: " \\\n")
         
+        let name = functionName(for: command)
         stream <<< """
+        _\(name)() {
+            _arguments -C\(optionArgs.isEmpty && paramArgs.isEmpty ? "" : " \\")
+        """
+        if !optionArgs.isEmpty {
+            stream <<< optionArgs + (paramArgs.isEmpty ? "" : " \\")
+        }
+        if !paramArgs.isEmpty {
+            stream <<< paramArgs
+        }
+        stream <<< "}"
+    }
+    
+    func writeFunction(name: String, body: String, into stream: WritableStream) {
+        let lines = body.components(separatedBy: "\n").map { "    " + $0 }.joined(separator: "\n")
+        stream <<< """
+        \(name)() {
+        \(lines)
         }
         """
+    }
+    
+    // MARK: - Helpers
+    
+    enum OptionWritingMode {
+        case normal
+        case additionalExclusive([String])
+        case variadic
+    }
+    
+    private func genOptionLine(names: [String], mode: OptionWritingMode, description: String) -> String {
+        precondition(names.count > 0)
+        
+        var line = "      "
+        
+        let mutuallyExclusive: [String]
+        switch mode {
+        case .normal:
+            mutuallyExclusive = names.count > 1 ? names : []
+        case .additionalExclusive(let exclusive): mutuallyExclusive = exclusive
+        case .variadic:
+            precondition(names.count == 1)
+            mutuallyExclusive = []
+        }
+        
+        if !mutuallyExclusive.isEmpty {
+            line += "'(\(mutuallyExclusive.joined(separator: " ")))'"
+        }
+        
+        if names.count > 1 {
+            line += "{\(names.joined(separator: ","))}\"["
+        } else {
+            line += "\""
+            if case .variadic = mode {
+                line += "*"
+            }
+            line += "\(names[0])["
+        }
+        
+        line += escapeDescription(description) + "]\""
+        return line
+    }
+    
+    private func genOptionArgs(for routable: Routable) -> [String] {
+        let lines = routable.options.map { (option) -> [String] in
+            if option.isVariadic {
+                return option.names.map { (name) in
+                    return genOptionLine(names: [name], mode: .variadic, description: option.shortDescription)
+                }
+            }
+            for group in routable.optionGroups where group.restriction != .atLeastOne {
+                if group.options.contains(where: { $0 === option }) {
+                    let exclusive = Array(group.options.map({ $0.names }).joined())
+                    return [genOptionLine(names: option.names, mode: .additionalExclusive(exclusive), description: option.shortDescription)]
+                }
+            }
+            return [genOptionLine(names: option.names, mode: .normal, description: option.shortDescription)]
+        }
+        return Array(lines.joined())
     }
     
     private func escapeDescription(_ description: String) -> String {
         return description.replacingOccurrences(of: "\"", with: "\\\"")
     }
     
-    private func groupName(for group: CommandGroupPath) -> String {
-        return group.joined(separator: "_")
+    private func functionName(for routable: RoutablePath) -> String {
+        return routable.joined(separator: "_")
     }
     
 }

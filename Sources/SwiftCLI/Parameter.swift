@@ -6,9 +6,17 @@
 //  Copyright (c) 2015 jakeheis. All rights reserved.
 //
 
+public enum Completion {
+    case none
+    case filename
+    case values([(name: String, description: String)])
+    case function(String)
+}
+
 public protocol AnyParameter: class {
     var required: Bool { get }
     var satisfied: Bool { get }
+    var completion: Completion { get }
     
     func update(value: String)
     func signature(for name: String) -> String
@@ -20,13 +28,20 @@ public class Parameter: AnyParameter {
     
     public let required = true
     private(set) public var satisfied = false
+    public let completion: Completion
+    
     private var privateValue: String? = nil
     
     public var value: String {
         return privateValue!
     }
 
-    public init() {}
+    /// Creates a new required parameter
+    ///
+    /// - Parameter completion: the completion type for use in ZshCompletionGenerator; default .filename
+    public init(completion: Completion = .filename) {
+        self.completion = completion
+    }
     
     public func update(value: String) {
         satisfied = true
@@ -43,9 +58,16 @@ public class OptionalParameter: AnyParameter {
     
     public let required = false
     public let satisfied = true
+    public let completion: Completion
+    
     public var value: String? = nil
     
-    public init() {}
+    /// Creates a new optional parameter
+    ///
+    /// - Parameter completion: the completion type for use in ZshCompletionGenerator; default .filename
+    public init(completion: Completion = .filename) {
+        self.completion = completion
+    }
     
     public func update(value: String) {
         self.value = value
@@ -65,9 +87,16 @@ public class CollectedParameter: AnyCollectedParameter {
     
     public let required = true
     private(set) public var satisfied = false
+    public let completion: Completion
+    
     public var value: [String] = []
     
-    public init() {}
+    /// Creates a new required collected parameter; must be last parameter in the command
+    ///
+    /// - Parameter completion: the completion type for use in ZshCompletionGenerator; default .filename
+    public init(completion: Completion = .filename) {
+        self.completion = completion
+    }
     
     public func update(value: String) {
         satisfied = true
@@ -84,9 +113,16 @@ public class OptionalCollectedParameter: AnyCollectedParameter {
     
     public let required = false
     public let satisfied = true
+    public let completion: Completion
+    
     public var value: [String] = []
     
-    public init() {}
+    /// Creates a new optional collected parameter; must be last parameter in the command
+    ///
+    /// - Parameter completion: the completion type for use in ZshCompletionGenerator; default .filename
+    public init(completion: Completion = .filename) {
+        self.completion = completion
+    }
     
     public func update(value: String) {
         self.value.append(value)

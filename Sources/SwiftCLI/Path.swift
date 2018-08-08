@@ -5,7 +5,11 @@
 //  Created by Jake Heiser on 3/22/18.
 //
 
-public struct CommandGroupPath {
+public protocol RoutablePath {
+    func joined(separator: String) -> String
+}
+
+public struct CommandGroupPath: RoutablePath {
     
     public let groups: [CommandGroup]
     
@@ -29,6 +33,15 @@ public struct CommandGroupPath {
         return CommandPath(groupPath: self, command: command)
     }
     
+    public func appending(_ routable: Routable) -> RoutablePath {
+        if let cmd = routable as? Command {
+            return CommandPath(groupPath: self, command: cmd)
+        } else if let group = routable as? CommandGroup {
+            return CommandGroupPath(groups: groups + [group])
+        }
+        fatalError()
+    }
+    
     public func droppingLast() -> CommandGroupPath {
         return CommandGroupPath(groups: Array(groups.dropLast()))
     }
@@ -39,7 +52,7 @@ public struct CommandGroupPath {
     
 }
 
-public struct CommandPath {
+public struct CommandPath: RoutablePath {
     
     public let groupPath: CommandGroupPath?
     public let command: Command

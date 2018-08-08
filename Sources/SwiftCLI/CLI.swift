@@ -41,7 +41,7 @@ public class CLI {
     public var globalOptions: [Option] = []
     
     /// A built-in help flag which each command automatically inherits; set to nil if this functionality is not wanted
-    public var helpFlag: Flag? = Flag("-h", "--help", description: "Show help information for this command")
+    public var helpFlag: Flag? = Flag("-h", "--help", description: "Show help information")
     
     /// A map of command name aliases; by default, maps "-h" to help and "-v" to version
     public var aliases: [String : String] = [

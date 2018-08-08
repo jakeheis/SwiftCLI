@@ -108,7 +108,7 @@ class EmptyCmd: Command {
 }
 
 class Req1Cmd: EmptyCmd {
-    let req1 = Parameter()
+    let req1 = Parameter(completion: .function("_ice_targets"))
 }
 
 class Opt1Cmd: EmptyCmd {
@@ -116,13 +116,19 @@ class Opt1Cmd: EmptyCmd {
 }
 
 class Req2Cmd: EmptyCmd {
-    let req1 = Parameter()
-    let req2 = Parameter()
+    let req1 = Parameter(completion: .filename)
+    let req2 = Parameter(completion: .values([
+        ("executable", "generates a project for a cli executable"),
+        ("library", "generates project for a dynamic library")
+    ]))
 }
 
 class Opt2Cmd: EmptyCmd {
-    let opt1 = OptionalParameter()
-    let opt2 = OptionalParameter()
+    let opt1 = OptionalParameter(completion: .filename)
+    let opt2 = OptionalParameter(completion: .values([
+        ("executable", "generates a project for a cli executable"),
+        ("library", "generates project for a dynamic library")
+    ]))
 }
 
 class Opt2InhCmd: Opt2Cmd {
@@ -138,8 +144,11 @@ class OptCollectedCmd: EmptyCmd {
 }
 
 class Req2CollectedCmd: EmptyCmd {
-    let req1 = Parameter()
-    let req2 = CollectedParameter()
+    let req1 = Parameter(completion: .values([
+        ("executable", "generates a project for a cli executable"),
+        ("library", "generates project for a dynamic library")
+        ]))
+    let req2 = CollectedParameter(completion: .filename)
 }
 
 class Opt2CollectedCmd: EmptyCmd {
@@ -148,10 +157,10 @@ class Opt2CollectedCmd: EmptyCmd {
 }
 
 class Req2Opt2Cmd: EmptyCmd {
-    let req1 = Parameter()
-    let req2 = Parameter()
-    let opt1 = OptionalParameter()
-    let opt2 = OptionalParameter()
+    let req1 = Parameter(completion: .filename)
+    let req2 = Parameter(completion: .function("_swift_dependency"))
+    let opt1 = OptionalParameter(completion: .none)
+    let opt2 = OptionalParameter(completion: .filename)
 }
 
 // MARK: -
@@ -178,7 +187,6 @@ class IntraGroup: CommandGroup {
 class OptionCmd: Command {
     let name = "cmd"
     let shortDescription = ""
-    var helpFlag: Flag? = nil
     func execute() throws {}
 }
 
@@ -195,8 +203,8 @@ class KeyCmd: OptionCmd {
 }
 
 class DoubleFlagCmd: OptionCmd {
-    let alpha = Flag("-a", "--alpha")
-    let beta = Flag("-b", "--beta")
+    let alpha = Flag("-a", "--alpha", description: "The alpha flag")
+    let beta = Flag("-b", "--beta", description: "The beta flag")
 }
 
 class DoubleKeyCmd: OptionCmd {
@@ -237,5 +245,14 @@ class ExactlyOneCmd: Command {
 }
 
 class VariadicKeyCmd: OptionCmd {
-    let files = VariadicKey<String>("-f", "--file")
+    let files = VariadicKey<String>("-f", "--file", description: "a file")
+}
+
+class QuoteDesciptionCmd: Command {
+    let name = "cmd"
+    let shortDescription = "this description has a \"quoted section\""
+    
+    let flag = Flag("-q", "--quoted", description: "also has \"quotes\"")
+    
+    func execute() throws {}
 }
