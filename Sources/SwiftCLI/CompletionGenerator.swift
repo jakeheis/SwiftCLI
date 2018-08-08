@@ -127,7 +127,14 @@ public final class ZshCompletionGenerator: CompletionGenerator {
             case .none:
                 line += " "
             case .values(let vals):
-                let valPortion = vals.map { "'\($0.0)[\($0.1)]'" }.joined(separator: " ")
+                let valPortion = vals.map { (value) in
+                    var line = "'\(value.name)"
+                    if !value.description.isEmpty {
+                        line += "[\(value.description)]"
+                    }
+                    line += "'"
+                    return line
+                }.joined(separator: " ")
                 line += "{_values '' \(valPortion)}"
             case .function(let function):
                 line += function

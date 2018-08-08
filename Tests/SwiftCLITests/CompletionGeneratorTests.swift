@@ -151,7 +151,7 @@ class CompletionGeneratorTests: XCTestCase {
         _tester_cmd() {
             _arguments -C \\
               ":req1:_files" \\
-              ":req2:{_values '' 'executable[generates a project for a cli executable]' 'library[generates project for a dynamic library]'}"
+              ":req2:{_values '' 'executable[generates a project for a cli executable]' 'library[generates project for a dynamic library]' 'other'}"
         }
         
         """)

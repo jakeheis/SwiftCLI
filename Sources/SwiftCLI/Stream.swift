@@ -106,7 +106,7 @@ public enum WriteStream {
         ///   - appending: whether written data should be appended to the end of the file if the file already exists; default true
         ///   - encoding: the encoding with which to write strings; default .utf8
         public init?(path: String, appending: Bool = true, createIfNecessary: Bool = true, encoding: String.Encoding = .utf8) {
-            let path = (path as NSString).expandingTildeInPath
+            let path = NSString(string: path).expandingTildeInPath
             if !FileManager.default.fileExists(atPath: path) && createIfNecessary {
                 guard FileManager.default.createFile(atPath: path, contents: nil, attributes: nil) else {
                     return nil
@@ -321,7 +321,7 @@ public enum ReadStream {
         ///
         /// - Parameter path: the path to read from
         public init?(path: String, encoding: String.Encoding = .utf8) {
-            let path = (path as NSString).expandingTildeInPath
+            let path = NSString(string: path).expandingTildeInPath
             guard let readHandle = FileHandle(forReadingAtPath: path) else {
                 return nil
             }

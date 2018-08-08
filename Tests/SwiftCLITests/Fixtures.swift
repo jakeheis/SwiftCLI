@@ -119,7 +119,8 @@ class Req2Cmd: EmptyCmd {
     let req1 = Parameter(completion: .filename)
     let req2 = Parameter(completion: .values([
         ("executable", "generates a project for a cli executable"),
-        ("library", "generates project for a dynamic library")
+        ("library", "generates project for a dynamic library"),
+        ("other", "")
     ]))
 }
 
