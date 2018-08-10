@@ -60,15 +60,15 @@ extension Task {
 
 // MARK: - Swift versions
 
+#if !swift(>=4.1)
+
 extension Sequence {
-    func optMap<T>(_ transform: (Element) -> T?) -> [T] {
-        #if swift(>=4.1)
-        return compactMap(transform)
-        #else
+    func compactMap<T>(_ transform: (Element) -> T?) -> [T] {
         return flatMap(transform)
-        #endif
     }
 }
+
+#endif
 
 // MARK: - Linux support
 

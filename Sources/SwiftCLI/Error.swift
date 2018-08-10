@@ -89,7 +89,7 @@ public struct OptionError: Swift.Error {
                         condition = "must not pass more than one of the following"
                     }
                 }
-                return condition + ": \(group.options.optMap({ $0.names.last }).joined(separator: " "))"
+                return condition + ": \(group.options.compactMap({ $0.names.last }).joined(separator: " "))"
             }
         }
     }
