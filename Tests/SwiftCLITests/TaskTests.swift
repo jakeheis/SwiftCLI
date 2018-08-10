@@ -202,7 +202,6 @@ class TaskTests: XCTestCase {
         let task = Task(executable: "ls", arguments: [path], stdout: lineStream)
         XCTAssertEqual(task.runSync(), 0)
         
-        lineStream.wait()
         XCTAssertEqual(count, 3)
     }
     

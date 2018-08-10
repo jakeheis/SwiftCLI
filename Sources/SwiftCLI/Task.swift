@@ -181,6 +181,10 @@ public class Task {
     /// Whether task is currently running
     public var isRunning: Bool { return process.isRunning }
     
+    public let stdout: WritableStream
+    public let stderr: WritableStream
+    public let stdin: ReadableStream
+    
     /// Create a new task
     ///
     /// - Parameters:
@@ -212,6 +216,10 @@ public class Task {
         if stdin !== ReadStream.stdin {
             self.process.standardInput = stdin.processObject
         }
+        
+        self.stdout = stdout
+        self.stderr = stderr
+        self.stdin = stdin
     }
     /// Run the task and wait for it to finish
     ///
@@ -226,13 +234,23 @@ public class Task {
     public func runAsync() {
         launch()
     }
-    
+
     /// Wait for the task to finish; must have already called runAsync
     ///
+    /// - Parameter waitForStreams: whether stdout and stderr should be waited on if they are ProcessingStreams (LineStream or CaptureStream);
+    /// default true
     /// - Returns: the exit code of the completed task
     @discardableResult
-    public func finish() -> Int32 {
+    public func finish(waitForStreams: Bool = true) -> Int32 {
         process.waitUntilExit()
+        if waitForStreams {
+            if let stream = stdout as? ProcessingStream {
+                stream.waitToFinishProcessing()
+            }
+            if let stream = stderr as? ProcessingStream {
+                stream.waitToFinishProcessing()
+            }
+        }
         return process.terminationStatus
     }
     

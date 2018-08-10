@@ -262,3 +262,8 @@ extension ReadStream.FileHandleStream {
     @available(*, unavailable, renamed: "closeRead")
     public func close() {}
 }
+
+extension LineStream {
+    @available(*, unavailable, message: "no longer needs to be called if this stream is the stdout or stderr of a Task; otherwise call waitToFinishProcessing()")
+    public func wait() {}
+}

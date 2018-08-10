@@ -293,14 +293,26 @@ public enum ReadStream {
     /// - Warning: do not call readLine on this stream and also call Swift.readLine() or Input.readLine()
     public static let stdin: ReadableStream = FileHandleStream(readHandle: .standardInput)
     
+    /// Create a new FileStream for the given path
+    ///
+    /// - Parameter path: the path which should be read from
+    /// - Returns: a new FileStream if the file exists and is readable
     public static func `for`(path: String) -> FileStream? {
         return FileStream(path: path)
     }
     
+    /// Create a new FileHandleStream for the given file handle
+    ///
+    /// - Parameter fileHandle: a file handle which can be read from
+    /// - Returns: a new FileHandleStream
     public static func `for`(fileHandle: FileHandle) -> FileHandleStream {
         return FileHandleStream(readHandle: fileHandle)
     }
     
+    /// Create a new FileHandleStream for the given file descriptor
+    ///
+    /// - Parameter fileDescriptor: a file descriptor which can be read from
+    /// - Returns: a new FileHandleStream
     public static func `for`(fileDescriptor: Int32) -> FileHandleStream {
         return FileHandleStream(readHandle: FileHandle(fileDescriptor: fileDescriptor))
     }
@@ -319,7 +331,9 @@ public enum ReadStream {
         
         /// Create a stream which reads from the given path
         ///
-        /// - Parameter path: the path to read from
+        /// - Parameters:
+        ///   - path: the path to read from
+        ///   - encoding: the encoding with which to read data; default .utf8
         public init?(path: String, encoding: String.Encoding = .utf8) {
             let path = NSString(string: path).expandingTildeInPath
             guard let readHandle = FileHandle(forReadingAtPath: path) else {
@@ -355,7 +369,9 @@ public enum ReadStream {
         
         /// Create a stream which reads from the given file handle
         ///
-        /// - Parameter readHandle: the file handle to read from
+        /// - Parameters:
+        ///   - readHandle: the file handle to read from
+        ///   - encoding: the encoding with which to read data; default .utf8
         public init(readHandle: FileHandle, encoding: String.Encoding = .utf8) {
             self.readHandle = readHandle
             self.processObject = readHandle
@@ -386,7 +402,12 @@ public class PipeStream: ReadableStream, WritableStream {
     
 }
 
-public class LineStream: WritableStream {
+public protocol ProcessingStream: WritableStream {
+    /// Blocks until this stream has completed processing its input
+    func waitToFinishProcessing()
+}
+
+public class LineStream: ProcessingStream {
     
     public let writeHandle: FileHandle
     public let processObject: Any
@@ -412,14 +433,15 @@ public class LineStream: WritableStream {
         }
     }
     
-    /// Wait for the line stream to call the 'each' closure on every line of text until it reaches EOF
-    public func wait() {
+    /// Wait for the line stream to call the 'each' closure on every line of text until it reaches EOF;
+    /// should not be called directly if the stream is the stdout or stderr of a Task
+    public func waitToFinishProcessing() {
         semaphore.wait()
     }
     
 }
 
-public class CaptureStream: WritableStream {
+public class CaptureStream: ProcessingStream {
     
     public let processObject: Any
     public let writeHandle: FileHandle
@@ -428,6 +450,7 @@ public class CaptureStream: WritableStream {
     private var content = ""
     private let queue = DispatchQueue(label: "com.jakeheis.SwiftCLI.CaptureStream")
     private let semaphore = DispatchSemaphore(value: 0)
+    private var waited = false
     
     /// Creates a new stream which collects all data written to it
     public init() {
@@ -444,8 +467,19 @@ public class CaptureStream: WritableStream {
         }
     }
     
-    public func readAll() -> String {
+    /// Blocks until all output has been captured; should not be called directly if the stream is the stdout or stderr of a Task
+    public func waitToFinishProcessing() {
+        waited = true
         semaphore.wait()
+    }
+    
+    /// Read all the data written to this stream; blocks until all output has been captured
+    ///
+    /// - Returns: all captured data
+    public func readAll() -> String {
+        if !waited {
+            waitToFinishProcessing()
+        }
         return content
     }
     

@@ -149,7 +149,7 @@ class StreamTests: XCTestCase {
         waitForExpectations(timeout: 1)
         
         stream.closeWrite()
-        stream.wait()
+        stream.waitToFinishProcessing()
     }
     
     func testCaptureStream() {
