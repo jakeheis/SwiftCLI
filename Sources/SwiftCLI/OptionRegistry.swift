@@ -80,9 +80,8 @@ public class OptionRegistry {
     
     private func incrementCount(for option: Option) {
         for group in groups {
-            if group.options.contains(where: { $0.names == option.names }) {
+            if group.options.contains(where: { $0 === option }) {
                 group.count += 1
-                break
             }
         }
     }

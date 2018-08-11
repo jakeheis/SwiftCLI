@@ -15,7 +15,8 @@ class OptionRegistryTests: XCTestCase {
         return [
             ("testFlagDetection", testFlagDetection),
             ("testKeyDetection", testKeyDetection),
-            ("testVariadicDetection", testVariadicDetection)
+            ("testVariadicDetection", testVariadicDetection),
+            ("testMultipleRestrictions", testMultipleRestrictions),
         ]
     }
     
@@ -40,6 +41,16 @@ class OptionRegistryTests: XCTestCase {
         let options = OptionRegistry(routable: cmd)
         XCTAssertNotNil(options.key(for: "-f"))
         XCTAssertNotNil(options.key(for: "--file"))
+    }
+    
+    func testMultipleRestrictions() {
+        let cmd = MultipleRestrictionsCmd()
+        let registry = OptionRegistry(routable: cmd)
+        _ = registry.flag(for: "-a")
+        _ = registry.flag(for: "-b")
+        
+        XCTAssertFalse(cmd.atMostOne.check())
+        XCTAssertFalse(cmd.atMostOneAgain.check())
     }
     
 }

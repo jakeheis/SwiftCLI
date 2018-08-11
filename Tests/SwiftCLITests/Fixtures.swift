@@ -245,6 +245,22 @@ class ExactlyOneCmd: Command {
     
 }
 
+class MultipleRestrictionsCmd: Command {
+    let name = "cmd"
+    
+    let alpha = Flag("-a", "--alpha", description: "the alpha flag")
+    let beta = Flag("-b", "--beta", description: "the beta flag")
+    
+    lazy var atMostOne: OptionGroup = .atMostOne(alpha, beta)
+    lazy var atMostOneAgain: OptionGroup = .atMostOne(alpha, beta)
+    
+    var optionGroups: [OptionGroup] {
+        return [atMostOne, atMostOneAgain]
+    }
+    
+    func execute() throws {}
+}
+
 class VariadicKeyCmd: OptionCmd {
     let files = VariadicKey<String>("-f", "--file", description: "a file")
 }
