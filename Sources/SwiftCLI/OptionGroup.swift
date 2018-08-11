@@ -6,7 +6,7 @@
 //  Copyright © 2017 jakeheis. All rights reserved.
 //
 
-public class OptionGroup {
+public class OptionGroup: CustomStringConvertible {
     
     public enum Restriction {
         case atMostOne // 0 or 1
@@ -41,6 +41,10 @@ public class OptionGroup {
     public let options: [Option]
     public let restriction: Restriction
     internal(set) public var count: Int = 0
+    
+    public var description: String {
+        return "OptionGroup.\(restriction)(\(options))"
+    }
     
     public init(options: [Option], restriction: Restriction) {
         precondition(!options.isEmpty, "must pass one or more options")

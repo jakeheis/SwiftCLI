@@ -6,7 +6,7 @@
 //  Copyright © 2017 jakeheis. All rights reserved.
 //
 
-public protocol Option: class {
+public protocol Option: class, CustomStringConvertible {
     var names: [String] { get }
     var shortDescription: String { get }
     var identifier: String { get }
@@ -14,12 +14,18 @@ public protocol Option: class {
 }
 
 public extension Option {
+    
+    var description: String {
+        return "\(type(of: self))(\(identifier))"
+    }
+    
     func usage(padding: Int) -> String {
         let spacing = String(repeating: " ", count: padding - identifier.count)
         let descriptionNewlineSpacing = String(repeating: " ", count: padding)
         let description = shortDescription.replacingOccurrences(of: "\n", with: "\n\(descriptionNewlineSpacing)")
         return "\(identifier)\(spacing)\(description)"
     }
+    
 }
 
 public class Flag: Option {

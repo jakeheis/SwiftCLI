@@ -5,8 +5,14 @@
 //  Created by Jake Heiser on 3/22/18.
 //
 
-public protocol RoutablePath {
+public protocol RoutablePath: CustomStringConvertible {
     func joined(separator: String) -> String
+}
+
+public extension RoutablePath {
+    var description: String {
+        return "\(type(of: self))(\(joined(separator: " ")))"
+    }
 }
 
 public struct CommandGroupPath: RoutablePath {
