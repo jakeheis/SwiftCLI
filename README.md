@@ -97,8 +97,8 @@ Finally, to actually start the CLI, you call one of the `go` methods. In a produ
 // Use go if you want program execution to continue afterwards
 myCli.go() 
 
-// Use exitAndGo if you want your program to terminate after CLI has finished
-myCli.exitAndGo()
+// Use goAndExit if you want your program to terminate after CLI has finished
+myCli.goAndExit()
 ```
 
 When you are creating and debugging your app, you can use `debugGo(with:)` which makes it easier to pass an argument string to your app during development.
@@ -392,6 +392,41 @@ let myCli = CLI(...)
 
 let generator = ZshCompletionGenerator(cli: myCli)
 generator.writeCompletions()
+```
+
+Completions will be automatically generated for command names and options. Parameter completion mode can be specified:
+
+```swift
+let noCompletions = Parameter(completion: .none)
+
+let aFile = Parameter(completion: .filename)
+
+let aValue = Parameter(completion: .values([
+    ("optionA", "the first available option"),
+    ("optionB", "the second available option")
+]))
+
+let aFunction = Parameter(completion: .function("_my_custom_func"))
+```
+
+The default parameter completion mode is `.filename`. If you specify a custom function with `.function`, that function must be supplied when creating the completion generator:
+
+```swift
+class MyCommand {
+    ...
+    let pids = Parameter(completion: .function("_list_processes"))
+    ...
+}
+
+let myCLI = CLI(...)
+myCLI.commands [MyCommand()]
+let generator = ZshCompletionGenerator(cli: myCli, functions: [
+    "_list_processes": """
+        local pids
+        pids=( $(ps -o pid=) )
+        _describe '' pids
+        """
+])
 ```
 
 ## Built-in commands
