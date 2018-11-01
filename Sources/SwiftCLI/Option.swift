@@ -1,3 +1,4 @@
+import Foundation
 //
 //  Option.swift
 //  SwiftCLI
@@ -11,34 +12,33 @@ public protocol Option: class, CustomStringConvertible {
     var shortDescription: String { get }
     var identifier: String { get }
     var isVariadic: Bool { get }
+    func usage(padding: Int) -> String
 }
 
 public extension Option {
-    
     var description: String {
         return "\(type(of: self))(\(identifier))"
     }
-    
+
     func usage(padding: Int) -> String {
         let spacing = String(repeating: " ", count: padding - identifier.count)
         let descriptionNewlineSpacing = String(repeating: " ", count: padding)
         let description = shortDescription.replacingOccurrences(of: "\n", with: "\n\(descriptionNewlineSpacing)")
         return "\(identifier)\(spacing)\(description)"
     }
-    
 }
 
 public class Flag: Option {
-    
+
     public let names: [String]
     public let shortDescription: String
     public private(set) var value: Bool
     public let isVariadic = false
-    
+
     public var identifier: String {
         return names.joined(separator: ", ")
     }
-    
+
     /// Creates a new flag
     ///
     /// - Parameters:
@@ -50,71 +50,89 @@ public class Flag: Option {
         self.value = defaultValue
         self.shortDescription = description
     }
-    
+
     /// Toggles the flag's value; don't call directly
     public func toggle() {
         value = !value
     }
-    
+
 }
 
 public protocol AnyKey: Option {
     var valueType: Any.Type { get }
-    
-    func updateValue(_ value: String) -> Bool
+    func updateValue(_ value: String) -> UpdateResult
 }
 
-public class Key<T: ConvertibleFromString>: AnyKey {
-    
+public class Key<T: ConvertibleFromString>: AnyKey
+        where T.ValidationOption.Element == T {
+    private var validation: [T.ValidationOption] = []
+
     public let names: [String]
     public let shortDescription: String
     public private(set) var value: T?
     public let isVariadic = false
-    
+
+    public var description: String {
+        return "\(type(of: self))(\(identifier))"
+    }
+
     public var valueType: Any.Type {
         return T.self
     }
-    
+
     public var identifier: String {
         return names.joined(separator: ", ") + " <value>"
     }
-    
+
     /// Creates a new key
     ///
     /// - Parameters:
     ///   - names: the names for the key; convention is to include a short name (-m) and a long name (--message)
     ///   - description: A short description of what this key does for usage statements
-    public init(_ names: String ..., description: String = "") {
+    public init(
+        _ names: String ...,
+        description: String = "",
+        validation: [T.ValidationOption] = []
+    ) {
         self.names = names
         self.shortDescription = description
+        self.validation = validation
     }
-    
+
     /// Toggles the key's value; don't call directly
-    public func updateValue(_ value: String) -> Bool {
-        guard let value = T.convert(from: value) else {
-            return false
+    public func updateValue(_ raw: String) -> UpdateResult {
+        guard let value = T.convert(from: raw) else {
+            return .illegalType
         }
+
+        for item in validation {
+            switch item.validate(element: value) {
+            case let .failed(message):
+                return .validationError(message)
+            case .succeeded:
+                continue
+            }
+        }
+
         self.value = value
-        return true
+        return .succeeded
     }
-    
 }
 
 public class VariadicKey<T: ConvertibleFromString>: AnyKey {
-    
     public let names: [String]
     public let shortDescription: String
     public private(set) var values: [T]
     public let isVariadic = true
-    
+
     public var valueType: Any.Type {
         return T.self
     }
-    
+
     public var identifier: String {
         return names.joined(separator: ", ") + " <value>"
     }
-    
+
     /// Creates a new variadic key
     ///
     /// - Parameters:
@@ -125,24 +143,16 @@ public class VariadicKey<T: ConvertibleFromString>: AnyKey {
         self.shortDescription = description
         self.values = []
     }
-    
+
     /// Toggles the key's value; don't call directly
-    public func updateValue(_ value: String) -> Bool {
-        guard let value = T.convert(from: value) else {
-            return false
+    public func updateValue(_ raw: String) -> UpdateResult {
+        guard let value = T.convert(from: raw) else {
+            return .illegalType
         }
         values.append(value)
-        return true
+        return .succeeded
     }
-    
-}
 
-// MARK: - ConvertibleFromString
-
-/// A type that can be created from a string
-public protocol ConvertibleFromString {
-  /// Returns an instance of the conforming type from a string representation
-  static func convert(from: String) -> Self?
 }
 
 extension ConvertibleFromString where Self: LosslessStringConvertible {
@@ -160,11 +170,6 @@ extension ConvertibleFromString where Self: RawRepresentable, Self.RawValue: Con
   }
 }
 
-extension String: ConvertibleFromString {}
-extension Int: ConvertibleFromString {}
-extension Float: ConvertibleFromString {}
-extension Double: ConvertibleFromString {}
-
 extension Bool: ConvertibleFromString {
   /// Returns a bool from a string representation
   ///
@@ -178,10 +183,10 @@ extension Bool: ConvertibleFromString {
   /// - y/n
   public static func convert(from: String) -> Bool? {
         let lowercased = from.lowercased()
-        
+
         if ["y", "yes", "t", "true"].contains(lowercased) { return true }
         if ["n", "no", "f", "false"].contains(lowercased) { return false }
-        
+
         return nil
     }
 }

@@ -11,16 +11,16 @@ public protocol ProcessError: Swift.Error {
 }
 
 extension CLI {
-    
+
     public struct Error: ProcessError {
-        
+
         public let message: String?
         public let exitStatus: Int32
-        
+
         public init() {
             self.init(exitStatus: 1)
         }
-        
+
         #if swift(>=4.0)
         public init<T: BinaryInteger>(exitStatus: T) {
             self.init(message: nil, exitStatus: Int32(exitStatus))
@@ -37,14 +37,14 @@ extension CLI {
         public init(message: String) {
             self.init(message: message, exitStatus: 1)
         }
-        
+
         public init(message: String?, exitStatus: Int32) {
             self.message = message
             self.exitStatus = exitStatus
         }
-        
+
     }
-    
+
 }
 
 // MARK: - Parse errors
@@ -52,7 +52,7 @@ extension CLI {
 public struct RouteError: Swift.Error {
     public let partialPath: CommandGroupPath
     public let notFound: String?
-    
+
     public init(partialPath: CommandGroupPath, notFound: String?) {
         self.partialPath = partialPath
         self.notFound = notFound
@@ -60,13 +60,14 @@ public struct RouteError: Swift.Error {
 }
 
 public struct OptionError: Swift.Error {
-    
+
     public enum Kind {
         case expectedValueAfterKey(String)
         case illegalTypeForKey(String, Any.Type)
         case unrecognizedOption(String)
         case optionGroupMisuse(OptionGroup)
-        
+        case validationError(String, String)
+
         public var message: String {
             switch self {
             case let .expectedValueAfterKey(key):
@@ -75,6 +76,8 @@ public struct OptionError: Swift.Error {
                 return "illegal value passed to '\(key)' (expected \(type))"
             case let .unrecognizedOption(opt):
                 return "unrecognized option '\(opt)'"
+            case let .validationError(opt, message):
+                return "\(message): for option '\(opt)'"
             case let .optionGroupMisuse(group):
                 let condition: String
                 if group.options.count == 1 {
@@ -93,10 +96,10 @@ public struct OptionError: Swift.Error {
             }
         }
     }
-    
+
     public let command: CommandPath?
     public let kind: Kind
-    
+
     public init(command: CommandPath?, kind: Kind) {
         self.command = command
         self.kind = kind
@@ -104,14 +107,14 @@ public struct OptionError: Swift.Error {
 }
 
 public struct ParameterError: Swift.Error {
-    
+
     public let command: CommandPath
     public let minCount: Int
     public let maxCount: Int?
-    
+
     public var message: String {
         let plural = minCount == 1 ? "argument" : "arguments"
-        
+
         switch maxCount {
         case .none:
             return "command requires at least \(minCount) \(plural)"
@@ -121,7 +124,7 @@ public struct ParameterError: Swift.Error {
             return "command requires between \(minCount) and \(max) arguments"
         }
     }
-    
+
     public init(command: CommandPath, paramIterator: ParameterIterator) {
         self.command = command
         self.minCount = paramIterator.minCount

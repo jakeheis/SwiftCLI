@@ -7,19 +7,19 @@
 //
 
 public class OptionRegistry {
-    
+
     private var flags: [String: Flag]
     private var keys: [String: AnyKey]
     private var groups: [OptionGroup]
-    
+
     public init(routable: Routable) {
         self.flags = [:]
         self.keys = [:]
         self.groups = []
-        
+
         register(routable)
     }
-    
+
     public func register(_ routable: Routable) {
         for option in routable.options {
             if let flag = option as? Flag {
@@ -32,13 +32,13 @@ public class OptionRegistry {
                 }
             }
         }
-        
+
         groups += routable.optionGroups
     }
-    
+
     public func parseOneOption(args: ArgumentList, command: CommandPath?) throws {
         let opt = args.pop()
-        
+
         if let flag = flag(for: opt) {
             flag.toggle()
         } else if let key = key(for: opt) {
@@ -46,22 +46,33 @@ public class OptionRegistry {
                 throw OptionError(command: command, kind: .expectedValueAfterKey(opt))
             }
             let value = args.pop()
-            guard key.updateValue(value) else {
-                throw OptionError(command: command, kind: .illegalTypeForKey(opt, key.valueType))
+            switch key.updateValue(value) {
+            case .illegalType:
+                throw OptionError(
+                    command: command,
+                    kind: .illegalTypeForKey(opt, key.valueType)
+                )
+            case let .validationError(message):
+                throw OptionError(
+                    command: command,
+                    kind: .validationError(opt, message)
+                )
+            case .succeeded:
+                break
             }
         } else {
             throw OptionError(command: command, kind: .unrecognizedOption(opt))
         }
     }
-    
+
     public func finish(command: CommandPath) throws {
         if let failingGroup = failingGroup() {
             throw OptionError(command: command, kind: .optionGroupMisuse(failingGroup))
         }
     }
-    
+
     // MARK: - Helpers
-    
+
     public func flag(for key: String) -> Flag? {
         if let flag = flags[key] {
             incrementCount(for: flag)
@@ -69,7 +80,7 @@ public class OptionRegistry {
         }
         return nil
     }
-    
+
     public func key(for key: String) -> AnyKey? {
         if let key = keys[key] {
             incrementCount(for: key)
@@ -77,7 +88,7 @@ public class OptionRegistry {
         }
         return nil
     }
-    
+
     private func incrementCount(for option: Option) {
         for group in groups {
             if group.options.contains(where: { $0 === option }) {
@@ -85,7 +96,7 @@ public class OptionRegistry {
             }
         }
     }
-    
+
     private func failingGroup() -> OptionGroup? {
         for group in groups {
             if !group.check() {
@@ -94,5 +105,5 @@ public class OptionRegistry {
         }
         return nil
     }
-    
+
 }
