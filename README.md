@@ -74,8 +74,17 @@ dependencies: [
 ]
 ```
 
-## Updating to SwiftCLI 5.0
-See [migration information](MIGRATION.md).
+### Carthage
+
+```
+github "jakeheis/SwiftCLI" ~> 5.2.1
+```
+
+### CocoaPods
+
+```ruby
+pod 'SwiftCLI', '~> 5.2.1'
+```
 
 ## Creating a CLI
 
