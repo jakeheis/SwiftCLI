@@ -273,3 +273,13 @@ class QuoteDesciptionCmd: Command {
     
     func execute() throws {}
 }
+
+class CompletionOptionCmd: OptionCmd {
+    let values = Key<String>("-v", "--values", completion: .values([("opt1", "first option"), ("opt2", "second option")]))
+    let function = Key<String>("-f", "--function", completion: .function("_a_func"))
+    let filename = Key<String>("-n", "--name", completion: .filename)
+    let none = Key<String>("-z", "--zero", completion: .none)
+    let def = Key<String>("-d", "--default")
+    
+    let flag = Flag("-f", "--flag")
+}

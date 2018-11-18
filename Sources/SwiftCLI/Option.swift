@@ -11,6 +11,7 @@ public protocol Option: class, CustomStringConvertible {
     var shortDescription: String { get }
     var identifier: String { get }
     var isVariadic: Bool { get }
+    var completion: Completion? { get }
 }
 
 public extension Option {
@@ -34,6 +35,7 @@ public class Flag: Option {
     public let shortDescription: String
     public private(set) var value: Bool
     public let isVariadic = false
+    public let completion: Completion? = nil
     
     public var identifier: String {
         return names.joined(separator: ", ")
@@ -70,6 +72,7 @@ public class Key<T: ConvertibleFromString>: AnyKey {
     public let shortDescription: String
     public private(set) var value: T?
     public let isVariadic = false
+    public let completion: Completion?
     
     public var valueType: Any.Type {
         return T.self
@@ -84,9 +87,10 @@ public class Key<T: ConvertibleFromString>: AnyKey {
     /// - Parameters:
     ///   - names: the names for the key; convention is to include a short name (-m) and a long name (--message)
     ///   - description: A short description of what this key does for usage statements
-    public init(_ names: String ..., description: String = "") {
+    public init(_ names: String ..., description: String = "", completion: Completion = .filename) {
         self.names = names
         self.shortDescription = description
+        self.completion = completion
     }
     
     /// Toggles the key's value; don't call directly
@@ -104,8 +108,9 @@ public class VariadicKey<T: ConvertibleFromString>: AnyKey {
     
     public let names: [String]
     public let shortDescription: String
-    public private(set) var values: [T]
+    public private(set) var values: [T] = []
     public let isVariadic = true
+    public let completion: Completion?
     
     public var valueType: Any.Type {
         return T.self
@@ -120,10 +125,10 @@ public class VariadicKey<T: ConvertibleFromString>: AnyKey {
     /// - Parameters:
     ///   - names: the names for the key; convention is to include a short name (-m) and a long name (--message)
     ///   - description: A short description of what this key does for usage statements
-    public init(_ names: String ..., description: String = "") {
+    public init(_ names: String ..., description: String = "", completion: Completion = .filename) {
         self.names = names
         self.shortDescription = description
-        self.values = []
+        self.completion = completion
     }
     
     /// Toggles the key's value; don't call directly

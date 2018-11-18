@@ -24,7 +24,8 @@ class CompletionGeneratorTests: XCTestCase {
             ("testParameterCompletion", testParameterCompletion),
             ("testLayered", testLayered),
             ("testEscaping", testEscaping),
-            ("testFunction", testFunction)
+            ("testFunction", testFunction),
+            ("testOptionCompletion", testOptionCompletion),
         ]
     }
     
@@ -115,8 +116,8 @@ class CompletionGeneratorTests: XCTestCase {
         XCTAssertEqual(variadicKeyCapture.readAll(), """
         _tester_cmd() {
             _arguments -C \\
-              "*-f[a file]" \\
-              "*--file[a file]"
+              "*-f[a file]: :_files" \\
+              "*--file[a file]: :_files"
         }
         
         """)
@@ -397,6 +398,30 @@ class CompletionGeneratorTests: XCTestCase {
             echo wassup
         }
         _tester
+        
+        """)
+    }
+    
+    func testOptionCompletion() {
+        let cmd = CompletionOptionCmd()
+        
+        let cli = CLI.createTester(commands: [cmd])
+        let generator = ZshCompletionGenerator(cli: cli)
+        
+        let capture = CaptureStream()
+        generator.writeCommand(for: CommandGroupPath(top: cli).appending(cmd), into: capture)
+        capture.closeWrite()
+        
+        XCTAssertEqual(capture.readAll(), """
+        _tester_cmd() {
+            _arguments -C \\
+              '(-v --values)'{-v,--values}"[]: :{_values '' 'opt1[first option]' 'opt2[second option]'}" \\
+              '(-f --function)'{-f,--function}"[]: :_a_func" \\
+              '(-n --name)'{-n,--name}"[]: :_files" \\
+              '(-z --zero)'{-z,--zero}"[]: : " \\
+              '(-d --default)'{-d,--default}"[]: :_files" \\
+              '(-f --flag)'{-f,--flag}"[]"
+        }
         
         """)
     }

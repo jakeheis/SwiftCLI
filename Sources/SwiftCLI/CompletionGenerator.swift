@@ -109,6 +109,27 @@ public final class ZshCompletionGenerator: CompletionGenerator {
         }
     }
     
+    func writeCompletion(_ completion: Completion) -> String {
+        switch completion {
+        case .filename:
+            return "_files"
+        case .none:
+            return " "
+        case .values(let vals):
+            let valPortion = vals.map { (value) in
+                var line = "'\(value.name)"
+                if !value.description.isEmpty {
+                    line += "[\(value.description)]"
+                }
+                line += "'"
+                return line
+            }.joined(separator: " ")
+            return "{_values '' \(valPortion)}"
+        case .function(let function):
+            return function
+        }
+    }
+    
     func writeCommand(for command: CommandPath, into stream: WritableStream) {
         let optionArgs = genOptionArgs(for: command.command).joined(separator: " \\\n")
         let paramArgs = command.command.parameters.map { (paramName, param) -> String in
@@ -120,25 +141,7 @@ public final class ZshCompletionGenerator: CompletionGenerator {
             if !param.required {
                 line += ":"
             }
-            line += "\(paramName):"
-            switch param.completion {
-            case .filename:
-                line += "_files"
-            case .none:
-                line += " "
-            case .values(let vals):
-                let valPortion = vals.map { (value) in
-                    var line = "'\(value.name)"
-                    if !value.description.isEmpty {
-                        line += "[\(value.description)]"
-                    }
-                    line += "'"
-                    return line
-                }.joined(separator: " ")
-                line += "{_values '' \(valPortion)}"
-            case .function(let function):
-                line += function
-            }
+            line += "\(paramName):\(writeCompletion(param.completion))"
             line += "\""
             return line
         }.joined(separator: " \\\n")
@@ -174,7 +177,7 @@ public final class ZshCompletionGenerator: CompletionGenerator {
         case variadic
     }
     
-    private func genOptionLine(names: [String], mode: OptionWritingMode, description: String) -> String {
+    private func genOptionLine(names: [String], mode: OptionWritingMode, description: String, completion: Completion?) -> String {
         precondition(names.count > 0)
         
         var line = "      "
@@ -203,7 +206,13 @@ public final class ZshCompletionGenerator: CompletionGenerator {
             line += "\(names[0])["
         }
         
-        line += escapeDescription(description) + "]\""
+        line += escapeDescription(description) + "]"
+        
+        if let completion = completion {
+            line += ": :\(writeCompletion(completion))"
+        }
+        
+        line += "\""
         return line
     }
     
@@ -211,16 +220,16 @@ public final class ZshCompletionGenerator: CompletionGenerator {
         let lines = routable.options.map { (option) -> [String] in
             if option.isVariadic {
                 return option.names.map { (name) in
-                    return genOptionLine(names: [name], mode: .variadic, description: option.shortDescription)
+                    return genOptionLine(names: [name], mode: .variadic, description: option.shortDescription, completion: option.completion)
                 }
             }
             for group in routable.optionGroups where group.restriction != .atLeastOne {
                 if group.options.contains(where: { $0 === option }) {
                     let exclusive = Array(group.options.map({ $0.names }).joined())
-                    return [genOptionLine(names: option.names, mode: .additionalExclusive(exclusive), description: option.shortDescription)]
+                    return [genOptionLine(names: option.names, mode: .additionalExclusive(exclusive), description: option.shortDescription, completion: option.completion)]
                 }
             }
-            return [genOptionLine(names: option.names, mode: .normal, description: option.shortDescription)]
+            return [genOptionLine(names: option.names, mode: .normal, description: option.shortDescription, completion: option.completion)]
         }
         return Array(lines.joined())
     }
