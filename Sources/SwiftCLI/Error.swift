@@ -66,6 +66,7 @@ public struct OptionError: Swift.Error {
         case illegalTypeForKey(String, Any.Type)
         case unrecognizedOption(String)
         case optionGroupMisuse(OptionGroup)
+        case validationError(String, String)
         
         public var message: String {
             switch self {
@@ -90,6 +91,8 @@ public struct OptionError: Swift.Error {
                     }
                 }
                 return condition + ": \(group.options.compactMap({ $0.names.last }).joined(separator: " "))"
+            case let .validationError(opt, message):
+                return "\(message): for option '\(opt)'"
             }
         }
     }

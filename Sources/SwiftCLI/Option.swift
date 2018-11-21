@@ -60,19 +60,57 @@ public class Flag: Option {
     
 }
 
+public enum UpdateError: Error {
+    case conversionError
+    case validationError(String)
+}
+
 public protocol AnyKey: Option {
     var valueType: Any.Type { get }
     
-    func updateValue(_ value: String) -> Bool
+    func updateValue(_ value: String) throws
+}
+
+public struct Validation<T> {
+    
+    public typealias ValidatorBlock = (T) -> Bool
+    
+    public typealias Shorthand = (ValidatorBlock, String)
+    
+//    public static func validation(_ validator: @escaping ValidatorBlock, _ message: String) -> Validation {
+//        return .init(block: validator, message: message)
+//    }
+    
+    public let block: ValidatorBlock
+    public let message: String
+    
+    init(_ shorthand: Shorthand) {
+        self.init(block: shorthand.0, message: shorthand.1)
+    }
+    
+    init(block: @escaping ValidatorBlock, message: String) {
+        self.block = block
+        self.message = message
+    }
+    
+    public func validate(_ value: T) throws {
+        guard block(value) else {
+            throw UpdateError.validationError(message)
+        }
+    }
+    
 }
 
 public class Key<T: ConvertibleFromString>: AnyKey {
+    
+//    public typealias Validation = (T) -> Bool
     
     public let names: [String]
     public let shortDescription: String
     public private(set) var value: T?
     public let isVariadic = false
     public let completion: Completion?
+    public let validations: [Validation<T>]
     
     public var valueType: Any.Type {
         return T.self
@@ -87,19 +125,22 @@ public class Key<T: ConvertibleFromString>: AnyKey {
     /// - Parameters:
     ///   - names: the names for the key; convention is to include a short name (-m) and a long name (--message)
     ///   - description: A short description of what this key does for usage statements
-    public init(_ names: String ..., description: String = "", completion: Completion = .filename) {
+    public init(_ names: String ..., description: String = "", completion: Completion = .filename, validations: [Validation<T>.Shorthand] = []) {
         self.names = names
         self.shortDescription = description
         self.completion = completion
+        self.validations = validations.map { Validation($0) }
     }
     
     /// Toggles the key's value; don't call directly
-    public func updateValue(_ value: String) -> Bool {
+    public func updateValue(_ value: String) throws {
         guard let value = T.convert(from: value) else {
-            return false
+            throw UpdateError.conversionError
+        }
+        for validation in validations {
+            try validation.validate(value)
         }
         self.value = value
-        return true
     }
     
 }
@@ -111,6 +152,7 @@ public class VariadicKey<T: ConvertibleFromString>: AnyKey {
     public private(set) var values: [T] = []
     public let isVariadic = true
     public let completion: Completion?
+    public let validations: [Validation<T>]
     
     public var valueType: Any.Type {
         return T.self
@@ -125,19 +167,22 @@ public class VariadicKey<T: ConvertibleFromString>: AnyKey {
     /// - Parameters:
     ///   - names: the names for the key; convention is to include a short name (-m) and a long name (--message)
     ///   - description: A short description of what this key does for usage statements
-    public init(_ names: String ..., description: String = "", completion: Completion = .filename) {
+    public init(_ names: String ..., description: String = "", completion: Completion = .filename, validations: [Validation<T>.Shorthand] = []) {
         self.names = names
         self.shortDescription = description
         self.completion = completion
+        self.validations = validations.map { Validation($0) }
     }
     
     /// Toggles the key's value; don't call directly
-    public func updateValue(_ value: String) -> Bool {
+    public func updateValue(_ value: String) throws {
         guard let value = T.convert(from: value) else {
-            return false
+            throw UpdateError.conversionError
+        }
+        for validation in validations {
+            try validation.validate(value)
         }
         values.append(value)
-        return true
     }
     
 }

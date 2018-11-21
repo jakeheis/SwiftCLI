@@ -262,7 +262,14 @@ class MultipleRestrictionsCmd: Command {
 }
 
 class VariadicKeyCmd: OptionCmd {
-    let files = VariadicKey<String>("-f", "--file", description: "a file")
+    
+    let files = VariadicKey<String>("-f", "--file", description: "a file", validations: [
+        (isPath, "")
+    ])
+    
+    static func isPath(_ value: String) -> Bool {
+        return false
+    }
 }
 
 class QuoteDesciptionCmd: Command {

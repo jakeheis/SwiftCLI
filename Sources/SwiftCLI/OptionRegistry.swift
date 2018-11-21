@@ -46,8 +46,12 @@ public class OptionRegistry {
                 throw OptionError(command: command, kind: .expectedValueAfterKey(opt))
             }
             let value = args.pop()
-            guard key.updateValue(value) else {
+            do {
+                try key.updateValue(value)
+            } catch UpdateError.conversionError {
                 throw OptionError(command: command, kind: .illegalTypeForKey(opt, key.valueType))
+            } catch let UpdateError.validationError(message) {
+                throw OptionError(command: command, kind: .validationError(opt, message))
             }
         } else {
             throw OptionError(command: command, kind: .unrecognizedOption(opt))
