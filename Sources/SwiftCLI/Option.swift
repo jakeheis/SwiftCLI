@@ -71,48 +71,14 @@ public protocol AnyKey: Option {
     func updateValue(_ value: String) throws
 }
 
-public struct Validation<T> {
-    
-    public typealias ValidatorBlock = (T) -> Bool
-    
-    public static func custom(_ validator: @escaping ValidatorBlock, _ message: String) -> Validation {
-        return .init(validator, message)
-    }
-    
-    public let block: ValidatorBlock
-    public let message: String
-    
-    init(_ block: @escaping ValidatorBlock, _ message: String) {
-        self.block = block
-        self.message = message
-    }
-    
-    public func validate(_ value: T) throws {
-        guard block(value) else {
-            throw UpdateError.validationError(message)
-        }
-    }
-    
-}
-
-public extension Validation where T: Comparable {
-    
-    public static func greaterThan(_ value: T) -> Validation {
-        return .init({ $0 > value }, "Must be greater than \(value)")
-    }
-    
-}
-
 public class Key<T: ConvertibleFromString>: AnyKey {
-    
-//    public typealias Validation = (T) -> Bool
-    
+        
     public let names: [String]
     public let shortDescription: String
     public private(set) var value: T?
     public let isVariadic = false
     public let completion: Completion?
-    public let validations: [Validation<T>]
+    public let validation: [Validation<T>]
     
     public var valueType: Any.Type {
         return T.self
@@ -127,11 +93,11 @@ public class Key<T: ConvertibleFromString>: AnyKey {
     /// - Parameters:
     ///   - names: the names for the key; convention is to include a short name (-m) and a long name (--message)
     ///   - description: A short description of what this key does for usage statements
-    public init(_ names: String ..., description: String = "", completion: Completion = .filename, validations: [Validation<T>] = []) {
+    public init(_ names: String ..., description: String = "", completion: Completion = .filename, validation: [Validation<T>] = []) {
         self.names = names
         self.shortDescription = description
         self.completion = completion
-        self.validations = validations
+        self.validation = validation
     }
     
     /// Toggles the key's value; don't call directly
@@ -139,8 +105,8 @@ public class Key<T: ConvertibleFromString>: AnyKey {
         guard let value = T.convert(from: value) else {
             throw UpdateError.conversionError
         }
-        for validation in validations {
-            try validation.validate(value)
+        for validator in validation {
+            try validator.validate(value)
         }
         self.value = value
     }
@@ -154,7 +120,7 @@ public class VariadicKey<T: ConvertibleFromString>: AnyKey {
     public private(set) var values: [T] = []
     public let isVariadic = true
     public let completion: Completion?
-    public let validations: [Validation<T>]
+    public let validation: [Validation<T>]
     
     public var valueType: Any.Type {
         return T.self
@@ -169,11 +135,11 @@ public class VariadicKey<T: ConvertibleFromString>: AnyKey {
     /// - Parameters:
     ///   - names: the names for the key; convention is to include a short name (-m) and a long name (--message)
     ///   - description: A short description of what this key does for usage statements
-    public init(_ names: String ..., description: String = "", completion: Completion = .filename, validations: [Validation<T>] = []) {
+    public init(_ names: String ..., description: String = "", completion: Completion = .filename, validation: [Validation<T>] = []) {
         self.names = names
         self.shortDescription = description
         self.completion = completion
-        self.validations = validations
+        self.validation = validation
     }
     
     /// Toggles the key's value; don't call directly
@@ -193,23 +159,23 @@ public class VariadicKey<T: ConvertibleFromString>: AnyKey {
 
 /// A type that can be created from a string
 public protocol ConvertibleFromString {
-  /// Returns an instance of the conforming type from a string representation
-  static func convert(from: String) -> Self?
+    /// Returns an instance of the conforming type from a string representation
+    static func convert(from: String) -> Self?
 }
 
 extension ConvertibleFromString where Self: LosslessStringConvertible {
-  public static func convert(from: String) -> Self? {
-    return Self(from)
-  }
+    public static func convert(from: String) -> Self? {
+        return Self(from)
+    }
 }
 
 extension ConvertibleFromString where Self: RawRepresentable, Self.RawValue: ConvertibleFromString {
-  public static func convert(from: String) -> Self? {
-    guard let val = RawValue.convert(from: from) else {
-      return nil
+    public static func convert(from: String) -> Self? {
+        guard let val = RawValue.convert(from: from) else {
+            return nil
+        }
+        return Self.init(rawValue: val)
     }
-    return Self.init(rawValue: val)
-  }
 }
 
 extension String: ConvertibleFromString {}
@@ -218,17 +184,17 @@ extension Float: ConvertibleFromString {}
 extension Double: ConvertibleFromString {}
 
 extension Bool: ConvertibleFromString {
-  /// Returns a bool from a string representation
-  ///
-  /// - parameter from: A string representation of a bool value
-  ///
-  /// This is case insensitive and recognizes several representations:
-  ///
-  /// - true/false
-  /// - t/f
-  /// - yes/no
-  /// - y/n
-  public static func convert(from: String) -> Bool? {
+    /// Returns a bool from a string representation
+    ///
+    /// - parameter from: A string representation of a bool value
+    ///
+    /// This is case insensitive and recognizes several representations:
+    ///
+    /// - true/false
+    /// - t/f
+    /// - yes/no
+    /// - y/n
+    public static func convert(from: String) -> Bool? {
         let lowercased = from.lowercased()
         
         if ["y", "yes", "t", "true"].contains(lowercased) { return true }
@@ -237,3 +203,4 @@ extension Bool: ConvertibleFromString {
         return nil
     }
 }
+

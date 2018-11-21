@@ -18,7 +18,7 @@ public struct Input {
     ///   - validation: predicate defining whether the given input is valid
     ///   - errorResponse: what to do if the input is invalid; default prints "Invalid input"
     /// - Returns: input
-    public static func readLine(prompt: String? = nil, secure: Bool = false, validation: InputReader<String>.Validation? = nil, errorResponse: InputReader<String>.ErrorResponse? = nil) -> String {
+    public static func readLine(prompt: String? = nil, secure: Bool = false, validation: [Validation<String>] = [], errorResponse: InputReader<String>.ErrorResponse? = nil) -> String {
         return readObject(prompt: prompt, secure: secure, validation: validation, errorResponse: errorResponse)
     }
     
@@ -30,7 +30,7 @@ public struct Input {
     ///   - validation: predicate defining whether the given input is valid
     ///   - errorResponse: what to do if the input is invalid; default prints "Invalid input"
     /// - Returns: input
-    public static func readInt(prompt: String? = nil, secure: Bool = false, validation: InputReader<Int>.Validation? = nil, errorResponse: InputReader<Int>.ErrorResponse? = nil) -> Int {
+    public static func readInt(prompt: String? = nil, secure: Bool = false, validation: [Validation<Int>] = [], errorResponse: InputReader<Int>.ErrorResponse? = nil) -> Int {
         return readObject(prompt: prompt, secure: secure, validation: validation, errorResponse: errorResponse)
     }
     
@@ -42,7 +42,7 @@ public struct Input {
     ///   - validation: predicate defining whether the given input is valid
     ///   - errorResponse: what to do if the input is invalid; default prints "Invalid input"
     /// - Returns: input
-    public static func readDouble(prompt: String? = nil, secure: Bool = false, validation: InputReader<Double>.Validation? = nil, errorResponse: InputReader<Double>.ErrorResponse? = nil) -> Double {
+    public static func readDouble(prompt: String? = nil, secure: Bool = false, validation: [Validation<Double>] = [], errorResponse: InputReader<Double>.ErrorResponse? = nil) -> Double {
         return readObject(prompt: prompt, secure: secure, validation: validation, errorResponse: errorResponse)
     }
     
@@ -54,7 +54,7 @@ public struct Input {
     ///   - validation: predicate defining whether the given input is valid
     ///   - errorResponse: what to do if the input is invalid; default prints "Invalid input"
     /// - Returns: input
-    public static func readBool(prompt: String? = nil, secure: Bool = false, validation: InputReader<Bool>.Validation? = nil, errorResponse: InputReader<Bool>.ErrorResponse? = nil) -> Bool {
+    public static func readBool(prompt: String? = nil, secure: Bool = false, validation: [Validation<Bool>] = [], errorResponse: InputReader<Bool>.ErrorResponse? = nil) -> Bool {
         return readObject(prompt: prompt, secure: secure, validation: validation, errorResponse: errorResponse)
     }
     
@@ -66,7 +66,7 @@ public struct Input {
     ///   - validation: predicate defining whether the given input is valid
     ///   - errorResponse: what to do if the input is invalid; default prints "Invalid input"
     /// - Returns: input
-    public static func readObject<T: ConvertibleFromString>(prompt: String? = nil, secure: Bool = false, validation: InputReader<T>.Validation? = nil, errorResponse: InputReader<T>.ErrorResponse? = nil) -> T {
+    public static func readObject<T: ConvertibleFromString>(prompt: String? = nil, secure: Bool = false, validation: [Validation<T>] = [], errorResponse: InputReader<T>.ErrorResponse? = nil) -> T {
         return InputReader<T>(prompt: prompt, secure: secure, validation: validation, errorResponse: errorResponse).read()
     }
     
@@ -78,15 +78,14 @@ public struct Input {
 
 public class InputReader<T: ConvertibleFromString> {
     
-    public typealias Validation = (T) -> Bool
     public typealias ErrorResponse = (_ input: String) -> ()
     
     public let prompt: String?
     public let secure: Bool
-    public let validation: Validation?
+    public let validation: [Validation<T>]
     public let errorResponse: ErrorResponse?
     
-    public init(prompt: String?, secure: Bool, validation: Validation?, errorResponse: ErrorResponse?) {
+    public init(prompt: String?, secure: Bool, validation: [Validation<T>] = [], errorResponse: ErrorResponse?) {
         self.prompt = prompt
         self.secure = secure
         self.validation = validation
@@ -111,15 +110,27 @@ public class InputReader<T: ConvertibleFromString> {
                 exit(1)
             }
             
-            if let converted = T.convert(from: input), validation?(converted) ?? true {
-                return converted
-            } else {
-                if let errorResponse = errorResponse {
-                    errorResponse(input)
-                } else {
-                    WriteStream.stderr <<< "Invalid input"
-                }
+            guard let converted = T.convert(from: input) else {
+                printError(input: input)
+                continue
             }
+            
+            do {
+                try validation.forEach { try $0.validate(converted) }
+            } catch {
+                printError(input: input)
+                continue
+            }
+            
+            return converted
+        }
+    }
+    
+    private func printError(input: String) {
+        if let errorResponse = errorResponse {
+            errorResponse(input)
+        } else {
+            WriteStream.stderr <<< "Invalid input"
         }
     }
     

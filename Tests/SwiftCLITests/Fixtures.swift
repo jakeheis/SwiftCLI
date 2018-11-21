@@ -271,14 +271,8 @@ class ValidatedKeyCmd: OptionCmd {
         return value.capitalized == value
     }
     
-    let firstName = Key<String>("-n", "--name", validations: [
-        .custom(isName, "Must be a capitalized first name")
-    ])
-    
-    let age = Key<Int>("-a", "--age", validations: [
-        .greaterThan(18)
-    ])
-    
+    let firstName = Key<String>("-n", "--name", validation: [.custom(isName, "Must be a capitalized first name")])
+    let age = Key<Int>("-a", "--age", validation: [.within(18...30)])
 }
 
 class QuoteDesciptionCmd: Command {
