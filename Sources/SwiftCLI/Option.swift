@@ -75,20 +75,14 @@ public struct Validation<T> {
     
     public typealias ValidatorBlock = (T) -> Bool
     
-    public typealias Shorthand = (ValidatorBlock, String)
-    
-//    public static func validation(_ validator: @escaping ValidatorBlock, _ message: String) -> Validation {
-//        return .init(block: validator, message: message)
-//    }
+    public static func custom(_ validator: @escaping ValidatorBlock, _ message: String) -> Validation {
+        return .init(validator, message)
+    }
     
     public let block: ValidatorBlock
     public let message: String
     
-    init(_ shorthand: Shorthand) {
-        self.init(block: shorthand.0, message: shorthand.1)
-    }
-    
-    init(block: @escaping ValidatorBlock, message: String) {
+    init(_ block: @escaping ValidatorBlock, _ message: String) {
         self.block = block
         self.message = message
     }
@@ -97,6 +91,14 @@ public struct Validation<T> {
         guard block(value) else {
             throw UpdateError.validationError(message)
         }
+    }
+    
+}
+
+public extension Validation where T: Comparable {
+    
+    public static func greaterThan(_ value: T) -> Validation {
+        return .init({ $0 > value }, "Must be greater than \(value)")
     }
     
 }
@@ -125,11 +127,11 @@ public class Key<T: ConvertibleFromString>: AnyKey {
     /// - Parameters:
     ///   - names: the names for the key; convention is to include a short name (-m) and a long name (--message)
     ///   - description: A short description of what this key does for usage statements
-    public init(_ names: String ..., description: String = "", completion: Completion = .filename, validations: [Validation<T>.Shorthand] = []) {
+    public init(_ names: String ..., description: String = "", completion: Completion = .filename, validations: [Validation<T>] = []) {
         self.names = names
         self.shortDescription = description
         self.completion = completion
-        self.validations = validations.map { Validation($0) }
+        self.validations = validations
     }
     
     /// Toggles the key's value; don't call directly
@@ -167,11 +169,11 @@ public class VariadicKey<T: ConvertibleFromString>: AnyKey {
     /// - Parameters:
     ///   - names: the names for the key; convention is to include a short name (-m) and a long name (--message)
     ///   - description: A short description of what this key does for usage statements
-    public init(_ names: String ..., description: String = "", completion: Completion = .filename, validations: [Validation<T>.Shorthand] = []) {
+    public init(_ names: String ..., description: String = "", completion: Completion = .filename, validations: [Validation<T>] = []) {
         self.names = names
         self.shortDescription = description
         self.completion = completion
-        self.validations = validations.map { Validation($0) }
+        self.validations = validations
     }
     
     /// Toggles the key's value; don't call directly

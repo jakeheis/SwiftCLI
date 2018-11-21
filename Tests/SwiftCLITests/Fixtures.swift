@@ -262,14 +262,23 @@ class MultipleRestrictionsCmd: Command {
 }
 
 class VariadicKeyCmd: OptionCmd {
+    let files = VariadicKey<String>("-f", "--file", description: "a file")
+}
+
+class ValidatedKeyCmd: OptionCmd {
     
-    let files = VariadicKey<String>("-f", "--file", description: "a file", validations: [
-        (isPath, "")
+    static func isName(_ value: String) -> Bool {
+        return value.capitalized == value
+    }
+    
+    let firstName = Key<String>("-n", "--name", validations: [
+        .custom(isName, "Must be a capitalized first name")
     ])
     
-    static func isPath(_ value: String) -> Bool {
-        return false
-    }
+    let age = Key<Int>("-a", "--age", validations: [
+        .greaterThan(18)
+    ])
+    
 }
 
 class QuoteDesciptionCmd: Command {
