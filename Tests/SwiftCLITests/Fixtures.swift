@@ -267,12 +267,19 @@ class VariadicKeyCmd: OptionCmd {
 
 class ValidatedKeyCmd: OptionCmd {
     
-    static func isName(_ value: String) -> Bool {
+    static func isCapitalized(_ value: String) -> Bool {
         return value.capitalized == value
     }
     
-    let firstName = Key<String>("-n", "--name", validation: [.custom(isName, "Must be a capitalized first name")])
-    let age = Key<Int>("-a", "--age", validation: [.within(18...30)])
+    let firstName = Key<String>("-n", "--name", validation: [
+        .custom(isCapitalized, "Must be a capitalized first name")
+    ])
+    let age = Key<Int>("-a", "--age", validation: [.greaterThan(18)])
+    
+    let location = Key<String>("-l", "--location", validation: [.rejecting("Chicago", "Boston")])
+    
+    let holiday = Key<String>("--holiday", validation: [.allowing("Thanksgiving", "Halloween")])
+    
 }
 
 class QuoteDesciptionCmd: Command {

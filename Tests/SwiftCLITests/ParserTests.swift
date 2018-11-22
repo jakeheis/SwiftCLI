@@ -261,6 +261,46 @@ class ParserTests: XCTestCase {
         let arguments4 = ArgumentList(testString: "tester cmd -a 19")
         _ = try Parser().parse(commandGroup: CLI.createTester(commands: [cmd4]), arguments: arguments4)
         XCTAssertEqual(cmd4.age.value, 19)
+        
+        let cmd5 = ValidatedKeyCmd()
+        let arguments5 = ArgumentList(testString: "tester cmd -l Chicago")
+        
+        do {
+            _ = try Parser().parse(commandGroup: CLI.createTester(commands: [cmd5]), arguments: arguments5)
+            XCTFail()
+        } catch let error as OptionError {
+            guard case let .validationError(option, message) = error.kind else {
+                XCTFail()
+                return
+            }
+            XCTAssertEqual(option, "-l")
+            XCTAssertEqual(message, "Must not be: Chicago, Boston")
+        }
+        
+        let cmd6 = ValidatedKeyCmd()
+        let arguments6 = ArgumentList(testString: "tester cmd -l Denver")
+        _ = try Parser().parse(commandGroup: CLI.createTester(commands: [cmd6]), arguments: arguments6)
+        XCTAssertEqual(cmd6.location.value, "Denver")
+        
+        let cmd7 = ValidatedKeyCmd()
+        let arguments7 = ArgumentList(testString: "tester cmd --holiday 4th")
+        
+        do {
+            _ = try Parser().parse(commandGroup: CLI.createTester(commands: [cmd7]), arguments: arguments7)
+            XCTFail()
+        } catch let error as OptionError {
+            guard case let .validationError(option, message) = error.kind else {
+                XCTFail()
+                return
+            }
+            XCTAssertEqual(option, "--holiday")
+            XCTAssertEqual(message, "Must be one of: Thanksgiving, Halloween")
+        }
+        
+        let cmd8 = ValidatedKeyCmd()
+        let arguments8 = ArgumentList(testString: "tester cmd --holiday Thanksgiving")
+        _ = try Parser().parse(commandGroup: CLI.createTester(commands: [cmd8]), arguments: arguments8)
+        XCTAssertEqual(cmd8.holiday.value, "Thanksgiving")
     }
     
     // MARK: - Combined test

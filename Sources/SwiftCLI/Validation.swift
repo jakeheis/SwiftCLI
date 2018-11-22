@@ -29,6 +29,20 @@ public struct Validation<T> {
     
 }
 
+public extension Validation where T: Equatable {
+    
+    public static func allowing(_ values: T..., message: String? = nil) -> Validation {
+        let commaSeparated = values.map({ String(describing: $0) }).joined(separator: ", ")
+        return .init({ values.contains($0) }, message ?? "Must be one of: \(commaSeparated)")
+    }
+    
+    public static func rejecting(_ values: T..., message: String? = nil) -> Validation {
+        let commaSeparated = values.map({ String(describing: $0) }).joined(separator: ", ")
+        return .init({ !values.contains($0) }, message ?? "Must not be: \(commaSeparated)")
+    }
+    
+}
+
 public extension Validation where T: Comparable {
     
     public static func greaterThan(_ value: T, message: String? = nil) -> Validation {

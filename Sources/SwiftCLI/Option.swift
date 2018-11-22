@@ -147,8 +147,8 @@ public class VariadicKey<T: ConvertibleFromString>: AnyKey {
         guard let value = T.convert(from: value) else {
             throw UpdateError.conversionError
         }
-        for validation in validations {
-            try validation.validate(value)
+        for validator in validation {
+            try validator.validate(value)
         }
         values.append(value)
     }
