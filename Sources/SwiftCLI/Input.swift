@@ -80,10 +80,10 @@ public class InputReader<T: ConvertibleFromString> {
     
     public let prompt: String?
     public let secure: Bool
-    public let validation: [Validation<T>]
+    public let validation: [SwiftCLI.Validation<T>]
     public let errorResponse: ErrorResponse?
     
-    public init(prompt: String?, secure: Bool, validation: [Validation<T>] = [], errorResponse: ErrorResponse?) {
+    public init(prompt: String?, secure: Bool, validation: [SwiftCLI.Validation<T>] = [], errorResponse: ErrorResponse?) {
         self.prompt = prompt
         self.secure = secure
         self.validation = validation
@@ -109,15 +109,27 @@ public class InputReader<T: ConvertibleFromString> {
             }
             
             guard let converted = T.convert(from: input) else {
-                printError(input: input)
+                if let errorResponse = errorResponse {
+                    errorResponse(input)
+                } else {
+                    WriteStream.stderr <<< "Invalid input"
+                }
                 continue
             }
             
             var success = true
             for validator in validation {
-                if case .failure(_) = validator.validate(converted) {
+                if case .failure(let message) = validator.validate(converted) {
                     success = false
-                    printError(input: input)
+                    if let errorResponse = errorResponse {
+                        errorResponse(input)
+                    } else {
+                        var errorLine = "Invalid input"
+                        if !message.isEmpty {
+                            errorLine += ": \(message)"
+                        }
+                        WriteStream.stderr <<< errorLine
+                    }
                     break
                 }
             }
@@ -125,14 +137,6 @@ public class InputReader<T: ConvertibleFromString> {
             if success {
                 return converted
             }
-        }
-    }
-    
-    private func printError(input: String) {
-        if let errorResponse = errorResponse {
-            errorResponse(input)
-        } else {
-            WriteStream.stderr <<< "Invalid input"
         }
     }
     
