@@ -60,7 +60,8 @@ public class Flag: Option {
     
 }
 
-public enum UpdateError: Error {
+public enum UpdateResult: Error {
+    case success
     case conversionError
     case validationError(String)
 }
@@ -68,7 +69,7 @@ public enum UpdateError: Error {
 public protocol AnyKey: Option {
     var valueType: Any.Type { get }
     
-    func updateValue(_ value: String) throws
+    func updateValue(_ value: String) -> UpdateResult
 }
 
 public class Key<T: ConvertibleFromString>: AnyKey {
@@ -101,14 +102,17 @@ public class Key<T: ConvertibleFromString>: AnyKey {
     }
     
     /// Toggles the key's value; don't call directly
-    public func updateValue(_ value: String) throws {
+    public func updateValue(_ value: String) -> UpdateResult {
         guard let value = T.convert(from: value) else {
-            throw UpdateError.conversionError
+            return .conversionError
         }
         for validator in validation {
-            try validator.validate(value)
+            if case .failure(let message) = validator.validate(value) {
+                return .validationError(message)
+            }
         }
         self.value = value
+        return .success
     }
     
 }
@@ -143,14 +147,17 @@ public class VariadicKey<T: ConvertibleFromString>: AnyKey {
     }
     
     /// Toggles the key's value; don't call directly
-    public func updateValue(_ value: String) throws {
+    public func updateValue(_ value: String) -> UpdateResult {
         guard let value = T.convert(from: value) else {
-            throw UpdateError.conversionError
+            return .conversionError
         }
         for validator in validation {
-            try validator.validate(value)
+            if case .failure(let message) = validator.validate(value) {
+                return .validationError(message)
+            }
         }
         values.append(value)
+        return .success
     }
     
 }

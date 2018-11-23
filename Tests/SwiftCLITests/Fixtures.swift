@@ -272,8 +272,9 @@ class ValidatedKeyCmd: OptionCmd {
     }
     
     let firstName = Key<String>("-n", "--name", validation: [
-        .custom(isCapitalized, "Must be a capitalized first name")
+        .custom("Must be a capitalized first name", isCapitalized)
     ])
+    
     let age = Key<Int>("-a", "--age", validation: [.greaterThan(18)])
     
     let location = Key<String>("-l", "--location", validation: [.rejecting("Chicago", "Boston")])

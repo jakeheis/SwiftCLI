@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct Input {
+public enum Input {
     
     /// Reads a line of input
     ///
@@ -70,8 +70,6 @@ public struct Input {
         return InputReader<T>(prompt: prompt, secure: secure, validation: validation, errorResponse: errorResponse).read()
     }
     
-    private init() {}
-    
 }
 
 // MARK: InputReader
@@ -115,14 +113,18 @@ public class InputReader<T: ConvertibleFromString> {
                 continue
             }
             
-            do {
-                try validation.forEach { try $0.validate(converted) }
-            } catch {
-                printError(input: input)
-                continue
+            var success = true
+            for validator in validation {
+                if case .failure(_) = validator.validate(converted) {
+                    success = false
+                    printError(input: input)
+                    break
+                }
             }
             
-            return converted
+            if success {
+                return converted
+            }
         }
     }
     
