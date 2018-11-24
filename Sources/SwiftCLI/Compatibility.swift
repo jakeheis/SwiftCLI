@@ -58,6 +58,40 @@ extension Task {
     
 }
 
+public extension Input {
+    
+    @available(*, unavailable, message: "Use Validation<String>.custom instead of (String) -> Bool")
+    public static func readLine(prompt: String? = nil, secure: Bool = false, validation: ((String) -> Bool)? = nil, errorResponse: InputReader<String>.ErrorResponse? = nil) -> String {
+        return ""
+    }
+    
+    @available(*, unavailable, message: "Use Validation<Int>.custom instead of (String) -> Bool")
+    public static func readInt(prompt: String? = nil, secure: Bool = false, validation: ((Int) -> Bool)? = nil, errorResponse: InputReader<Int>.ErrorResponse? = nil) -> Int {
+        return 0
+    }
+    
+    @available(*, unavailable, message: "Use Validation<Double>.custom instead of (String) -> Bool")
+    public static func readDouble(prompt: String? = nil, secure: Bool = false, validation: ((Double) -> Bool)? = nil, errorResponse: InputReader<Double>.ErrorResponse? = nil) -> Double {
+        return 0
+    }
+    
+    @available(*, unavailable, message: "Use Validation<Bool>.custom instead of (String) -> Bool")
+    public static func readBool(prompt: String? = nil, secure: Bool = false, validation: ((Bool) -> Bool)? = nil, errorResponse: InputReader<Bool>.ErrorResponse? = nil) -> Bool {
+        return false
+    }
+    
+    @available(*, unavailable, message: "Use Validation<T>.custom instead of (T) -> Bool")
+    public static func readObject<T: ConvertibleFromString>(prompt: String? = nil, secure: Bool = false, validation: ((T) -> Bool)? = nil, errorResponse: InputReader<T>.ErrorResponse? = nil) -> T {
+        return T.convert(from: "")!
+    }
+    
+}
+
+public extension InputReader {
+    @available(*, deprecated, message: "Use Validation<T>.custom instead of InputReader<T>.Validation")
+    public typealias Validation = (T) -> Bool
+}
+
 // MARK: - Swift versions
 
 #if !swift(>=4.1)

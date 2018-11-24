@@ -53,5 +53,15 @@ class InputTests: XCTestCase {
         let bool3 = Input.readBool()
         XCTAssertEqual(bool3, true)
     }
+    
+    func testValidation() {
+        input = ["asdf", "3.4", "5", "9", "11"]
+        let int = Input.readInt(validation: [.greaterThan(10)])
+        XCTAssertEqual(int, 11)
+        
+        input = ["asdf", "5", "false", "SwiftCLI"]
+        let str = Input.readLine(validation: [.contains("ift")])
+        XCTAssertEqual(str, "SwiftCLI")
+    }
 
 }

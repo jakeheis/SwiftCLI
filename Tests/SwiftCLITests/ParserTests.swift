@@ -221,6 +221,88 @@ class ParserTests: XCTestCase {
         XCTAssertFalse(cmd.flag.value)
     }
     
+    func testValidation() throws {
+        let cmd1 = ValidatedKeyCmd()
+        let arguments1 = ArgumentList(testString: "tester cmd -n jake")
+        
+        do {
+            _ = try Parser().parse(commandGroup: CLI.createTester(commands: [cmd1]), arguments: arguments1)
+            XCTFail()
+        } catch let error as OptionError {
+            guard case let .validationError(option, message) = error.kind else {
+                XCTFail()
+                return
+            }
+            XCTAssertEqual(option, "-n")
+            XCTAssertEqual(message, "Must be a capitalized first name")
+        }
+        
+        let cmd2 = ValidatedKeyCmd()
+        let arguments2 = ArgumentList(testString: "tester cmd -n Jake")
+        _ = try Parser().parse(commandGroup: CLI.createTester(commands: [cmd2]), arguments: arguments2)
+        XCTAssertEqual(cmd2.firstName.value, "Jake")
+        
+        let cmd3 = ValidatedKeyCmd()
+        let arguments3 = ArgumentList(testString: "tester cmd -a 15")
+        
+        do {
+            _ = try Parser().parse(commandGroup: CLI.createTester(commands: [cmd3]), arguments: arguments3)
+            XCTFail()
+        } catch let error as OptionError {
+            guard case let .validationError(option, message) = error.kind else {
+                XCTFail()
+                return
+            }
+            XCTAssertEqual(option, "-a")
+            XCTAssertEqual(message, "must be greater than 18")
+        }
+        
+        let cmd4 = ValidatedKeyCmd()
+        let arguments4 = ArgumentList(testString: "tester cmd -a 19")
+        _ = try Parser().parse(commandGroup: CLI.createTester(commands: [cmd4]), arguments: arguments4)
+        XCTAssertEqual(cmd4.age.value, 19)
+        
+        let cmd5 = ValidatedKeyCmd()
+        let arguments5 = ArgumentList(testString: "tester cmd -l Chicago")
+        
+        do {
+            _ = try Parser().parse(commandGroup: CLI.createTester(commands: [cmd5]), arguments: arguments5)
+            XCTFail()
+        } catch let error as OptionError {
+            guard case let .validationError(option, message) = error.kind else {
+                XCTFail()
+                return
+            }
+            XCTAssertEqual(option, "-l")
+            XCTAssertEqual(message, "must not be: Chicago, Boston")
+        }
+        
+        let cmd6 = ValidatedKeyCmd()
+        let arguments6 = ArgumentList(testString: "tester cmd -l Denver")
+        _ = try Parser().parse(commandGroup: CLI.createTester(commands: [cmd6]), arguments: arguments6)
+        XCTAssertEqual(cmd6.location.value, "Denver")
+        
+        let cmd7 = ValidatedKeyCmd()
+        let arguments7 = ArgumentList(testString: "tester cmd --holiday 4th")
+        
+        do {
+            _ = try Parser().parse(commandGroup: CLI.createTester(commands: [cmd7]), arguments: arguments7)
+            XCTFail()
+        } catch let error as OptionError {
+            guard case let .validationError(option, message) = error.kind else {
+                XCTFail()
+                return
+            }
+            XCTAssertEqual(option, "--holiday")
+            XCTAssertEqual(message, "must be one of: Thanksgiving, Halloween")
+        }
+        
+        let cmd8 = ValidatedKeyCmd()
+        let arguments8 = ArgumentList(testString: "tester cmd --holiday Thanksgiving")
+        _ = try Parser().parse(commandGroup: CLI.createTester(commands: [cmd8]), arguments: arguments8)
+        XCTAssertEqual(cmd8.holiday.value, "Thanksgiving")
+    }
+    
     // MARK: - Combined test
     
     func testFullParse() throws {

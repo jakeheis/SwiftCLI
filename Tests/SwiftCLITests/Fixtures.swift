@@ -265,6 +265,24 @@ class VariadicKeyCmd: OptionCmd {
     let files = VariadicKey<String>("-f", "--file", description: "a file")
 }
 
+class ValidatedKeyCmd: OptionCmd {
+    
+    static func isCapitalized(_ value: String) -> Bool {
+        return value.capitalized == value
+    }
+    
+    let firstName = Key<String>("-n", "--name", validation: [
+        .custom("Must be a capitalized first name", isCapitalized)
+    ])
+    
+    let age = Key<Int>("-a", "--age", validation: [.greaterThan(18)])
+    
+    let location = Key<String>("-l", "--location", validation: [.rejecting("Chicago", "Boston")])
+    
+    let holiday = Key<String>("--holiday", validation: [.allowing("Thanksgiving", "Halloween")])
+    
+}
+
 class QuoteDesciptionCmd: Command {
     let name = "cmd"
     let shortDescription = "this description has a \"quoted section\""
