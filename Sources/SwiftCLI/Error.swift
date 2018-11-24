@@ -91,8 +91,8 @@ public struct OptionError: Swift.Error {
                     }
                 }
                 return condition + ": \(group.options.compactMap({ $0.names.last }).joined(separator: " "))"
-            case let .validationError(opt, message):
-                return "\(message): for option '\(opt)'"
+            case let .validationError(key, message):
+                return "illegal value passed to '\(key)': \(message)"
             }
         }
     }

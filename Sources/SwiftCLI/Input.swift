@@ -76,18 +76,29 @@ public enum Input {
 
 public class InputReader<T: ConvertibleFromString> {
     
-    public typealias ErrorResponse = (_ input: String) -> ()
+    public enum InvalidInputReason {
+        case wrongType
+        case failedValidation(String)
+    }
+    
+    public typealias ErrorResponse = (_ input: String, _ resaon: InvalidInputReason) -> ()
     
     public let prompt: String?
     public let secure: Bool
     public let validation: [SwiftCLI.Validation<T>]
-    public let errorResponse: ErrorResponse?
+    public let errorResponse: ErrorResponse
     
-    public init(prompt: String?, secure: Bool, validation: [SwiftCLI.Validation<T>] = [], errorResponse: ErrorResponse?) {
+    public init(prompt: String?, secure: Bool, validation: [SwiftCLI.Validation<T>], errorResponse: ErrorResponse?) {
         self.prompt = prompt
         self.secure = secure
         self.validation = validation
-        self.errorResponse = errorResponse
+        self.errorResponse = errorResponse ?? { (input, reason) in
+            var errorLine = "Invalid input"
+            if case .failedValidation(let message) = reason, !message.isEmpty {
+                errorLine += ": \(message)"
+            }
+            WriteStream.stderr <<< errorLine
+        }
     }
     
     public func read() -> T {
@@ -109,11 +120,7 @@ public class InputReader<T: ConvertibleFromString> {
             }
             
             guard let converted = T.convert(from: input) else {
-                if let errorResponse = errorResponse {
-                    errorResponse(input)
-                } else {
-                    WriteStream.stderr <<< "Invalid input"
-                }
+                errorResponse(input, .wrongType)
                 continue
             }
             
@@ -121,15 +128,7 @@ public class InputReader<T: ConvertibleFromString> {
             for validator in validation {
                 if case .failure(let message) = validator.validate(converted) {
                     success = false
-                    if let errorResponse = errorResponse {
-                        errorResponse(input)
-                    } else {
-                        var errorLine = "Invalid input"
-                        if !message.isEmpty {
-                            errorLine += ": \(message)"
-                        }
-                        WriteStream.stderr <<< errorLine
-                    }
+                    errorResponse(input, .failedValidation(message))
                     break
                 }
             }

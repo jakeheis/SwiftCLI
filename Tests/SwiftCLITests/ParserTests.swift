@@ -254,7 +254,7 @@ class ParserTests: XCTestCase {
                 return
             }
             XCTAssertEqual(option, "-a")
-            XCTAssertEqual(message, "Must be greater than 18")
+            XCTAssertEqual(message, "must be greater than 18")
         }
         
         let cmd4 = ValidatedKeyCmd()
@@ -274,7 +274,7 @@ class ParserTests: XCTestCase {
                 return
             }
             XCTAssertEqual(option, "-l")
-            XCTAssertEqual(message, "Must not be: Chicago, Boston")
+            XCTAssertEqual(message, "must not be: Chicago, Boston")
         }
         
         let cmd6 = ValidatedKeyCmd()
@@ -294,7 +294,7 @@ class ParserTests: XCTestCase {
                 return
             }
             XCTAssertEqual(option, "--holiday")
-            XCTAssertEqual(message, "Must be one of: Thanksgiving, Halloween")
+            XCTAssertEqual(message, "must be one of: Thanksgiving, Halloween")
         }
         
         let cmd8 = ValidatedKeyCmd()
