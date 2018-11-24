@@ -9,6 +9,12 @@
 
 import SwiftCLI
 
+extension CLI {
+    static func createTester(commands: [Routable], description: String? = nil) -> CLI {
+        return CLI(name: "tester", description: description, commands: commands)
+    }
+}
+
 class TestCommand: Command {
 
     let name = "test"

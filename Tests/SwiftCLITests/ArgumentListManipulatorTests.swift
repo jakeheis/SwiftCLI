@@ -11,13 +11,6 @@ import XCTest
 
 class ArgumentListManipulatorTests: XCTestCase {
     
-    static var allTests : [(String, (ArgumentListManipulatorTests) -> () throws -> Void)] {
-        return [
-            ("testOptionSplitter", testOptionSplitter),
-            ("testEqualsSplit", testEqualsSplit)
-        ]
-    }
-    
     func testOptionSplitter() {
         let splitter = OptionSplitter()
         

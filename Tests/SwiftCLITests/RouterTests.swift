@@ -9,19 +9,6 @@ import XCTest
 import SwiftCLI
 
 class RouterTests: XCTestCase {
-    
-    static var allTests : [(String, (RouterTests) -> () throws -> Void)] {
-        return [
-            ("testNameRoute", testNameRoute),
-            ("testAliasRoute", testAliasRoute),
-            ("testSingleRouter", testSingleRouter),
-            ("testFailedRoute", testFailedRoute),
-            ("testGroupPartialRoute", testGroupPartialRoute),
-            ("testGroupFailedRoute", testGroupFailedRoute),
-            ("testGroupSuccessRoute", testGroupSuccessRoute),
-            ("testNestedGroup", testNestedGroup),
-        ]
-    }
 
     func testNameRoute() throws {
         let args = ArgumentList(testString: "tester alpha")

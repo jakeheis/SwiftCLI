@@ -11,25 +11,6 @@ import XCTest
 
 class HelpMessageGeneratorTests: XCTestCase {
     
-    static var allTests : [(String, (HelpMessageGeneratorTests) -> () throws -> Void)] {
-        return [
-            ("testCommandListGeneration", testCommandListGeneration),
-            ("testMutlineCommandListGeneration", testMutlineCommandListGeneration),
-            ("testUsageStatementGeneration", testUsageStatementGeneration),
-            ("testLongDescriptionGeneration", testLongDescriptionGeneration),
-            ("testInheritedUsageStatementGeneration", testInheritedUsageStatementGeneration),
-            ("testMutlineUsageStatementGeneration", testMutlineUsageStatementGeneration),
-            ("testCommandNotSpecified", testCommandNotSpecified),
-            ("testCommandNotFound", testCommandNotFound),
-            ("testMisusedOptionsStatementGeneration", testMisusedOptionsStatementGeneration),
-            ("testNoCommandMisusedOption", testNoCommandMisusedOption),
-            ("testExpectedValueAfterKey", testExpectedValueAfterKey),
-            ("testIllegalOptionType", testIllegalOptionType),
-            ("testOptionGroupMisuse", testOptionGroupMisuse),
-            ("testParameterError", testParameterError),
-        ]
-    }
-    
     // MARK: - HelpMessageGenerator.writeCommandList
     
     func testCommandListGeneration() {

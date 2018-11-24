@@ -11,15 +11,6 @@ import XCTest
 
 class OptionRegistryTests: XCTestCase {
     
-    static var allTests : [(String, (OptionRegistryTests) -> () throws -> Void)] {
-        return [
-            ("testFlagDetection", testFlagDetection),
-            ("testKeyDetection", testKeyDetection),
-            ("testVariadicDetection", testVariadicDetection),
-            ("testMultipleRestrictions", testMultipleRestrictions),
-        ]
-    }
-    
     func testFlagDetection() {
         let cmd = FlagCmd()
         let options = OptionRegistry(routable: cmd)

@@ -11,23 +11,6 @@ import Dispatch
 
 class StreamTests: XCTestCase {
     
-    static var allTests : [(String, (StreamTests) -> () throws -> ())] {
-        return [
-            ("testWrite", testWrite),
-            ("testWriteData", testWriteData),
-            ("testRead", testRead),
-            ("testReadData", testReadData),
-            ("testReadAll", testReadAll),
-            ("testReadLine", testReadLine),
-            ("testReadLines", testReadLines),
-            ("testLineStream", testLineStream),
-            ("testCaptureStream", testCaptureStream),
-            ("testNullStream", testNullStream),
-            ("testReadFile", testReadFile),
-            ("testWriteFile", testWriteFile),
-        ]
-    }
-    
     // MARK: - Write
     
     func testWrite() {

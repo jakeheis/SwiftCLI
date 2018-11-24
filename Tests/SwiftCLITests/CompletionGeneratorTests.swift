@@ -8,26 +8,7 @@
 import XCTest
 @testable import SwiftCLI
 
-extension CLI {
-    static func createTester(commands: [Routable], description: String? = nil) -> CLI {
-        return CLI(name: "tester", description: description, commands: commands)
-    }
-}
-
 class CompletionGeneratorTests: XCTestCase {
-    
-    static var allTests : [(String, (CompletionGeneratorTests) -> () throws -> Void)] {
-        return [
-            ("testGroup", testGroup),
-            ("testBasicOptions", testBasicOptions),
-            ("testSepcialCaseOptionCompletion", testSepcialCaseOptionCompletion),
-            ("testParameterCompletion", testParameterCompletion),
-            ("testLayered", testLayered),
-            ("testEscaping", testEscaping),
-            ("testFunction", testFunction),
-            ("testOptionCompletion", testOptionCompletion),
-        ]
-    }
     
     func testGroup() {
         let cli = CLI.createTester(commands: [alphaCmd, betaCmd])

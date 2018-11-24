@@ -11,19 +11,7 @@ import XCTest
 
 class SwiftCLITests: XCTestCase {
     
-    static var allTests : [(String, (SwiftCLITests) -> () throws -> Void)] {
-        return [
-            ("testCLIGo", testCLIGo),
-            ("testGoWithArguments", testGoWithArguments),
-            ("testCLIHelp", testCLIHelp),
-            ("testGlobalOptions", testGlobalOptions),
-            ("testOptionSplit", testOptionSplit),
-            ("testCommandHelp", testCommandHelp),
-            ("testSingleCommand", testSingleCommand),
-        ]
-    }
-    
-    var executionString = ""
+    private var executionString = ""
     
     // Integration tests
     

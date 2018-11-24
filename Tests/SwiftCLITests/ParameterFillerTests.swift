@@ -9,19 +9,6 @@ import XCTest
 import SwiftCLI
 
 class ParameterFillerTests: XCTestCase {
-
-    static var allTests : [(String, (ParameterFillerTests) -> () throws -> Void)] {
-        return [
-            ("testEmptySignature", testEmptySignature),
-            ("testRequiredParameters", testRequiredParameters),
-            ("testOptionalParameters", testOptionalParameters),
-            ("testOptionalParametersWithInheritance", testOptionalParametersWithInheritance),
-            ("testCollectedRequiredParameters", testCollectedRequiredParameters),
-            ("testCollectedOptionalParameters", testCollectedOptionalParameters),
-            ("testCombinedRequiredAndOptionalParameters", testCombinedRequiredAndOptionalParameters),
-            ("testEmptyOptionalCollectedParameter", testEmptyOptionalCollectedParameter),
-        ]
-    }
     
     @discardableResult
     func parse<T: Command>(command: T, args: [String]) throws -> T {

@@ -11,13 +11,6 @@ import XCTest
 
 class ArgumentListTests: XCTestCase {
     
-    static var allTests : [(String, (ArgumentListTests) -> () throws -> Void)] {
-        return [
-            ("testStringParse", testStringParse),
-            ("testManipulate", testManipulate),
-        ]
-    }
-    
     func testStringParse() {
         let easy = ArgumentList(argumentString: "tester test thisCase")
         XCTAssertEqual(easy.pop(), "tester")

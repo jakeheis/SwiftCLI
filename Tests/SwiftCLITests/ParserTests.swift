@@ -11,26 +11,6 @@ import XCTest
 
 class ParserTests: XCTestCase {
     
-    static var allTests : [(String, (ParserTests) -> () throws -> Void)] {
-        return [
-            ("testSimpleFlagParsing", testSimpleFlagParsing),
-            ("testSimpleKeyParsing", testSimpleKeyParsing),
-            ("testKeyValueParsing", testKeyValueParsing),
-            ("testCombinedFlagsAndKeysParsing", testCombinedFlagsAndKeysParsing),
-            ("testCombinedFlagsAndKeysAndArgumentsParsing", testCombinedFlagsAndKeysAndArgumentsParsing),
-            ("testUnrecognizedOptions", testUnrecognizedOptions),
-            ("testKeysNotGivenValues", testKeysNotGivenValues),
-            ("testIllegalOptionFormat", testIllegalOptionFormat),
-            ("testFlagSplitting", testFlagSplitting),
-            ("testGroupRestriction", testGroupRestriction),
-            ("testVaridadicParse", testVaridadicParse),
-            ("testBeforeCommand", testBeforeCommand),
-            ("testDefaultFlagValue", testDefaultFlagValue),
-            ("testFullParse", testFullParse),
-            ("testCollectedOptions", testCollectedOptions)
-        ]
-    }
-    
     // MARK: - Option parsing tests
     
     func testSimpleFlagParsing() throws {

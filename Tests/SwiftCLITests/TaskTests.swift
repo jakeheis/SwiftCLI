@@ -11,25 +11,6 @@ import XCTest
 
 class TaskTests: XCTestCase {
     
-    static var allTests : [(String, (TaskTests) -> () throws -> Void)] {
-        return [
-            ("testRun", testRun),
-            ("testCapture", testCapture),
-            ("testExecutableFind", testExecutableFind),
-            ("testBashRun", testBashRun),
-            ("testBashCapture", testBashCapture),
-            ("testRunDirectory", testRunDirectory),
-            ("testCaptureDirectory", testCaptureDirectory),
-            ("testIn", testIn),
-            ("testPipe", testPipe),
-            ("testCurrentDirectory", testCurrentDirectory),
-            ("testEnv", testEnv),
-            ("testSignals", testSignals),
-            ("testTaskLineStream", testTaskLineStream),
-            ("testTaskNullStream", testTaskNullStream),
-        ]
-    }
-    
     func testRun() throws {
         let file = "file.txt"
         try SwiftCLI.run("/usr/bin/touch", file)
