@@ -77,13 +77,13 @@ dependencies: [
 ### Carthage
 
 ```
-github "jakeheis/SwiftCLI" ~> 5.2.1
+github "jakeheis/SwiftCLI" ~> 5.2.2
 ```
 
 ### CocoaPods
 
 ```ruby
-pod 'SwiftCLI', '~> 5.2.1'
+pod 'SwiftCLI', '~> 5.2.2'
 ```
 
 ## Creating a CLI

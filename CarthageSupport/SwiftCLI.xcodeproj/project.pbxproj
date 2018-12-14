@@ -28,6 +28,7 @@
 		825AEC922190AF5B00A98A4B /* CLI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 825AEC7E2190AF5B00A98A4B /* CLI.swift */; };
 		825AEC932190AF5B00A98A4B /* Parser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 825AEC7F2190AF5B00A98A4B /* Parser.swift */; };
 		825AEC942190AF5B00A98A4B /* Task.swift in Sources */ = {isa = PBXBuildFile; fileRef = 825AEC802190AF5B00A98A4B /* Task.swift */; };
+		EF06C95021C44951004C67BF /* Validation.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF06C94F21C44951004C67BF /* Validation.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -54,6 +55,7 @@
 		825AEC7E2190AF5B00A98A4B /* CLI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CLI.swift; sourceTree = "<group>"; };
 		825AEC7F2190AF5B00A98A4B /* Parser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Parser.swift; sourceTree = "<group>"; };
 		825AEC802190AF5B00A98A4B /* Task.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Task.swift; sourceTree = "<group>"; };
+		EF06C94F21C44951004C67BF /* Validation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Validation.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -116,6 +118,7 @@
 				825AEC7E2190AF5B00A98A4B /* CLI.swift */,
 				825AEC7F2190AF5B00A98A4B /* Parser.swift */,
 				825AEC802190AF5B00A98A4B /* Task.swift */,
+				EF06C94F21C44951004C67BF /* Validation.swift */,
 			);
 			name = SwiftCLI;
 			path = ../Sources/SwiftCLI;
@@ -213,6 +216,7 @@
 				825AEC8C2190AF5B00A98A4B /* Input.swift in Sources */,
 				825AEC812190AF5B00A98A4B /* ArgumentList.swift in Sources */,
 				825AEC942190AF5B00A98A4B /* Task.swift in Sources */,
+				EF06C95021C44951004C67BF /* Validation.swift in Sources */,
 				825AEC852190AF5B00A98A4B /* Error.swift in Sources */,
 				825AEC862190AF5B00A98A4B /* Option.swift in Sources */,
 				825AEC922190AF5B00A98A4B /* CLI.swift in Sources */,

@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
 
   s.name         = "SwiftCLI"
-  s.version      = "5.2.1"
+  s.version      = "5.2.2"
   s.summary      = "A powerful framework that can be used to develop a CLI in Swift"
 
   s.description  = <<-DESC
