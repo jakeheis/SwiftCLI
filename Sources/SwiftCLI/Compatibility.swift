@@ -81,7 +81,7 @@ public extension Input {
     }
     
     @available(*, unavailable, message: "Use Validation<T>.custom instead of (T) -> Bool")
-    public static func readObject<T: ConvertibleFromString>(prompt: String? = nil, secure: Bool = false, validation: ((T) -> Bool)? = nil, errorResponse: InputReader<T>.ErrorResponse? = nil) -> T {
+    public static func readObject<T>(prompt: String? = nil, secure: Bool = false, validation: ((T) -> Bool)? = nil, errorResponse: InputReader<T>.ErrorResponse? = nil) -> T {
         return T.convert(from: "")!
     }
     

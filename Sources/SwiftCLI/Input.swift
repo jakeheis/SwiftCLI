@@ -66,7 +66,7 @@ public enum Input {
     ///   - validation: predicate defining whether the given input is valid
     ///   - errorResponse: what to do if the input is invalid; default prints "Invalid input"
     /// - Returns: input
-    public static func readObject<T: ConvertibleFromString>(prompt: String? = nil, secure: Bool = false, validation: [Validation<T>] = [], errorResponse: InputReader<T>.ErrorResponse? = nil) -> T {
+    public static func readObject<T>(prompt: String? = nil, secure: Bool = false, validation: [Validation<T>] = [], errorResponse: InputReader<T>.ErrorResponse? = nil) -> T {
         return InputReader<T>(prompt: prompt, secure: secure, validation: validation, errorResponse: errorResponse).read()
     }
     
