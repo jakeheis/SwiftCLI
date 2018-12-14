@@ -14,7 +14,7 @@ public protocol Routable: class {
     
     /// A concise description of what this command or group is
     var shortDescription: String { get }
-
+    
     /// A longer description of how to use this command or group
     var longDescription: String { get }
     
@@ -47,7 +47,8 @@ extension Routable {
             options = optionsFromMirror(superMirror)
         }
         options.append(contentsOf: mirror.children.compactMap { (child) -> Option? in
-            if let option = child.value as? Option {
+            _ = [child.label][0] // Linux 4.2 crashes for some reason if this isn't done
+            if (child.label != "children" && child.label != "optionGroups"), let option = child.value as? Option {
                 return option
             }
             return nil
@@ -86,8 +87,9 @@ extension Command {
             parameters = parametersFromMirror(superMirror)
         }
         parameters.append(contentsOf: mirror.children.compactMap { (child) in
-            if let argument = child.value as? AnyParameter, let label = child.label {
-                return (label, argument)
+            _ = [child.label][0] // Linux 4.2 crashes for some reason if this isn't done
+            if (child.label != "children" && child.label != "optionGroups"), let param = child.value as? AnyParameter, let label = child.label {
+                return (label, param)
             }
             return nil
         })
@@ -97,11 +99,11 @@ extension Command {
     public var shortDescription: String {
         return ""
     }
-
+    
     public var longDescription: String {
         return ""
     }
-
+    
 }
 
 // MARK: -
@@ -118,7 +120,7 @@ public extension CommandGroup {
     var aliases: [String: String] {
         return [:]
     }
-
+    
     public var longDescription: String {
         return ""
     }
