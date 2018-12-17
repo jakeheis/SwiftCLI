@@ -24,19 +24,18 @@ public protocol AnyParameter: class {
     func signature(for name: String) -> String
 }
 
-protocol RequiredParameter: AnyParameter {
-    associatedtype Value
-    
-    var value: Value { get }
-}
-
-extension RequiredParameter {
-    public var required: Bool { return true }
-    
-    public var paramType: Any.Type {
-        return Value.self
-    }
-}
+//class RequiredParameter<Value>: AnyParameter {
+//
+//    var value: Value {
+//
+//    }
+//
+//    public var required: Bool { return true }
+//
+//    public var paramType: Any.Type {
+//        return Value.self
+//    }
+//}
 
 protocol OptParameter: AnyParameter {
     associatedtype Value
@@ -52,148 +51,159 @@ extension OptParameter {
     }
 }
 
-// MARK: - Single parameters
-
-public class Parameter: RequiredParameter {
+public enum Param {
     
-    private(set) public var satisfied = false
-    public let completion: Completion
-    
-    private var privateValue: String? = nil
-    
-    public var value: String {
-        return privateValue!
+    public class Required<Value: ConvertibleFromString>: AnyParameter {
+        
+        public let required = true
+        private(set) public var satisfied = false
+        public let completion: Completion
+        
+        private var privateValue: Value? = nil
+        
+        public var paramType: Any.Type {
+            return Value.self
+        }
+        
+        public var value: Value {
+            return privateValue!
+        }
+        
+        /// Creates a new required parameter
+        ///
+        /// - Parameter completion: the completion type for use in ZshCompletionGenerator; default .filename
+        public init(completion: Completion = .filename) {
+            self.completion = completion
+        }
+        
+        public func update(value: String) -> UpdateResult {
+            guard let converted = Value.convert(from: value) else {
+                return .conversionError
+            }
+            satisfied = true
+            privateValue = converted
+            return .success
+        }
+        
+        public func signature(for name: String) -> String {
+            return "<\(name)>"
+        }
+        
     }
-
-    /// Creates a new required parameter
-    ///
-    /// - Parameter completion: the completion type for use in ZshCompletionGenerator; default .filename
-    public init(completion: Completion = .filename) {
-        self.completion = completion
+    
+    public class Optional<Value: ConvertibleFromString>: AnyParameter {
+        
+        public let required = false
+        public let satisfied = true
+        public let completion: Completion
+        
+        public var value: Value? = nil
+        
+        public var paramType: Any.Type {
+            return Value.self
+        }
+        
+        /// Creates a new optional parameter
+        ///
+        /// - Parameter completion: the completion type for use in ZshCompletionGenerator; default .filename
+        public init(completion: Completion = .filename) {
+            self.completion = completion
+        }
+        
+        public func update(value: String) -> UpdateResult {
+            guard let converted = Value.convert(from: value) else {
+                return .conversionError
+            }
+            self.value = converted
+            return .success
+        }
+        
+        public func signature(for name: String) -> String {
+            return "[<\(name)>]"
+        }
+        
     }
     
-    public func update(value: String) -> UpdateResult {
-        satisfied = true
-        privateValue = value
-        return .success
-    }
-    
-    public func signature(for name: String) -> String {
-        return "<\(name)>"
-    }
-
 }
 
-public class OptionalParameter: OptParameter {
-    
-    public let required = false
-    public let satisfied = true
-    public let completion: Completion
-    
-    public var value: String? = nil
-    
-    /// Creates a new optional parameter
-    ///
-    /// - Parameter completion: the completion type for use in ZshCompletionGenerator; default .filename
-    public init(completion: Completion = .filename) {
-        self.completion = completion
-    }
-    
-    public func update(value: String) -> UpdateResult {
-        self.value = value
-        return .success
-    }
-    
-    public func signature(for name: String) -> String {
-        return "[<\(name)>]"
-    }
-    
-}
-
-// MARK: - Collected parameters
+public typealias Parameter = Param.Required<String>
+public typealias OptionalParameter = Param.Optional<String>
 
 public protocol AnyCollectedParameter: AnyParameter {}
 
-protocol RequiredCollectedParameter: AnyCollectedParameter {
-    associatedtype Value
+public enum CollectedParam {
     
-    var value: [Value] { get }
-}
-
-extension RequiredCollectedParameter {
-    public var required: Bool { return true }
-    
-    public var paramType: Any.Type {
-        return Value.self
-    }
-}
-
-protocol OptCollectedParameter: AnyCollectedParameter {
-    associatedtype Value
-    
-    var value: [Value] { get }
-}
-
-extension OptCollectedParameter {
-    var required: Bool { return false }
-    
-    public var paramType: Any.Type {
-        return Value.self
-    }
-}
-
-public class CollectedParameter: RequiredCollectedParameter {
-    
-    public let required = true
-    private(set) public var satisfied = false
-    public let completion: Completion
-    
-    public var value: [String] = []
-    
-    /// Creates a new required collected parameter; must be last parameter in the command
-    ///
-    /// - Parameter completion: the completion type for use in ZshCompletionGenerator; default .filename
-    public init(completion: Completion = .filename) {
-        self.completion = completion
+    public class Required<Value: ConvertibleFromString>: AnyCollectedParameter {
+        
+        public let required = true
+        private(set) public var satisfied = false
+        public let completion: Completion
+        
+        public var value: [Value] = []
+        
+        public var paramType: Any.Type {
+            return Value.self
+        }
+        
+        /// Creates a new required collected parameter; must be last parameter in the command
+        ///
+        /// - Parameter completion: the completion type for use in ZshCompletionGenerator; default .filename
+        public init(completion: Completion = .filename) {
+            self.completion = completion
+        }
+        
+        public func update(value: String) -> UpdateResult {
+            guard let converted = Value.convert(from: value) else {
+                return .conversionError
+            }
+            satisfied = true
+            self.value.append(converted)
+            return .success
+        }
+        
+        public func signature(for name: String) -> String {
+            return "<\(name)> ..."
+        }
+        
     }
     
-    public func update(value: String) -> UpdateResult {
-        satisfied = true
-        self.value.append(value)
-        return .success
-    }
-    
-    public func signature(for name: String) -> String {
-        return "<\(name)> ..."
-    }
-
-}
-
-public class OptionalCollectedParameter: OptCollectedParameter {
-    
-    public let required = false
-    public let satisfied = true
-    public let completion: Completion
-    
-    public var value: [String] = []
-    
-    /// Creates a new optional collected parameter; must be last parameter in the command
-    ///
-    /// - Parameter completion: the completion type for use in ZshCompletionGenerator; default .filename
-    public init(completion: Completion = .filename) {
-        self.completion = completion
-    }
-    
-    public func update(value: String) -> UpdateResult {
-        self.value.append(value)
-        return .success
-    }
-    
-    public func signature(for name: String) -> String {
-        return "[<\(name)>] ..."
+    public class Optional<Value: ConvertibleFromString>: AnyCollectedParameter {
+        
+        public let required = false
+        public let satisfied = true
+        public let completion: Completion
+        
+        public var value: [Value] = []
+        
+        public var paramType: Any.Type {
+            return Value.self
+        }
+        
+        /// Creates a new optional collected parameter; must be last parameter in the command
+        ///
+        /// - Parameter completion: the completion type for use in ZshCompletionGenerator; default .filename
+        public init(completion: Completion = .filename) {
+            self.completion = completion
+        }
+        
+        public func update(value: String) -> UpdateResult {
+            guard let converted = Value.convert(from: value) else {
+                return .conversionError
+            }
+            self.value.append(converted)
+            return .success
+        }
+        
+        public func signature(for name: String) -> String {
+            return "[<\(name)>] ..."
+        }
+        
     }
     
 }
+
+public typealias CollectedParameter = CollectedParam.Required<String>
+public typealias OptionalCollectedParameter = CollectedParam.Optional<String>
 
 // MARK: - ParameterIterator
 
