@@ -116,7 +116,7 @@ extension HelpMessageGenerator {
     
     public func writeParameterErrorMessage(for error: ParameterError, to out: WritableStream) {
         writeUsageStatement(for: error.command, to: out)
-        out <<< "Error: " + error.message
+        out <<< "Error: " + error.kind.message
         out <<< ""
     }
     

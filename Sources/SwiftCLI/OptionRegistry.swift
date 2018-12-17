@@ -6,6 +6,18 @@
 //  Copyright (c) 2014 jakeheis. All rights reserved.
 //
 
+
+enum Speed {
+    case fast
+    case slow
+}
+
+//class SpeedParameter: RequiredParameter {
+//    
+//    
+//    
+//}
+
 public class OptionRegistry {
     
     private var flags: [String: Flag]

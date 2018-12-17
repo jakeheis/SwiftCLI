@@ -108,26 +108,33 @@ public struct OptionError: Swift.Error {
 
 public struct ParameterError: Swift.Error {
     
-    public let command: CommandPath
-    public let minCount: Int
-    public let maxCount: Int?
-    
-    public var message: String {
-        let plural = minCount == 1 ? "argument" : "arguments"
+    public enum Kind {
+        case wrongNumber(ParameterIterator)
+        case illegalTypeForParameter(String, Any.Type)
         
-        switch maxCount {
-        case .none:
-            return "command requires at least \(minCount) \(plural)"
-        case let .some(max) where max == minCount:
-            return "command requires exactly \(max) \(plural)"
-        case let .some(max):
-            return "command requires between \(minCount) and \(max) arguments"
+        public var message: String {
+            switch self {
+            case let .wrongNumber(iterator):
+                let plural = iterator.minCount == 1 ? "argument" : "arguments"
+                switch iterator.maxCount {
+                case .none:
+                    return "command requires at least \(iterator.minCount) \(plural)"
+                case let .some(max) where max == iterator.minCount:
+                    return "command requires exactly \(max) \(plural)"
+                case let .some(max):
+                    return "command requires between \(iterator.minCount) and \(max) arguments"
+                }
+            case let .illegalTypeForParameter(param, type):
+                return "illegal value passed to '\(param)' (expected \(type))"
+            }
         }
     }
     
-    public init(command: CommandPath, paramIterator: ParameterIterator) {
+    public let command: CommandPath
+    public let kind: Kind
+    
+    public init(command: CommandPath, kind: Kind) {
         self.command = command
-        self.minCount = paramIterator.minCount
-        self.maxCount = paramIterator.maxCount
+        self.kind = kind
     }
 }

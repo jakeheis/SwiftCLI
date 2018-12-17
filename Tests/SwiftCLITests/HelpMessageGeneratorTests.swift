@@ -340,7 +340,7 @@ class HelpMessageGeneratorTests: XCTestCase {
         let path = CommandGroupPath(top: cli).appending(command)
         
         let capture = CaptureStream()
-        let error = ParameterError(command: path, paramIterator: ParameterIterator(command: path))
+        let error = ParameterError(command: path, kind: .wrongNumber(ParameterIterator(command: path)))
         DefaultHelpMessageGenerator().writeParameterErrorMessage(for: error, to: capture)
         capture.closeWrite()
         

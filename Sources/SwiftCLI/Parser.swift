@@ -112,18 +112,24 @@ public class DefaultParameterFiller: ParameterFiller {
         
         while arguments.hasNext() {
             if params.nextIsCollection() || !arguments.nextIsOption() {
-                if let param = params.next() {
-                    param.update(value: arguments.pop())
+                if let (name, param) = params.next() {
+                    let result = param.update(value: arguments.pop())
+                    switch result {
+                    case .conversionError:
+                        throw ParameterError(command: commandPath, kind: .illegalTypeForParameter(name, param.paramType))
+                    case .validationError(_): break
+                    case .success: break
+                    }
                 } else {
-                    throw ParameterError(command: commandPath, paramIterator: params)
+                    throw ParameterError(command: commandPath, kind: .wrongNumber(params))
                 }
             } else {
                 try optionRegistry.parseOneOption(args: arguments, command: commandPath)
             }
         }
         
-        if let param = params.next(), !param.satisfied {
-            throw ParameterError(command: commandPath, paramIterator: params)
+        if let (_, param) = params.next(), !param.satisfied {
+            throw ParameterError(command: commandPath, kind: .wrongNumber(params))
         }
     }
     
