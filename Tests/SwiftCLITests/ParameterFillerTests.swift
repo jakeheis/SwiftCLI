@@ -176,9 +176,57 @@ class ParameterFillerTests: XCTestCase {
         }
     }
     
+    public func XCTAssertThrowsSpecificError<T, E: Error>(
+        expression: @autoclosure () throws -> T,
+        file: StaticString = #file,
+        line: UInt = #line,
+        error errorHandler: (E) -> Void) {
+        XCTAssertThrowsError(expression, file: file, line: line) { (error) in
+            guard let specificError = error as? E else {
+                XCTFail("Error must be type \(String(describing: E.self)), is \(String(describing: type(of: error)))", file: file, line: line)
+                return
+            }
+            errorHandler(specificError)
+        }
+    }
+    
     func testEmptyOptionalCollectedParameter() throws { // Tests regression
         let cmd = try parse(command: OptCollectedCmd(), args: [])
         XCTAssertEqual(cmd.opt1.value, [])
+    }
+    
+    func testCustomParameter() throws {
+        XCTAssertThrowsSpecificError(
+            expression: try parse(command: EnumCmd(), args: []),
+            error: { (error: ParameterError) in
+                assertMinCount(of: error, is: 1)
+                assertMaxCount(of: error, is: 1)
+        })
+        
+        XCTAssertThrowsSpecificError(
+            expression: try parse(command: EnumCmd(), args: ["value"]),
+            error: { (error: ParameterError) in
+                guard case let .illegalTypeForParameter(param, type) = error.kind else {
+                    XCTFail()
+                    return
+                }
+                
+                XCTAssertEqual(param, "speed")
+                XCTAssert(type is EnumCmd.Speed.Type)
+        })
+        
+        let fast = try parse(command: EnumCmd(), args: ["fast"])
+        XCTAssertEqual(fast.speed.value.rawValue, "fast")
+        
+        let slow = try parse(command: EnumCmd(), args: ["slow"])
+        XCTAssertEqual(slow.speed.value.rawValue, "slow")
+        
+        XCTAssertThrowsSpecificError(
+            expression: try parse(command: EnumCmd(), args: ["slow", "second"]),
+            error: { (error: ParameterError) in
+                assertMinCount(of: error, is: 1)
+                assertMaxCount(of: error, is: 1)
+        })
     }
     
     // MARK: -

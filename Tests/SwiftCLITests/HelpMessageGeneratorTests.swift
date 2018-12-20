@@ -334,7 +334,7 @@ class HelpMessageGeneratorTests: XCTestCase {
     
     // MARK: - HelpMessageGenerator.writeParameterErrorMessage
     
-    func testParameterError() {
+    func testParameterCountError() {
         let command = Req2Opt2Cmd()
         let cli = CLI.createTester(commands: [command])
         let path = CommandGroupPath(top: cli).appending(command)
@@ -352,6 +352,31 @@ class HelpMessageGeneratorTests: XCTestCase {
           -h, --help      Show help information
 
         Error: command requires between 2 and 4 arguments
+        
+        
+        """)
+    }
+    
+    func testParameterTypeError() {
+        let command = EnumCmd()
+        let cli = CLI.createTester(commands: [command])
+        let path = CommandGroupPath(top: cli).appending(command)
+        
+        let capture = CaptureStream()
+        let error = ParameterError(command: path, kind: .illegalTypeForParameter("speed", EnumCmd.Speed.self))
+        DefaultHelpMessageGenerator().writeParameterErrorMessage(for: error, to: capture)
+        capture.closeWrite()
+        
+        XCTAssertEqual(capture.readAll(), """
+
+        Usage: tester cmd <speed> [options]
+
+        Limits param values to enum
+
+        Options:
+          -h, --help      Show help information
+
+        Error: illegal value passed to 'speed' (expected Speed)
         
         
         """)

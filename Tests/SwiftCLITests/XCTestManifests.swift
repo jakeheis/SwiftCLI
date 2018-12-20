@@ -41,7 +41,8 @@ extension HelpMessageGeneratorTests {
         ("testMutlineUsageStatementGeneration", testMutlineUsageStatementGeneration),
         ("testNoCommandMisusedOption", testNoCommandMisusedOption),
         ("testOptionGroupMisuse", testOptionGroupMisuse),
-        ("testParameterError", testParameterError),
+        ("testParameterCountError", testParameterCountError),
+        ("testParameterTypeError", testParameterTypeError),
         ("testUsageStatementGeneration", testUsageStatementGeneration),
     ]
 }
@@ -69,6 +70,7 @@ extension ParameterFillerTests {
         ("testCollectedOptionalParameters", testCollectedOptionalParameters),
         ("testCollectedRequiredParameters", testCollectedRequiredParameters),
         ("testCombinedRequiredAndOptionalParameters", testCombinedRequiredAndOptionalParameters),
+        ("testCustomParameter", testCustomParameter),
         ("testEmptyOptionalCollectedParameter", testEmptyOptionalCollectedParameter),
         ("testEmptySignature", testEmptySignature),
         ("testOptionalParameters", testOptionalParameters),

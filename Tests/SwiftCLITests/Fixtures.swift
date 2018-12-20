@@ -307,3 +307,19 @@ class CompletionOptionCmd: OptionCmd {
     
     let flag = Flag("-f", "--flag")
 }
+
+class EnumCmd: Command {
+    
+    enum Speed: String, ConvertibleFromString {
+        case slow
+        case fast
+    }
+    
+    let name = "cmd"
+    let shortDescription = "Limits param values to enum"
+    
+    let speed = Param.Required<Speed>()
+    
+    func execute() throws {}
+    
+}
