@@ -318,7 +318,7 @@ class EnumCmd: Command {
     enum Single: String, CustomParameterValue {
         case value
         
-        static func errorMessage(paramName: String, parameter: AnyParameter) -> String {
+        static func errorMessage(namedParameter: NamedParameter) -> String {
             return "only can be 'value'"
         }
         

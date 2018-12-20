@@ -71,25 +71,25 @@ public protocol Command: Routable {
     func execute() throws
     
     /// The paramters this command accepts; derived automatically, don't implement unless custom functionality needed
-    var parameters: [(String, AnyParameter)] { get }
+    var parameters: [NamedParameter] { get }
     
 }
 
 extension Command {
     
-    public var parameters: [(String, AnyParameter)] {
+    public var parameters: [NamedParameter] {
         return parametersFromMirror(Mirror(reflecting: self))
     }
     
-    private func parametersFromMirror(_ mirror: Mirror) -> [(String, AnyParameter)] {
-        var parameters: [(String, AnyParameter)] = []
+    private func parametersFromMirror(_ mirror: Mirror) -> [NamedParameter] {
+        var parameters: [NamedParameter] = []
         if let superMirror = mirror.superclassMirror {
             parameters = parametersFromMirror(superMirror)
         }
         parameters.append(contentsOf: mirror.children.compactMap { (child) in
             _ = [child.label][0] // Linux 4.2 crashes for some reason if this isn't done
             if (child.label != "children" && child.label != "optionGroups"), let param = child.value as? AnyParameter, let label = child.label {
-                return (label, param)
+                return NamedParameter(name: label, param: param)
             }
             return nil
         })

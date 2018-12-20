@@ -132,16 +132,16 @@ public final class ZshCompletionGenerator: CompletionGenerator {
     
     func writeCommand(for command: CommandPath, into stream: WritableStream) {
         let optionArgs = genOptionArgs(for: command.command).joined(separator: " \\\n")
-        let paramArgs = command.command.parameters.map { (paramName, param) -> String in
+        let paramArgs = command.command.parameters.map { (namedParam) -> String in
             var line = "      \""
-            if param is AnyCollectedParameter {
+            if namedParam.param is AnyCollectedParameter {
                 line += "*"
             }
             line += ":"
-            if !param.required {
+            if !namedParam.param.required {
                 line += ":"
             }
-            line += "\(paramName):\(writeCompletion(param.completion))"
+            line += "\(namedParam.name):\(writeCompletion(namedParam.param.completion))"
             line += "\""
             return line
         }.joined(separator: " \\\n")

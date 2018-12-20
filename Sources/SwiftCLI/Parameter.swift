@@ -178,17 +178,28 @@ public enum CollectedParam {
 public typealias CollectedParameter = CollectedParam.Required<String>
 public typealias OptionalCollectedParameter = CollectedParam.Optional<String>
 
+// MARK: - NamedParameter
+
+public struct NamedParameter {
+    public let name: String
+    public let param: AnyParameter
+    
+    public var signature: String {
+        return param.signature(for: name)
+    }
+}
+
 // MARK: - CustomParameterValue
 
 public protocol CustomParameterValue: ConvertibleFromString {
-    static func errorMessage(paramName: String, parameter: AnyParameter) -> String
+    static func errorMessage(namedParameter: NamedParameter) -> String
 }
 
 public extension CustomParameterValue where Self: CaseIterable {
     
-    static func errorMessage(paramName: String, parameter: AnyParameter) -> String {
+    static func errorMessage(namedParameter: NamedParameter) -> String {
         let options = allCases.map({ String(describing: $0) }).joined(separator: ", ")
-        return "illegal value passed to '\(paramName)'; expected one of: \(options)"
+        return "illegal value passed to '\(namedParameter.name)'; expected one of: \(options)"
     }
     
 }
@@ -197,8 +208,8 @@ public extension CustomParameterValue where Self: CaseIterable {
 
 public class ParameterIterator {
     
-    private var params: [(String, AnyParameter)]
-    private let collected: (String, AnyCollectedParameter)?
+    private var params: [NamedParameter]
+    private let collected: NamedParameter?
     
     public let minCount: Int
     public let maxCount: Int?
@@ -206,9 +217,9 @@ public class ParameterIterator {
     public init(command: CommandPath) {
         var all = command.command.parameters
         
-        self.minCount = all.filter({ $0.1.required }).count
+        self.minCount = all.filter({ $0.param.required }).count
         
-        if let collected = all.last as? (String, AnyCollectedParameter) {
+        if let collected = all.last, collected.param is AnyCollectedParameter {
             self.collected = collected
             all.removeLast()
             self.maxCount = nil
@@ -219,23 +230,20 @@ public class ParameterIterator {
         
         self.params = all
         
-        assert(all.index(where: { $0.1 is AnyCollectedParameter }) == nil, "can only have one collected parameter, and it must be the last parameter")
-        assert(all.index(where: { $0.1 is OptionalParameter }).flatMap({ $0 >= minCount }) ?? true, "optional parameters must come after all required parameters")
+        assert(all.index(where: { $0.param is AnyCollectedParameter }) == nil, "can only have one collected parameter, and it must be the last parameter")
+        assert(all.index(where: { $0.param is OptionalParameter }).flatMap({ $0 >= minCount }) ?? true, "optional parameters must come after all required parameters")
     }
     
     public func nextIsCollection() -> Bool {
         return params.isEmpty && collected != nil
     }
 
-    public func next() -> (String, AnyParameter)? {
+    public func next() -> NamedParameter? {
         if let individual = params.first {
             params.removeFirst()
             return individual
         }
-        if let (name, param) = collected {
-            return (name, param)
-        }
-        return nil
+        return collected
     }
     
 }

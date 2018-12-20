@@ -112,11 +112,11 @@ public class DefaultParameterFiller: ParameterFiller {
         
         while arguments.hasNext() {
             if params.nextIsCollection() || !arguments.nextIsOption() {
-                if let (name, param) = params.next() {
-                    let result = param.update(value: arguments.pop())
+                if let namedParam = params.next() {
+                    let result = namedParam.param.update(value: arguments.pop())
                     switch result {
                     case .conversionError:
-                        throw ParameterError(command: commandPath, kind: .illegalTypeForParameter(name, param))
+                        throw ParameterError(command: commandPath, kind: .illegalTypeForParameter(namedParam))
                     case .validationError(_): break
                     case .success: break
                     }
@@ -128,7 +128,7 @@ public class DefaultParameterFiller: ParameterFiller {
             }
         }
         
-        if let (_, param) = params.next(), !param.satisfied {
+        if let namedParam = params.next(), !namedParam.param.satisfied {
             throw ParameterError(command: commandPath, kind: .wrongNumber(params))
         }
     }

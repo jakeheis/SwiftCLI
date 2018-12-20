@@ -206,13 +206,13 @@ class ParameterFillerTests: XCTestCase {
         XCTAssertThrowsSpecificError(
             expression: try parse(command: EnumCmd(), args: ["value"]),
             error: { (error: ParameterError) in
-                guard case let .illegalTypeForParameter(name, param) = error.kind else {
+                guard case let .illegalTypeForParameter(namedParam) = error.kind else {
                     XCTFail()
                     return
                 }
                 
-                XCTAssertEqual(name, "speed")
-                XCTAssert(param.paramType is EnumCmd.Speed.Type)
+                XCTAssertEqual(namedParam.name, "speed")
+                XCTAssert(namedParam.param.paramType is EnumCmd.Speed.Type)
         })
         
         let fast = try parse(command: EnumCmd(), args: ["fast"])

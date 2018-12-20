@@ -363,7 +363,7 @@ class HelpMessageGeneratorTests: XCTestCase {
         let path = CommandGroupPath(top: cli).appending(command)
         
         let capture1 = CaptureStream()
-        let error1 = ParameterError(command: path, kind: .illegalTypeForParameter("speed", command.speed))
+        let error1 = ParameterError(command: path, kind: .illegalTypeForParameter(.init(name: "speed", param: command.speed)))
         DefaultHelpMessageGenerator().writeParameterErrorMessage(for: error1, to: capture1)
         capture1.closeWrite()
         
@@ -382,7 +382,7 @@ class HelpMessageGeneratorTests: XCTestCase {
         """)
         
         let capture2 = CaptureStream()
-        let error2 = ParameterError(command: path, kind: .illegalTypeForParameter("single", command.single))
+        let error2 = ParameterError(command: path, kind: .illegalTypeForParameter(.init(name: "single", param: command.single)))
         DefaultHelpMessageGenerator().writeParameterErrorMessage(for: error2, to: capture2)
         capture2.closeWrite()
         
@@ -401,7 +401,7 @@ class HelpMessageGeneratorTests: XCTestCase {
         """)
         
         let capture3 = CaptureStream()
-        let error3 = ParameterError(command: path, kind: .illegalTypeForParameter("int", command.int))
+        let error3 = ParameterError(command: path, kind: .illegalTypeForParameter(.init(name: "int", param: command.int)))
         DefaultHelpMessageGenerator().writeParameterErrorMessage(for: error3, to: capture3)
         capture3.closeWrite()
         

@@ -74,7 +74,7 @@ public struct CommandPath: RoutablePath {
         var message = joined()
         
         if !command.parameters.isEmpty {
-            let signature = command.parameters.map({ $0.1.signature(for: $0.0) }).joined(separator: " ")
+            let signature = command.parameters.map({ $0.signature }).joined(separator: " ")
             message += " \(signature)"
         }
         
