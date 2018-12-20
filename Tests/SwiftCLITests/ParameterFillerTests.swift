@@ -200,19 +200,19 @@ class ParameterFillerTests: XCTestCase {
             expression: try parse(command: EnumCmd(), args: []),
             error: { (error: ParameterError) in
                 assertMinCount(of: error, is: 1)
-                assertMaxCount(of: error, is: 1)
+                assertMaxCount(of: error, is: 3)
         })
         
         XCTAssertThrowsSpecificError(
             expression: try parse(command: EnumCmd(), args: ["value"]),
             error: { (error: ParameterError) in
-                guard case let .illegalTypeForParameter(param, type) = error.kind else {
+                guard case let .illegalTypeForParameter(name, param) = error.kind else {
                     XCTFail()
                     return
                 }
                 
-                XCTAssertEqual(param, "speed")
-                XCTAssert(type is EnumCmd.Speed.Type)
+                XCTAssertEqual(name, "speed")
+                XCTAssert(param.paramType is EnumCmd.Speed.Type)
         })
         
         let fast = try parse(command: EnumCmd(), args: ["fast"])
@@ -222,10 +222,10 @@ class ParameterFillerTests: XCTestCase {
         XCTAssertEqual(slow.speed.value.rawValue, "slow")
         
         XCTAssertThrowsSpecificError(
-            expression: try parse(command: EnumCmd(), args: ["slow", "second"]),
+            expression: try parse(command: EnumCmd(), args: ["slow", "value", "3", "fourth"]),
             error: { (error: ParameterError) in
                 assertMinCount(of: error, is: 1)
-                assertMaxCount(of: error, is: 1)
+                assertMaxCount(of: error, is: 3)
         })
     }
     

@@ -116,7 +116,7 @@ public class DefaultParameterFiller: ParameterFiller {
                     let result = param.update(value: arguments.pop())
                     switch result {
                     case .conversionError:
-                        throw ParameterError(command: commandPath, kind: .illegalTypeForParameter(name, param.paramType))
+                        throw ParameterError(command: commandPath, kind: .illegalTypeForParameter(name, param))
                     case .validationError(_): break
                     case .success: break
                     }

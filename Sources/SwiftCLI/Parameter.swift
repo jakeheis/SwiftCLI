@@ -24,33 +24,6 @@ public protocol AnyParameter: class {
     func signature(for name: String) -> String
 }
 
-//class RequiredParameter<Value>: AnyParameter {
-//
-//    var value: Value {
-//
-//    }
-//
-//    public var required: Bool { return true }
-//
-//    public var paramType: Any.Type {
-//        return Value.self
-//    }
-//}
-
-protocol OptParameter: AnyParameter {
-    associatedtype Value
-    
-    var value: Value? { get }
-}
-
-extension OptParameter {
-    var required: Bool { return false }
-    
-    public var paramType: Any.Type {
-        return Value.self
-    }
-}
-
 public enum Param {
     
     public class Required<Value: ConvertibleFromString>: AnyParameter {
@@ -204,6 +177,21 @@ public enum CollectedParam {
 
 public typealias CollectedParameter = CollectedParam.Required<String>
 public typealias OptionalCollectedParameter = CollectedParam.Optional<String>
+
+// MARK: - CustomParameterValue
+
+public protocol CustomParameterValue: ConvertibleFromString {
+    static func errorMessage(paramName: String, parameter: AnyParameter) -> String
+}
+
+public extension CustomParameterValue where Self: CaseIterable {
+    
+    static func errorMessage(paramName: String, parameter: AnyParameter) -> String {
+        let options = allCases.map({ String(describing: $0) }).joined(separator: ", ")
+        return "illegal value passed to '\(paramName)'; expected one of: \(options)"
+    }
+    
+}
 
 // MARK: - ParameterIterator
 

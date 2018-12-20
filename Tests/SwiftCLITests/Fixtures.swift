@@ -310,15 +310,26 @@ class CompletionOptionCmd: OptionCmd {
 
 class EnumCmd: Command {
     
-    enum Speed: String, ConvertibleFromString {
+    enum Speed: String, CustomParameterValue, CaseIterable {
         case slow
         case fast
+    }
+    
+    enum Single: String, CustomParameterValue {
+        case value
+        
+        static func errorMessage(paramName: String, parameter: AnyParameter) -> String {
+            return "only can be 'value'"
+        }
+        
     }
     
     let name = "cmd"
     let shortDescription = "Limits param values to enum"
     
     let speed = Param.Required<Speed>()
+    let single = Param.Optional<Single>()
+    let int = Param.Optional<Int>()
     
     func execute() throws {}
     

@@ -110,7 +110,7 @@ public struct ParameterError: Swift.Error {
     
     public enum Kind {
         case wrongNumber(ParameterIterator)
-        case illegalTypeForParameter(String, Any.Type)
+        case illegalTypeForParameter(String, AnyParameter)
         
         public var message: String {
             switch self {
@@ -124,8 +124,11 @@ public struct ParameterError: Swift.Error {
                 case let .some(max):
                     return "command requires between \(iterator.minCount) and \(max) arguments"
                 }
-            case let .illegalTypeForParameter(param, type):
-                return "illegal value passed to '\(param)' (expected \(type))"
+            case let .illegalTypeForParameter(paramName, param):
+                if let paramValue = param.paramType as? CustomParameterValue.Type {
+                    return paramValue.errorMessage(paramName: paramName, parameter: param)
+                }
+                return "illegal value passed to '\(paramName)' (expected \(param.paramType))"
             }
         }
     }

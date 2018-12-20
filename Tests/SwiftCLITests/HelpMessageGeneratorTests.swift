@@ -362,21 +362,59 @@ class HelpMessageGeneratorTests: XCTestCase {
         let cli = CLI.createTester(commands: [command])
         let path = CommandGroupPath(top: cli).appending(command)
         
-        let capture = CaptureStream()
-        let error = ParameterError(command: path, kind: .illegalTypeForParameter("speed", EnumCmd.Speed.self))
-        DefaultHelpMessageGenerator().writeParameterErrorMessage(for: error, to: capture)
-        capture.closeWrite()
+        let capture1 = CaptureStream()
+        let error1 = ParameterError(command: path, kind: .illegalTypeForParameter("speed", command.speed))
+        DefaultHelpMessageGenerator().writeParameterErrorMessage(for: error1, to: capture1)
+        capture1.closeWrite()
         
-        XCTAssertEqual(capture.readAll(), """
+        XCTAssertEqual(capture1.readAll(), """
 
-        Usage: tester cmd <speed> [options]
+        Usage: tester cmd <speed> [<single>] [<int>] [options]
 
         Limits param values to enum
 
         Options:
           -h, --help      Show help information
 
-        Error: illegal value passed to 'speed' (expected Speed)
+        Error: illegal value passed to 'speed'; expected one of: slow, fast
+        
+        
+        """)
+        
+        let capture2 = CaptureStream()
+        let error2 = ParameterError(command: path, kind: .illegalTypeForParameter("single", command.single))
+        DefaultHelpMessageGenerator().writeParameterErrorMessage(for: error2, to: capture2)
+        capture2.closeWrite()
+        
+        XCTAssertEqual(capture2.readAll(), """
+
+        Usage: tester cmd <speed> [<single>] [<int>] [options]
+
+        Limits param values to enum
+
+        Options:
+          -h, --help      Show help information
+
+        Error: only can be 'value'
+        
+        
+        """)
+        
+        let capture3 = CaptureStream()
+        let error3 = ParameterError(command: path, kind: .illegalTypeForParameter("int", command.int))
+        DefaultHelpMessageGenerator().writeParameterErrorMessage(for: error3, to: capture3)
+        capture3.closeWrite()
+        
+        XCTAssertEqual(capture3.readAll(), """
+
+        Usage: tester cmd <speed> [<single>] [<int>] [options]
+
+        Limits param values to enum
+
+        Options:
+          -h, --help      Show help information
+
+        Error: illegal value passed to 'int' (expected Int)
         
         
         """)
