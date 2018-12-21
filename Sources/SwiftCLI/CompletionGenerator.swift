@@ -7,6 +7,13 @@
 
 import Foundation
 
+public enum Completion {
+    case none
+    case filename
+    case values([(name: String, description: String)])
+    case function(String)
+}
+
 public enum Shell {
     case bash
     case zsh

@@ -212,7 +212,7 @@ class ParameterFillerTests: XCTestCase {
                 }
                 
                 XCTAssertEqual(namedParam.name, "speed")
-                XCTAssert(namedParam.param.paramType is EnumCmd.Speed.Type)
+                XCTAssert(namedParam.param.valueType is EnumCmd.Speed.Type)
         })
         
         let fast = try parse(command: EnumCmd(), args: ["fast"])

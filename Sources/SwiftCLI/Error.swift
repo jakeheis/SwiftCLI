@@ -125,10 +125,10 @@ public struct ParameterError: Swift.Error {
                     return "command requires between \(iterator.minCount) and \(max) arguments"
                 }
             case let .illegalTypeForParameter(namedParam):
-                if let paramValue = namedParam.param.paramType as? CustomParameterValue.Type {
-                    return paramValue.errorMessage(namedParameter: namedParam)
+                if let valueType = namedParam.param.valueType as? CustomParameterValue.Type {
+                    return valueType.errorMessage(namedParameter: namedParam)
                 }
-                return "illegal value passed to '\(namedParam.name)' (expected \(namedParam.param.paramType))"
+                return "illegal value passed to '\(namedParam.name)' (expected \(namedParam.param.valueType))"
             }
         }
     }

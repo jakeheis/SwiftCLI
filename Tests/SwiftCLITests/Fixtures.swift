@@ -310,7 +310,7 @@ class CompletionOptionCmd: OptionCmd {
 
 class EnumCmd: Command {
     
-    enum Speed: String, CustomParameterValue, CaseIterable {
+    enum Speed: String, ConvertibleFromString {
         case slow
         case fast
     }
@@ -334,3 +334,7 @@ class EnumCmd: Command {
     func execute() throws {}
     
 }
+
+#if swift(>=4.2)
+extension EnumCmd.Speed: CustomParameterValue, CaseIterable {}
+#endif
