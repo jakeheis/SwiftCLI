@@ -46,9 +46,18 @@ extension Routable {
         if let superMirror = mirror.superclassMirror {
             options = optionsFromMirror(superMirror)
         }
+        
         options.append(contentsOf: mirror.children.compactMap { (child) -> Option? in
-            _ = [child.label][0] // Linux 4.2 crashes for some reason if this isn't done
-            if (child.label != "children" && child.label != "optionGroups"), let option = child.value as? Option {
+            #if !os(macOS)
+            #if swift(>=4.1.50)
+            print(child.label as Any, to: &NoStream.stream)
+            guard child.label != "children" && child.label != "optionGroups" else {
+                return nil
+            }
+            #endif
+            #endif
+            
+            if let option = child.value as? Option {
                 return option
             }
             return nil
@@ -87,8 +96,16 @@ extension Command {
             parameters = parametersFromMirror(superMirror)
         }
         parameters.append(contentsOf: mirror.children.compactMap { (child) in
-            _ = [child.label][0] // Linux 4.2 crashes for some reason if this isn't done
-            if (child.label != "children" && child.label != "optionGroups"), let param = child.value as? AnyParameter, let label = child.label {
+            #if !os(macOS)
+            #if swift(>=4.1.50)
+            print(child.label as Any, to: &NoStream.stream)
+            guard child.label != "children" && child.label != "optionGroups" else {
+                return nil
+            }
+            #endif
+            #endif
+            
+            if let param = child.value as? AnyParameter, let label = child.label {
                 return NamedParameter(name: label, param: param)
             }
             return nil
@@ -125,3 +142,19 @@ public extension CommandGroup {
         return ""
     }
 }
+
+#if !os(macOS)
+#if swift(>=4.1.50)
+struct NoStream: TextOutputStream {
+    
+    // Fix for strange crash on Linux with Swift 4.2
+    
+    static var stream = NoStream()
+    
+    mutating func write(_ string: String) {
+        // No-op
+    }
+    
+}
+#endif
+#endif
