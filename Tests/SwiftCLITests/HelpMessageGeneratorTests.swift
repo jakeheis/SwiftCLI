@@ -367,7 +367,7 @@ class HelpMessageGeneratorTests: XCTestCase {
         DefaultHelpMessageGenerator().writeParameterErrorMessage(for: error1, to: capture1)
         capture1.closeWrite()
         
-        #if swift(>=4.2)
+        #if swift(>=4.1.50)
         XCTAssertEqual(capture1.readAll(), """
 
         Usage: tester cmd <speed> [<single>] [<int>] [options]

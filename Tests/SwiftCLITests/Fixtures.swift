@@ -335,6 +335,6 @@ class EnumCmd: Command {
     
 }
 
-#if swift(>=4.2)
+#if swift(>=4.1.50)
 extension EnumCmd.Speed: CustomParameterValue, CaseIterable {}
 #endif

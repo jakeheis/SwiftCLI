@@ -183,7 +183,7 @@ public protocol CustomParameterValue: ConvertibleFromString {
     static func errorMessage(namedParameter: NamedParameter) -> String
 }
 
-#if swift(>=4.2)
+#if swift(>=4.1.50)
 
 public extension CustomParameterValue where Self: CaseIterable {
     
