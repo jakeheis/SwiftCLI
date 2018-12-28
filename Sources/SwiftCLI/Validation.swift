@@ -5,7 +5,11 @@
 //  Created by Jake Heiser on 11/21/18.
 //
 
-public struct Validation<T> {
+public protocol AnyValidation {
+    var message: String { get }
+}
+
+public struct Validation<T>: AnyValidation {
     
     public enum Result {
         case success
@@ -19,7 +23,7 @@ public struct Validation<T> {
     }
     
     public let block: ValidatorBlock
-    private let message: String
+    public let message: String
     
     init(_ message: String, _ block: @escaping ValidatorBlock) {
         self.block = block

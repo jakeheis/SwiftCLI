@@ -63,17 +63,14 @@ public struct OptionError: Swift.Error {
     
     public enum Kind {
         case expectedValueAfterKey(String)
-        case illegalTypeForKey(String, Any.Type)
         case unrecognizedOption(String)
         case optionGroupMisuse(OptionGroup)
-        case validationError(String, String)
+        case invalidKeyValue(AnyKey, String, ProcessingError)
         
         public var message: String {
             switch self {
             case let .expectedValueAfterKey(key):
                 return "expected a value to follow '\(key)'"
-            case let .illegalTypeForKey(key, type):
-                return "illegal value passed to '\(key)' (expected \(type))"
             case let .unrecognizedOption(opt):
                 return "unrecognized option '\(opt)'"
             case let .optionGroupMisuse(group):
@@ -91,8 +88,8 @@ public struct OptionError: Swift.Error {
                     }
                 }
                 return condition + ": \(group.options.compactMap({ $0.names.last }).joined(separator: " "))"
-            case let .validationError(key, message):
-                return "illegal value passed to '\(key)': \(message)"
+            case let .invalidKeyValue(key, id, error):
+                return key.valueType.messageForProcessingError(error: error, for: id)
             }
         }
     }
@@ -109,26 +106,23 @@ public struct OptionError: Swift.Error {
 public struct ParameterError: Swift.Error {
     
     public enum Kind {
-        case wrongNumber(ParameterIterator)
-        case illegalTypeForParameter(NamedParameter)
+        case wrongNumber(Int, Int?)
+        case invalidValue(NamedParameter, ProcessingError)
         
         public var message: String {
             switch self {
-            case let .wrongNumber(iterator):
-                let plural = iterator.minCount == 1 ? "argument" : "arguments"
-                switch iterator.maxCount {
+            case let .wrongNumber(min, max):
+                let plural = min == 1 ? "argument" : "arguments"
+                switch max {
                 case .none:
-                    return "command requires at least \(iterator.minCount) \(plural)"
-                case let .some(max) where max == iterator.minCount:
+                    return "command requires at least \(min) \(plural)"
+                case let .some(max) where max == min:
                     return "command requires exactly \(max) \(plural)"
                 case let .some(max):
-                    return "command requires between \(iterator.minCount) and \(max) arguments"
+                    return "command requires between \(min) and \(max) arguments"
                 }
-            case let .illegalTypeForParameter(namedParam):
-                if let valueType = namedParam.param.valueType as? CustomParameterValue.Type {
-                    return valueType.errorMessage(namedParameter: namedParam)
-                }
-                return "illegal value passed to '\(namedParam.name)' (expected \(namedParam.param.valueType))"
+            case let .invalidValue(param, error):
+                return param.param.valueType.messageForProcessingError(error: error, for: param.name)
             }
         }
     }

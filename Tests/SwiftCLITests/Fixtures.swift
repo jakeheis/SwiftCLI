@@ -6,8 +6,8 @@
 //  Copyright (c) 2016 jakeheis. All rights reserved.
 //
 
-
 import SwiftCLI
+import XCTest
 
 extension CLI {
     static func createTester(commands: [Routable], description: String? = nil) -> CLI {
@@ -315,13 +315,10 @@ class EnumCmd: Command {
         case fast
     }
     
-    enum Single: String, CustomParameterValue {
+    enum Single: String, ConvertibleFromString {
         case value
         
-        static func errorMessage(namedParameter: NamedParameter) -> String {
-            return "only can be 'value'"
-        }
-        
+        static let explanationForConversionFailure = "only can be 'value'"
     }
     
     let name = "cmd"
@@ -336,5 +333,21 @@ class EnumCmd: Command {
 }
 
 #if swift(>=4.1.50)
-extension EnumCmd.Speed: CustomParameterValue, CaseIterable {}
+extension EnumCmd.Speed: CaseIterable {}
 #endif
+
+// MARK: -
+
+func XCTAssertThrowsSpecificError<T, E: Error>(
+    expression: @autoclosure () throws -> T,
+    file: StaticString = #file,
+    line: UInt = #line,
+    error errorHandler: (E) -> Void) {
+    XCTAssertThrowsError(expression, file: file, line: line) { (error) in
+        guard let specificError = error as? E else {
+            XCTFail("Error must be type \(String(describing: E.self)), is \(String(describing: type(of: error)))", file: file, line: line)
+            return
+        }
+        errorHandler(specificError)
+    }
+}

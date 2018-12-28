@@ -287,7 +287,7 @@ class HelpMessageGeneratorTests: XCTestCase {
         let capture = CaptureStream()
         let command = TestCommand()
         let path = CommandGroupPath(top: CLI.createTester(commands: [command])).appending(command)
-        let error = OptionError(command: path, kind: .illegalTypeForKey("-t", Int.self))
+        let error = OptionError(command: path, kind: .invalidKeyValue(command.times, "-t", .conversionError))
         DefaultHelpMessageGenerator().writeMisusedOptionsStatement(for: error, to: capture)
         capture.closeWrite()
         
@@ -302,7 +302,7 @@ class HelpMessageGeneratorTests: XCTestCase {
           -s, --silent           Silence all test output
           -t, --times <value>    Number of times to run the test
         
-        Error: illegal value passed to '-t' (expected Int)
+        Error: invalid value passed to '-t'; expected Int
         
         
         """)
@@ -340,7 +340,7 @@ class HelpMessageGeneratorTests: XCTestCase {
         let path = CommandGroupPath(top: cli).appending(command)
         
         let capture = CaptureStream()
-        let error = ParameterError(command: path, kind: .wrongNumber(ParameterIterator(command: path)))
+        let error = ParameterError(command: path, kind: .wrongNumber(2, 4))
         DefaultHelpMessageGenerator().writeParameterErrorMessage(for: error, to: capture)
         capture.closeWrite()
         
@@ -363,7 +363,7 @@ class HelpMessageGeneratorTests: XCTestCase {
         let path = CommandGroupPath(top: cli).appending(command)
         
         let capture1 = CaptureStream()
-        let error1 = ParameterError(command: path, kind: .illegalTypeForParameter(.init(name: "speed", param: command.speed)))
+        let error1 = ParameterError(command: path, kind: .invalidValue(.init(name: "speed", param: command.speed), .conversionError))
         DefaultHelpMessageGenerator().writeParameterErrorMessage(for: error1, to: capture1)
         capture1.closeWrite()
         
@@ -377,7 +377,7 @@ class HelpMessageGeneratorTests: XCTestCase {
         Options:
           -h, --help      Show help information
 
-        Error: illegal value passed to 'speed'; expected one of: slow, fast
+        Error: invalid value passed to 'speed'; expected one of: slow, fast
         
         
         """)
@@ -391,14 +391,14 @@ class HelpMessageGeneratorTests: XCTestCase {
         Options:
           -h, --help      Show help information
 
-        Error: illegal value passed to 'speed' (expected Speed)
+        Error: invalid value passed to 'speed' (expected Speed)
 
 
         """)
         #endif
         
         let capture2 = CaptureStream()
-        let error2 = ParameterError(command: path, kind: .illegalTypeForParameter(.init(name: "single", param: command.single)))
+        let error2 = ParameterError(command: path, kind: .invalidValue(.init(name: "single", param: command.single), .conversionError))
         DefaultHelpMessageGenerator().writeParameterErrorMessage(for: error2, to: capture2)
         capture2.closeWrite()
         
@@ -411,13 +411,13 @@ class HelpMessageGeneratorTests: XCTestCase {
         Options:
           -h, --help      Show help information
 
-        Error: only can be 'value'
+        Error: invalid value passed to 'single'; only can be 'value'
         
         
         """)
         
         let capture3 = CaptureStream()
-        let error3 = ParameterError(command: path, kind: .illegalTypeForParameter(.init(name: "int", param: command.int)))
+        let error3 = ParameterError(command: path, kind: .invalidValue(.init(name: "int", param: command.int), .conversionError))
         DefaultHelpMessageGenerator().writeParameterErrorMessage(for: error3, to: capture3)
         capture3.closeWrite()
         
@@ -430,7 +430,7 @@ class HelpMessageGeneratorTests: XCTestCase {
         Options:
           -h, --help      Show help information
 
-        Error: illegal value passed to 'int' (expected Int)
+        Error: invalid value passed to 'int'; expected Int
         
         
         """)

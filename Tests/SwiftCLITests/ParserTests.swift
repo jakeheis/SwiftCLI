@@ -92,10 +92,11 @@ class ParserTests: XCTestCase {
             _ = try Parser().parse(commandGroup: cli, arguments: arguments)
             XCTFail()
         } catch let error as OptionError {
-            guard case let .expectedValueAfterKey(key) = error.kind, key == "-b" else {
+            guard case let .expectedValueAfterKey(key) = error.kind else {
                 XCTFail()
                 return
             }
+            XCTAssertEqual(key, "-b")
         }
     }
     
@@ -108,7 +109,7 @@ class ParserTests: XCTestCase {
             _ = try Parser().parse(commandGroup: cli, arguments: arguments)
             XCTFail()
         } catch let error as OptionError {
-            guard case let .illegalTypeForKey(key, type) = error.kind, key == "-a", type == Int.self else {
+            guard case .invalidKeyValue(let key, "-a", .conversionError) = error.kind, key === cmd.alpha else {
                 XCTFail()
                 return
             }
@@ -209,12 +210,12 @@ class ParserTests: XCTestCase {
             _ = try Parser().parse(commandGroup: CLI.createTester(commands: [cmd1]), arguments: arguments1)
             XCTFail()
         } catch let error as OptionError {
-            guard case let .validationError(option, message) = error.kind else {
+            guard case .invalidKeyValue(let key, "-n", .validationError(let validator)) = error.kind else {
                 XCTFail()
                 return
             }
-            XCTAssertEqual(option, "-n")
-            XCTAssertEqual(message, "Must be a capitalized first name")
+            XCTAssert(key === cmd1.firstName)
+            XCTAssertEqual(validator.message, "Must be a capitalized first name")
         }
         
         let cmd2 = ValidatedKeyCmd()
@@ -229,12 +230,12 @@ class ParserTests: XCTestCase {
             _ = try Parser().parse(commandGroup: CLI.createTester(commands: [cmd3]), arguments: arguments3)
             XCTFail()
         } catch let error as OptionError {
-            guard case let .validationError(option, message) = error.kind else {
-                XCTFail()
+            guard case .invalidKeyValue(let key, "-a", .validationError(let validator)) = error.kind else {
+                XCTFail(String(describing: error))
                 return
             }
-            XCTAssertEqual(option, "-a")
-            XCTAssertEqual(message, "must be greater than 18")
+            XCTAssert(key === cmd3.age)
+            XCTAssertEqual(validator.message, "must be greater than 18")
         }
         
         let cmd4 = ValidatedKeyCmd()
@@ -249,12 +250,12 @@ class ParserTests: XCTestCase {
             _ = try Parser().parse(commandGroup: CLI.createTester(commands: [cmd5]), arguments: arguments5)
             XCTFail()
         } catch let error as OptionError {
-            guard case let .validationError(option, message) = error.kind else {
+            guard case .invalidKeyValue(let key, "-l", .validationError(let validator)) = error.kind else {
                 XCTFail()
                 return
             }
-            XCTAssertEqual(option, "-l")
-            XCTAssertEqual(message, "must not be: Chicago, Boston")
+            XCTAssert(key === cmd5.location)
+            XCTAssertEqual(validator.message, "must not be: Chicago, Boston")
         }
         
         let cmd6 = ValidatedKeyCmd()
@@ -269,12 +270,12 @@ class ParserTests: XCTestCase {
             _ = try Parser().parse(commandGroup: CLI.createTester(commands: [cmd7]), arguments: arguments7)
             XCTFail()
         } catch let error as OptionError {
-            guard case let .validationError(option, message) = error.kind else {
-                XCTFail()
+            guard case .invalidKeyValue(let key, "--holiday", .validationError(let validator)) = error.kind else {
+                XCTFail(String(describing: error))
                 return
             }
-            XCTAssertEqual(option, "--holiday")
-            XCTAssertEqual(message, "must be one of: Thanksgiving, Halloween")
+            XCTAssert(key === cmd7.holiday)
+            XCTAssertEqual(validator.message, "must be one of: Thanksgiving, Halloween")
         }
         
         let cmd8 = ValidatedKeyCmd()

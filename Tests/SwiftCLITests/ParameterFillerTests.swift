@@ -13,35 +13,17 @@ class ParameterFillerTests: XCTestCase {
     func testEmptySignature() throws {
         try parse(command: EmptyCmd(), args: [])
         
-        do {
-            try parse(command: EmptyCmd(), args: ["arg"])
-            XCTFail()
-        } catch let error as ParameterError {
-            assertMinCount(of: error, is: 0)
-            assertMaxCount(of: error, is: 0)
-        }
+        assertParseNumberError(command: EmptyCmd(), args: ["arg"], min: 0, max: 0)
     }
     
     func testRequiredParameters() throws {
-        do {
-            try parse(command: Req2Cmd(), args: ["arg1"])
-            XCTFail()
-        } catch let error as ParameterError {
-            assertMinCount(of: error, is: 2)
-            assertMaxCount(of: error, is: 2)
-        }
+        assertParseNumberError(command: Req2Cmd(), args: ["arg"], min: 2, max: 2)
         
         let req2 = try parse(command: Req2Cmd(), args: ["arg1", "arg2"])
         XCTAssertEqual(req2.req1.value, "arg1")
         XCTAssertEqual(req2.req2.value, "arg2")
         
-        do {
-            try parse(command: Req2Cmd(), args: ["arg1", "arg2", "arg3"])
-            XCTFail()
-        } catch let error as ParameterError {
-            assertMinCount(of: error, is: 2)
-            assertMaxCount(of: error, is: 2)
-        }
+        assertParseNumberError(command: Req2Cmd(), args: ["arg1", "arg2", "arg3"], min: 2, max: 2)
     }
     
     func testOptionalParameters() throws {
@@ -57,13 +39,7 @@ class ParameterFillerTests: XCTestCase {
         XCTAssertEqual(cmd3.opt1.value, "arg1")
         XCTAssertEqual(cmd3.opt2.value, "arg2")
         
-        do {
-            try parse(command: Opt2Cmd(), args: ["arg1", "arg2", "arg3"])
-            XCTFail()
-        } catch let error as ParameterError {
-            assertMinCount(of: error, is: 0)
-            assertMaxCount(of: error, is: 2)
-        }
+        assertParseNumberError(command: Opt2Cmd(), args: ["arg1", "arg2", "arg3"], min: 0, max: 2)
     }
     
     func testOptionalParametersWithInheritance() throws {
@@ -87,31 +63,13 @@ class ParameterFillerTests: XCTestCase {
         XCTAssertEqual(cmd4.opt2.value, "arg2")
         XCTAssertEqual(cmd4.opt3.value, "arg3")
         
-        do {
-            try parse(command: Opt2InhCmd(), args: ["arg1", "arg2", "arg3", "arg4"])
-            XCTFail()
-        } catch let error as ParameterError {
-            assertMinCount(of: error, is: 0)
-            assertMaxCount(of: error, is: 3)
-        }
+        assertParseNumberError(command: Opt2InhCmd(), args: ["arg1", "arg2", "arg3", "arg4"], min: 0, max: 3)
     }
     
     func testCollectedRequiredParameters() throws {
-        do {
-            try parse(command: ReqCollectedCmd(), args: [])
-            XCTFail()
-        } catch let error as ParameterError {
-            assertMinCount(of: error, is: 1)
-            assertMaxCount(of: error, is: nil)
-        }
+        assertParseNumberError(command: ReqCollectedCmd(), args: [], min: 1, max: nil)
         
-        do {
-            try parse(command: Req2CollectedCmd(), args: ["arg1"])
-            XCTFail()
-        } catch let error as ParameterError {
-            assertMinCount(of: error, is: 2)
-            assertMaxCount(of: error, is: nil)
-        }
+        assertParseNumberError(command: Req2CollectedCmd(), args: ["arg1"], min: 2, max: nil)
         
         let cmd1 = try parse(command: Req2CollectedCmd(), args: ["arg1", "arg2"])
         XCTAssertEqual(cmd1.req1.value, "arg1")
@@ -141,25 +99,19 @@ class ParameterFillerTests: XCTestCase {
     }
     
     func testCombinedRequiredAndOptionalParameters() throws {
-        do {
-            try parse(command: Req2Opt2Cmd(), args: ["arg1"])
-            XCTFail()
-        } catch let error as ParameterError {
-            assertMinCount(of: error, is: 2)
-            assertMaxCount(of: error, is: 4)
-        }
+        assertParseNumberError(command: Req2Opt2Cmd(), args: ["arg1"], min: 2, max: 4)
         
         let cmd1 = try parse(command: Req2Opt2Cmd(), args: ["arg1", "arg2"])
         XCTAssertEqual(cmd1.req1.value, "arg1")
         XCTAssertEqual(cmd1.req2.value, "arg2")
-        XCTAssertEqual(cmd1.opt1.value, nil)
-        XCTAssertEqual(cmd1.opt2.value, nil)
+        XCTAssertNil(cmd1.opt1.value)
+        XCTAssertNil(cmd1.opt2.value)
         
         let cmd2 = try parse(command: Req2Opt2Cmd(), args: ["arg1", "arg2", "arg3"])
         XCTAssertEqual(cmd2.req1.value, "arg1")
         XCTAssertEqual(cmd2.req2.value, "arg2")
         XCTAssertEqual(cmd2.opt1.value, "arg3")
-        XCTAssertEqual(cmd2.opt2.value, nil)
+        XCTAssertNil(cmd2.opt2.value)
         
         let cmd3 = try parse(command: Req2Opt2Cmd(), args: ["arg1", "arg2", "arg3", "arg4"])
         XCTAssertEqual(cmd3.req1.value, "arg1")
@@ -167,27 +119,7 @@ class ParameterFillerTests: XCTestCase {
         XCTAssertEqual(cmd3.opt1.value, "arg3")
         XCTAssertEqual(cmd3.opt2.value, "arg4")
         
-        do {
-            try parse(command: Req2Opt2Cmd(), args: ["arg1", "arg2", "arg3", "arg4", "arg5"])
-            XCTFail()
-        } catch let error as ParameterError {
-            assertMinCount(of: error, is: 2)
-            assertMaxCount(of: error, is: 4)
-        }
-    }
-    
-    public func XCTAssertThrowsSpecificError<T, E: Error>(
-        expression: @autoclosure () throws -> T,
-        file: StaticString = #file,
-        line: UInt = #line,
-        error errorHandler: (E) -> Void) {
-        XCTAssertThrowsError(expression, file: file, line: line) { (error) in
-            guard let specificError = error as? E else {
-                XCTFail("Error must be type \(String(describing: E.self)), is \(String(describing: type(of: error)))", file: file, line: line)
-                return
-            }
-            errorHandler(specificError)
-        }
+        assertParseNumberError(command: Req2Opt2Cmd(), args: ["arg1", "arg2", "arg3", "arg4", "arg5"], min: 2, max: 4)
     }
     
     func testEmptyOptionalCollectedParameter() throws { // Tests regression
@@ -196,23 +128,19 @@ class ParameterFillerTests: XCTestCase {
     }
     
     func testCustomParameter() throws {
-        XCTAssertThrowsSpecificError(
-            expression: try parse(command: EnumCmd(), args: []),
-            error: { (error: ParameterError) in
-                assertMinCount(of: error, is: 1)
-                assertMaxCount(of: error, is: 3)
-        })
+        assertParseNumberError(command: EnumCmd(), args: [], min: 1, max: 3)
         
+        let cmd = EnumCmd()
         XCTAssertThrowsSpecificError(
-            expression: try parse(command: EnumCmd(), args: ["value"]),
+            expression: try parse(command: cmd, args: ["value"]),
             error: { (error: ParameterError) in
-                guard case let .illegalTypeForParameter(namedParam) = error.kind else {
+                guard case .invalidValue(let namedParam, .conversionError) = error.kind else {
                     XCTFail()
                     return
                 }
                 
                 XCTAssertEqual(namedParam.name, "speed")
-                XCTAssert(namedParam.param.valueType is EnumCmd.Speed.Type)
+                XCTAssert(namedParam.param === cmd.speed)
         })
         
         let fast = try parse(command: EnumCmd(), args: ["fast"])
@@ -221,12 +149,7 @@ class ParameterFillerTests: XCTestCase {
         let slow = try parse(command: EnumCmd(), args: ["slow"])
         XCTAssertEqual(slow.speed.value.rawValue, "slow")
         
-        XCTAssertThrowsSpecificError(
-            expression: try parse(command: EnumCmd(), args: ["slow", "value", "3", "fourth"]),
-            error: { (error: ParameterError) in
-                assertMinCount(of: error, is: 1)
-                assertMaxCount(of: error, is: 3)
-        })
+        assertParseNumberError(command: EnumCmd(), args: ["slow", "value", "3", "fourth"], min: 1, max: 3)
     }
     
     // MARK: -
@@ -240,21 +163,15 @@ class ParameterFillerTests: XCTestCase {
         return command
     }
     
-    private func assertMinCount(of error: ParameterError, is num: Int, file: StaticString = #file, line: UInt = #line) {
-        guard case let .wrongNumber(iterator) = error.kind else {
-            XCTFail(file: file, line: line)
-            return
-        }
-        XCTAssertEqual(iterator.minCount, num, file: file, line: line)
+    private func assertParseNumberError<T: Command>(command: T, args: [String], min: Int, max: Int?, file: StaticString = #file, line: UInt = #line) {
+        XCTAssertThrowsSpecificError(
+            expression: try parse(command: command, args: args), file: file, line: line,
+            error: { (error: ParameterError) in
+                guard case .wrongNumber(min, max) = error.kind else {
+                    XCTFail("Expected error to be .wrongNumber(\(min), \(max as Any)); got .\(error.kind)", file: file, line: line)
+                    return
+                }
+        })
     }
-    
-    private func assertMaxCount(of error: ParameterError, is num: Int?, file: StaticString = #file, line: UInt = #line) {
-        guard case let .wrongNumber(iterator) = error.kind else {
-            XCTFail(file: file, line: line)
-            return
-        }
-        XCTAssertEqual(iterator.maxCount, num, file: file, line: line)
-    }
-    
 
 }

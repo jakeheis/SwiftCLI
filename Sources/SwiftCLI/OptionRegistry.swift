@@ -57,13 +57,9 @@ public class OptionRegistry {
              guard args.hasNext(), !args.nextIsOption() else {
                 throw OptionError(command: command, kind: .expectedValueAfterKey(opt))
             }
-            let value = args.pop()
-            switch key.updateValue(value) {
-            case .conversionError:
-                throw OptionError(command: command, kind: .illegalTypeForKey(opt, key.valueType))
-            case .validationError(let message):
-                throw OptionError(command: command, kind: .validationError(opt, message))
-            case .success: break
+            let updateResult = key.updateValue(args.pop())
+            if case let .failure(error) = updateResult {
+               throw OptionError(command: command, kind: .invalidKeyValue(key, opt, error))
             }
         } else {
             throw OptionError(command: command, kind: .unrecognizedOption(opt))

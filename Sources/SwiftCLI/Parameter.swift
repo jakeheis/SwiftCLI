@@ -11,21 +11,44 @@ public protocol AnyParameter: class {
     var satisfied: Bool { get }
     var completion: Completion { get }
     
-    var valueType: Any.Type { get }
+    var valueType: ConvertibleFromString.Type { get }
     
     func update(value: String) -> UpdateResult
     func signature(for name: String) -> String
 }
 
+protocol TypedParameter: AnyParameter {
+    associatedtype Value: ConvertibleFromString
+    
+    var validation: [Validation<Value>] { get }
+    
+    func update(with value: Value)
+}
+
+extension TypedParameter {
+    
+    public var valueType: ConvertibleFromString.Type {
+        return Value.self
+    }
+    
+    public func update(value: String) -> UpdateResult {
+        let (result, potentialValue) = Value.convertAndValidate(value: value, validation: validation)
+        if let value = potentialValue {
+            update(with: value)
+        }
+        return result
+    }
+    
+}
+
 public enum Param {
     
-    public class Required<Value: ConvertibleFromString>: AnyParameter {
+    public class Required<Value: ConvertibleFromString>: TypedParameter {
         
         public let required = true
         public var satisfied: Bool { return privateValue != nil }
         public let completion: Completion
-        
-        public var valueType: Any.Type { return Value.self }
+        public let validation: [Validation<Value>]
         
         private var privateValue: Value? = nil
         
@@ -36,16 +59,13 @@ public enum Param {
         /// Creates a new required parameter
         ///
         /// - Parameter completion: the completion type for use in ZshCompletionGenerator; default .filename
-        public init(completion: Completion = .filename) {
+        public init(completion: Completion = .filename, validation: [Validation<Value>] = []) {
             self.completion = completion
+            self.validation = validation
         }
         
-        public func update(value: String) -> UpdateResult {
-            guard let converted = Value.convert(from: value) else {
-                return .conversionError
-            }
-            privateValue = converted
-            return .success
+        func update(with value: Value) {
+            privateValue = value
         }
         
         public func signature(for name: String) -> String {
@@ -54,31 +74,25 @@ public enum Param {
         
     }
     
-    public class Optional<Value: ConvertibleFromString>: AnyParameter {
+    public class Optional<Value: ConvertibleFromString>: TypedParameter {
         
         public let required = false
         public let satisfied = true
         public let completion: Completion
-        
-        public var valueType: Any.Type {
-            return Value.self
-        }
+        public let validation: [Validation<Value>]
         
         public var value: Value? = nil
         
         /// Creates a new optional parameter
         ///
         /// - Parameter completion: the completion type for use in ZshCompletionGenerator; default .filename
-        public init(completion: Completion = .filename) {
+        public init(completion: Completion = .filename, validation: [Validation<Value>] = []) {
             self.completion = completion
+            self.validation = validation
         }
         
-        public func update(value: String) -> UpdateResult {
-            guard let converted = Value.convert(from: value) else {
-                return .conversionError
-            }
-            self.value = converted
-            return .success
+        func update(with value: Value) {
+            self.value = value
         }
         
         public func signature(for name: String) -> String {
@@ -90,34 +104,29 @@ public enum Param {
 }
 
 public protocol AnyCollectedParameter: AnyParameter {}
+protocol TypedCollectedParameter: AnyCollectedParameter, TypedParameter {}
 
 public enum CollectedParam {
     
-    public class Required<Value: ConvertibleFromString>: AnyCollectedParameter {
+    public class Required<Value: ConvertibleFromString>: TypedCollectedParameter {
         
         public let required = true
         public var satisfied: Bool { return !value.isEmpty }
         public let completion: Completion
-        
-        public var valueType: Any.Type {
-            return Value.self
-        }
+        public let validation: [Validation<Value>]
         
         public var value: [Value] = []
         
         /// Creates a new required collected parameter; must be last parameter in the command
         ///
         /// - Parameter completion: the completion type for use in ZshCompletionGenerator; default .filename
-        public init(completion: Completion = .filename) {
+        public init(completion: Completion = .filename, validation: [Validation<Value>] = []) {
             self.completion = completion
+            self.validation = validation
         }
         
-        public func update(value: String) -> UpdateResult {
-            guard let converted = Value.convert(from: value) else {
-                return .conversionError
-            }
-            self.value.append(converted)
-            return .success
+        func update(with value: Value) {
+            self.value.append(value)
         }
         
         public func signature(for name: String) -> String {
@@ -126,31 +135,25 @@ public enum CollectedParam {
         
     }
     
-    public class Optional<Value: ConvertibleFromString>: AnyCollectedParameter {
+    public class Optional<Value: ConvertibleFromString>: TypedCollectedParameter {
         
         public let required = false
         public let satisfied = true
         public let completion: Completion
-        
-        public var valueType: Any.Type {
-            return Value.self
-        }
+        public let validation: [Validation<Value>]
         
         public var value: [Value] = []
         
         /// Creates a new optional collected parameter; must be last parameter in the command
         ///
         /// - Parameter completion: the completion type for use in ZshCompletionGenerator; default .filename
-        public init(completion: Completion = .filename) {
+        public init(completion: Completion = .filename, validation: [Validation<Value>] = []) {
             self.completion = completion
+            self.validation = validation
         }
         
-        public func update(value: String) -> UpdateResult {
-            guard let converted = Value.convert(from: value) else {
-                return .conversionError
-            }
-            self.value.append(converted)
-            return .success
+        func update(with value: Value) {
+            self.value.append(value)
         }
         
         public func signature(for name: String) -> String {
@@ -175,26 +178,12 @@ public struct NamedParameter {
     public var signature: String {
         return param.signature(for: name)
     }
-}
-
-// MARK: - CustomParameterValue
-
-public protocol CustomParameterValue: ConvertibleFromString {
-    static func errorMessage(namedParameter: NamedParameter) -> String
-}
-
-#if swift(>=4.1.50)
-
-public extension CustomParameterValue where Self: CaseIterable {
     
-    static func errorMessage(namedParameter: NamedParameter) -> String {
-        let options = allCases.map({ String(describing: $0) }).joined(separator: ", ")
-        return "illegal value passed to '\(namedParameter.name)'; expected one of: \(options)"
+    public init(name: String, param: AnyParameter) {
+        self.name = name
+        self.param = param
     }
-    
 }
-
-#endif
 
 // MARK: - ParameterIterator
 

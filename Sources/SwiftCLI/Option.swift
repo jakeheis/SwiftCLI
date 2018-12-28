@@ -60,14 +60,13 @@ public class Flag: Option {
     
 }
 
-public enum UpdateResult: Error {
+public enum UpdateResult {
     case success
-    case conversionError
-    case validationError(String)
+    case failure(ProcessingError)
 }
 
 public protocol AnyKey: Option {
-    var valueType: Any.Type { get }
+    var valueType: ConvertibleFromString.Type { get }
     
     func updateValue(_ value: String) -> UpdateResult
 }
@@ -81,7 +80,7 @@ public class Key<T: ConvertibleFromString>: AnyKey {
     public let completion: Completion?
     public let validation: [Validation<T>]
     
-    public var valueType: Any.Type {
+    public var valueType: ConvertibleFromString.Type {
         return T.self
     }
     
@@ -103,16 +102,11 @@ public class Key<T: ConvertibleFromString>: AnyKey {
     
     /// Toggles the key's value; don't call directly
     public func updateValue(_ value: String) -> UpdateResult {
-        guard let value = T.convert(from: value) else {
-            return .conversionError
+        let (result, potentialValue) = T.convertAndValidate(value: value, validation: validation)
+        if let value = potentialValue {
+            self.value = value
         }
-        for validator in validation {
-            if case .failure(let message) = validator.validate(value) {
-                return .validationError(message)
-            }
-        }
-        self.value = value
-        return .success
+        return result
     }
     
 }
@@ -126,7 +120,7 @@ public class VariadicKey<T: ConvertibleFromString>: AnyKey {
     public let completion: Completion?
     public let validation: [Validation<T>]
     
-    public var valueType: Any.Type {
+    public var valueType: ConvertibleFromString.Type {
         return T.self
     }
     
@@ -148,27 +142,81 @@ public class VariadicKey<T: ConvertibleFromString>: AnyKey {
     
     /// Toggles the key's value; don't call directly
     public func updateValue(_ value: String) -> UpdateResult {
-        guard let value = T.convert(from: value) else {
-            return .conversionError
+        let (result, potentialValue) = T.convertAndValidate(value: value, validation: validation)
+        if let value = potentialValue {
+            values.append(value)
         }
-        for validator in validation {
-            if case .failure(let message) = validator.validate(value) {
-                return .validationError(message)
-            }
-        }
-        values.append(value)
-        return .success
+        return result
     }
     
 }
 
+
 // MARK: - ConvertibleFromString
+
+public enum ProcessingError {
+    case conversionError
+    case validationError(AnyValidation)
+}
 
 /// A type that can be created from a string
 public protocol ConvertibleFromString {
     /// Returns an instance of the conforming type from a string representation
     static func convert(from: String) -> Self?
+    
+    static var explanationForConversionFailure: String { get }
+    
+    static func messageForProcessingError(error: ProcessingError, for id: String?) -> String
 }
+
+extension ConvertibleFromString {
+    
+    public static func convertAndValidate(value: String, validation: [Validation<Self>]) -> (UpdateResult, Self?) {
+        guard let converted = Self.convert(from: value) else {
+            return (.failure(.conversionError), nil)
+        }
+        for validator in validation {
+            if case .failure(_) = validator.validate(converted) {
+                return (.failure(.validationError(validator)), nil)
+            }
+        }
+        return (.success, converted)
+    }
+    
+    public static var explanationForConversionFailure: String {
+        return "expected \(self)"
+    }
+    
+    public static func messageForProcessingError(error: ProcessingError, for id: String?) -> String {
+        var message = "invalid value"
+        if let id = id {
+            message += " passed to '\(id)'"
+        }
+        
+        message += "; "
+        
+        switch error {
+        case .conversionError: message += explanationForConversionFailure
+        case let .validationError(validation): message += validation.message
+        }
+        
+        return message
+    }
+    
+}
+
+#if swift(>=4.1.50)
+
+extension ConvertibleFromString where Self: CaseIterable {
+    
+    public static var explanationForConversionFailure: String {
+        let options = allCases.map({ String(describing: $0) }).joined(separator: ", ")
+        return "expected one of: \(options)"
+    }
+
+}
+
+#endif
 
 extension ConvertibleFromString where Self: LosslessStringConvertible {
     public static func convert(from: String) -> Self? {

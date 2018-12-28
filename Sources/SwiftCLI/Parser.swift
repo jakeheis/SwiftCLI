@@ -114,14 +114,11 @@ public class DefaultParameterFiller: ParameterFiller {
             if params.nextIsCollection() || !arguments.nextIsOption() {
                 if let namedParam = params.next() {
                     let result = namedParam.param.update(value: arguments.pop())
-                    switch result {
-                    case .conversionError:
-                        throw ParameterError(command: commandPath, kind: .illegalTypeForParameter(namedParam))
-                    case .validationError(_): break
-                    case .success: break
+                    if case let .failure(error) = result {
+                        throw ParameterError(command: commandPath, kind: .invalidValue(namedParam, error))
                     }
                 } else {
-                    throw ParameterError(command: commandPath, kind: .wrongNumber(params))
+                    throw ParameterError(command: commandPath, kind: .wrongNumber(params.minCount, params.maxCount))
                 }
             } else {
                 try optionRegistry.parseOneOption(args: arguments, command: commandPath)
@@ -129,7 +126,7 @@ public class DefaultParameterFiller: ParameterFiller {
         }
         
         if let namedParam = params.next(), !namedParam.param.satisfied {
-            throw ParameterError(command: commandPath, kind: .wrongNumber(params))
+            throw ParameterError(command: commandPath, kind: .wrongNumber(params.minCount, params.maxCount))
         }
     }
     
