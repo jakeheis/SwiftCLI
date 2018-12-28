@@ -57,7 +57,7 @@ public class OptionRegistry {
              guard args.hasNext(), !args.nextIsOption() else {
                 throw OptionError(command: command, kind: .expectedValueAfterKey(opt))
             }
-            let updateResult = key.updateValue(args.pop())
+            let updateResult = key.update(to: args.pop())
             if case let .failure(error) = updateResult {
                throw OptionError(command: command, kind: .invalidKeyValue(key, opt, error))
             }

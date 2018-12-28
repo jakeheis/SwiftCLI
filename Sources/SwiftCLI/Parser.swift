@@ -113,7 +113,7 @@ public class DefaultParameterFiller: ParameterFiller {
         while arguments.hasNext() {
             if params.nextIsCollection() || !arguments.nextIsOption() {
                 if let namedParam = params.next() {
-                    let result = namedParam.param.update(value: arguments.pop())
+                    let result = namedParam.param.update(to: arguments.pop())
                     if case let .failure(error) = result {
                         throw ParameterError(command: commandPath, kind: .invalidValue(namedParam, error))
                     }

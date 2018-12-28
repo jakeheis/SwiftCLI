@@ -6,44 +6,16 @@
 //  Copyright (c) 2015 jakeheis. All rights reserved.
 //
 
-public protocol AnyParameter: class {
+public protocol AnyParameter: AnyValueBox {
     var required: Bool { get }
     var satisfied: Bool { get }
-    var completion: Completion { get }
-    
-    var valueType: ConvertibleFromString.Type { get }
-    
-    func update(value: String) -> UpdateResult
+
     func signature(for name: String) -> String
-}
-
-protocol TypedParameter: AnyParameter {
-    associatedtype Value: ConvertibleFromString
-    
-    var validation: [Validation<Value>] { get }
-    
-    func update(with value: Value)
-}
-
-extension TypedParameter {
-    
-    public var valueType: ConvertibleFromString.Type {
-        return Value.self
-    }
-    
-    public func update(value: String) -> UpdateResult {
-        let (result, potentialValue) = Value.convertAndValidate(value: value, validation: validation)
-        if let value = potentialValue {
-            update(with: value)
-        }
-        return result
-    }
-    
 }
 
 public enum Param {
     
-    public class Required<Value: ConvertibleFromString>: TypedParameter {
+    public class Required<Value: ConvertibleFromString>: AnyParameter, ValueBox {
         
         public let required = true
         public var satisfied: Bool { return privateValue != nil }
@@ -64,7 +36,7 @@ public enum Param {
             self.validation = validation
         }
         
-        func update(with value: Value) {
+        public func update(to value: Value) {
             privateValue = value
         }
         
@@ -74,7 +46,7 @@ public enum Param {
         
     }
     
-    public class Optional<Value: ConvertibleFromString>: TypedParameter {
+    public class Optional<Value: ConvertibleFromString>: AnyParameter, SingleValueBox {
         
         public let required = false
         public let satisfied = true
@@ -91,10 +63,6 @@ public enum Param {
             self.validation = validation
         }
         
-        func update(with value: Value) {
-            self.value = value
-        }
-        
         public func signature(for name: String) -> String {
             return "[<\(name)>]"
         }
@@ -104,11 +72,11 @@ public enum Param {
 }
 
 public protocol AnyCollectedParameter: AnyParameter {}
-protocol TypedCollectedParameter: AnyCollectedParameter, TypedParameter {}
+//protocol TypedCollectedParameter: AnyCollectedParameter, TypedParameter {}
 
 public enum CollectedParam {
     
-    public class Required<Value: ConvertibleFromString>: TypedCollectedParameter {
+    public class Required<Value: ConvertibleFromString>: AnyCollectedParameter, MultiValueBox {
         
         public let required = true
         public var satisfied: Bool { return !value.isEmpty }
@@ -125,17 +93,13 @@ public enum CollectedParam {
             self.validation = validation
         }
         
-        func update(with value: Value) {
-            self.value.append(value)
-        }
-        
         public func signature(for name: String) -> String {
             return "<\(name)> ..."
         }
         
     }
     
-    public class Optional<Value: ConvertibleFromString>: TypedCollectedParameter {
+    public class Optional<Value: ConvertibleFromString>: AnyCollectedParameter, MultiValueBox {
         
         public let required = false
         public let satisfied = true
@@ -150,10 +114,6 @@ public enum CollectedParam {
         public init(completion: Completion = .filename, validation: [Validation<Value>] = []) {
             self.completion = completion
             self.validation = validation
-        }
-        
-        func update(with value: Value) {
-            self.value.append(value)
         }
         
         public func signature(for name: String) -> String {

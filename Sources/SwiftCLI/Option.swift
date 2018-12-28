@@ -6,15 +6,65 @@
 //  Copyright © 2017 jakeheis. All rights reserved.
 //
 
+public protocol AnyValueBox: class {
+    var completion: Completion { get }
+    var valueType: ConvertibleFromString.Type { get }
+    
+    func update(to value: String) -> UpdateResult
+}
+
+public protocol ValueBox: AnyValueBox {
+    associatedtype Value: ConvertibleFromString
+    
+    var validation: [Validation<Value>] { get }
+    
+    func update(to value: Value)
+}
+
+public extension ValueBox {
+    
+    var valueType: ConvertibleFromString.Type { return Value.self }
+    
+    func update(to value: String) -> UpdateResult {
+        let (result, potentialValue) = Value.convertAndValidate(value: value, validation: validation)
+        if let typedValue = potentialValue {
+            update(to: typedValue)
+        }
+        return result
+    }
+    
+}
+
+public protocol SingleValueBox: ValueBox {
+    var value: Value? { get set }
+}
+
+public extension SingleValueBox {
+    func update(to value: Value) {
+        self.value = value
+    }
+}
+
+public protocol MultiValueBox: ValueBox {
+    var value: [Value] { get set }
+}
+
+public extension MultiValueBox {
+    func update(to value: Value) {
+        self.value.append(value)
+    }
+}
+
 public protocol Option: class, CustomStringConvertible {
     var names: [String] { get }
     var shortDescription: String { get }
     var identifier: String { get }
     var isVariadic: Bool { get }
-    var completion: Completion? { get }
 }
 
 public extension Option {
+    
+    var isVariadic: Bool { return false }
     
     var description: String {
         return "\(type(of: self))(\(identifier))"
@@ -34,8 +84,6 @@ public class Flag: Option {
     public let names: [String]
     public let shortDescription: String
     public private(set) var value: Bool
-    public let isVariadic = false
-    public let completion: Completion? = nil
     
     public var identifier: String {
         return names.joined(separator: ", ")
@@ -65,24 +113,15 @@ public enum UpdateResult {
     case failure(ProcessingError)
 }
 
-public protocol AnyKey: Option {
-    var valueType: ConvertibleFromString.Type { get }
-    
-    func updateValue(_ value: String) -> UpdateResult
-}
+public protocol AnyKey: Option, AnyValueBox {}
 
-public class Key<T: ConvertibleFromString>: AnyKey {
+public class Key<Value: ConvertibleFromString>: AnyKey, SingleValueBox {
         
     public let names: [String]
     public let shortDescription: String
-    public private(set) var value: T?
-    public let isVariadic = false
-    public let completion: Completion?
-    public let validation: [Validation<T>]
-    
-    public var valueType: ConvertibleFromString.Type {
-        return T.self
-    }
+    public var value: Value?
+    public let completion: Completion
+    public let validation: [Validation<Value>]
     
     public var identifier: String {
         return names.joined(separator: ", ") + " <value>"
@@ -93,36 +132,23 @@ public class Key<T: ConvertibleFromString>: AnyKey {
     /// - Parameters:
     ///   - names: the names for the key; convention is to include a short name (-m) and a long name (--message)
     ///   - description: A short description of what this key does for usage statements
-    public init(_ names: String ..., description: String = "", completion: Completion = .filename, validation: [Validation<T>] = []) {
+    public init(_ names: String ..., description: String = "", completion: Completion = .filename, validation: [Validation<Value>] = []) {
         self.names = names
         self.shortDescription = description
         self.completion = completion
         self.validation = validation
     }
     
-    /// Toggles the key's value; don't call directly
-    public func updateValue(_ value: String) -> UpdateResult {
-        let (result, potentialValue) = T.convertAndValidate(value: value, validation: validation)
-        if let value = potentialValue {
-            self.value = value
-        }
-        return result
-    }
-    
 }
 
-public class VariadicKey<T: ConvertibleFromString>: AnyKey {
+public class VariadicKey<Value: ConvertibleFromString>: AnyKey, MultiValueBox {
     
     public let names: [String]
     public let shortDescription: String
-    public private(set) var values: [T] = []
+    public var value: [Value] = []
     public let isVariadic = true
-    public let completion: Completion?
-    public let validation: [Validation<T>]
-    
-    public var valueType: ConvertibleFromString.Type {
-        return T.self
-    }
+    public let completion: Completion
+    public let validation: [Validation<Value>]
     
     public var identifier: String {
         return names.joined(separator: ", ") + " <value>"
@@ -133,20 +159,11 @@ public class VariadicKey<T: ConvertibleFromString>: AnyKey {
     /// - Parameters:
     ///   - names: the names for the key; convention is to include a short name (-m) and a long name (--message)
     ///   - description: A short description of what this key does for usage statements
-    public init(_ names: String ..., description: String = "", completion: Completion = .filename, validation: [Validation<T>] = []) {
+    public init(_ names: String ..., description: String = "", completion: Completion = .filename, validation: [Validation<Value>] = []) {
         self.names = names
         self.shortDescription = description
         self.completion = completion
         self.validation = validation
-    }
-    
-    /// Toggles the key's value; don't call directly
-    public func updateValue(_ value: String) -> UpdateResult {
-        let (result, potentialValue) = T.convertAndValidate(value: value, validation: validation)
-        if let value = potentialValue {
-            values.append(value)
-        }
-        return result
     }
     
 }
