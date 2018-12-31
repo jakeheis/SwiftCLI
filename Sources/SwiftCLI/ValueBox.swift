@@ -7,10 +7,10 @@
 
 public enum UpdateResult {
     case success
-    case failure(ProcessingError)
+    case failure(InvalidValueReason)
 }
 
-public enum ProcessingError {
+public enum InvalidValueReason {
     case conversionError
     case validationError(AnyValidation)
 }
@@ -41,10 +41,8 @@ public extension ValueBox {
             return .failure(.conversionError)
         }
         
-        for validator in validation {
-            if case .failure(_) = validator.validate(converted) {
-                return .failure(.validationError(validator))
-            }
+        if let failedValidation = validation.first(where: { $0.validate(converted) == false }) {
+            return .failure(.validationError(failedValidation))
         }
         
         update(to: converted)
@@ -64,7 +62,7 @@ public protocol ConvertibleFromString {
     
     static var explanationForConversionFailure: String { get }
     
-    static func messageForProcessingError(error: ProcessingError, for id: String?) -> String
+    static func messageForInvalidValue(reason: InvalidValueReason, for id: String?) -> String
 }
 
 extension ConvertibleFromString {
@@ -73,7 +71,7 @@ extension ConvertibleFromString {
         return "expected \(self)"
     }
     
-    public static func messageForProcessingError(error: ProcessingError, for id: String?) -> String {
+    public static func messageForInvalidValue(reason: InvalidValueReason, for id: String?) -> String {
         var message = "invalid value"
         if let id = id {
             message += " passed to '\(id)'"
@@ -81,7 +79,7 @@ extension ConvertibleFromString {
         
         message += "; "
         
-        switch error {
+        switch reason {
         case .conversionError: message += explanationForConversionFailure
         case let .validationError(validation): message += validation.message
         }

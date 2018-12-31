@@ -76,12 +76,7 @@ public enum Input {
 
 public class InputReader<T: ConvertibleFromString> {
     
-    public enum InvalidInputReason {
-        case wrongType
-        case failedValidation(String)
-    }
-    
-    public typealias ErrorResponse = (_ input: String, _ resaon: InvalidInputReason) -> ()
+    public typealias ErrorResponse = (_ input: String, _ resaon: InvalidValueReason) -> ()
     
     public let prompt: String?
     public let secure: Bool
@@ -92,12 +87,8 @@ public class InputReader<T: ConvertibleFromString> {
         self.prompt = prompt
         self.secure = secure
         self.validation = validation
-        self.errorResponse = errorResponse ?? { (input, reason) in
-            var errorLine = "Invalid input"
-            if case .failedValidation(let message) = reason, !message.isEmpty {
-                errorLine += ": \(message)"
-            }
-            WriteStream.stderr <<< errorLine
+        self.errorResponse = errorResponse ?? { (_, reason) in
+            Term.stderr <<< T.messageForInvalidValue(reason: reason, for: nil)
         }
     }
     
@@ -120,22 +111,16 @@ public class InputReader<T: ConvertibleFromString> {
             }
             
             guard let converted = T.convert(from: input) else {
-                errorResponse(input, .wrongType)
+                errorResponse(input, .conversionError)
                 continue
             }
             
-            var success = true
-            for validator in validation {
-                if case .failure(let message) = validator.validate(converted) {
-                    success = false
-                    errorResponse(input, .failedValidation(message))
-                    break
-                }
+            if let failedValidation = validation.first(where: { $0.validate(converted) == false }) {
+                errorResponse(input, .validationError(failedValidation))
+                continue
             }
             
-            if success {
-                return converted
-            }
+            return converted
         }
     }
     
@@ -144,8 +129,8 @@ public class InputReader<T: ConvertibleFromString> {
             if !prompt.hasSuffix(" ") && !prompt.hasSuffix("\n") {
                 prompt += " "
             }
-            print(prompt, terminator: "")
-            fflush(stdout)
+            Term.stdout.write(prompt)
+            fflush(Foundation.stdout)
         }
     }
     

@@ -194,7 +194,7 @@ public class Task {
     ///   - stdout: the stream which the task should use as it's standard output; defaults to the current process's stdout
     ///   - stderr: the stream which the task should use as it's standard error; defaults to the current process's stderr
     ///   - stdin: the stream which the task should use as it's standard input; defaults to the current process's stdin
-    public init(executable: String, arguments: [String] = [], directory: String? = nil, stdout: WritableStream = WriteStream.stdout, stderr: WritableStream = WriteStream.stderr, stdin: ReadableStream = ReadStream.stdin) {
+    public init(executable: String, arguments: [String] = [], directory: String? = nil, stdout: WritableStream = Term.stdout, stderr: WritableStream = Term.stderr, stdin: ReadableStream = ReadStream.stdin) {
         self.process = Process()
         if executable.hasPrefix("/") || executable.hasPrefix(".") {
             self.process.launchPath = executable

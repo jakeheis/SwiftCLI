@@ -29,12 +29,12 @@ extension Routable {
     
     /// Standard out stream
     public var stdout: WritableStream {
-        return WriteStream.stdout
+        return Term.stdout
     }
     
     /// Standard error stream
     public var stderr: WritableStream {
-        return WriteStream.stderr
+        return Term.stderr
     }
     
     public var options: [Option] {

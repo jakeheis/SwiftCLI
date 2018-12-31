@@ -222,14 +222,6 @@ extension WritableStream {
     
 }
 
-extension Term {
-    @available(*, unavailable, message: "Use WriteStream.stdout instead")
-    public static var stdout: WritableStream { return WriteStream.stdout }
-    
-    @available(*, unavailable, message: "Use WriteStream.stderr instead")
-    public static var stderr: WritableStream { return WriteStream.stderr }
-}
-
 @available(*, unavailable, message: "use CLI.Error instead")
 public enum CLIError: Error {
     case error(String)

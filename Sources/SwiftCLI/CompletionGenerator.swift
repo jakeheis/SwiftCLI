@@ -44,7 +44,7 @@ public final class ZshCompletionGenerator: CompletionGenerator {
     }
     
     public func writeCompletions() {
-        writeCompletions(into: WriteStream.stdout)
+        writeCompletions(into: Term.stdout)
     }
     
     public func writeCompletions(into stream: WritableStream) {

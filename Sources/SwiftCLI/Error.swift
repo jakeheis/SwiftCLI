@@ -65,7 +65,7 @@ public struct OptionError: Swift.Error {
         case expectedValueAfterKey(String)
         case unrecognizedOption(String)
         case optionGroupMisuse(OptionGroup)
-        case invalidKeyValue(AnyKey, String, ProcessingError)
+        case invalidKeyValue(AnyKey, String, InvalidValueReason)
         
         public var message: String {
             switch self {
@@ -88,8 +88,8 @@ public struct OptionError: Swift.Error {
                     }
                 }
                 return condition + ": \(group.options.compactMap({ $0.names.last }).joined(separator: " "))"
-            case let .invalidKeyValue(key, id, error):
-                return key.valueType.messageForProcessingError(error: error, for: id)
+            case let .invalidKeyValue(key, id, reason):
+                return key.valueType.messageForInvalidValue(reason: reason, for: id)
             }
         }
     }
@@ -107,7 +107,7 @@ public struct ParameterError: Swift.Error {
     
     public enum Kind {
         case wrongNumber(Int, Int?)
-        case invalidValue(NamedParameter, ProcessingError)
+        case invalidValue(NamedParameter, InvalidValueReason)
         
         public var message: String {
             switch self {
@@ -121,8 +121,8 @@ public struct ParameterError: Swift.Error {
                 case let .some(max):
                     return "command requires between \(min) and \(max) arguments"
                 }
-            case let .invalidValue(param, error):
-                return param.param.valueType.messageForProcessingError(error: error, for: param.name)
+            case let .invalidValue(param, reason):
+                return param.param.valueType.messageForInvalidValue(reason: reason, for: param.name)
             }
         }
     }

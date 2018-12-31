@@ -30,11 +30,11 @@ public struct Validation<T>: AnyValidation {
         self.message = message
     }
     
-    public func validate(_ value: T) -> Result {
+    public func validate(_ value: T) -> Bool {
         guard block(value) else {
-            return .failure(message)
+            return false
         }
-        return .success
+        return true
     }
     
 }

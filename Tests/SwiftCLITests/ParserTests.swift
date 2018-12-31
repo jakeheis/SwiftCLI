@@ -175,7 +175,7 @@ class ParserTests: XCTestCase {
         let arguments = ArgumentList(testString: "tester cmd -f firstFile --file secondFile")
         
         _ = try Parser().parse(commandGroup: cli, arguments: arguments)
-        XCTAssertEqual(cmd.files.values, ["firstFile", "secondFile"])
+        XCTAssertEqual(cmd.files.value, ["firstFile", "secondFile"])
     }
     
     func testBeforeCommand() throws {
