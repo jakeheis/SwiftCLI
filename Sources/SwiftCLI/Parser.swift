@@ -21,7 +21,7 @@ public class Parser {
     public func parse(commandGroup: CommandGroup, arguments: ArgumentList) throws -> CommandPath {
         let (commandPath, optionRegistry) = try router.parse(commandGroup: commandGroup, arguments: arguments)
         try parameterFiller.parse(commandPath: commandPath, optionRegistry: optionRegistry, arguments: arguments)
-        try optionRegistry.finish(command: commandPath)
+        try optionRegistry.checkGroups(command: commandPath)
         return commandPath
     }
     

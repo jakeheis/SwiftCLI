@@ -6,18 +6,6 @@
 //  Copyright (c) 2014 jakeheis. All rights reserved.
 //
 
-
-enum Speed {
-    case fast
-    case slow
-}
-
-//class SpeedParameter: RequiredParameter {
-//    
-//    
-//    
-//}
-
 public class OptionRegistry {
     
     private var flags: [String: Flag]
@@ -66,9 +54,11 @@ public class OptionRegistry {
         }
     }
     
-    public func finish(command: CommandPath) throws {
-        if let failingGroup = failingGroup() {
-            throw OptionError(command: command, kind: .optionGroupMisuse(failingGroup))
+    public func checkGroups(command: CommandPath) throws {
+        for group in groups {
+            if !group.check() {
+                throw OptionError(command: command, kind: .optionGroupMisuse(group))
+            }
         }
     }
     
@@ -96,15 +86,6 @@ public class OptionRegistry {
                 group.count += 1
             }
         }
-    }
-    
-    private func failingGroup() -> OptionGroup? {
-        for group in groups {
-            if !group.check() {
-                return group
-            }
-        }
-        return nil
     }
     
 }
