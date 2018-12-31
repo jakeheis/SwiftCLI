@@ -225,18 +225,25 @@ public final class ZshCompletionGenerator: CompletionGenerator {
     
     private func genOptionArgs(for routable: Routable) -> [String] {
         let lines = routable.options.map { (option) -> [String] in
-            if option.isVariadic {
+            let completion: Completion?
+            if let key = option as? AnyKey {
+                completion = key.completion
+            } else {
+                completion = nil
+            }
+            
+            if option is AnyVariadicKey {
                 return option.names.map { (name) in
-                    return genOptionLine(names: [name], mode: .variadic, description: option.shortDescription, completion: option.completion)
+                    return genOptionLine(names: [name], mode: .variadic, description: option.shortDescription, completion: completion)
                 }
             }
             for group in routable.optionGroups where group.restriction != .atLeastOne {
                 if group.options.contains(where: { $0 === option }) {
                     let exclusive = Array(group.options.map({ $0.names }).joined())
-                    return [genOptionLine(names: option.names, mode: .additionalExclusive(exclusive), description: option.shortDescription, completion: option.completion)]
+                    return [genOptionLine(names: option.names, mode: .additionalExclusive(exclusive), description: option.shortDescription, completion: completion)]
                 }
             }
-            return [genOptionLine(names: option.names, mode: .normal, description: option.shortDescription, completion: option.completion)]
+            return [genOptionLine(names: option.names, mode: .normal, description: option.shortDescription, completion: completion)]
         }
         return Array(lines.joined())
     }
@@ -250,3 +257,8 @@ public final class ZshCompletionGenerator: CompletionGenerator {
     }
     
 }
+
+// MARK: -
+
+fileprivate protocol AnyVariadicKey: AnyKey {}
+extension VariadicKey: AnyVariadicKey {}

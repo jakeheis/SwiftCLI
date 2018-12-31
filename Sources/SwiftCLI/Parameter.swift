@@ -11,21 +11,6 @@ public protocol AnyParameter: AnyValueBox {
     var satisfied: Bool { get }
 }
 
-public extension AnyParameter {
-    
-    func signature(for name: String) -> String {
-        var sig = "<\(name)>"
-        if required == false {
-            sig = "[\(sig)]"
-        }
-        if self is AnyCollectedParameter {
-            sig += " ..."
-        }
-        return sig
-    }
-    
-}
-
 public class _Param<Value: ConvertibleFromString> {
     
     public let completion: Completion
@@ -111,7 +96,14 @@ public struct NamedParameter {
     public let param: AnyParameter
     
     public var signature: String {
-        return param.signature(for: name)
+        var sig = "<\(name)>"
+        if param.required == false {
+            sig = "[\(sig)]"
+        }
+        if param is AnyCollectedParameter {
+            sig += " ..."
+        }
+        return sig
     }
     
     public init(name: String, param: AnyParameter) {

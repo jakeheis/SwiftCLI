@@ -10,13 +10,10 @@ public protocol Option: class, CustomStringConvertible {
     var names: [String] { get }
     var shortDescription: String { get }
     var identifier: String { get }
-    var isVariadic: Bool { get }
 }
 
 public extension Option {
-    
-    var isVariadic: Bool { return false }
-    
+        
     var description: String {
         return "\(type(of: self))(\(identifier))"
     }
@@ -103,7 +100,6 @@ public class Key<Value: ConvertibleFromString>: _Key<Value>, AnyKey, ValueBox {
 public class VariadicKey<Value: ConvertibleFromString>: _Key<Value>, AnyKey, ValueBox {
     
     public var value: [Value] = []
-    public let isVariadic = true
     
     public override init(_ names: String ..., description: String = "", completion: Completion = .filename, validation: [Validation<Value>] = []) {
         super.init(names, description: description, completion: completion, validation: validation)
