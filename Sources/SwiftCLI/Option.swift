@@ -6,55 +6,6 @@
 //  Copyright © 2017 jakeheis. All rights reserved.
 //
 
-public protocol AnyValueBox: class {
-    var completion: Completion { get }
-    var valueType: ConvertibleFromString.Type { get }
-    
-    func update(to value: String) -> UpdateResult
-}
-
-public protocol ValueBox: AnyValueBox {
-    associatedtype Value: ConvertibleFromString
-    
-    var validation: [Validation<Value>] { get }
-    
-    func update(to value: Value)
-}
-
-public extension ValueBox {
-    
-    var valueType: ConvertibleFromString.Type { return Value.self }
-    
-    func update(to value: String) -> UpdateResult {
-        let (result, potentialValue) = Value.convertAndValidate(value: value, validation: validation)
-        if let typedValue = potentialValue {
-            update(to: typedValue)
-        }
-        return result
-    }
-    
-}
-
-public protocol SingleValueBox: ValueBox {
-    var value: Value? { get set }
-}
-
-public extension SingleValueBox {
-    func update(to value: Value) {
-        self.value = value
-    }
-}
-
-public protocol MultiValueBox: ValueBox {
-    var value: [Value] { get set }
-}
-
-public extension MultiValueBox {
-    func update(to value: Value) {
-        self.value.append(value)
-    }
-}
-
 public protocol Option: class, CustomStringConvertible {
     var names: [String] { get }
     var shortDescription: String { get }
@@ -108,18 +59,12 @@ public class Flag: Option {
     
 }
 
-public enum UpdateResult {
-    case success
-    case failure(ProcessingError)
-}
-
 public protocol AnyKey: Option, AnyValueBox {}
 
-public class Key<Value: ConvertibleFromString>: AnyKey, SingleValueBox {
-        
+public class _Key<Value: ConvertibleFromString> {
+    
     public let names: [String]
     public let shortDescription: String
-    public var value: Value?
     public let completion: Completion
     public let validation: [Validation<Value>]
     
@@ -132,7 +77,7 @@ public class Key<Value: ConvertibleFromString>: AnyKey, SingleValueBox {
     /// - Parameters:
     ///   - names: the names for the key; convention is to include a short name (-m) and a long name (--message)
     ///   - description: A short description of what this key does for usage statements
-    public init(_ names: String ..., description: String = "", completion: Completion = .filename, validation: [Validation<Value>] = []) {
+    public init(_ names: [String], description: String, completion: Completion, validation: [Validation<Value>] = []) {
         self.names = names
         self.shortDescription = description
         self.completion = completion
@@ -141,138 +86,31 @@ public class Key<Value: ConvertibleFromString>: AnyKey, SingleValueBox {
     
 }
 
-public class VariadicKey<Value: ConvertibleFromString>: AnyKey, MultiValueBox {
+public class Key<Value: ConvertibleFromString>: _Key<Value>, AnyKey, ValueBox {
     
-    public let names: [String]
-    public let shortDescription: String
+    public var value: Value?
+    
+    public override init(_ names: String ..., description: String = "", completion: Completion = .filename, validation: [Validation<Value>] = []) {
+        super.init(names, description: description, completion: completion, validation: validation)
+    }
+    
+    public func update(to value: Value) {
+        self.value = value
+    }
+    
+}
+
+public class VariadicKey<Value: ConvertibleFromString>: _Key<Value>, AnyKey, ValueBox {
+    
     public var value: [Value] = []
     public let isVariadic = true
-    public let completion: Completion
-    public let validation: [Validation<Value>]
     
-    public var identifier: String {
-        return names.joined(separator: ", ") + " <value>"
+    public override init(_ names: String ..., description: String = "", completion: Completion = .filename, validation: [Validation<Value>] = []) {
+        super.init(names, description: description, completion: completion, validation: validation)
     }
     
-    /// Creates a new variadic key
-    ///
-    /// - Parameters:
-    ///   - names: the names for the key; convention is to include a short name (-m) and a long name (--message)
-    ///   - description: A short description of what this key does for usage statements
-    public init(_ names: String ..., description: String = "", completion: Completion = .filename, validation: [Validation<Value>] = []) {
-        self.names = names
-        self.shortDescription = description
-        self.completion = completion
-        self.validation = validation
+    public func update(to value: Value) {
+        self.value.append(value)
     }
     
 }
-
-
-// MARK: - ConvertibleFromString
-
-public enum ProcessingError {
-    case conversionError
-    case validationError(AnyValidation)
-}
-
-/// A type that can be created from a string
-public protocol ConvertibleFromString {
-    /// Returns an instance of the conforming type from a string representation
-    static func convert(from: String) -> Self?
-    
-    static var explanationForConversionFailure: String { get }
-    
-    static func messageForProcessingError(error: ProcessingError, for id: String?) -> String
-}
-
-extension ConvertibleFromString {
-    
-    public static func convertAndValidate(value: String, validation: [Validation<Self>]) -> (UpdateResult, Self?) {
-        guard let converted = Self.convert(from: value) else {
-            return (.failure(.conversionError), nil)
-        }
-        for validator in validation {
-            if case .failure(_) = validator.validate(converted) {
-                return (.failure(.validationError(validator)), nil)
-            }
-        }
-        return (.success, converted)
-    }
-    
-    public static var explanationForConversionFailure: String {
-        return "expected \(self)"
-    }
-    
-    public static func messageForProcessingError(error: ProcessingError, for id: String?) -> String {
-        var message = "invalid value"
-        if let id = id {
-            message += " passed to '\(id)'"
-        }
-        
-        message += "; "
-        
-        switch error {
-        case .conversionError: message += explanationForConversionFailure
-        case let .validationError(validation): message += validation.message
-        }
-        
-        return message
-    }
-    
-}
-
-#if swift(>=4.1.50)
-
-extension ConvertibleFromString where Self: CaseIterable {
-    
-    public static var explanationForConversionFailure: String {
-        let options = allCases.map({ String(describing: $0) }).joined(separator: ", ")
-        return "expected one of: \(options)"
-    }
-
-}
-
-#endif
-
-extension ConvertibleFromString where Self: LosslessStringConvertible {
-    public static func convert(from: String) -> Self? {
-        return Self(from)
-    }
-}
-
-extension ConvertibleFromString where Self: RawRepresentable, Self.RawValue: ConvertibleFromString {
-    public static func convert(from: String) -> Self? {
-        guard let val = RawValue.convert(from: from) else {
-            return nil
-        }
-        return Self.init(rawValue: val)
-    }
-}
-
-extension String: ConvertibleFromString {}
-extension Int: ConvertibleFromString {}
-extension Float: ConvertibleFromString {}
-extension Double: ConvertibleFromString {}
-
-extension Bool: ConvertibleFromString {
-    /// Returns a bool from a string representation
-    ///
-    /// - parameter from: A string representation of a bool value
-    ///
-    /// This is case insensitive and recognizes several representations:
-    ///
-    /// - true/false
-    /// - t/f
-    /// - yes/no
-    /// - y/n
-    public static func convert(from: String) -> Bool? {
-        let lowercased = from.lowercased()
-        
-        if ["y", "yes", "t", "true"].contains(lowercased) { return true }
-        if ["n", "no", "f", "false"].contains(lowercased) { return false }
-        
-        return nil
-    }
-}
-

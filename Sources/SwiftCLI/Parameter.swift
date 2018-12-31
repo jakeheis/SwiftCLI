@@ -9,18 +9,43 @@
 public protocol AnyParameter: AnyValueBox {
     var required: Bool { get }
     var satisfied: Bool { get }
+}
 
-    func signature(for name: String) -> String
+public extension AnyParameter {
+    
+    func signature(for name: String) -> String {
+        var sig = "<\(name)>"
+        if required == false {
+            sig = "[\(sig)]"
+        }
+        if self is AnyCollectedParameter {
+            sig += " ..."
+        }
+        return sig
+    }
+    
+}
+
+public class _Param<Value: ConvertibleFromString> {
+    
+    public let completion: Completion
+    public let validation: [Validation<Value>]
+    
+    /// Creates a new parameter
+    ///
+    /// - Parameter completion: the completion type for use in ZshCompletionGenerator; default .filename
+    public init(completion: Completion = .filename, validation: [Validation<Value>] = []) {
+        self.completion = completion
+        self.validation = validation
+    }
+    
 }
 
 public enum Param {
     
-    public class Required<Value: ConvertibleFromString>: AnyParameter, ValueBox {
-        
+    public class Required<Value: ConvertibleFromString>: _Param<Value>, AnyParameter, ValueBox {
         public let required = true
         public var satisfied: Bool { return privateValue != nil }
-        public let completion: Completion
-        public let validation: [Validation<Value>]
         
         private var privateValue: Value? = nil
         
@@ -28,98 +53,48 @@ public enum Param {
             return privateValue!
         }
         
-        /// Creates a new required parameter
-        ///
-        /// - Parameter completion: the completion type for use in ZshCompletionGenerator; default .filename
-        public init(completion: Completion = .filename, validation: [Validation<Value>] = []) {
-            self.completion = completion
-            self.validation = validation
-        }
-        
         public func update(to value: Value) {
             privateValue = value
         }
-        
-        public func signature(for name: String) -> String {
-            return "<\(name)>"
-        }
-        
     }
     
-    public class Optional<Value: ConvertibleFromString>: AnyParameter, SingleValueBox {
-        
+    public class Optional<Value: ConvertibleFromString>: _Param<Value>, AnyParameter, ValueBox {
         public let required = false
         public let satisfied = true
-        public let completion: Completion
-        public let validation: [Validation<Value>]
         
         public var value: Value? = nil
         
-        /// Creates a new optional parameter
-        ///
-        /// - Parameter completion: the completion type for use in ZshCompletionGenerator; default .filename
-        public init(completion: Completion = .filename, validation: [Validation<Value>] = []) {
-            self.completion = completion
-            self.validation = validation
+        public func update(to value: Value) {
+            self.value = value
         }
-        
-        public func signature(for name: String) -> String {
-            return "[<\(name)>]"
-        }
-        
     }
     
 }
 
 public protocol AnyCollectedParameter: AnyParameter {}
-//protocol TypedCollectedParameter: AnyCollectedParameter, TypedParameter {}
 
 public enum CollectedParam {
     
-    public class Required<Value: ConvertibleFromString>: AnyCollectedParameter, MultiValueBox {
-        
+    public class Required<Value: ConvertibleFromString>: _Param<Value>, AnyCollectedParameter, ValueBox {
         public let required = true
         public var satisfied: Bool { return !value.isEmpty }
-        public let completion: Completion
-        public let validation: [Validation<Value>]
         
         public var value: [Value] = []
         
-        /// Creates a new required collected parameter; must be last parameter in the command
-        ///
-        /// - Parameter completion: the completion type for use in ZshCompletionGenerator; default .filename
-        public init(completion: Completion = .filename, validation: [Validation<Value>] = []) {
-            self.completion = completion
-            self.validation = validation
+        public func update(to value: Value) {
+            self.value.append(value)
         }
-        
-        public func signature(for name: String) -> String {
-            return "<\(name)> ..."
-        }
-        
     }
     
-    public class Optional<Value: ConvertibleFromString>: AnyCollectedParameter, MultiValueBox {
-        
+    public class Optional<Value: ConvertibleFromString>: _Param<Value>, AnyCollectedParameter, ValueBox {
         public let required = false
         public let satisfied = true
-        public let completion: Completion
-        public let validation: [Validation<Value>]
         
         public var value: [Value] = []
         
-        /// Creates a new optional collected parameter; must be last parameter in the command
-        ///
-        /// - Parameter completion: the completion type for use in ZshCompletionGenerator; default .filename
-        public init(completion: Completion = .filename, validation: [Validation<Value>] = []) {
-            self.completion = completion
-            self.validation = validation
+        public func update(to value: Value) {
+            self.value.append(value)
         }
-        
-        public func signature(for name: String) -> String {
-            return "[<\(name)>] ..."
-        }
-        
     }
     
 }
