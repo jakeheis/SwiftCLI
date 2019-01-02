@@ -12,13 +12,13 @@ public protocol Option: class, CustomStringConvertible {
     var identifier: String { get }
 }
 
-public extension Option {
+extension Option {
         
-    var description: String {
+    public var description: String {
         return "\(type(of: self))(\(identifier))"
     }
     
-    func usage(padding: Int) -> String {
+    public func usage(padding: Int) -> String {
         let spacing = String(repeating: " ", count: padding - identifier.count)
         let descriptionNewlineSpacing = String(repeating: " ", count: padding)
         let description = shortDescription.replacingOccurrences(of: "\n", with: "\n\(descriptionNewlineSpacing)")
@@ -62,7 +62,7 @@ public class _Key<Value: ConvertibleFromString> {
     
     public let names: [String]
     public let shortDescription: String
-    public let completion: Completion
+    public let completion: ShellCompletion
     public let validation: [Validation<Value>]
     
     public var identifier: String {
@@ -74,7 +74,7 @@ public class _Key<Value: ConvertibleFromString> {
     /// - Parameters:
     ///   - names: the names for the key; convention is to include a short name (-m) and a long name (--message)
     ///   - description: A short description of what this key does for usage statements
-    public init(_ names: [String], description: String, completion: Completion, validation: [Validation<Value>] = []) {
+    public init(_ names: [String], description: String, completion: ShellCompletion, validation: [Validation<Value>] = []) {
         self.names = names
         self.shortDescription = description
         self.completion = completion
@@ -87,7 +87,7 @@ public class Key<Value: ConvertibleFromString>: _Key<Value>, AnyKey, ValueBox {
     
     public var value: Value?
     
-    public override init(_ names: String ..., description: String = "", completion: Completion = .filename, validation: [Validation<Value>] = []) {
+    public override init(_ names: String ..., description: String = "", completion: ShellCompletion = .filename, validation: [Validation<Value>] = []) {
         super.init(names, description: description, completion: completion, validation: validation)
     }
     
@@ -101,7 +101,7 @@ public class VariadicKey<Value: ConvertibleFromString>: _Key<Value>, AnyKey, Val
     
     public var value: [Value] = []
     
-    public override init(_ names: String ..., description: String = "", completion: Completion = .filename, validation: [Validation<Value>] = []) {
+    public override init(_ names: String ..., description: String = "", completion: ShellCompletion = .filename, validation: [Validation<Value>] = []) {
         super.init(names, description: description, completion: completion, validation: validation)
     }
     

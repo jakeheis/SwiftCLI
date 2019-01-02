@@ -13,13 +13,13 @@ public protocol AnyParameter: AnyValueBox {
 
 public class _Param<Value: ConvertibleFromString> {
     
-    public let completion: Completion
+    public let completion: ShellCompletion
     public let validation: [Validation<Value>]
     
     /// Creates a new parameter
     ///
     /// - Parameter completion: the completion type for use in ZshCompletionGenerator; default .filename
-    public init(completion: Completion = .filename, validation: [Validation<Value>] = []) {
+    public init(completion: ShellCompletion = .filename, validation: [Validation<Value>] = []) {
         self.completion = completion
         self.validation = validation
     }

@@ -7,21 +7,14 @@
 
 import Foundation
 
-public enum Completion {
+public enum ShellCompletion {
     case none
     case filename
     case values([(name: String, description: String)])
     case function(String)
 }
 
-public enum Shell {
-    case bash
-    case zsh
-}
-
 public protocol CompletionGenerator {
-    var shell: Shell { get }
-    
     init(cli: CLI)
     init(cli: CLI, functions: [String: String])
     func writeCompletions()
@@ -31,7 +24,6 @@ public protocol CompletionGenerator {
 public final class ZshCompletionGenerator: CompletionGenerator {
     
     public let cli: CLI
-    public let shell = Shell.zsh
     public let functions: [String: String]
     
     public convenience init(cli: CLI) {
@@ -116,7 +108,7 @@ public final class ZshCompletionGenerator: CompletionGenerator {
         }
     }
     
-    func writeCompletion(_ completion: Completion) -> String {
+    func writeCompletion(_ completion: ShellCompletion) -> String {
         switch completion {
         case .filename:
             return "_files"
@@ -184,7 +176,7 @@ public final class ZshCompletionGenerator: CompletionGenerator {
         case variadic
     }
     
-    private func genOptionLine(names: [String], mode: OptionWritingMode, description: String, completion: Completion?) -> String {
+    private func genOptionLine(names: [String], mode: OptionWritingMode, description: String, completion: ShellCompletion?) -> String {
         precondition(names.count > 0)
         
         var line = "      "
@@ -225,7 +217,7 @@ public final class ZshCompletionGenerator: CompletionGenerator {
     
     private func genOptionArgs(for routable: Routable) -> [String] {
         let lines = routable.options.map { (option) -> [String] in
-            let completion: Completion?
+            let completion: ShellCompletion?
             if let key = option as? AnyKey {
                 completion = key.completion
             } else {

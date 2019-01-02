@@ -133,8 +133,8 @@ public protocol CommandGroup: Routable {
     var aliases: [String: String] { get }
 }
 
-public extension CommandGroup {
-    var aliases: [String: String] {
+extension CommandGroup {
+    public var aliases: [String: String] {
         return [:]
     }
     

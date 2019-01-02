@@ -9,8 +9,8 @@ public protocol RoutablePath: CustomStringConvertible {
     func joined(separator: String) -> String
 }
 
-public extension RoutablePath {
-    var description: String {
+extension RoutablePath {
+    public var description: String {
         return "\(type(of: self))(\(joined(separator: " ")))"
     }
 }

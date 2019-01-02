@@ -37,8 +37,11 @@ public class CLI {
         return nil
     }()
     
-    /// Options which every command should inherit
+    /// Options which every command inherits
     public var globalOptions: [Option] = []
+    
+    /// Option groups which every command inherits
+    public var globalOptionGroups: [OptionGroup] = []
     
     /// A built-in help flag which each command automatically inherits; set to nil if this functionality is not wanted
     public var helpFlag: Flag? = Flag("-h", "--help", description: "Show help information")
@@ -101,19 +104,9 @@ public class CLI {
         return go(with: ArgumentList(arguments: [name] + arguments))
     }
     
-    /// Kicks off the entire CLI process, routing to and executing the command specified by the passed arguments.
-    /// Uses the argument string passed to this function. Use go() or go(with:) instead of this function in a production app
-    ///
-    /// - Parameter argumentString: the arguments to use when running the CLI
-    /// - Returns: an Int32 representing the success of the CLI in routing to and executing the correct command. Usually should be passed to `exit(result)`
-    public func debugGo(with argumentString: String) -> Int32 {
-        stdout <<< "[Debug Mode]"
-        return go(with: ArgumentList(argumentString: argumentString))
-    }
+    // MARK: - Internal/private
     
-    // MARK: - Private
-    
-    private func go(with arguments: ArgumentList) -> Int32 {
+    func go(with arguments: ArgumentList) -> Int32 {
         arguments.pop() // Pop off cli name (always first arg)
         
         argumentListManipulators.forEach { $0.manipulate(arguments: arguments) }
@@ -191,6 +184,10 @@ extension CLI: CommandGroup {
             return globalOptions + [helpFlag]
         }
         return globalOptions
+    }
+    
+    public var optionGroups: [OptionGroup] {
+        return globalOptionGroups
     }
     
 }

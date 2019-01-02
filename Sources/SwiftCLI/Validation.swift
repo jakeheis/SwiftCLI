@@ -39,7 +39,7 @@ public struct Validation<T>: AnyValidation {
     
 }
 
-public extension Validation where T: Equatable {
+extension Validation where T: Equatable {
     
     public static func allowing(_ values: T..., message: String? = nil) -> Validation {
         let commaSeparated = values.map({ String(describing: $0) }).joined(separator: ", ")
@@ -53,7 +53,7 @@ public extension Validation where T: Equatable {
     
 }
 
-public extension Validation where T: Comparable {
+extension Validation where T: Comparable {
     
     public static func greaterThan(_ value: T, message: String? = nil) -> Validation {
         return .init(message ?? "must be greater than \(value)") { $0 > value }
@@ -73,7 +73,7 @@ public extension Validation where T: Comparable {
     
 }
 
-public extension Validation where T == String {
+extension Validation where T == String {
     
     public static func contains(_ substring: String, message: String? = nil) -> Validation {
         return .init(message ?? "must contain '\(substring)'") { $0.contains(substring) }

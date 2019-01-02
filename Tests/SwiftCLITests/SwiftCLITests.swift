@@ -15,53 +15,84 @@ class SwiftCLITests: XCTestCase {
     
     // Integration tests
     
-    func testCLIGo() {
-        let cli = createCLI()
-        let result = cli.debugGo(with: "tester test firstTest MyTester -t 5 -s")
-        XCTAssertEqual(result, 0, "Command should have succeeded")
-        XCTAssertEqual(self.executionString, "MyTester will test firstTest, 5 times, silently", "Command should have produced accurate output")
-    }
-    
     func testGoWithArguments() {
-        let cli = createCLI()
-        let result = cli.go(with: ["test", "firstTest", "MyTester", "-t", "5", "-s"])
+        let (result, out, err) = runCLI { $0.go(with: ["test", "firstTest", "MyTester", "-t", "5", "-s"]) }
         XCTAssertEqual(result, 0, "Command should have succeeded")
-        XCTAssertEqual(self.executionString, "MyTester will test firstTest, 5 times, silently", "Command should have produced accurate output")
+        XCTAssertEqual(executionString, "MyTester will test firstTest, 5 times, silently", "Command should have produced accurate output")
+        XCTAssertEqual(out, "")
+        XCTAssertEqual(err, "")
     }
     
     func testCLIHelp() {
-        let cli1 = createCLI()
-        let result = cli1.debugGo(with: "tester help")
+        let (result, out, err) = runCLI { $0.go(with: ["help"]) }
         XCTAssertEqual(result, 0, "Command should have succeeded")
+        XCTAssertEqual(out, """
+
+        Usage: tester <command> [options]
+
+        Commands:
+          test            A command to test stuff
+          help            Prints help information
+
         
-        let cli2 = createCLI()
-        let result2 = cli2.debugGo(with: "tester -h")
+        """)
+        XCTAssertEqual(err, "")
+        
+        let (result2, out2, err2) = runCLI { $0.go(with: ["-h"]) }
         XCTAssertEqual(result2, 0, "Command should have succeeded")
+        XCTAssertEqual(out2, """
+
+        Usage: tester <command> [options]
+
+        Commands:
+          test            A command to test stuff
+          help            Prints help information
+
+        
+        """)
+        XCTAssertEqual(err2, "")
     }
     
     func testGlobalOptions() {
-        let cli = createCLI()
         let verboseFlag = Flag("-v")
-        cli.globalOptions.append(verboseFlag)
         
-        let result3 = cli.debugGo(with: "tester test myTest -v")
-        XCTAssertEqual(result3, 0, "Command should have succeeded")
+        let (result, out, err) = runCLI {
+            $0.globalOptions.append(verboseFlag)
+            return $0.go(with: ["test", "myTest", "-v"])
+        }
+        XCTAssertEqual(result, 0, "Command should have succeeded")
         XCTAssertEqual(executionString, "defaultTester will test myTest, 1 times", "Command should have produced accurate output")
         XCTAssertTrue(verboseFlag.value)
+        XCTAssertEqual(out, "")
+        XCTAssertEqual(err, "")
     }
     
     func testOptionSplit() {
-        let cli = createCLI()
-        let result = cli.debugGo(with: "tester test firstTest MyTester -st 5")
+        let (result, out, err) = runCLI { $0.go(with: ["test", "firstTest", "MyTester", "-st", "5"]) }
         XCTAssertEqual(result, 0, "Command should have succeeded")
         XCTAssertEqual(executionString, "MyTester will test firstTest, 5 times, silently", "Command should have produced accurate output")
+        XCTAssertEqual(out, "")
+        XCTAssertEqual(err, "")
     }
     
     func testCommandHelp() {
-        let cli = createCLI()
-        let result = cli.debugGo(with: "tester test aTest -h")
+        let (result, out, err) = runCLI { $0.go(with: ["test", "aTest", "-h"]) }
         XCTAssertEqual(result, 0)
         XCTAssertEqual(executionString, "")
+        XCTAssertEqual(out, """
+        
+        Usage: tester test <testName> [<testerName>] [options]
+        
+        A command to test stuff
+        
+        Options:
+          -h, --help             Show help information
+          -s, --silent           Silence all test output
+          -t, --times <value>    Number of times to run the test
+        
+
+        """)
+        XCTAssertEqual(err, "")
     }
     
     func testSingleCommand() {
@@ -69,15 +100,30 @@ class SwiftCLITests: XCTestCase {
             self.executionString = executionString
         }
         let cli = CLI(singleCommand: cmd)
-        XCTAssertEqual(cli.debugGo(with: "test aTest"), 0)
+        XCTAssertEqual(cli.go(with: ["aTest"]), 0)
         XCTAssertEqual(executionString, "defaultTester will test aTest, 1 times")
     }
     
-    func createCLI() -> CLI {
+    private func runCLI(_ run: (CLI) -> Int32) -> (Int32, String, String) {
         let cmd = TestCommand { (executionString) in
             self.executionString = executionString
         }
-        return CLI.createTester(commands: [cmd])
+        
+        let out = CaptureStream()
+        let err = CaptureStream()
+        
+        Term.stdout = out
+        Term.stderr = err
+        
+        let cli = CLI.createTester(commands: [cmd])
+        let result = run(cli)
+        out.closeWrite()
+        err.closeWrite()
+        
+        Term.stdout = WriteStream.stdout
+        Term.stderr = WriteStream.stderr
+        
+        return (result, out.readAll(), err.readAll())
     }
     
     // Tear down

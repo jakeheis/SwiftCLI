@@ -18,7 +18,7 @@ public enum InvalidValueReason {
 // MARK: -
 
 public protocol AnyValueBox: class {
-    var completion: Completion { get }
+    var completion: ShellCompletion { get }
     var valueType: ConvertibleFromString.Type { get }
     
     func update(to value: String) -> UpdateResult
@@ -32,11 +32,11 @@ public protocol ValueBox: AnyValueBox {
     func update(to value: Value)
 }
 
-public extension ValueBox {
+extension ValueBox {
     
-    var valueType: ConvertibleFromString.Type { return Value.self }
+    public var valueType: ConvertibleFromString.Type { return Value.self }
     
-    func update(to value: String) -> UpdateResult {
+     public func update(to value: String) -> UpdateResult {
         guard let converted = Value.convert(from: value) else {
             return .failure(.conversionError)
         }

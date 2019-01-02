@@ -132,7 +132,6 @@ extension StreamTests {
 
 extension SwiftCLITests {
     static let __allTests = [
-        ("testCLIGo", testCLIGo),
         ("testCLIHelp", testCLIHelp),
         ("testCommandHelp", testCommandHelp),
         ("testGlobalOptions", testGlobalOptions),

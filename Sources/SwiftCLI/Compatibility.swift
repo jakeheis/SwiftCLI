@@ -58,7 +58,7 @@ extension Task {
     
 }
 
-public extension Input {
+extension Input {
     
     @available(*, unavailable, message: "Use Validation<String>.custom instead of (String) -> Bool")
     public static func readLine(prompt: String? = nil, secure: Bool = false, validation: ((String) -> Bool)? = nil, errorResponse: InputReader<String>.ErrorResponse? = nil) -> String {
@@ -81,15 +81,25 @@ public extension Input {
     }
     
     @available(*, unavailable, message: "Use Validation<T>.custom instead of (T) -> Bool")
-    public static func readObject<T>(prompt: String? = nil, secure: Bool = false, validation: ((T) -> Bool)? = nil, errorResponse: InputReader<T>.ErrorResponse? = nil) -> T {
+    public static func readObject<T: ConvertibleFromString>(prompt: String? = nil, secure: Bool = false, validation: ((T) -> Bool)? = nil, errorResponse: InputReader<T>.ErrorResponse? = nil) -> T {
         return T.convert(from: "")!
     }
     
 }
 
-public extension InputReader {
+extension InputReader {
     @available(*, deprecated, message: "Use Validation<T>.custom instead of InputReader<T>.Validation")
     public typealias Validation = (T) -> Bool
+}
+
+extension CLI {
+    
+    @available(*, deprecated, message: "Use go(with: []) instead")
+    public func debugGo(with argumentString: String) -> Int32 {
+        stdout <<< "[Debug Mode]"
+        return go(with: ArgumentList(argumentString: argumentString))
+    }
+    
 }
 
 // MARK: - Swift versions
