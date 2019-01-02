@@ -96,16 +96,21 @@ extension Command {
             parameters = parametersFromMirror(superMirror)
         }
         parameters.append(contentsOf: mirror.children.compactMap { (child) in
+            guard let label = child.label else {
+                return nil
+            }
+            
             #if !os(macOS)
             #if swift(>=4.1.50)
-            print(child.label as Any, to: &NoStream.stream)
-            guard child.label != "children" && child.label != "optionGroups" else {
+            print("label \(label)", to: &NoStream.stream)
+            print("label \(label)", to: &NoStream.stream)
+            guard label != "children" && label != "optionGroups" else {
                 return nil
             }
             #endif
             #endif
             
-            if let param = child.value as? AnyParameter, let label = child.label {
+            if let param = child.value as? AnyParameter {
                 return NamedParameter(name: label, param: param)
             }
             return nil

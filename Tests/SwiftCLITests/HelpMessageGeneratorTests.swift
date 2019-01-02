@@ -391,7 +391,7 @@ class HelpMessageGeneratorTests: XCTestCase {
         Options:
           -h, --help      Show help information
 
-        Error: invalid value passed to 'speed' (expected Speed)
+        Error: invalid value passed to 'speed'; expected Speed
 
 
         """)
