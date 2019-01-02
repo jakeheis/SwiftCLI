@@ -8,7 +8,7 @@
 
 public class OptionRegistry {
     
-    private var flags: [String: Flag]
+    private var flags: [String: AnyFlag]
     private var keys: [String: AnyKey]
     private var groups: [OptionGroup]
     
@@ -22,7 +22,7 @@ public class OptionRegistry {
     
     public func register(_ routable: Routable) {
         for option in routable.options {
-            if let flag = option as? Flag {
+            if let flag = option as? AnyFlag {
                 for name in flag.names {
                     flags[name] = flag
                 }
@@ -40,7 +40,7 @@ public class OptionRegistry {
         let opt = args.pop()
         
         if let flag = flag(for: opt) {
-            flag.toggle()
+            flag.update()
         } else if let key = key(for: opt) {
              guard args.hasNext(), !args.nextIsOption() else {
                 throw OptionError(command: command, kind: .expectedValueAfterKey(opt))
@@ -64,7 +64,7 @@ public class OptionRegistry {
     
     // MARK: - Helpers
     
-    public func flag(for key: String) -> Flag? {
+    public func flag(for key: String) -> AnyFlag? {
         if let flag = flags[key] {
             incrementCount(for: flag)
             return flag

@@ -271,6 +271,10 @@ class VariadicKeyCmd: OptionCmd {
     let files = VariadicKey<String>("-f", "--file", description: "a file")
 }
 
+class CounterFlagCmd: OptionCmd {
+    let verbosity = CounterFlag("-v", "--verbose", description: "Increase the verbosity")
+}
+
 class ValidatedKeyCmd: OptionCmd {
     
     static func isCapitalized(_ value: String) -> Bool {

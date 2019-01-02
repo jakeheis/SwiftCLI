@@ -27,11 +27,18 @@ extension Option {
     
 }
 
-public class Flag: Option {
+// MARK: - Flags
+
+public protocol AnyFlag: Option {
+    func update()
+}
+
+public class Flag: AnyFlag {
     
     public let names: [String]
     public let shortDescription: String
     public private(set) var value: Bool
+    private let defaultValue: Bool
     
     public var identifier: String {
         return names.joined(separator: ", ")
@@ -45,16 +52,46 @@ public class Flag: Option {
     ///   - defaultValue: the default value of this flag; default false
     public init(_ names: String ..., description: String = "", defaultValue: Bool = false) {
         self.names = names
-        self.value = defaultValue
         self.shortDescription = description
+        self.value = defaultValue
+        self.defaultValue = defaultValue
     }
     
     /// Toggles the flag's value; don't call directly
-    public func toggle() {
-        value = !value
+    public func update() {
+        value = !defaultValue
     }
     
 }
+
+public class CounterFlag: AnyFlag {
+    
+    public let names: [String]
+    public let shortDescription: String
+    public private(set) var value: Int = 0
+    
+    public var identifier: String {
+        return names.joined(separator: ", ")
+    }
+    
+    /// Creates a new flag
+    ///
+    /// - Parameters:
+    ///   - names: the names for the flag; convention is to include a short name (-a) and a long name (--all)
+    ///   - description: A short description of what this flag does for usage statements
+    public init(_ names: String ..., description: String = "") {
+        self.names = names
+        self.shortDescription = description
+    }
+    
+    /// Increments the flag's value; don't call directly
+    public func update() {
+        value += 1
+    }
+    
+}
+
+// MARK: - Keys
 
 public protocol AnyKey: Option, AnyValueBox {}
 

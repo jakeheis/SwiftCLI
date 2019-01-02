@@ -178,6 +178,18 @@ class ParserTests: XCTestCase {
         XCTAssertEqual(cmd.files.value, ["firstFile", "secondFile"])
     }
     
+    func testCounterParse() throws {
+        let counterCmd = CounterFlagCmd()
+        let counterCli = CLI.createTester(commands: [counterCmd])
+        _ = try Parser().parse(commandGroup: counterCli, arguments: ArgumentList(arguments: ["cmd", "-v", "-v"]))
+        XCTAssertEqual(counterCmd.verbosity.value, 2)
+        
+        let flagCmd = FlagCmd()
+        let flagCli = CLI.createTester(commands: [flagCmd])
+        _ = try Parser().parse(commandGroup: flagCli, arguments: ArgumentList(arguments: ["cmd", "-a", "-a"]))
+        XCTAssertTrue(flagCmd.flag.value)
+    }
+    
     func testBeforeCommand() throws {
         let cmd = EmptyCmd()
         let yes = Flag("-y")
