@@ -167,10 +167,12 @@ class ParameterFillerTests: XCTestCase {
         XCTAssertThrowsSpecificError(
             expression: try parse(command: command, args: args), file: file, line: line,
             error: { (error: ParameterError) in
-                guard case .wrongNumber(min, max) = error.kind else {
+                guard case let .wrongNumber(aMin, aMax) = error.kind else {
                     XCTFail("Expected error to be .wrongNumber(\(min), \(max as Any)); got .\(error.kind)", file: file, line: line)
                     return
                 }
+                XCTAssertEqual(aMin, min, file: file, line: line)
+                XCTAssertEqual(aMax, max, file: file, line: line)
         })
     }
 
