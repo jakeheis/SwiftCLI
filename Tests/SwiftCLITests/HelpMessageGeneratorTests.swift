@@ -435,5 +435,74 @@ class HelpMessageGeneratorTests: XCTestCase {
         
         """)
     }
+    
+    func testColoredError() {
+        let cli = CLI.createTester(commands: [alphaCmd])
+        let routeError = RouteError(partialPath: CommandGroupPath(top: cli), notFound: "missing")
+        
+        let plainCapture = CaptureStream()
+        DefaultHelpMessageGenerator(colorError: false, boldError: false).writeRouteErrorMessage(for: routeError, to: plainCapture)
+        plainCapture.closeWrite()
+        XCTAssertEqual(plainCapture.readAll(), """
+        
+        Usage: tester <command> [options]
+        
+        Commands:
+          alpha           The alpha command
+          help            Prints help information
 
+        Error: command 'missing' not found
+
+
+        """)
+        
+        let colorCapture = CaptureStream()
+        DefaultHelpMessageGenerator(colorError: true, boldError: false).writeRouteErrorMessage(for: routeError, to: colorCapture)
+        colorCapture.closeWrite()
+        XCTAssertEqual(colorCapture.readAll(), """
+        
+        Usage: tester <command> [options]
+
+        Commands:
+          alpha           The alpha command
+          help            Prints help information
+
+        \u{001B}[31mError: \u{001B}[0mcommand 'missing' not found
+        
+
+        """)
+        
+        let boldCapture = CaptureStream()
+        DefaultHelpMessageGenerator(colorError: false, boldError: true).writeRouteErrorMessage(for: routeError, to: boldCapture)
+        boldCapture.closeWrite()
+        XCTAssertEqual(boldCapture.readAll(), """
+        
+        Usage: tester <command> [options]
+
+        Commands:
+          alpha           The alpha command
+          help            Prints help information
+
+        \u{001B}[1mError: \u{001B}[0mcommand 'missing' not found
+
+
+        """)
+        
+        let bothCapture = CaptureStream()
+        DefaultHelpMessageGenerator(colorError: true, boldError: true).writeRouteErrorMessage(for: routeError, to: bothCapture)
+        bothCapture.closeWrite()
+        XCTAssertEqual(bothCapture.readAll(), """
+        
+        Usage: tester <command> [options]
+
+        Commands:
+          alpha           The alpha command
+          help            Prints help information
+
+        \u{001B}[1m\u{001B}[31mError: \u{001B}[0mcommand 'missing' not found
+
+
+        """)
+    }
+    
 }
