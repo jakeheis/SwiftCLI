@@ -29,6 +29,7 @@ extension CompletionGeneratorTests {
 
 extension HelpMessageGeneratorTests {
     static let __allTests = [
+        ("testColoredError", testColoredError),
         ("testCommandListGeneration", testCommandListGeneration),
         ("testCommandNotFound", testCommandNotFound),
         ("testCommandNotSpecified", testCommandNotSpecified),
@@ -85,6 +86,7 @@ extension ParserTests {
         ("testCollectedOptions", testCollectedOptions),
         ("testCombinedFlagsAndKeysAndArgumentsParsing", testCombinedFlagsAndKeysAndArgumentsParsing),
         ("testCombinedFlagsAndKeysParsing", testCombinedFlagsAndKeysParsing),
+        ("testCounterParse", testCounterParse),
         ("testDefaultFlagValue", testDefaultFlagValue),
         ("testFlagSplitting", testFlagSplitting),
         ("testFullParse", testFullParse),
