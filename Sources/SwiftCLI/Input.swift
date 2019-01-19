@@ -88,7 +88,8 @@ public class InputReader<T: ConvertibleFromString> {
         self.secure = secure
         self.validation = validation
         self.errorResponse = errorResponse ?? { (_, reason) in
-            Term.stderr <<< T.messageForInvalidValue(reason: reason, for: nil)
+            let message = T.messageForInvalidValue(reason: reason, for: nil)
+            Term.stderr <<< String(message[message.startIndex]).capitalized + message[message.index(after: message.startIndex)...]
         }
     }
     

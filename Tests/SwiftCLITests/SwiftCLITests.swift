@@ -108,22 +108,14 @@ class SwiftCLITests: XCTestCase {
         let cmd = TestCommand { (executionString) in
             self.executionString = executionString
         }
+
+        var result: Int32 = 0
+        let (out, err) = CLI.capture {
+            let cli = CLI.createTester(commands: [cmd])
+            result = run(cli)
+        }
         
-        let out = CaptureStream()
-        let err = CaptureStream()
-        
-        Term.stdout = out
-        Term.stderr = err
-        
-        let cli = CLI.createTester(commands: [cmd])
-        let result = run(cli)
-        out.closeWrite()
-        err.closeWrite()
-        
-        Term.stdout = WriteStream.stdout
-        Term.stderr = WriteStream.stderr
-        
-        return (result, out.readAll(), err.readAll())
+        return (result, out, err)
     }
     
     // Tear down

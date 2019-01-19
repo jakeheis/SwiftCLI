@@ -22,38 +22,96 @@ class InputTests: XCTestCase {
     
     func testInt() {
         input = ["asdf", "3.4", "5"]
-        let int = Input.readInt()
-        XCTAssertEqual(int, 5)
+        let (out, err) = CLI.capture {
+            let int = Input.readInt()
+            XCTAssertEqual(int, 5)
+        }
+        XCTAssertEqual(out, "")
+        XCTAssertEqual(err, """
+        Invalid value; expected Int
+        Invalid value; expected Int
+        
+        """)
     }
     
     func testDouble() {
         input = ["asdf", "3.4", "5"]
-        let double = Input.readDouble()
-        XCTAssertEqual(double, 3.4)
+        let (out, err) = CLI.capture {
+            let double = Input.readDouble()
+            XCTAssertEqual(double, 3.4)
+        }
+        XCTAssertEqual(out, "")
+        XCTAssertEqual(err, """
+        Invalid value; expected Double
+        
+        """)
     }
     
     func testBool() {
         input = ["asdf", "5", "false"]
-        let bool = Input.readBool()
-        XCTAssertEqual(bool, false)
+        let (out, err) = CLI.capture {
+            let bool = Input.readBool()
+            XCTAssertEqual(bool, false)
+        }
+        XCTAssertEqual(out, "")
+        XCTAssertEqual(err, """
+        Invalid value; expected Bool
+        Invalid value; expected Bool
+
+        """)
         
         input = ["asdf", "5", "T"]
-        let bool2 = Input.readBool()
-        XCTAssertEqual(bool2, true)
+        let (out2, err2) = CLI.capture {
+            let bool = Input.readBool()
+            XCTAssertEqual(bool, true)
+        }
+        XCTAssertEqual(out2, "")
+        XCTAssertEqual(err2, """
+        Invalid value; expected Bool
+        Invalid value; expected Bool
+
+        """)
         
         input = ["asdf", "yeppp", "YES"]
-        let bool3 = Input.readBool()
-        XCTAssertEqual(bool3, true)
+        let (out3, err3) = CLI.capture {
+            let bool = Input.readBool()
+            XCTAssertEqual(bool, true)
+        }
+        XCTAssertEqual(out3, "")
+        XCTAssertEqual(err3, """
+        Invalid value; expected Bool
+        Invalid value; expected Bool
+
+        """)
     }
     
     func testValidation() {
         input = ["asdf", "3.4", "5", "9", "11"]
-        let int = Input.readInt(validation: [.greaterThan(10)])
-        XCTAssertEqual(int, 11)
+        let (out, err) = CLI.capture {
+            let int = Input.readInt(validation: [.greaterThan(10)])
+            XCTAssertEqual(int, 11)
+        }
+        XCTAssertEqual(out, "")
+        XCTAssertEqual(err, """
+        Invalid value; expected Int
+        Invalid value; expected Int
+        Invalid value; must be greater than 10
+        Invalid value; must be greater than 10
+
+        """)
         
         input = ["asdf", "5", "false", "SwiftCLI"]
-        let str = Input.readLine(validation: [.contains("ift")])
-        XCTAssertEqual(str, "SwiftCLI")
+        let (out2, err2) = CLI.capture {
+            let str = Input.readLine(validation: [.contains("ift")])
+            XCTAssertEqual(str, "SwiftCLI")
+        }
+        XCTAssertEqual(out2, "")
+        XCTAssertEqual(err2, """
+        Invalid value; must contain 'ift'
+        Invalid value; must contain 'ift'
+        Invalid value; must contain 'ift'
+
+        """)
     }
 
 }

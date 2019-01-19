@@ -36,6 +36,8 @@ extension HelpMessageGeneratorTests {
         ("testExpectedValueAfterKey", testExpectedValueAfterKey),
         ("testIllegalOptionType", testIllegalOptionType),
         ("testInheritedUsageStatementGeneration", testInheritedUsageStatementGeneration),
+        ("testInvalidOptionValue", testInvalidOptionValue),
+        ("testInvalidParameterValue", testInvalidParameterValue),
         ("testLongDescriptionGeneration", testLongDescriptionGeneration),
         ("testMisusedOptionsStatementGeneration", testMisusedOptionsStatementGeneration),
         ("testMutlineCommandListGeneration", testMutlineCommandListGeneration),
@@ -77,6 +79,7 @@ extension ParameterFillerTests {
         ("testOptionalParameters", testOptionalParameters),
         ("testOptionalParametersWithInheritance", testOptionalParametersWithInheritance),
         ("testRequiredParameters", testRequiredParameters),
+        ("testValidatedParameter", testValidatedParameter),
     ]
 }
 

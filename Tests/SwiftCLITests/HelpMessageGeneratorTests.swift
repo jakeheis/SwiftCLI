@@ -308,6 +308,31 @@ class HelpMessageGeneratorTests: XCTestCase {
         """)
     }
     
+    func testInvalidOptionValue() {
+        let capture = CaptureStream()
+        let command = ValidatedKeyCmd()
+        let path = CommandGroupPath(top: CLI.createTester(commands: [command])).appending(command)
+        let error = OptionError(command: path, kind: .invalidKeyValue(command.location, "-l", .validationError(command.location.validation[0])))
+        DefaultHelpMessageGenerator().writeMisusedOptionsStatement(for: error, to: capture)
+        capture.closeWrite()
+        
+        XCTAssertEqualLineByLine(capture.readAll(), """
+        
+        Usage: tester cmd [options]
+
+        Options:
+          --holiday <value>         \n\
+          -a, --age <value>         \n\
+          -h, --help                Show help information
+          -l, --location <value>    \n\
+          -n, --name <value>        \n\
+
+        Error: invalid value passed to '-l'; must not be: Chicago, Boston
+
+
+        """)
+    }
+    
     func testOptionGroupMisuse() {
         let command = ExactlyOneCmd()
         let path = CommandGroupPath(top: CLI.createTester(commands: [command])).appending(command)
@@ -435,6 +460,33 @@ class HelpMessageGeneratorTests: XCTestCase {
         
         """)
     }
+    
+    func testInvalidParameterValue() {
+        let command = ValidatedParamCmd()
+        let cli = CLI.createTester(commands: [command])
+        let path = CommandGroupPath(top: cli).appending(command)
+        
+        let capture1 = CaptureStream()
+        let error1 = ParameterError(command: path, kind: .invalidValue(.init(name: "age", param: command.age), .validationError(command.age.validation[0])))
+        DefaultHelpMessageGenerator().writeParameterErrorMessage(for: error1, to: capture1)
+        capture1.closeWrite()
+        
+        XCTAssertEqual(capture1.readAll(), """
+
+        Usage: tester cmd [<age>] [options]
+
+        Validates param values
+
+        Options:
+          -h, --help      Show help information
+
+        Error: invalid value passed to 'age'; must be greater than 18
+        
+        
+        """)
+    }
+    
+    // MARK: -
     
     func testColoredError() {
         let cli = CLI.createTester(commands: [alphaCmd])

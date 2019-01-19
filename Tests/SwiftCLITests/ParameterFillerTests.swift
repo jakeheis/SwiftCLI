@@ -152,6 +152,28 @@ class ParameterFillerTests: XCTestCase {
         assertParseNumberError(command: EnumCmd(), args: ["slow", "value", "3", "fourth"], min: 1, max: 3)
     }
     
+    func testValidatedParameter() throws {
+        let cmd1 = try parse(command: ValidatedParamCmd(), args: [])
+        XCTAssertNil(cmd1.age.value)
+        
+        let cmd2 = ValidatedParamCmd()
+        XCTAssertThrowsSpecificError(
+            expression: try parse(command: cmd2, args: ["16"]),
+            error: { (error: ParameterError) in
+                guard case .invalidValue(let namedParam, .validationError(let validation)) = error.kind else {
+                    XCTFail()
+                    return
+                }
+                
+                XCTAssertEqual(namedParam.name, "age")
+                XCTAssert(namedParam.param === cmd2.age)
+                XCTAssertEqual(validation.message, "must be greater than 18")
+        })
+        
+        let cmd3 = try parse(command: ValidatedParamCmd(), args: ["20"])
+        XCTAssertEqual(cmd3.age.value, 20)
+    }
+    
     // MARK: -
     
     @discardableResult

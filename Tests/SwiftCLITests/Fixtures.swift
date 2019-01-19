@@ -340,6 +340,17 @@ class EnumCmd: Command {
 extension EnumCmd.Speed: CaseIterable {}
 #endif
 
+class ValidatedParamCmd: Command {
+    
+    let name = "cmd"
+    let shortDescription = "Validates param values"
+    
+    let age = Param.Optional<Int>(validation: [.greaterThan(18)])
+    
+    func execute() throws {}
+    
+}
+
 // MARK: -
 
 func XCTAssertThrowsSpecificError<T, E: Error>(
@@ -354,4 +365,35 @@ func XCTAssertThrowsSpecificError<T, E: Error>(
         }
         errorHandler(specificError)
     }
+}
+
+func XCTAssertEqualLineByLine(_ s1: String, _ s2: String, file: StaticString = #file, line: UInt = #line) {
+    let lines1 = s1.components(separatedBy: "\n")
+    let lines2 = s2.components(separatedBy: "\n")
+    
+    XCTAssertEqual(lines1.count, lines2.count, "line count should be equal", file: file, line: line)
+    
+    for (l1, l2) in zip(lines1, lines2) {
+        XCTAssertEqual(l1, l2, file: file, line: line)
+    }
+}
+
+extension CLI {
+    
+    static func capture(_ block: () -> ()) -> (String, String) {
+        let out = CaptureStream()
+        let err = CaptureStream()
+        
+        Term.stdout = out
+        Term.stderr = err
+        block()
+        Term.stdout = WriteStream.stdout
+        Term.stderr = WriteStream.stderr
+        
+        out.closeWrite()
+        err.closeWrite()
+        
+        return (out.readAll(), err.readAll())
+    }
+    
 }
