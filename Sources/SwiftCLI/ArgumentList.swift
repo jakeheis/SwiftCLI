@@ -21,7 +21,7 @@ public class ArgumentList {
     ///
     /// - Parameter argumentString: string from which to parse argument
     public convenience init(argumentString: String) {
-        let regex = try! Regex(pattern: "(\"[^\"]*\")|[^\"\\s]+", options: [])
+        let regex = try! NSRegularExpression(pattern: "(\"[^\"]*\")|[^\"\\s]+", options: [])
         
         let argumentMatches = regex.matches(in: argumentString, options: [], range: NSRange(location: 0, length: argumentString.utf8.count))
         

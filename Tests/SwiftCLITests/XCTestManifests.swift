@@ -154,7 +154,6 @@ extension TaskTests {
         ("testCaptureDirectory", testCaptureDirectory),
         ("testCurrentDirectory", testCurrentDirectory),
         ("testEnv", testEnv),
-        ("testExecutableFind", testExecutableFind),
         ("testIn", testIn),
         ("testPipe", testPipe),
         ("testRun", testRun),

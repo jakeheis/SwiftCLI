@@ -9,35 +9,23 @@ import Foundation
 
 // MARK: Minor version deprecations
 
-@available(*, deprecated, renamed: "run(_:arguments:)")
-public func run(_ executable: String, _ args: [String]) throws {
-    try run(executable, arguments: args)
-}
+@available(*, unavailable, renamed: "Task.run")
+public func run(_ executable: String, _ arguments: String...) throws {}
 
-@available(*, deprecated, message: "Use run(_:arguments:directory:) instead")
-public func run(_ executable: String, directory: String, _ args: String...) throws {
-    try run(executable, arguments: args, directory: directory)
-}
+@available(*, unavailable, renamed: "Task.run")
+public func run(_ executable: String, arguments: [String], directory: String? = nil) throws {}
 
-@available(*, deprecated, message: "Use run(_:arguments:directory:) instead")
-public func run(_ executable: String, directory: String, _ args: [String]) throws {
-    try run(executable, arguments: args, directory: directory)
-}
+@available(*, unavailable, renamed: "Task.capture")
+public func capture(_ executable: String, _ arguments: String...) throws -> CaptureResult { fatalError() }
 
-@available(*, deprecated, renamed: "capture(_:arguments:)")
-public func capture(_ executable: String, _ args: [String]) throws -> CaptureResult {
-    return try capture(executable, arguments: args)
-}
+@available(*, unavailable, renamed: "Task.capture")
+public func capture(_ executable: String, arguments: [String], directory: String? = nil) throws -> CaptureResult { fatalError() }
 
-@available(*, deprecated, message: "Use capture(_:arguments:directory:) instead")
-public func capture(_ executable: String, directory: String, _ args: String...) throws -> CaptureResult {
-    return try capture(executable, arguments: args, directory: directory)
-}
+@available(*, unavailable, renamed: "Task.run")
+public func run(bash: String, directory: String? = nil) throws {}
 
-@available(*, deprecated, message: "Use capture(_:arguments:directory:) instead")
-public func capture(_ executable: String, directory: String?, _ args: [String]) throws -> CaptureResult {
-    return try capture(executable, arguments: args, directory: directory)
-}
+@available(*, unavailable, renamed: "Task.capture")
+public func capture(bash: String, directory: String? = nil) throws -> CaptureResult { fatalError() }
 
 extension Task {
     
@@ -54,6 +42,18 @@ extension Task {
     @available(*, deprecated, renamed: "init(executable:arguments:directory:stdout:stderr:stdin:)")
     public convenience init(executable: String, args: [String] = [], currentDirectory: String? = nil, stdout: WritableStream = WriteStream.stdout, stderr: WritableStream = WriteStream.stderr, stdin: ReadableStream = ReadStream.stdin) {
         self.init(executable: executable, arguments: args, directory: currentDirectory, stdout: stdout, stderr: stderr, stdin: stdin)
+    }
+    
+    /// Finds the path to an executable
+    ///
+    /// - Parameter named: the name of the executable to find
+    /// - Returns: the full path to the executable if found, or nil
+    @available(*, deprecated)
+    public static func findExecutable(named: String) -> String? {
+        if named.hasPrefix("/") || named.hasPrefix(".") {
+            return named
+        }
+        return try? capture(bash: "which \(named)").stdout
     }
     
 }
@@ -102,6 +102,9 @@ extension CLI {
     
 }
 
+@available(*, deprecated, renamed: "ShellCompletion")
+public typealias Completion = ShellCompletion
+
 // MARK: - Swift versions
 
 #if !swift(>=4.1)
@@ -112,18 +115,6 @@ extension Sequence {
     }
 }
 
-#endif
-
-// MARK: - Linux support
-
-#if os(Linux)
-#if swift(>=3.1)
-typealias Regex = NSRegularExpression
-#else
-typealias Regex = RegularExpression
-#endif
-#else
-typealias Regex = NSRegularExpression
 #endif
 
 // MARK: Unavailable
