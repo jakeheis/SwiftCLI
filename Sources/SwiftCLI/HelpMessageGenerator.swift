@@ -121,7 +121,7 @@ extension HelpMessageGenerator {
     }
     
     public func writeUnrecognizedErrorMessage(for error: Error, to out: WritableStream) {
-        out <<< "An error occurred: \(error)"
+        out <<< "An error occurred: \(error.localizedDescription)"
     }
     
 }
