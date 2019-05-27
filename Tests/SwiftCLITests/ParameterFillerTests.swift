@@ -178,10 +178,11 @@ class ParameterFillerTests: XCTestCase {
     
     @discardableResult
     private func parse<T: Command>(command: T, args: [String]) throws -> T {
-        let path = CommandPath(command: command)
-        let registry = OptionRegistry(routable: command)
-        let arguments = ArgumentList(arguments: args)
-        try DefaultParameterFiller().parse(commandPath: path, optionRegistry: registry, arguments: arguments)
+        let cli = CLI(name: "tester", commands: [command])
+        let arguments = ArgumentList(arguments: [command.name] + args)
+        let routed = try Parser().parse(cli: cli, arguments: arguments)
+        XCTAssert(routed.command === command)
+
         return command
     }
     

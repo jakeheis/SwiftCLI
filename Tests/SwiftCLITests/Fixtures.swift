@@ -351,6 +351,21 @@ class ValidatedParamCmd: Command {
     
 }
 
+class RememberExecutionCmd: Command {
+    
+    let name = "cmd"
+    let shortDescription = "Remembers execution"
+    
+    let param = OptionalParameter()
+    
+    var executed = false
+    
+    func execute() throws {
+        executed = true
+    }
+    
+}
+
 // MARK: -
 
 func XCTAssertThrowsSpecificError<T, E: Error>(

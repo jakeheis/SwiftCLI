@@ -36,6 +36,10 @@ public class OptionRegistry {
         groups += routable.optionGroups
     }
     
+    public func recognizesOption(_ opt: String) -> Bool {
+        return flags[opt] != nil || keys[opt] != nil
+    }
+    
     public func parseOneOption(args: ArgumentList, command: CommandPath?) throws {
         let opt = args.pop()
         

@@ -94,10 +94,9 @@ extension InputReader {
 
 extension CLI {
     
-    @available(*, deprecated, message: "Use go(with: []) instead")
+    @available(*, unavailable)
     public func debugGo(with argumentString: String) -> Int32 {
-        stdout <<< "[Debug Mode]"
-        return go(with: ArgumentList(argumentString: argumentString))
+        return 1
     }
     
 }
@@ -156,26 +155,6 @@ extension CLI {
     
     @available(*, unavailable, message: "Create a new CLI object: let cli = CLI(..)")
     public static func debugGo(with argumentString: String) -> Int32 { return 0 }
-    
-    @available(*, unavailable, message: "Use a custom parser instead: cli.parser = Parser(router: MyRouter())")
-    public var router: Router {
-        get {
-            return parser.router
-        }
-        set(newValue) {
-            parser = Parser(router: newValue)
-        }
-    }
-    
-    @available(*, unavailable, message: "Use a custom parser instead: cli.parser = Parser(parameterFiller: ParameterFiller())")
-    public var parameterFiller: ParameterFiller {
-        get {
-            return parser.parameterFiller
-        }
-        set(newValue) {
-            parser = Parser(parameterFiller: newValue)
-        }
-    }
     
 }
 

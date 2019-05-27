@@ -14,7 +14,7 @@ class ArgumentListManipulatorTests: XCTestCase {
     func testOptionSplitter() {
         let splitter = OptionSplitter()
         
-        let args = ArgumentList(argumentString: "tester -ab")
+        let args = ArgumentList(arguments: ["tester", "-ab"])
         splitter.manipulate(arguments: args)
         XCTAssertEqual(args.pop(), "tester")
         XCTAssertEqual(args.pop(), "-a")
@@ -25,7 +25,7 @@ class ArgumentListManipulatorTests: XCTestCase {
     func testEqualsSplit() {
         let splitter = OptionSplitter()
         
-        let args = ArgumentList(argumentString: "tester --key=value")
+        let args = ArgumentList(arguments: ["tester", "--key=value"])
         splitter.manipulate(arguments: args)
         XCTAssertEqual(args.pop(), "tester")
         XCTAssertEqual(args.pop(), "--key")

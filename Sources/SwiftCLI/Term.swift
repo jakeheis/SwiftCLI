@@ -7,14 +7,12 @@
 
 import Foundation
 
-public class Term {
+public enum Term {
 
     public static let isTTY = isatty(fileno(Foundation.stdout)) != 0
     
     public static var stdout: WritableStream = WriteStream.stdout
     public static var stderr: WritableStream = WriteStream.stderr
     public static var stdin: ReadableStream = ReadStream.stdin
-    
-    private init() {}
-    
+
 }

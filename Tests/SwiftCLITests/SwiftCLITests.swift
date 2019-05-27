@@ -39,8 +39,8 @@ class SwiftCLITests: XCTestCase {
         XCTAssertEqual(err, "")
         
         let (result2, out2, err2) = runCLI { $0.go(with: ["-h"]) }
-        XCTAssertEqual(result2, 0, "Command should have succeeded")
-        XCTAssertEqual(out2, """
+        XCTAssertEqual(result2, 1, "Command should have failed")
+        XCTAssertEqual(err2, """
 
         Usage: tester <command> [options]
 
@@ -50,7 +50,7 @@ class SwiftCLITests: XCTestCase {
 
         
         """)
-        XCTAssertEqual(err2, "")
+        XCTAssertEqual(out2, "")
     }
     
     func testGlobalOptions() {
@@ -96,12 +96,141 @@ class SwiftCLITests: XCTestCase {
     }
     
     func testSingleCommand() {
-        let cmd = TestCommand { (executionString) in
-            self.executionString = executionString
-        }
+        let cmd = RememberExecutionCmd()
         let cli = CLI(singleCommand: cmd)
-        XCTAssertEqual(cli.go(with: ["aTest"]), 0)
-        XCTAssertEqual(executionString, "defaultTester will test aTest, 1 times")
+        
+        let (out, err) = CLI.capture {
+            let result = cli.go(with: ["aTest"])
+            XCTAssertEqual(result, 0)
+        }
+        XCTAssertEqual(out, "")
+        XCTAssertEqual(err, "")
+        XCTAssertTrue(cmd.executed)
+        XCTAssertEqual(cmd.param.value, "aTest")
+        
+        cmd.executed = false
+        cmd.param.value = nil
+        
+        let (out2, err2) = CLI.capture {
+            let result = cli.go(with: [])
+            XCTAssertEqual(result, 0)
+        }
+        XCTAssertEqual(out2, "")
+        XCTAssertEqual(err2, "")
+        XCTAssertTrue(cmd.executed)
+        XCTAssertNil(cmd.param.value)
+        
+        let (out3, err3) = CLI.capture {
+            let result = cli.go(with: ["-h"])
+            XCTAssertEqual(result, 0)
+        }
+        XCTAssertEqual(out3, """
+        
+        Usage: cmd [<param>] [options]
+
+        Remembers execution
+
+        Options:
+          -h, --help      Show help information
+        
+        
+        """)
+        XCTAssertEqual(err3, "")
+    }
+    
+    func testFallback() {
+        class Execute: Command {
+            let name = "execute"
+            let file = OptionalParameter()
+            var executed = false
+            func execute() throws { executed = true }
+        }
+        
+        class Build: Command {
+            let name = "build"
+            var built = false
+            func execute() throws { built = true }
+        }
+        
+        let execute = Execute()
+        let build = Build()
+        
+        let (out, err) = CLI.capture {
+            let cli = CLI(name: "swift", commands: [build])
+            cli.parser.routeBehavior = .searchWithFallback(execute)
+            let result = cli.go(with: ["build"])
+            XCTAssertEqual(result, 0)
+        }
+        XCTAssertEqual(out, "")
+        XCTAssertEqual(err, "")
+        XCTAssertTrue(build.built)
+        XCTAssertFalse(execute.executed)
+        XCTAssertNil(execute.file.value)
+        
+        build.built = false
+        
+        let (out2, err2) = CLI.capture {
+            let cli = CLI(name: "swift", commands: [build])
+            cli.parser.routeBehavior = .searchWithFallback(execute)
+            let result = cli.go(with: ["file.swift"])
+            XCTAssertEqual(result, 0)
+        }
+        XCTAssertEqual(out2, "")
+        XCTAssertEqual(err2, "")
+        XCTAssertFalse(build.built)
+        XCTAssertTrue(execute.executed)
+        XCTAssertEqual(execute.file.value, "file.swift")
+        
+        execute.executed = false
+        execute.file.value = nil
+        
+        let (out3, err3) = CLI.capture {
+            let cli = CLI(name: "swift", commands: [build])
+            cli.parser.routeBehavior = .searchWithFallback(execute)
+            let result = cli.go(with: [])
+            XCTAssertEqual(result, 0)
+        }
+        XCTAssertEqual(out3, "")
+        XCTAssertEqual(err3, "")
+        XCTAssertFalse(build.built)
+        XCTAssertTrue(execute.executed)
+        XCTAssertNil(execute.file.value)
+        
+        let (out4, err4) = CLI.capture {
+            let cli = CLI(name: "swift", commands: [build])
+            cli.parser.routeBehavior = .searchWithFallback(execute)
+            let result = cli.go(with: ["-h"])
+            XCTAssertEqual(result, 0)
+        }
+        XCTAssertEqual(out4, """
+        
+        Usage: swift [<file>] [options]
+
+        Options:
+          -h, --help      Show help information
+        
+        
+        """)
+        XCTAssertEqual(err4, "")
+        
+        let (out5, err5) = CLI.capture {
+            let cli = CLI(name: "swift", commands: [build])
+            cli.parser.routeBehavior = .searchWithFallback(execute)
+            let result = cli.go(with: ["hi.swift", "this.swift"])
+            XCTAssertEqual(result, 1)
+        }
+        XCTAssertEqual(err5, """
+        
+        Usage: swift [<file>] [options]
+
+        Options:
+          -h, --help      Show help information
+        
+        Error: command requires between 0 and 1 arguments
+
+        
+        """)
+        XCTAssertEqual(out5, "")
     }
     
     private func runCLI(_ run: (CLI) -> Int32) -> (Int32, String, String) {
