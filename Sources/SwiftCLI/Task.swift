@@ -9,159 +9,7 @@ import Foundation
 
 // MARK: -
 
-/// Run an executable synchronously; uses this process's stdout, stderr, and stdin
-///
-/// - Parameters:
-///   - executable: the executable to run
-///   - arguments: arguments to pass to the executable
-/// - Throws: RunError if command fails
-public func run(_ executable: String, _ arguments: String...) throws {
-    try run(executable, arguments: arguments)
-}
-
-/// Run an executable synchronously; uses this process's stdout, stderr, and stdin
-///
-/// - Parameters:
-///   - executable: the executable to run
-///   - arguments: arguments to pass to the executable
-///   - directory: the directory to run in; default current directory
-/// - Throws: RunError if command fails
-public func run(_ executable: String, arguments: [String], directory: String? = nil) throws {
-    let task = Task(executable: executable, arguments: arguments, directory: directory)
-    let code = task.runSync()
-    guard code == 0 else {
-        throw RunError(exitStatus: code)
-    }
-}
-
-/// Run an executable synchronously and capture its output
-///
-/// - Parameters:
-///   - executable: the executable to run
-///   - arguments: arguments to pass to the executable
-/// - Returns: the captured data
-/// - Throws: CaptureError if command fails
-public func capture(_ executable: String, _ arguments: String...) throws -> CaptureResult {
-    return try capture(executable, arguments: arguments)
-}
-
-
-/// Run an executable synchronously and capture its output
-///
-/// - Parameters:
-///   - executable: the executable to run
-///   - arguments: arguments to pass to the executable
-///   - directory: the directory to run in; default current directory
-/// - Returns: the captured data
-/// - Throws: CaptureError if command fails
-public func capture(_ executable: String, arguments: [String], directory: String? = nil) throws -> CaptureResult {
-    let out = CaptureStream()
-    let err = CaptureStream()
-    
-    let task = Task(executable: executable, arguments: arguments, directory: directory, stdout: out, stderr: err)
-    let exitCode = task.runSync()
-    
-    let captured = CaptureResult(rawStdout: out.readAll(), rawStderr: err.readAll())
-    guard exitCode == 0 else {
-        throw CaptureError(exitStatus: exitCode, captured: captured)
-    }
-    
-    return captured
-}
-
-/// Run a bash statement synchronously; uses this process's stdout, stderr, and stdin
-///
-/// - Parameters:
-///   - bash: the bash statement to run
-///   - directory: the directory to run in
-/// - Throws: RunError if command fails
-/// - Warning: Do not use this with unsanitized user input, can be dangerous
-public func run(bash: String, directory: String? = nil) throws {
-    try run("/bin/bash", arguments: ["-c", bash], directory: directory)
-}
-
-/// Run a bash statement synchronously and capture its output
-///
-/// - Parameters:
-///   - bash: the bash statement to run
-///   - directory: the directory to run in
-/// - Returns: the captured data
-/// - Throws: CaptureError if command fails
-/// - Warning: Do not use this with unsanitized user input, can be dangerous
-public func capture(bash: String, directory: String? = nil) throws -> CaptureResult {
-    return try capture("/bin/bash", arguments: ["-c", bash], directory: directory)
-}
-
-// MARK: -
-
 public class Task {
-    
-    /// Finds the path to an executable
-    ///
-    /// - Parameter named: the name of the executable to find
-    /// - Returns: the full path to the executable if found, or nil
-    public static func findExecutable(named: String) -> String? {
-        if named.hasPrefix("/") || named.hasPrefix(".") {
-            return named
-        }
-        return try? capture(bash: "which \(named)").stdout
-    }
-    
-    /// Run the given executable, replacing the current process with it
-    ///
-    /// - Parameters:
-    ///   - executable: executable to run
-    ///   - directory: the directory to run in; default current directory
-    ///   - arguments: arguments to the executable
-    ///   - env: the environment in which to execute the task; default same env as current process
-    /// - Returns: Never
-    /// - Throws: CLI.Error if the executable could not be found
-    public static func execvp(_ executable: String, arguments: [String], directory: String? = nil, env: [String: String]? = nil) throws -> Never {
-        let exec: String
-        var swiftArgs: [String] = []
-        if executable.hasPrefix("/") || executable.hasPrefix(".") {
-            exec = executable
-            swiftArgs = arguments
-        } else {
-            exec = "/usr/bin/env"
-            swiftArgs = [executable] + arguments
-        }
-        
-        let argv = ([exec] + swiftArgs).map({ $0.withCString(strdup) })
-        defer { argv.forEach { free($0)} }
-        
-        var priorDir: String? = nil
-        if let directory = directory {
-            priorDir = FileManager.default.currentDirectoryPath
-            FileManager.default.changeCurrentDirectoryPath(directory)
-        }
-
-        if let env = env {
-            let envp = UnsafeMutablePointer<UnsafeMutablePointer<Int8>?>.allocate(capacity: env.count + 1)
-            envp.initialize(from: env.map { strdup("\($0)=\($1)") }, count: env.count)
-            envp[env.count] = nil
-            defer {
-                for pair in envp ..< envp + env.count {
-                    free(UnsafeMutableRawPointer(pair.pointee))
-                }
-                #if swift(>=4.1)
-                envp.deallocate()
-                #else
-                envp.deallocate(capacity: env.count + 1)
-                #endif
-            }
-            
-            Foundation.execve(exec, argv + [nil], envp)
-        } else {
-            Foundation.execvp(exec, argv + [nil])
-        }
-        
-        if let priorDir = priorDir {
-            FileManager.default.changeCurrentDirectoryPath(priorDir)
-        }
-        
-        throw CLI.Error(message: "\(executable) not found")
-    }
     
     private let process: Process
     
@@ -181,8 +29,13 @@ public class Task {
     /// Whether task is currently running
     public var isRunning: Bool { return process.isRunning }
     
+    /// The standard out stream for the task
     public let stdout: WritableStream
+    
+    /// The standard error stream for the task
     public let stderr: WritableStream
+    
+    /// The standard input stream for the task
     public let stdin: ReadableStream
     
     /// Create a new task
@@ -194,7 +47,7 @@ public class Task {
     ///   - stdout: the stream which the task should use as it's standard output; defaults to the current process's stdout
     ///   - stderr: the stream which the task should use as it's standard error; defaults to the current process's stderr
     ///   - stdin: the stream which the task should use as it's standard input; defaults to the current process's stdin
-    public init(executable: String, arguments: [String] = [], directory: String? = nil, stdout: WritableStream = WriteStream.stdout, stderr: WritableStream = WriteStream.stderr, stdin: ReadableStream = ReadStream.stdin) {
+    public init(executable: String, arguments: [String] = [], directory: String? = nil, stdout: WritableStream = Term.stdout, stderr: WritableStream = Term.stderr, stdin: ReadableStream = ReadStream.stdin) {
         self.process = Process()
         if executable.hasPrefix("/") || executable.hasPrefix(".") {
             self.process.launchPath = executable
@@ -320,6 +173,149 @@ public class Task {
         
         process.environment = env
         process.launch()
+    }
+    
+}
+
+extension Task {
+    
+    /// Run an executable synchronously; uses this process's stdout, stderr, and stdin
+    ///
+    /// - Parameters:
+    ///   - executable: the executable to run
+    ///   - arguments: arguments to pass to the executable
+    /// - Throws: RunError if command fails
+    public static func run(_ executable: String, _ arguments: String...) throws {
+        try run(executable, arguments: arguments)
+    }
+    
+    /// Run an executable synchronously; uses this process's stdout, stderr, and stdin
+    ///
+    /// - Parameters:
+    ///   - executable: the executable to run
+    ///   - arguments: arguments to pass to the executable
+    ///   - directory: the directory to run in; default current directory
+    /// - Throws: RunError if command fails
+    public static func run(_ executable: String, arguments: [String], directory: String? = nil) throws {
+        let task = Task(executable: executable, arguments: arguments, directory: directory)
+        let code = task.runSync()
+        guard code == 0 else {
+            throw RunError(exitStatus: code)
+        }
+    }
+    
+    /// Run an executable synchronously and capture its output
+    ///
+    /// - Parameters:
+    ///   - executable: the executable to run
+    ///   - arguments: arguments to pass to the executable
+    /// - Returns: the captured data
+    /// - Throws: CaptureError if command fails
+    public static func capture(_ executable: String, _ arguments: String...) throws -> CaptureResult {
+        return try capture(executable, arguments: arguments)
+    }
+    
+    
+    /// Run an executable synchronously and capture its output
+    ///
+    /// - Parameters:
+    ///   - executable: the executable to run
+    ///   - arguments: arguments to pass to the executable
+    ///   - directory: the directory to run in; default current directory
+    /// - Returns: the captured data
+    /// - Throws: CaptureError if command fails
+    public static func capture(_ executable: String, arguments: [String], directory: String? = nil) throws -> CaptureResult {
+        let out = CaptureStream()
+        let err = CaptureStream()
+        
+        let task = Task(executable: executable, arguments: arguments, directory: directory, stdout: out, stderr: err)
+        let exitCode = task.runSync()
+        
+        let captured = CaptureResult(rawStdout: out.readAll(), rawStderr: err.readAll())
+        guard exitCode == 0 else {
+            throw CaptureError(exitStatus: exitCode, captured: captured)
+        }
+        
+        return captured
+    }
+    
+    /// Run a bash statement synchronously; uses this process's stdout, stderr, and stdin
+    ///
+    /// - Parameters:
+    ///   - bash: the bash statement to run
+    ///   - directory: the directory to run in
+    /// - Throws: RunError if command fails
+    /// - Warning: Do not use this with unsanitized user input, can be dangerous
+    public static func run(bash: String, directory: String? = nil) throws {
+        try run("/bin/bash", arguments: ["-c", bash], directory: directory)
+    }
+    
+    /// Run a bash statement synchronously and capture its output
+    ///
+    /// - Parameters:
+    ///   - bash: the bash statement to run
+    ///   - directory: the directory to run in
+    /// - Returns: the captured data
+    /// - Throws: CaptureError if command fails
+    /// - Warning: Do not use this with unsanitized user input, can be dangerous
+    public static func capture(bash: String, directory: String? = nil) throws -> CaptureResult {
+        return try capture("/bin/bash", arguments: ["-c", bash], directory: directory)
+    }
+    
+    /// Run the given executable, replacing the current process with it
+    ///
+    /// - Parameters:
+    ///   - executable: executable to run
+    ///   - directory: the directory to run in; default current directory
+    ///   - arguments: arguments to the executable
+    ///   - env: the environment in which to execute the task; default same env as current process
+    /// - Returns: Never
+    /// - Throws: CLI.Error if the executable could not be found
+    public static func execvp(_ executable: String, arguments: [String], directory: String? = nil, env: [String: String]? = nil) throws -> Never {
+        let exec: String
+        var swiftArgs: [String] = []
+        if executable.hasPrefix("/") || executable.hasPrefix(".") {
+            exec = executable
+            swiftArgs = arguments
+        } else {
+            exec = "/usr/bin/env"
+            swiftArgs = [executable] + arguments
+        }
+        
+        let argv = ([exec] + swiftArgs).map({ $0.withCString(strdup) })
+        defer { argv.forEach { free($0)} }
+        
+        var priorDir: String? = nil
+        if let directory = directory {
+            priorDir = FileManager.default.currentDirectoryPath
+            FileManager.default.changeCurrentDirectoryPath(directory)
+        }
+        
+        if let env = env {
+            let envp = UnsafeMutablePointer<UnsafeMutablePointer<Int8>?>.allocate(capacity: env.count + 1)
+            envp.initialize(from: env.map { strdup("\($0)=\($1)") }, count: env.count)
+            envp[env.count] = nil
+            defer {
+                for pair in envp ..< envp + env.count {
+                    free(UnsafeMutableRawPointer(pair.pointee))
+                }
+                #if swift(>=4.1)
+                envp.deallocate()
+                #else
+                envp.deallocate(capacity: env.count + 1)
+                #endif
+            }
+            
+            Foundation.execve(exec, argv + [nil], envp)
+        } else {
+            Foundation.execvp(exec, argv + [nil])
+        }
+        
+        if let priorDir = priorDir {
+            FileManager.default.changeCurrentDirectoryPath(priorDir)
+        }
+        
+        throw CLI.Error(message: "\(executable) not found")
     }
     
 }

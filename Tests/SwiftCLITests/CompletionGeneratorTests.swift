@@ -86,14 +86,14 @@ class CompletionGeneratorTests: XCTestCase {
     func testSepcialCaseOptionCompletion() {
         let variadicKey = VariadicKeyCmd()
         let exactlyOne = ExactlyOneCmd()
+        let counterFlag = CounterFlagCmd()
         
-        let cli = CLI.createTester(commands: [variadicKey, exactlyOne])
+        let cli = CLI.createTester(commands: [variadicKey, exactlyOne, counterFlag])
         let generator = ZshCompletionGenerator(cli: cli)
         
         let variadicKeyCapture = CaptureStream()
         generator.writeCommand(for: CommandGroupPath(top: cli).appending(variadicKey), into: variadicKeyCapture)
         variadicKeyCapture.closeWrite()
-        
         XCTAssertEqual(variadicKeyCapture.readAll(), """
         _tester_cmd() {
             _arguments -C \\
@@ -106,12 +106,23 @@ class CompletionGeneratorTests: XCTestCase {
         let exactlyOneCapture = CaptureStream()
         generator.writeCommand(for: CommandGroupPath(top: cli).appending(exactlyOne), into: exactlyOneCapture)
         exactlyOneCapture.closeWrite()
-        
         XCTAssertEqual(exactlyOneCapture.readAll(), """
         _tester_cmd() {
             _arguments -C \\
               '(-a --alpha -b --beta)'{-a,--alpha}"[the alpha flag]" \\
               '(-a --alpha -b --beta)'{-b,--beta}"[the beta flag]"
+        }
+        
+        """)
+        
+        let counterFlagCapture = CaptureStream()
+        generator.writeCommand(for: CommandGroupPath(top: cli).appending(counterFlag), into: counterFlagCapture)
+        counterFlagCapture.closeWrite()
+        XCTAssertEqual(counterFlagCapture.readAll(), """
+        _tester_cmd() {
+            _arguments -C \\
+              "*-v[Increase the verbosity]" \\
+              "*--verbose[Increase the verbosity]"
         }
         
         """)

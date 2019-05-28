@@ -29,6 +29,8 @@ public class HelpCommand: Command {
             } else if let command = child as? Command {
                 cli.helpMessageGenerator.writeUsageStatement(for: path.appending(command), to: stdout)
                 return
+            } else {
+                break
             }
         }
         

@@ -29,12 +29,12 @@ extension Routable {
     
     /// Standard out stream
     public var stdout: WritableStream {
-        return WriteStream.stdout
+        return Term.stdout
     }
     
     /// Standard error stream
     public var stderr: WritableStream {
-        return WriteStream.stderr
+        return Term.stderr
     }
     
     public var options: [Option] {
@@ -46,9 +46,18 @@ extension Routable {
         if let superMirror = mirror.superclassMirror {
             options = optionsFromMirror(superMirror)
         }
+        
         options.append(contentsOf: mirror.children.compactMap { (child) -> Option? in
-            _ = [child.label][0] // Linux 4.2 crashes for some reason if this isn't done
-            if (child.label != "children" && child.label != "optionGroups"), let option = child.value as? Option {
+            #if !os(macOS)
+            #if swift(>=4.1.50)
+            print(child.label as Any, to: &NoStream.stream)
+            guard child.label != "children" && child.label != "optionGroups" else {
+                return nil
+            }
+            #endif
+            #endif
+            
+            if let option = child.value as? Option {
                 return option
             }
             return nil
@@ -71,25 +80,38 @@ public protocol Command: Routable {
     func execute() throws
     
     /// The paramters this command accepts; derived automatically, don't implement unless custom functionality needed
-    var parameters: [(String, AnyParameter)] { get }
+    var parameters: [NamedParameter] { get }
     
 }
 
 extension Command {
     
-    public var parameters: [(String, AnyParameter)] {
+    public var parameters: [NamedParameter] {
         return parametersFromMirror(Mirror(reflecting: self))
     }
     
-    private func parametersFromMirror(_ mirror: Mirror) -> [(String, AnyParameter)] {
-        var parameters: [(String, AnyParameter)] = []
+    private func parametersFromMirror(_ mirror: Mirror) -> [NamedParameter] {
+        var parameters: [NamedParameter] = []
         if let superMirror = mirror.superclassMirror {
             parameters = parametersFromMirror(superMirror)
         }
         parameters.append(contentsOf: mirror.children.compactMap { (child) in
-            _ = [child.label][0] // Linux 4.2 crashes for some reason if this isn't done
-            if (child.label != "children" && child.label != "optionGroups"), let param = child.value as? AnyParameter, let label = child.label {
-                return (label, param)
+            guard let label = child.label else {
+                return nil
+            }
+            
+            #if !os(macOS)
+            #if swift(>=4.1.50)
+            print("label \(label)", to: &NoStream.stream)
+            print("label \(label)", to: &NoStream.stream)
+            guard label != "children" && label != "optionGroups" else {
+                return nil
+            }
+            #endif
+            #endif
+            
+            if let param = child.value as? AnyParameter {
+                return NamedParameter(name: label, param: param)
             }
             return nil
         })
@@ -116,12 +138,28 @@ public protocol CommandGroup: Routable {
     var aliases: [String: String] { get }
 }
 
-public extension CommandGroup {
-    var aliases: [String: String] {
+extension CommandGroup {
+    public var aliases: [String: String] {
         return [:]
     }
     
-    var longDescription: String {
+    public var longDescription: String {
         return ""
     }
 }
+
+#if !os(macOS)
+#if swift(>=4.1.50)
+struct NoStream: TextOutputStream {
+    
+    // Fix for strange crash on Linux with Swift 4.2
+    
+    static var stream = NoStream()
+    
+    mutating func write(_ string: String) {
+        // No-op
+    }
+    
+}
+#endif
+#endif

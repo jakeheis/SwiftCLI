@@ -3,7 +3,7 @@ SwiftCLI
 
 [![Build Status](https://travis-ci.org/jakeheis/SwiftCLI.svg?branch=master)](https://travis-ci.org/jakeheis/SwiftCLI)
 
-A powerful framework that can be used to develop a CLI, from the simplest to the most complex, in Swift.
+A powerful framework for developing CLIs, from the simplest to the most complex, in Swift.
 
 ```swift
 import SwiftCLI
@@ -26,7 +26,7 @@ greeter.go()
 Hello world!
 ```
 
-With SwiftCLI, you get for free:
+With SwiftCLI, you automatically get:
 - Command routing
 - Option parsing
 - Help messages
@@ -91,7 +91,7 @@ pod 'SwiftCLI', '~> 5.2.2'
 When creating a `CLI`, a `name` is required, and a `version` and `description` are both optional.
 
 ```swift
-let myCli = CLI(name: "greeter", version: "1.0.0", description: "Greeter - your own personal greeter")
+let myCli = CLI(name: "greeter", version: "1.0.0", description: "Greeter - a friendly greeter")
 ```
 
 You set commands through the `.commands` property:
@@ -100,23 +100,22 @@ You set commands through the `.commands` property:
 myCli.commands = [myCommand, myOtherCommand]
 ```
 
-Finally, to actually start the CLI, you call one of the `go` methods. In a production app, `go()` or `goAndExit()` should be used. These methods use the arguments passed to your CLI on launch.
+Finally, to run the CLI, you call one of the `go` methods.
 
 ```swift
 // Use go if you want program execution to continue afterwards
 myCli.go() 
 
-// Use goAndExit if you want your program to terminate after CLI has finished
+// Use goAndExit if you want your program to terminate after the CLI has finished
 myCli.goAndExit()
-```
 
-When you are creating and debugging your app, you can use `debugGo(with:)` which makes it easier to pass an argument string to your app during development.
-```swift
-myCli.debugGo(with: "greeter greet")
+// Use go(with:) if you want to control the arguments which the CLI runs with
+myCli.go(with: ["arg1", "arg2"])
 ```
 
 ## Commands
 In order to create a command, you must implement the `Command` protocol. All that's required is to implement a `name` property and an `execute` function; the other properties of `Command` are optional (though a `shortDescription` is highly recommended). A simple hello world command could be created as such:
+
 ```swift
 class GreetCommand: Command {
 
@@ -129,8 +128,11 @@ class GreetCommand: Command {
 
 }
 ```
+
 ### Parameters
+
 A command can specify what parameters it accepts through certain instance variables. Using reflection, SwiftCLI will identify instance variables of type `Parameter`, `OptionalParameter`, `CollectedParameter`, and `OptionalCollectedParameter`. These instance variables should appear in the order that the command expects the user to pass the arguments:
+
 ```swift
 class GreetCommand: Command {
     let name = "greet"
@@ -138,7 +140,7 @@ class GreetCommand: Command {
     let secondParam = Parameter()
 }
 ```
-In this example, if the user runs `greeter greet Jack Jill`, `firstParam` will be updated to have the value `Jack` and `secondParam` will be updated to have the value `Jill`. The values of these parameters can be accessed in `func execute()` by calling `firstParam.value`, etc.
+In this example, if the user runs `greeter greet Jack Jill`, `firstParam` will contain the value `Jack` and `secondParam` will contain the value `Jill`. You can access the values of these parameters in `func execute()` by calling `firstParam.value`, etc.
 
 #### Required parameters
 
@@ -149,19 +151,28 @@ class GreetCommand: Command {
     let name = "greet"
 
     let person = Parameter()
-    let greeting = Parameter()
+    let followUp = Parameter()
 
     func execute() throws {
-        stdout <<< "\(greeting.value), \(person.value)!"
+        stdout <<< "Hey there, \(person.value)!"
+        stdout <<< followUp.value
     }
 }
 ```
 
 ```bash
 ~ > greeter greet Jack
-Expected 2 arguments, but got 1.
-~ > greeter greet Jack Hello
-Hello, Jack!
+
+Usage: greeter greet <person> <followUp> [options]
+
+Options:
+  -h, --help      Show help information
+
+Error: command requires exactly 2 arguments
+
+~ > greeter greet Jack "What's up?"
+Hey there, Jack!
+What's up?
 ```
 
 #### Optional parameters
@@ -173,11 +184,13 @@ class GreetCommand: Command {
     let name = "greet"
 
     let person = Parameter()
-    let greeting = OptionalParameter()
+    let followUp = OptionalParameter()
 
     func execute() throws {
-        let greet = greeting.value ?? "Hey there"
-        stdout <<< "\(greet), \(person.value)!"
+        stdout <<< "Hey there, \(person.value)!"
+        if let followUpText = followUp.value {
+            stdout <<< followUpText
+        }
     }
 }
 ```
@@ -185,8 +198,9 @@ class GreetCommand: Command {
 ```bash
 ~ > greeter greet Jack
 Hey there, Jack!
-~ > greeter greet Jack Hello
+~ > greeter greet Jack "What's up?"
 Hello, Jack!
+What's up?
 ```
 
 #### Collected parameters
@@ -200,8 +214,9 @@ class GreetCommand: Command {
     let people = CollectedParameter()
 
     func execute() throws {
-        let peopleString = people.value.joined(separator: ", ")
-        stdout <<< "Hey there, \(peopleString)!"
+        for person in people.value {
+            stdout <<< "Hey there, \(person)!"
+        }        
     }
 }
 ```
@@ -209,14 +224,95 @@ class GreetCommand: Command {
 ```bash
 ~ > greeter greet Jack
 Hey there, Jack!
-~ > greeter greet Jack Jill
-Hey there, Jack, Jill!
-~ > greeter greet Jack Jill Hill
-Hey there, Jack, Jill, Hill!
+~ > greeter greet Jack Jill Water
+Hey there, Jack!
+Hey there, Jill!
+Hey there, Water!
+```
+
+#### Parameters with non-String values
+
+All of the parameters above will have a `value` of type `String`. To create a parameter with a different type, use `Param.Required<MyType>`, `Param.Optional<MyType>`, `CollectedParam.Required<MyType>`, or `CollectedParam.Optional<MyType>`.
+
+```swift
+class GreetCommand: Command {
+    let name = "greet"
+
+    let number = Param.Required<Int>()
+
+    func execute() throws {
+        stdout <<< "Hey there, number \(number.value)!"     
+    }
+}
+```
+
+```bash
+~ > greeter greet Jack
+
+Usage: greeter greet <number> [options]
+
+Options:
+  -h, --help      Show help information
+
+Error: invalid value passed to 'number'; expected Int
+
+~ > greeter greet 4
+Hey there, number 4!
+```
+
+Parameters with enum types which conform to `CaseIterable` have additional specialized behavior. In an error message, the allowed values for that parameter will be spelled out.
+
+```swift
+class GreetCommand: Command {
+    
+    let name = "greet"
+    
+    enum Volume: String, ConvertibleFromString, CaseIterable {
+        case loud
+        case quiet
+    }
+    
+    let volume = Param.Required<Volume>()
+    
+    func execute() throws {
+        let greeting = "Hello world!"
+        
+        switch volume.value {
+        case .loud: stdout <<< greeting.uppercased()
+        case .quiet: stdout <<< greeting.lowercased()
+        }
+        
+    }
+}
+```
+
+```bash
+~ > greeter greet Jack
+
+Usage: greeter greet <volume> [options]
+
+Options:
+  -h, --help      Show help information
+
+Error: invalid value passed to 'volume'; expected one of: loud, quiet
+
+~ > greet greet loud
+HELLO WORLD!
+```
+
+Any type can be used so long as it conforms to `ConvertibleFromString`. Most primitive types (e.g. `Int`) conform to `ConvertibleFromString` already, as do enums with raw values that are primitive types. To conform a custom type to `ConvertibleFromString`, simply implement one function:
+
+```swift
+extension MyType: ConvertibleFromString {
+    static func convert(from: String) -> Self? {
+        // Construct an instance of MyType from the String, or return nil if not possible
+        ...
+    }
+}
 ```
 
 ### Options
-Commands have support for two types of options: flag options and keyed options. Both types of options can either be denoted by a dash followed by a single letter (e.g. `git commit -a`) or two dashes followed by the option name (e.g. `git commit --all`). Single letter options can be cascaded into a single dash followed by all the desired options: `git commit -am "message"` == `git commit -a -m "message"`.
+Commands have support for two types of options: flag options and keyed options. Both types of options can be denoted by either a dash followed by a single letter (e.g. `git commit -a`) or two dashes followed by the option name (e.g. `git commit --all`). Single letter options can be cascaded into a single dash followed by all the desired options: `git commit -am "message"` == `git commit -a -m "message"`.
 
 Options are specified as instance variables on the command class, just like parameters:
 ```swift
@@ -231,7 +327,7 @@ class ExampleCommand: Command {
 #### Flag options
 Flag options are simple options that act as boolean switches. For example, if you were to implement `git commit`, `-a` would be a flag option. They take the form of variables of the type `Flag`.
 
-The ```GreetCommand``` could be modified to take a "loudly" flag:
+The `GreetCommand` could take a "loudly" flag:
 ```swift
 class GreetCommand: Command {
 
@@ -250,10 +346,22 @@ class GreetCommand: Command {
 }
 ```
 
+A related option type is `CounterFlag`, which counts the nubmer of times the user passes the same flag. For example, with a flag declaration like:
+
+```swift
+class GreetCommand: Command {
+    ...
+    let softly = CounterFlag("-s", "--softly", description: "Say the greeting softly")
+    ...
+}
+```
+
+the user can write `greeter greet -s -s`, and `softly.value` will be `2`.
+
 #### Keyed options
 Keyed options are options that have an associated value. Using "git commit" as an example, "-m" would be a keyed option, as it has an associated value - the commit message. They take the form of variables of the generic type `Key<T>`, where `T` is the type of the option.
 
-The ```GreetCommand``` could be modified to take a "number of times" option:
+The `GreetCommand` could take a "number of times" option:
 ```swift
 class GreetCommand: Command {
 
@@ -280,7 +388,7 @@ class GreetCommand: Command {
 }
 ```
 
-the user can write `greeter greet -l Chicago -l NYC`, and `locations.value` will then be set to `["Chicago", "NYC"]`.
+the user can write `greeter greet -l Chicago -l NYC`, and `locations.value` will be `["Chicago", "NYC"]`.
 
 #### Option groups
 
@@ -297,13 +405,14 @@ class GreetCommand: Command {
     let whisper = Flag("-w", "--whisper", description: "Whisper the greeting")
     
     var optionGroups: [OptionGroup] {
-        let volume: OptionGroup = .atMostOne(loudly, whipser)
-        return [volume]
+        return [.atMostOne(loudly, whipser)]
     }
 
     func execute() throws {
         if loudly.value {
-             ...
+            ...
+        } else if whisper.value{
+            ...
         } else {
             ...
         }
@@ -327,9 +436,7 @@ extension Command {
 myCli.globalOptions.append(verboseFlag)
 ```
 
-With this, every command now has a `verbose` flag.
-
-By default, every command will have a `-h` flag which prints help information. You can turn this off by setting the CLI `helpFlag` to nil:
+By default, every command has a `-h` flag which prints help information. You can turn this off by setting the CLI `helpFlag` to nil:
 
 ```swift
 myCli.helpFlag = nil
@@ -338,8 +445,9 @@ myCli.helpFlag = nil
 #### Usage of options
 As seen in the above examples, `Flag()` and `Key()` both take an optional `description` parameter. A concise description of what the option does should be included here. This allows the `HelpMessageGenerator` to generate a fully informative usage statement for the command.
 
-A command's usage statement is shown in two situations:
+A command's usage statement is shown in three situations:
 - The user passed an option that the command does not support -- ```greeter greet -z```
+- The user passed the wrong number of arguments
 - The command's help was invoked -- `greeter greet -h`
 
 ```bash
@@ -394,7 +502,7 @@ Commands:
 
 ## Shell completions
 
-Zsh completions can be automatically generated for your CLI (bash completions coming soon).
+Zsh completions can be automatically generated for your CLI.
 
 ```swift
 let myCli = CLI(...)
@@ -442,7 +550,7 @@ let generator = ZshCompletionGenerator(cli: myCli, functions: [
 `CLI` has two built-in commands: `HelpCommand` and `VersionCommand`.
 
 ### Help Command
-The `HelpCommand` can be invoked with `myapp help` or `myapp -h`. The `HelpCommand` first prints the app description (if any was given during `CLI.setup()`). It then iterates through all available commands, printing their name and their short description.
+The `HelpCommand` can be invoked with `myapp help`. The `HelpCommand` first prints the app description (if any was given during `CLI.setup()`). It then iterates through all available commands, printing their name and their short description.
 
 ```bash
 ~ > greeter help
@@ -464,7 +572,7 @@ myCLI.helpCommand = nil
 ```
 
 ### Version Command
-The `VersionCommand` can be invoked with `myapp version` or `myapp -v`. The VersionCommand prints the version of the app given during init `CLI(name:version:)`. If no version is given, the command is not available.
+The `VersionCommand` can be invoked with `myapp version` or `myapp --version`. The VersionCommand prints the version of the app given during init `CLI(name:version:)`. If no version is given, the command is not available.
 
 ```bash
 ~ > greeter -v
@@ -499,14 +607,14 @@ For example, you could write:
 ```swift
 let percentage = Input.readDouble(
     prompt: "Percentage:",
-    validation: { $0 >= 0 && $0 <= 100 },
-    errorResponse: { (input) in
-        stderr <<< "'\(input)' is invalid; must be a number between 0 and 100"
+    validation: [.within(0...100)],
+    errorResponse: { (input, reason) in
+        Term.stderr <<< "'\(input)' is invalid; must be a number between 0 and 100"
     }
 )
 ```
 
-which would result in interaction such as:
+which would result in an interaction such as:
 
 ```shell
 Percentage: asdf
@@ -522,12 +630,12 @@ SwiftCLI makes it easy to execute external tasks:
 
 ```swift
 // Execute a command and print output:
-try run("echo", "hello")
-try run(bash: "while true; do echo hi && sleep 1; done")
+try Task.run("echo", "hello")
+try Task.run(bash: "while true; do echo hi && sleep 1; done")
 
 // Execute a command and capture the output:
-let currentDirectory = try capture("pwd").stdout
-let sorted = try capture(bash: "cat Package.swift | sort").stdout
+let currentDirectory = try Task.capture("pwd").stdout
+let sorted = try Task.capture(bash: "cat Package.swift | sort").stdout
 ```
 
 You can also use the `Task` class for more custom behavior:
@@ -561,7 +669,7 @@ let ln = CLI(singleCommand: Ln())
 ln.go()
 ```
 
-In this case, if the user writes `ln myFile newLocation`, rather than searching for a command with the name "myFile", `SwiftCLI` will execute the `Ln` command and pass on "myFile` as the first argument to that command.
+In this case, if the user writes `ln myFile newLocation`, rather than searching for a command with the name "myFile", `SwiftCLI` will execute the `Ln` command and pass on "myFile" as the first argument to that command.
 
 Keep in mind that when creating a single command CLI, you lose the default `VersionCommand`. This means that `cli -v` will not work automatically, and that if you want to print your CLI version you will need to manually implement a `Flag("-v")` on your single command.
 
@@ -582,7 +690,7 @@ myCLI.parser = Parser(router: MyRouter(), parameterFiller: MyParameterFiller())
 ```
 
 #### Aliases
-Aliases can be made through the the `aliases` property on CLI. `DefaultRouter` will take these aliases into account while routing to the matching command. For example, if you write:
+Aliases can be made through the the `aliases` property on CLI. `Parser` will take these aliases into account while routing to the matching command. For example, if you write:
 
 ```swift
 myCLI.aliases["-c"] = "command"
@@ -590,10 +698,10 @@ myCLI.aliases["-c"] = "command"
 
 And the user makes the call `myapp -c`, the parser will search for a command with the name "command" because of the alias, not a command with the name "-c".
 
-By default, "-h" is aliased to "help" and "-v" to "version", but you can remove these if they're not wanted:
+By default, "--version" is an alias for "version", but you can remove this if desired:
 
 ```swift
-myCLI.aliases["-h"] = nil
+myCLI.aliases["--version"] = nil
 ```
 
 ### `argumentListManipulators`
@@ -603,7 +711,7 @@ myCLI.aliases["-h"] = nil
 You can implement `ArgumentListManipulator` on your own type and update CLI's property:
 
 ```swift
-public var argumentListManipulators: [ArgumentListManipulator] = [OptionSplitter()]
+cli.argumentListManipulators.append(MyManipulator())
 ```
 
 ### `helpMessageGenerator`
@@ -611,12 +719,16 @@ public var argumentListManipulators: [ArgumentListManipulator] = [OptionSplitter
 The messages formed by SwiftCLI can also be customized:
 
 ```swift
-public var helpMessageGenerator: HelpMessageGenerator = DefaultHelpMessageGenerator()
+cli.helpMessageGenerator = MyHelpMessageGenerator()
 ```
 
 ## Running your CLI
 
-Simply call `swift run`. In order to ensure your `CLI` gets the arguments passed on the command line, make sure to call `CLI.go()`, **not** ```CLI.debugGo(with: "")```.
+Simply call `swift run`. In order to ensure your `CLI` gets the arguments passed on the command line, make sure to call `CLI.go()`, **not** `CLI.go(with: [])`.
 
-## Example
-An example of a CLI developed with SwfitCLI can be found at https://github.com/jakeheis/Ice.
+## CLIs build with SwiftCLI
+
+- [XcodeGen](https://github.com/yonaskolb/XcodeGen)
+- [BartyCrouch](https://github.com/Flinesoft/BartyCrouch)
+- [Ice](https://github.com/jakeheis/Ice)
+

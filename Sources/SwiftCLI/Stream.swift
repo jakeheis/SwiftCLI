@@ -232,7 +232,7 @@ extension ReadableStream {
             }
         }
         
-        if let index = accumluated.index(of: delimiter) {
+        if let index = accumluated.firstIndex(of: delimiter) {
             let remainder = String(accumluated[accumluated.index(after: index)...])
             readBuffer.fill(with: remainder)
             return String(accumluated[..<index])

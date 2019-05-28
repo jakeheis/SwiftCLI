@@ -9,8 +9,8 @@ public protocol RoutablePath: CustomStringConvertible {
     func joined(separator: String) -> String
 }
 
-public extension RoutablePath {
-    var description: String {
+extension RoutablePath {
+    public var description: String {
         return "\(type(of: self))(\(joined(separator: " ")))"
     }
 }
@@ -60,21 +60,19 @@ public struct CommandGroupPath: RoutablePath {
 
 public struct CommandPath: RoutablePath {
     
-    public let groupPath: CommandGroupPath?
+    public let groupPath: CommandGroupPath
     public let command: Command
+    public var ignoreName = false
     
     public var options: [Option] {
-        if let shared = groupPath?.groups.map({ $0.options }).joined() {
-            return command.options + shared
-        }
-        return command.options
+        return command.options + groupPath.groups.map({ $0.options }).joined()
     }
     
     public var usage: String {
         var message = joined()
         
         if !command.parameters.isEmpty {
-            let signature = command.parameters.map({ $0.1.signature(for: $0.0) }).joined(separator: " ")
+            let signature = command.parameters.map({ $0.signature }).joined(separator: " ")
             message += " \(signature)"
         }
         
@@ -85,16 +83,17 @@ public struct CommandPath: RoutablePath {
         return message
     }
     
-    public init(groupPath: CommandGroupPath? = nil, command: Command) {
+    public init(groupPath: CommandGroupPath, command: Command) {
         self.groupPath = groupPath
         self.command = command
     }
     
     public func joined(separator: String = " ") -> String {
-        if let group = groupPath?.joined(separator: separator) {
-            return group + separator + command.name
+        var str = groupPath.joined(separator: separator)
+        if !ignoreName {
+            str += separator + command.name
         }
-        return command.name
+        return str
     }
     
 }

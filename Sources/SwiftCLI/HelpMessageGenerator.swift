@@ -13,6 +13,7 @@ public protocol HelpMessageGenerator {
     func writeMisusedOptionsStatement(for error: OptionError, to out: WritableStream)
     func writeParameterErrorMessage(for error: ParameterError, to out: WritableStream)
     func writeUnrecognizedErrorMessage(for error: Error, to out: WritableStream)
+    func writeErrorLine(for errorMessage: String, to out: WritableStream)
 }
 
 extension HelpMessageGenerator {
@@ -99,7 +100,7 @@ extension HelpMessageGenerator {
     public func writeRouteErrorMessage(for error: RouteError, to out: WritableStream) {
         writeCommandList(for: error.partialPath, to: out)
         if let notFound = error.notFound {
-            out <<< "Error: command '\(notFound)' not found"
+            writeErrorLine(for: "command '\(notFound)' not found", to: out)
             out <<< ""
         }
     }
@@ -110,22 +111,58 @@ extension HelpMessageGenerator {
         } else {
             out <<< ""
         }
-        out <<< "Error: " + error.kind.message
+        writeErrorLine(for: error.kind.message, to: out)
         out <<< ""
     }
     
     public func writeParameterErrorMessage(for error: ParameterError, to out: WritableStream) {
         writeUsageStatement(for: error.command, to: out)
-        out <<< "Error: " + error.message
+        writeErrorLine(for: error.kind.message, to: out)
         out <<< ""
     }
     
     public func writeUnrecognizedErrorMessage(for error: Error, to out: WritableStream) {
-        out <<< "An error occurred: \(error.localizedDescription)"
+        writeErrorLine(for: error.localizedDescription, to: out)
+    }
+    
+    public func writeErrorLine(for errorMessage: String, to out: WritableStream) {
+        out <<< "Error: " + errorMessage
     }
     
 }
 
 public class DefaultHelpMessageGenerator: HelpMessageGenerator {
-    public init() {}
+    
+    private enum Colors {
+        static let escape = "\u{001B}["
+        static let none = escape + "0m"
+        static let red = escape + "31m"
+        static let bold = escape + "1m"
+    }
+    
+    public let colorError: Bool
+    public let boldError: Bool
+    
+    public init(colorError: Bool = false, boldError: Bool = false) {
+        self.colorError = colorError
+        self.boldError = boldError
+    }
+    
+    public func writeErrorLine(for errorMessage: String, to out: WritableStream) {
+        var errorWord = ""
+        if boldError {
+            errorWord += Colors.bold
+        }
+        if colorError {
+            errorWord += Colors.red
+        }
+        
+        errorWord += "Error: "
+        if colorError || boldError {
+            errorWord += Colors.none
+        }
+        
+        out <<< errorWord + errorMessage
+    }
+    
 }

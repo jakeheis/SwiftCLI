@@ -10,39 +10,116 @@
 
 public class Parser {
     
-    public let router: Router
-    public let parameterFiller: ParameterFiller
-    
-    public init(router: Router = DefaultRouter(), parameterFiller: ParameterFiller = DefaultParameterFiller()) {
-        self.router = router
-        self.parameterFiller = parameterFiller
+    public enum RouteBehavior {
+        case search
+        case searchWithFallback(Command)
+        case automatically(Command)
+        
+        var fallback: Command? {
+            switch self {
+            case .search: return nil
+            case .searchWithFallback(let cmd): return cmd
+            case .automatically(let cmd): return cmd
+            }
+        }
     }
     
-    public func parse(commandGroup: CommandGroup, arguments: ArgumentList) throws -> CommandPath {
-        let (commandPath, optionRegistry) = try router.parse(commandGroup: commandGroup, arguments: arguments)
-        try parameterFiller.parse(commandPath: commandPath, optionRegistry: optionRegistry, arguments: arguments)
-        try optionRegistry.finish(command: commandPath)
-        return commandPath
+    private enum State {
+        case routing(CommandGroupPath)
+        case routed(CommandPath, ParameterIterator)
+        
+        var command: CommandPath? {
+            if case let .routed(path, _) = self {
+                return path
+            }
+            return nil
+        }
     }
     
-}
-
-// MARK: - Router
-
-/// Implements a func which uses the first few args to recognize options and route to the appropriate command
-public protocol Router {
-    func parse(commandGroup: CommandGroup, arguments: ArgumentList) throws -> (CommandPath, OptionRegistry)
-}
-
-public class DefaultRouter: Router {
+    public var parseOptionsAfterCollectedParameter = false
+    public var routeBehavior: RouteBehavior = .search
     
     public init() {}
     
-    public func parse(commandGroup: CommandGroup, arguments: ArgumentList) throws -> (CommandPath, OptionRegistry) {
-        let optionRegistry = OptionRegistry(routable: commandGroup)
-        var groupPath = CommandGroupPath(top: commandGroup)
+    public func parse(cli: CommandGroup, arguments: ArgumentList) throws -> CommandPath {
+        let optionRegistry = OptionRegistry(routable: cli)
+        
+        var state: State = .routing(CommandGroupPath(top: cli))
         
         while arguments.hasNext() {
+            if shouldParseOption(state: state, arguments: arguments, optionRegistry: optionRegistry) {
+                try optionRegistry.parseOneOption(args: arguments, command: state.command)
+                continue
+            }
+            
+            switch state {
+            case .routing(let groupPath):
+                state = try route(groupPath: groupPath, arguments: arguments, optionRegistry: optionRegistry)
+            case .routed(let commandPath, let params):
+                if let namedParam = params.next() {
+                    let result = namedParam.param.update(to: arguments.pop())
+                    if case let .failure(error) = result {
+                        throw ParameterError(command: commandPath, kind: .invalidValue(namedParam, error))
+                    }
+                } else {
+                    throw ParameterError(command: commandPath, kind: .wrongNumber(params.minCount, params.maxCount))
+                }
+            }
+        }
+        
+        if case let .routing(group) = state, let fallback = routeBehavior.fallback {
+            var command = group.appending(fallback)
+            command.ignoreName = true
+            state = .routed(command, ParameterIterator(command: command))
+        }
+        
+        let commandPath: CommandPath
+        
+        switch state {
+        case .routing(let groupPath):
+            if let command = groupPath.bottom as? Command & CommandGroup {
+                commandPath = groupPath.droppingLast().appending(command)
+            } else {
+                throw RouteError(partialPath: groupPath, notFound: nil)
+            }
+        case .routed(let path, let params):
+            if let namedParam = params.next(), !namedParam.param.satisfied {
+                throw ParameterError(command: path, kind: .wrongNumber(params.minCount, params.maxCount))
+            }
+            commandPath = path
+        }
+        
+        try optionRegistry.checkGroups(command: commandPath)
+        
+        return commandPath
+    }
+    
+    private func shouldParseOption(state: State, arguments: ArgumentList, optionRegistry: OptionRegistry) -> Bool {
+        guard arguments.nextIsOption() else {
+            return false
+        }
+        
+        switch state {
+        case .routing(let groupPath):
+            if optionRegistry.recognizesOption(arguments.peek()) {
+                return true
+            } else if case .search = routeBehavior, groupPath.bottom.aliases[arguments.peek()] == nil {
+                return true
+            }
+            return false
+        case .routed(_, let params):
+            return !params.nextIsCollection() || parseOptionsAfterCollectedParameter
+        }
+    }
+    
+    private func route(groupPath: CommandGroupPath, arguments: ArgumentList, optionRegistry: OptionRegistry) throws -> Parser.State {
+        switch routeBehavior {
+        case .automatically(let cmd):
+            var cmdPath = groupPath.appending(cmd)
+            cmdPath.ignoreName = true
+            optionRegistry.register(cmd)
+            return .routed(cmdPath, ParameterIterator(command: cmdPath))
+        case .search, .searchWithFallback(_):
             arguments.manipulate { (args) in
                 var copy = args
                 if let alias = groupPath.bottom.aliases[copy[0]] {
@@ -51,80 +128,34 @@ public class DefaultRouter: Router {
                 return copy
             }
             
-            if arguments.nextIsOption() {
-                try optionRegistry.parseOneOption(args: arguments, command: nil)
+            let matching: Routable
+            
+            let name = arguments.peek()
+            
+            if let found = groupPath.bottom.children.first(where: { $0.name == name }) {
+                matching = found
+                arguments.pop()
+            } else if let fallback = routeBehavior.fallback {
+                optionRegistry.register(fallback)
+                var cmdPath = groupPath.appending(fallback)
+                cmdPath.ignoreName = true
+                return .routed(cmdPath, ParameterIterator(command: cmdPath))
             } else {
-                let name = arguments.pop()
-                guard let matching = groupPath.bottom.children.first(where: { $0.name == name }) else {
-                    throw RouteError(partialPath: groupPath, notFound: name)
-                }
-                
-                optionRegistry.register(matching)
-                
-                if let group = matching as? CommandGroup {
-                    groupPath = groupPath.appending(group)
-                } else if let cmd = matching as? Command {
-                    return (groupPath.appending(cmd), optionRegistry)
-                } else {
-                    preconditionFailure("Routables must be either CommandGroups or Commands")
-                }
+                throw RouteError(partialPath: groupPath, notFound: name)
+            }
+            
+            optionRegistry.register(matching)
+            
+            if let group = matching as? CommandGroup {
+                return .routing(groupPath.appending(group))
+            } else if let cmd = matching as? Command {
+                let cmdPath = groupPath.appending(cmd)
+                return .routed(cmdPath, ParameterIterator(command: cmdPath))
+            } else {
+                preconditionFailure("Routables must be either CommandGroups or Commands")
             }
         }
         
-        if let command = groupPath.bottom as? Command & CommandGroup {
-            return (groupPath.droppingLast().appending(command), optionRegistry)
-        }
-        
-        throw RouteError(partialPath: groupPath, notFound: nil)
-    }
-    
-}
-
-public class SingleCommandRouter: Router {
-    
-    public let command: Command
-    
-    public init(command: Command) {
-        self.command = command
-    }
-    
-    public func parse(commandGroup: CommandGroup, arguments: ArgumentList) throws -> (CommandPath, OptionRegistry) {
-        let optionRegistry = OptionRegistry(routable: commandGroup) // Still include default -h flag
-        optionRegistry.register(command)
-        return (CommandPath(command: command), optionRegistry)
-    }
-    
-}
-
-// MARK: - ParseFinisher
-
-/// Implements a func which uses the remaining args to fill the given command's parameters and options
-public protocol ParameterFiller {
-    func parse(commandPath: CommandPath, optionRegistry: OptionRegistry, arguments: ArgumentList) throws
-}
-
-public class DefaultParameterFiller: ParameterFiller {
-    
-    public init() {}
-    
-    public func parse(commandPath: CommandPath, optionRegistry: OptionRegistry, arguments: ArgumentList) throws {
-        let params = ParameterIterator(command: commandPath)
-        
-        while arguments.hasNext() {
-            if params.nextIsCollection() || !arguments.nextIsOption() {
-                if let param = params.next() {
-                    param.update(value: arguments.pop())
-                } else {
-                    throw ParameterError(command: commandPath, paramIterator: params)
-                }
-            } else {
-                try optionRegistry.parseOneOption(args: arguments, command: commandPath)
-            }
-        }
-        
-        if let param = params.next(), !param.satisfied {
-            throw ParameterError(command: commandPath, paramIterator: params)
-        }
     }
     
 }

@@ -6,8 +6,8 @@
 //  Copyright (c) 2016 jakeheis. All rights reserved.
 //
 
-
 import SwiftCLI
+import XCTest
 
 extension CLI {
     static func createTester(commands: [Routable], description: String? = nil) -> CLI {
@@ -271,6 +271,10 @@ class VariadicKeyCmd: OptionCmd {
     let files = VariadicKey<String>("-f", "--file", description: "a file")
 }
 
+class CounterFlagCmd: OptionCmd {
+    let verbosity = CounterFlag("-v", "--verbose", description: "Increase the verbosity")
+}
+
 class ValidatedKeyCmd: OptionCmd {
     
     static func isCapitalized(_ value: String) -> Bool {
@@ -306,4 +310,105 @@ class CompletionOptionCmd: OptionCmd {
     let def = Key<String>("-d", "--default")
     
     let flag = Flag("-f", "--flag")
+}
+
+class EnumCmd: Command {
+    
+    enum Speed: String, ConvertibleFromString {
+        case slow
+        case fast
+    }
+    
+    enum Single: String, ConvertibleFromString {
+        case value
+        
+        static let explanationForConversionFailure = "only can be 'value'"
+    }
+    
+    let name = "cmd"
+    let shortDescription = "Limits param values to enum"
+    
+    let speed = Param.Required<Speed>()
+    let single = Param.Optional<Single>()
+    let int = Param.Optional<Int>()
+    
+    func execute() throws {}
+    
+}
+
+#if swift(>=4.1.50)
+extension EnumCmd.Speed: CaseIterable {}
+#endif
+
+class ValidatedParamCmd: Command {
+    
+    let name = "cmd"
+    let shortDescription = "Validates param values"
+    
+    let age = Param.Optional<Int>(validation: [.greaterThan(18)])
+    
+    func execute() throws {}
+    
+}
+
+class RememberExecutionCmd: Command {
+    
+    let name = "cmd"
+    let shortDescription = "Remembers execution"
+    
+    let param = OptionalParameter()
+    
+    var executed = false
+    
+    func execute() throws {
+        executed = true
+    }
+    
+}
+
+// MARK: -
+
+func XCTAssertThrowsSpecificError<T, E: Error>(
+    expression: @autoclosure () throws -> T,
+    file: StaticString = #file,
+    line: UInt = #line,
+    error errorHandler: (E) -> Void) {
+    XCTAssertThrowsError(expression, file: file, line: line) { (error) in
+        guard let specificError = error as? E else {
+            XCTFail("Error must be type \(String(describing: E.self)), is \(String(describing: type(of: error)))", file: file, line: line)
+            return
+        }
+        errorHandler(specificError)
+    }
+}
+
+func XCTAssertEqualLineByLine(_ s1: String, _ s2: String, file: StaticString = #file, line: UInt = #line) {
+    let lines1 = s1.components(separatedBy: "\n")
+    let lines2 = s2.components(separatedBy: "\n")
+    
+    XCTAssertEqual(lines1.count, lines2.count, "line count should be equal", file: file, line: line)
+    
+    for (l1, l2) in zip(lines1, lines2) {
+        XCTAssertEqual(l1, l2, file: file, line: line)
+    }
+}
+
+extension CLI {
+    
+    static func capture(_ block: () -> ()) -> (String, String) {
+        let out = CaptureStream()
+        let err = CaptureStream()
+        
+        Term.stdout = out
+        Term.stderr = err
+        block()
+        Term.stdout = WriteStream.stdout
+        Term.stderr = WriteStream.stderr
+        
+        out.closeWrite()
+        err.closeWrite()
+        
+        return (out.readAll(), err.readAll())
+    }
+    
 }

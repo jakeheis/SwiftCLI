@@ -7,14 +7,14 @@
 
 import Foundation
 
-public enum Shell {
-    case bash
-    case zsh
+public enum ShellCompletion {
+    case none
+    case filename
+    case values([(name: String, description: String)])
+    case function(String)
 }
 
 public protocol CompletionGenerator {
-    var shell: Shell { get }
-    
     init(cli: CLI)
     init(cli: CLI, functions: [String: String])
     func writeCompletions()
@@ -24,7 +24,6 @@ public protocol CompletionGenerator {
 public final class ZshCompletionGenerator: CompletionGenerator {
     
     public let cli: CLI
-    public let shell = Shell.zsh
     public let functions: [String: String]
     
     public convenience init(cli: CLI) {
@@ -37,7 +36,7 @@ public final class ZshCompletionGenerator: CompletionGenerator {
     }
     
     public func writeCompletions() {
-        writeCompletions(into: WriteStream.stdout)
+        writeCompletions(into: Term.stdout)
     }
     
     public func writeCompletions(into stream: WritableStream) {
@@ -109,7 +108,7 @@ public final class ZshCompletionGenerator: CompletionGenerator {
         }
     }
     
-    func writeCompletion(_ completion: Completion) -> String {
+    func writeCompletion(_ completion: ShellCompletion) -> String {
         switch completion {
         case .filename:
             return "_files"
@@ -132,16 +131,16 @@ public final class ZshCompletionGenerator: CompletionGenerator {
     
     func writeCommand(for command: CommandPath, into stream: WritableStream) {
         let optionArgs = genOptionArgs(for: command.command).joined(separator: " \\\n")
-        let paramArgs = command.command.parameters.map { (paramName, param) -> String in
+        let paramArgs = command.command.parameters.map { (namedParam) -> String in
             var line = "      \""
-            if param is AnyCollectedParameter {
+            if namedParam.param is AnyCollectedParameter {
                 line += "*"
             }
             line += ":"
-            if !param.required {
+            if !namedParam.param.required {
                 line += ":"
             }
-            line += "\(paramName):\(writeCompletion(param.completion))"
+            line += "\(namedParam.name):\(writeCompletion(namedParam.param.completion))"
             line += "\""
             return line
         }.joined(separator: " \\\n")
@@ -177,7 +176,7 @@ public final class ZshCompletionGenerator: CompletionGenerator {
         case variadic
     }
     
-    private func genOptionLine(names: [String], mode: OptionWritingMode, description: String, completion: Completion?) -> String {
+    private func genOptionLine(names: [String], mode: OptionWritingMode, description: String, completion: ShellCompletion?) -> String {
         precondition(names.count > 0)
         
         var line = "      "
@@ -218,18 +217,25 @@ public final class ZshCompletionGenerator: CompletionGenerator {
     
     private func genOptionArgs(for routable: Routable) -> [String] {
         let lines = routable.options.map { (option) -> [String] in
-            if option.isVariadic {
+            let completion: ShellCompletion?
+            if let key = option as? AnyKey {
+                completion = key.completion
+            } else {
+                completion = nil
+            }
+            
+            if option is AnyVariadicOption {
                 return option.names.map { (name) in
-                    return genOptionLine(names: [name], mode: .variadic, description: option.shortDescription, completion: option.completion)
+                    return genOptionLine(names: [name], mode: .variadic, description: option.shortDescription, completion: completion)
                 }
             }
             for group in routable.optionGroups where group.restriction != .atLeastOne {
                 if group.options.contains(where: { $0 === option }) {
                     let exclusive = Array(group.options.map({ $0.names }).joined())
-                    return [genOptionLine(names: option.names, mode: .additionalExclusive(exclusive), description: option.shortDescription, completion: option.completion)]
+                    return [genOptionLine(names: option.names, mode: .additionalExclusive(exclusive), description: option.shortDescription, completion: completion)]
                 }
             }
-            return [genOptionLine(names: option.names, mode: .normal, description: option.shortDescription, completion: option.completion)]
+            return [genOptionLine(names: option.names, mode: .normal, description: option.shortDescription, completion: completion)]
         }
         return Array(lines.joined())
     }
@@ -243,3 +249,9 @@ public final class ZshCompletionGenerator: CompletionGenerator {
     }
     
 }
+
+// MARK: -
+
+fileprivate protocol AnyVariadicOption: Option {}
+extension VariadicKey: AnyVariadicOption {}
+extension CounterFlag: AnyVariadicOption {}

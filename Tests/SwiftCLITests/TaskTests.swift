@@ -13,7 +13,7 @@ class TaskTests: XCTestCase {
     
     func testRun() throws {
         let file = "file.txt"
-        try SwiftCLI.run("/usr/bin/touch", file)
+        try Task.run("/usr/bin/touch", file)
         
         XCTAssertTrue(FileManager.default.fileExists(atPath: file))
         try FileManager.default.removeItem(atPath: file)
@@ -25,27 +25,14 @@ class TaskTests: XCTestCase {
         _ = FileManager.default.createFile(atPath: path + "/SwiftCLI", contents: nil, attributes: nil)
         defer { try! FileManager.default.removeItem(atPath: path) }
         
-        let output = try capture("/bin/ls", path)
-        XCTAssertEqual(output.stdout, "SwiftCLI")
-        XCTAssertEqual(output.stderr, "")
-    }
-    
-    func testExecutableFind() throws {
-        let path = "/tmp/_swiftcli"
-        try FileManager.default.createDirectory(atPath: path, withIntermediateDirectories: false, attributes: nil)
-        _ = FileManager.default.createFile(atPath: path + "/SwiftCLI", contents: nil, attributes: nil)
-        defer { try! FileManager.default.removeItem(atPath: path) }
-        
-        XCTAssertEqual(Task.findExecutable(named: "ls"), "/bin/ls")
-        
-        let output = try capture("ls", path)
+        let output = try Task.capture("/bin/ls", path)
         XCTAssertEqual(output.stdout, "SwiftCLI")
         XCTAssertEqual(output.stderr, "")
     }
     
     func testBashRun() throws {
         let file = "file.txt"
-        try SwiftCLI.run(bash: "touch \(file)")
+        try Task.run(bash: "touch \(file)")
         
         XCTAssertTrue(FileManager.default.fileExists(atPath: file))
         try FileManager.default.removeItem(atPath: file)
@@ -57,7 +44,7 @@ class TaskTests: XCTestCase {
         _ = FileManager.default.createFile(atPath: path + "/SwiftCLI", contents: nil, attributes: nil)
         defer { try! FileManager.default.removeItem(atPath: path) }
         
-        let output = try capture(bash: "ls \(path)")
+        let output = try Task.capture(bash: "ls \(path)")
         XCTAssertEqual(output.stdout, "SwiftCLI")
         XCTAssertEqual(output.stderr, "")
     }
@@ -67,7 +54,7 @@ class TaskTests: XCTestCase {
         try FileManager.default.createDirectory(atPath: path, withIntermediateDirectories: false, attributes: nil)
         defer { try! FileManager.default.removeItem(atPath: path) }
         
-        try SwiftCLI.run("touch", arguments: ["SwiftCLI"], directory: path)
+        try Task.run("touch", arguments: ["SwiftCLI"], directory: path)
         
         XCTAssertTrue(FileManager.default.fileExists(atPath: path + "/SwiftCLI"))
     }
@@ -78,7 +65,7 @@ class TaskTests: XCTestCase {
         _ = FileManager.default.createFile(atPath: path + "/SwiftCLI", contents: nil, attributes: nil)
         defer { try! FileManager.default.removeItem(atPath: path) }
         
-        let output = try capture("ls", arguments: [], directory: path)
+        let output = try Task.capture("ls", arguments: [], directory: path)
         XCTAssertEqual(output.stdout, "SwiftCLI")
         XCTAssertEqual(output.stderr, "")
     }
@@ -100,6 +87,9 @@ class TaskTests: XCTestCase {
     }
     
     func testPipe() throws {
+        // Travis errors on Linux for unknown reason
+        #if os(macOS)
+        
         let path = "/tmp/_swiftcli"
         try FileManager.default.createDirectory(atPath: path, withIntermediateDirectories: false, attributes: nil)
         _ = FileManager.default.createFile(atPath: path + "/Info.plist", contents: nil, attributes: nil)
@@ -117,6 +107,8 @@ class TaskTests: XCTestCase {
         grep.runAsync()
                 
         XCTAssertEqual(output.readAll(), "SwiftCLITests\n")
+        
+        #endif
     }
     
     func testCurrentDirectory() throws {

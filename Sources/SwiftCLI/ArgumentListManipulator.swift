@@ -24,7 +24,7 @@ public class OptionSplitter: ArgumentListManipulator {
             while let first = unsplit.first {
                 unsplit.removeFirst()
                 
-                if first.hasPrefix("--"), let equalsIndex = first.index(of: "=") {
+                if first.hasPrefix("--"), let equalsIndex = first.firstIndex(of: "=") {
                     split.append(String(first[..<equalsIndex]))
                     split.append(String(first[first.index(after: equalsIndex)...]))
                 } else if first.hasPrefix("-") && !first.hasPrefix("--") {

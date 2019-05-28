@@ -53,18 +53,12 @@ class ValidationTests: XCTestCase {
     }
     
     private func assertSuccess<T>(of validation: Validation<T>, with input: T, file: StaticString = #file, line: UInt = #line) {
-        if case .failure(_) = validation.validate(input) {
-            XCTFail("Validation failed, should have succeeded", file: file, line: line)
-        }
+        XCTAssertTrue(validation.validate(input), file: file, line: line)
     }
     
     private func assertFailure<T>(of validation: Validation<T>, with input: T, message expectedMessage: String, file: StaticString = #file, line: UInt = #line) {
-        guard case .failure(let actualMessage) = validation.validate(input) else {
-            XCTFail("Validation succeeded, should have failed", file: file, line: line)
-            return
-        }
-        
-        XCTAssertEqual(actualMessage, expectedMessage, file: file, line: line)
+        XCTAssertFalse(validation.validate(input), file: file, line: line)
+        XCTAssertEqual(validation.message, expectedMessage, file: file, line: line)
     }
     
 }

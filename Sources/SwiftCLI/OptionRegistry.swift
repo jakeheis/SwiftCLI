@@ -8,7 +8,7 @@
 
 public class OptionRegistry {
     
-    private var flags: [String: Flag]
+    private var flags: [String: AnyFlag]
     private var keys: [String: AnyKey]
     private var groups: [OptionGroup]
     
@@ -22,7 +22,7 @@ public class OptionRegistry {
     
     public func register(_ routable: Routable) {
         for option in routable.options {
-            if let flag = option as? Flag {
+            if let flag = option as? AnyFlag {
                 for name in flag.names {
                     flags[name] = flag
                 }
@@ -36,37 +36,39 @@ public class OptionRegistry {
         groups += routable.optionGroups
     }
     
+    public func recognizesOption(_ opt: String) -> Bool {
+        return flags[opt] != nil || keys[opt] != nil
+    }
+    
     public func parseOneOption(args: ArgumentList, command: CommandPath?) throws {
         let opt = args.pop()
         
         if let flag = flag(for: opt) {
-            flag.toggle()
+            flag.update()
         } else if let key = key(for: opt) {
              guard args.hasNext(), !args.nextIsOption() else {
                 throw OptionError(command: command, kind: .expectedValueAfterKey(opt))
             }
-            let value = args.pop()
-            switch key.updateValue(value) {
-            case .conversionError:
-                throw OptionError(command: command, kind: .illegalTypeForKey(opt, key.valueType))
-            case .validationError(let message):
-                throw OptionError(command: command, kind: .validationError(opt, message))
-            case .success: break
+            let updateResult = key.update(to: args.pop())
+            if case let .failure(error) = updateResult {
+               throw OptionError(command: command, kind: .invalidKeyValue(key, opt, error))
             }
         } else {
             throw OptionError(command: command, kind: .unrecognizedOption(opt))
         }
     }
     
-    public func finish(command: CommandPath) throws {
-        if let failingGroup = failingGroup() {
-            throw OptionError(command: command, kind: .optionGroupMisuse(failingGroup))
+    public func checkGroups(command: CommandPath) throws {
+        for group in groups {
+            if !group.check() {
+                throw OptionError(command: command, kind: .optionGroupMisuse(group))
+            }
         }
     }
     
     // MARK: - Helpers
     
-    public func flag(for key: String) -> Flag? {
+    public func flag(for key: String) -> AnyFlag? {
         if let flag = flags[key] {
             incrementCount(for: flag)
             return flag
@@ -88,15 +90,6 @@ public class OptionRegistry {
                 group.count += 1
             }
         }
-    }
-    
-    private func failingGroup() -> OptionGroup? {
-        for group in groups {
-            if !group.check() {
-                return group
-            }
-        }
-        return nil
     }
     
 }

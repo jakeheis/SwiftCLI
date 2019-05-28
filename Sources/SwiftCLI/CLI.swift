@@ -37,17 +37,17 @@ public class CLI {
         return nil
     }()
     
-    /// Options which every command should inherit
+    /// Options which every command inherits
     public var globalOptions: [Option] = []
+    
+    /// Option groups which every command inherits
+    public var globalOptionGroups: [OptionGroup] = []
     
     /// A built-in help flag which each command automatically inherits; set to nil if this functionality is not wanted
     public var helpFlag: Flag? = Flag("-h", "--help", description: "Show help information")
     
-    /// A map of command name aliases; by default, maps "-h" to help and "-v" to version
+    /// A map of command name aliases; by default, default maps "--version" to 'version'
     public var aliases: [String : String] = [
-        "-h": "help",
-        "--help": "help",
-        "-v": "version",
         "--version": "version"
     ]
     
@@ -72,7 +72,7 @@ public class CLI {
     /// - Parameter singleCommand: the single command
     public convenience init(singleCommand: Command) {
         self.init(name: singleCommand.name, commands: [singleCommand])
-        parser = Parser(router: SingleCommandRouter(command: singleCommand))
+        parser.routeBehavior = .automatically(singleCommand)
     }
     
     /// Kicks off the entire CLI process, routing to and executing the command specified by the passed arguments.
@@ -90,7 +90,7 @@ public class CLI {
     /// - Returns: an Int32 representing the success of the CLI in routing to and executing the correct
     /// command. Usually should be passed to `exit(result)`
     public func go() -> Int32 {
-        return go(with: ArgumentList())
+        return go(with: ArgumentList(arguments: Array(CommandLine.arguments.dropFirst())))
     }
     
     /// Kicks off the entire CLI process, routing to and executing the command specified by the passed arguments.
@@ -98,24 +98,12 @@ public class CLI {
     /// - Parameter arguments: the arguments to execute with; should not include CLI name (i.e. if you wanted to execute "greeter greet world", 'arguments' should be ["greet", "world"])
     /// - Returns: an Int32 representing the success of the CLI in routing to and executing the correct command. Usually should be passed to `exit(result)`
     public func go(with arguments: [String]) -> Int32 {
-        return go(with: ArgumentList(arguments: [name] + arguments))
+        return go(with: ArgumentList(arguments: arguments))
     }
     
-    /// Kicks off the entire CLI process, routing to and executing the command specified by the passed arguments.
-    /// Uses the argument string passed to this function. Use go() or go(with:) instead of this function in a production app
-    ///
-    /// - Parameter argumentString: the arguments to use when running the CLI
-    /// - Returns: an Int32 representing the success of the CLI in routing to and executing the correct command. Usually should be passed to `exit(result)`
-    public func debugGo(with argumentString: String) -> Int32 {
-        stdout <<< "[Debug Mode]"
-        return go(with: ArgumentList(argumentString: argumentString))
-    }
+    // MARK: - Internal/private
     
-    // MARK: - Private
-    
-    private func go(with arguments: ArgumentList) -> Int32 {
-        arguments.pop() // Pop off cli name (always first arg)
-        
+    func go(with arguments: ArgumentList) -> Int32 {
         argumentListManipulators.forEach { $0.manipulate(arguments: arguments) }
         
         var exitStatus: Int32 = 0
@@ -142,7 +130,7 @@ public class CLI {
     
     private func parse(arguments: ArgumentList) throws -> CommandPath {
         do {
-            return try parser.parse(commandGroup: self, arguments: arguments)
+            return try parser.parse(cli: self, arguments: arguments)
         } catch let error as RouteError {
             helpMessageGenerator.writeRouteErrorMessage(for: error, to: stderr)
             throw CLI.Error()
@@ -191,6 +179,10 @@ extension CLI: CommandGroup {
             return globalOptions + [helpFlag]
         }
         return globalOptions
+    }
+    
+    public var optionGroups: [OptionGroup] {
+        return globalOptionGroups
     }
     
 }

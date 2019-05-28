@@ -21,18 +21,9 @@ extension CLI {
             self.init(exitStatus: 1)
         }
         
-        #if swift(>=4.0)
         public init<T: BinaryInteger>(exitStatus: T) {
             self.init(message: nil, exitStatus: Int32(exitStatus))
         }
-        #else
-        public init(exitStatus: Int) {
-            self.init(message: nil, exitStatus: Int32(exitStatus))
-        }
-        public init(exitStatus: Int32) {
-            self.init(message: nil, exitStatus: exitStatus)
-        }
-        #endif
 
         public init(message: String) {
             self.init(message: message, exitStatus: 1)
@@ -63,17 +54,14 @@ public struct OptionError: Swift.Error {
     
     public enum Kind {
         case expectedValueAfterKey(String)
-        case illegalTypeForKey(String, Any.Type)
         case unrecognizedOption(String)
         case optionGroupMisuse(OptionGroup)
-        case validationError(String, String)
+        case invalidKeyValue(AnyKey, String, InvalidValueReason)
         
         public var message: String {
             switch self {
             case let .expectedValueAfterKey(key):
                 return "expected a value to follow '\(key)'"
-            case let .illegalTypeForKey(key, type):
-                return "illegal value passed to '\(key)' (expected \(type))"
             case let .unrecognizedOption(opt):
                 return "unrecognized option '\(opt)'"
             case let .optionGroupMisuse(group):
@@ -91,8 +79,8 @@ public struct OptionError: Swift.Error {
                     }
                 }
                 return condition + ": \(group.options.compactMap({ $0.names.last }).joined(separator: " "))"
-            case let .validationError(key, message):
-                return "illegal value passed to '\(key)': \(message)"
+            case let .invalidKeyValue(key, id, reason):
+                return key.valueType.messageForInvalidValue(reason: reason, for: id)
             }
         }
     }
@@ -108,26 +96,33 @@ public struct OptionError: Swift.Error {
 
 public struct ParameterError: Swift.Error {
     
-    public let command: CommandPath
-    public let minCount: Int
-    public let maxCount: Int?
-    
-    public var message: String {
-        let plural = minCount == 1 ? "argument" : "arguments"
+    public enum Kind {
+        case wrongNumber(Int, Int?)
+        case invalidValue(NamedParameter, InvalidValueReason)
         
-        switch maxCount {
-        case .none:
-            return "command requires at least \(minCount) \(plural)"
-        case let .some(max) where max == minCount:
-            return "command requires exactly \(max) \(plural)"
-        case let .some(max):
-            return "command requires between \(minCount) and \(max) arguments"
+        public var message: String {
+            switch self {
+            case let .wrongNumber(min, max):
+                let plural = min == 1 ? "argument" : "arguments"
+                switch max {
+                case .none:
+                    return "command requires at least \(min) \(plural)"
+                case let .some(max) where max == min:
+                    return "command requires exactly \(max) \(plural)"
+                case let .some(max):
+                    return "command requires between \(min) and \(max) arguments"
+                }
+            case let .invalidValue(param, reason):
+                return param.param.valueType.messageForInvalidValue(reason: reason, for: param.name)
+            }
         }
     }
     
-    public init(command: CommandPath, paramIterator: ParameterIterator) {
+    public let command: CommandPath
+    public let kind: Kind
+    
+    public init(command: CommandPath, kind: Kind) {
         self.command = command
-        self.minCount = paramIterator.minCount
-        self.maxCount = paramIterator.maxCount
+        self.kind = kind
     }
 }
