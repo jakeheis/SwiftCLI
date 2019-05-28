@@ -1,4 +1,4 @@
-#if !canImport(ObjectiveC)
+#if !os(macOS)
 import XCTest
 
 extension ArgumentListManipulatorTests {

@@ -138,8 +138,8 @@ public class ParameterIterator {
         
         self.params = all
         
-        assert(all.index(where: { $0.param is AnyCollectedParameter }) == nil, "can only have one collected parameter, and it must be the last parameter")
-        assert(all.index(where: { $0.param is OptionalParameter }).flatMap({ $0 >= minCount }) ?? true, "optional parameters must come after all required parameters")
+        assert(all.firstIndex(where: { $0.param is AnyCollectedParameter }) == nil, "can only have one collected parameter, and it must be the last parameter")
+        assert(all.firstIndex(where: { $0.param is OptionalParameter }).flatMap({ $0 >= minCount }) ?? true, "optional parameters must come after all required parameters")
     }
     
     public func nextIsCollection() -> Bool {

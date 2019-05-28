@@ -116,6 +116,22 @@ extension Sequence {
 
 #endif
 
+#if !swift(>=5.0)
+
+extension Collection {
+    func firstIndex(where test: (Element) -> Bool) -> Index? {
+        return index(where: test)
+    }
+}
+
+extension Collection where Element: Equatable {
+    func firstIndex(of element: Element) -> Index? {
+        return index(of: element)
+    }
+}
+
+#endif
+
 // MARK: Unavailable
 
 extension CLI {
