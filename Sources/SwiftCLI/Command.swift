@@ -121,7 +121,7 @@ public extension CommandGroup {
         return [:]
     }
     
-    public var longDescription: String {
+    var longDescription: String {
         return ""
     }
 }
