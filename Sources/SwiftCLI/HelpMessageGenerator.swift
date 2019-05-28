@@ -122,7 +122,7 @@ extension HelpMessageGenerator {
     }
     
     public func writeUnrecognizedErrorMessage(for error: Error, to out: WritableStream) {
-        writeErrorLine(for: String(describing: error), to: out)
+        writeErrorLine(for: error.localizedDescription, to: out)
     }
     
     public func writeErrorLine(for errorMessage: String, to out: WritableStream) {
