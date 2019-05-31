@@ -231,7 +231,7 @@ extension Task {
         let task = Task(executable: executable, arguments: arguments, directory: directory, stdout: out, stderr: err)
         let exitCode = task.runSync()
         
-        let captured = CaptureResult(rawStdout: out.readAll(), rawStderr: err.readAll())
+        let captured = CaptureResult(stdoutData: out.readAllData(), stderrData: err.readAllData())
         guard exitCode == 0 else {
             throw CaptureError(exitStatus: exitCode, captured: captured)
         }
@@ -357,20 +357,21 @@ public struct CaptureError: ProcessError {
 }
 
 public struct CaptureResult {
-    /// The full stdout contents; use `stdout` for trimmed contents
-    public let rawStdout: String
     
-    /// The full stderr contents; use `stderr` for trimmed contents
-    public let rawStderr: String
+    /// The full stdout data
+    public let stdoutData: Data
+    
+    /// The full stderr data
+    public let stderrData: Data
     
     /// The stdout contents, trimmed of whitespace
     public var stdout: String {
-        return rawStdout.trimmingCharacters(in: .whitespacesAndNewlines)
+        return String(data: stdoutData, encoding: .utf8)?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
     }
     
     /// The stderr contents, trimmed of whitespace
     public var stderr: String {
-        return rawStderr.trimmingCharacters(in: .whitespacesAndNewlines)
+        return String(data: stderrData, encoding: .utf8)?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
     }
 }
 

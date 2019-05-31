@@ -94,7 +94,7 @@ extension InputReader {
 
 extension CLI {
     
-    @available(*, unavailable)
+    @available(*, unavailable, message: "Use go(with:)")
     public func debugGo(with argumentString: String) -> Int32 {
         return 1
     }
@@ -103,6 +103,22 @@ extension CLI {
 
 @available(*, deprecated, renamed: "ShellCompletion")
 public typealias Completion = ShellCompletion
+
+extension CaptureResult {
+    
+    /// The full stdout contents; use `stdout` for trimmed contents
+    @available(*, deprecated, message: "Use stdout or stdoutData")
+    public var rawStdout: String {
+        return String(data: stdoutData, encoding: .utf8) ?? ""
+    }
+    
+    /// The full stderr contents; use `stderr` for trimmed contents
+    @available(*, deprecated, message: "Use stderr or stderrData")
+    public var rawStderr: String {
+        return String(data: stderrData, encoding: .utf8) ?? ""
+    }
+    
+}
 
 // MARK: - Swift versions
 
