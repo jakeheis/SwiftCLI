@@ -67,7 +67,7 @@ public class Parser {
             }
         }
         
-        if case let .routing(group) = state, let fallback = routeBehavior.fallback, cli.helpFlag?.value != true {
+        if case let .routing(group) = state, let fallback = routeBehavior.fallback {
             var command = group.appending(fallback)
             command.ignoreName = true
             state = .routed(command, ParameterIterator(command: command))
