@@ -41,7 +41,7 @@ public class Parser {
     
     public init() {}
     
-    public func parse(cli: CommandGroup, arguments: ArgumentList) throws -> CommandPath {
+    public func parse(cli: CLI, arguments: ArgumentList) throws -> CommandPath {
         let optionRegistry = OptionRegistry(routable: cli)
         
         var state: State = .routing(CommandGroupPath(top: cli))
@@ -67,7 +67,7 @@ public class Parser {
             }
         }
         
-        if case let .routing(group) = state, let fallback = routeBehavior.fallback {
+        if case let .routing(group) = state, let fallback = routeBehavior.fallback, cli.helpFlag?.value != true {
             var command = group.appending(fallback)
             command.ignoreName = true
             state = .routed(command, ParameterIterator(command: command))
