@@ -96,7 +96,7 @@ extension Command {
             parameters = parametersFromMirror(superMirror)
         }
         parameters.append(contentsOf: mirror.children.compactMap { (child) in
-            guard let label = child.label else {
+            guard var label = child.label else {
                 return nil
             }
             
@@ -111,6 +111,9 @@ extension Command {
             #endif
             
             if let param = child.value as? AnyParameter {
+                if label.hasPrefix("$") {
+                    label = String(label[label.index(after: label.startIndex)...])
+                }
                 return NamedParameter(name: label, param: param)
             }
             return nil

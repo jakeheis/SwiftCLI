@@ -6,6 +6,41 @@
 //  Copyright (c) 2015 jakeheis. All rights reserved.
 //
 
+@propertyDelegate
+public class Pram<Value: ConvertibleFromString>:  _Param<Value>, AnyParameter, ValueBox {
+    
+    private var privValue: Value?
+    public var value: Value {
+        return privValue!
+    }
+    
+    public let required = true
+    public var satisfied = false
+    
+    public init() {
+        super.init()
+    }
+    
+    public override init(completion: ShellCompletion = .filename, validation: [Validation<Value>] = []) {
+        super.init(completion: completion, validation: validation)
+    }
+    
+    public func update(to value: Value) {
+        self.privValue = value
+    }
+    
+}
+
+public class Cmd: Command {
+    public let name = "cmd"
+    
+    @Pram var person: String
+    
+    public func execute() throws {
+        print("Hello \(person)!")
+    }
+}
+
 public protocol AnyParameter: AnyValueBox {
     var required: Bool { get }
     var satisfied: Bool { get }

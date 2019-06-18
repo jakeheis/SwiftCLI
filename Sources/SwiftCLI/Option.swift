@@ -124,7 +124,7 @@ public class Key<Value: ConvertibleFromString>: _Key<Value>, AnyKey, ValueBox {
     
     public var value: Value?
     
-    public override init(_ names: String ..., description: String = "", completion: ShellCompletion = .filename, validation: [Validation<Value>] = []) {
+    public init(_ names: String ..., description: String = "", completion: ShellCompletion = .filename, validation: [Validation<Value>] = []) {
         super.init(names, description: description, completion: completion, validation: validation)
     }
     
@@ -138,7 +138,7 @@ public class VariadicKey<Value: ConvertibleFromString>: _Key<Value>, AnyKey, Val
     
     public var value: [Value] = []
     
-    public override init(_ names: String ..., description: String = "", completion: ShellCompletion = .filename, validation: [Validation<Value>] = []) {
+    public init(_ names: String ..., description: String = "", completion: ShellCompletion = .filename, validation: [Validation<Value>] = []) {
         super.init(names, description: description, completion: completion, validation: validation)
     }
     
