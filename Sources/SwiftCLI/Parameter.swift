@@ -6,41 +6,6 @@
 //  Copyright (c) 2015 jakeheis. All rights reserved.
 //
 
-@propertyDelegate
-public class Pram<Value: ConvertibleFromString>:  _Param<Value>, AnyParameter, ValueBox {
-    
-    private var privValue: Value?
-    public var value: Value {
-        return privValue!
-    }
-    
-    public let required = true
-    public var satisfied = false
-    
-    public init() {
-        super.init()
-    }
-    
-    public override init(completion: ShellCompletion = .filename, validation: [Validation<Value>] = []) {
-        super.init(completion: completion, validation: validation)
-    }
-    
-    public func update(to value: Value) {
-        self.privValue = value
-    }
-    
-}
-
-public class Cmd: Command {
-    public let name = "cmd"
-    
-    @Pram var person: String
-    
-    public func execute() throws {
-        print("Hello \(person)!")
-    }
-}
-
 public protocol AnyParameter: AnyValueBox {
     var required: Bool { get }
     var satisfied: Bool { get }
@@ -59,6 +24,95 @@ public class _Param<Value: ConvertibleFromString> {
         self.validation = validation
     }
     
+}
+
+@propertyDelegate
+public class Pram<Value: ConvertibleFromString> : _Param<Value>, AnyParameter, ValueBox {
+    
+    private var privValue: Value?
+    public var value: Value {
+        return privValue!
+    }
+    
+    public var required: Bool { return true }
+    public var satisfied = false
+    
+    public init() {
+        super.init()
+    }
+    
+    public override init(completion: ShellCompletion = .filename, validation: [Validation<Value>] = []) {
+        super.init(completion: completion, validation: validation)
+    }
+    
+    public func update(to value: Value) {
+        self.privValue = value
+    }
+    
+}
+
+public protocol OptionType {
+    static var empty: Self { get }
+}
+extension Optional: OptionType {
+    public static var empty: Self { return Optional.none }
+}
+
+@propertyDelegate
+public class OptPram<Value: OptionType & ConvertibleFromString> : Pram<Value> {
+    
+    public override var value: Value {
+        return super.value
+    }
+    
+    public override var required: Bool { return false }
+    
+    public override init() {
+        super.init()
+    }
+    
+    public init(initialValue: Value) {
+        <#code#>
+    }
+    
+}
+
+//
+//@propertyDelegate
+//public class OptPram<Value: OptionType> : _Param<Value>, AnyParameter, ValueBox {
+//
+//    public var value: Value
+//
+//    public let required = false
+//    public var satisfied = false
+//
+//    public init() {
+//        value = Value.empty
+//    }
+//
+//    public override init(completion: ShellCompletion = .filename, validation: [Validation<Value>] = []) {
+//        value = Value.empty
+//        super.init(completion: completion, validation: validation)
+//    }
+//
+//    public func update(to value: Value) {
+//        self.value = value
+//    }
+//
+//}
+
+public class Cmd: Command {
+    public let name = "cmd"
+    
+    @Pram var person: String
+    @OptPram var age: Int?
+    
+    public func execute() throws {
+        print("Hello \(person)!")
+        if let age = age {
+            print("You are \(age) years old.")
+        }
+    }
 }
 
 public enum Param {
