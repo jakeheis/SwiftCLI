@@ -30,7 +30,8 @@ extension WritableStream {
     /// - Parameter content: the content to write
     public func write(_ content: String) {
         guard let data = content.data(using: encoding) else {
-            fatalError("Couldn't write content: \(content)")
+            assertionFailure("Couldn't write content: \(content)")
+            return
         }
         writeData(data)
     }
@@ -210,7 +211,8 @@ extension ReadableStream {
             return unread.isEmpty ? nil : unread
         }
         guard let new = String(data: data, encoding: encoding) else {
-            fatalError("Couldn't parse data into string using \(encoding)")
+            assertionFailure("Couldn't parse data into string using \(encoding)")
+            return nil
         }
         return unread + new
     }
