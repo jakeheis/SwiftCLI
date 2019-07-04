@@ -111,7 +111,7 @@ public class _Key<Value: ConvertibleFromString> {
     /// - Parameters:
     ///   - names: the names for the key; convention is to include a short name (-m) and a long name (--message)
     ///   - description: A short description of what this key does for usage statements
-    public init(_ names: [String], description: String, completion: ShellCompletion, validation: [Validation<Value>] = []) {
+    public init(names: [String], description: String, completion: ShellCompletion, validation: [Validation<Value>] = []) {
         self.names = names
         self.shortDescription = description
         self.completion = completion
@@ -124,8 +124,8 @@ public class Key<Value: ConvertibleFromString>: _Key<Value>, AnyKey, ValueBox {
     
     public var value: Value?
     
-    public override init(_ names: String ..., description: String = "", completion: ShellCompletion = .filename, validation: [Validation<Value>] = []) {
-        super.init(names, description: description, completion: completion, validation: validation)
+    public init(_ names: String ..., description: String = "", completion: ShellCompletion = .filename, validation: [Validation<Value>] = []) {
+        super.init(names: names, description: description, completion: completion, validation: validation)
     }
     
     public func update(to value: Value) {
@@ -138,8 +138,8 @@ public class VariadicKey<Value: ConvertibleFromString>: _Key<Value>, AnyKey, Val
     
     public var value: [Value] = []
     
-    public override init(_ names: String ..., description: String = "", completion: ShellCompletion = .filename, validation: [Validation<Value>] = []) {
-        super.init(names, description: description, completion: completion, validation: validation)
+    public init(_ names: String ..., description: String = "", completion: ShellCompletion = .filename, validation: [Validation<Value>] = []) {
+        super.init(names: names, description: description, completion: completion, validation: validation)
     }
     
     public func update(to value: Value) {
