@@ -103,7 +103,7 @@ public class InputReader<T: ConvertibleFromString> {
                     possibleInput = String(cString: chars, encoding: .utf8)
                 }
             } else {
-                possibleInput = ReadInput.read()
+                possibleInput = Term.read()
             }
             
             guard let input = possibleInput else {
@@ -135,17 +135,4 @@ public class InputReader<T: ConvertibleFromString> {
         }
     }
     
-}
-
-// MARK: - ReadInput
-
-/// Internal struct which enables testing of Input
-struct ReadInput {
-    static var read: () -> String? = normalRead
-    
-    static func normalRead() -> String? {
-        return readLine()
-    }
-    
-    private init() {}
 }
