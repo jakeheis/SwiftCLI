@@ -22,10 +22,12 @@ class TestCommand: Command {
 
     var executionString = ""
 
-    let testName = Parameter()
+    @Pram var testName: String
     let testerName = OptionalParameter()
     
-    let silent = Flag("-s", "--silent", description: "Silence all test output")
+    @Flag("-s", "--silent", description: "Silence all test output")
+    var silent: Bool
+    
     let times = Key<Int>("-t", "--times", description: "Number of times to run the test")
 
     let completion: ((_ executionString: String) -> ())?
@@ -35,8 +37,8 @@ class TestCommand: Command {
     }
 
     func execute() throws {
-        executionString = "\(testerName.value ?? "defaultTester") will test \(testName.value), \(times.value ?? 1) times"
-        if silent.value {
+        executionString = "\(testerName.value ?? "defaultTester") will test \(testName), \(times.value ?? 1) times"
+        if silent {
             executionString += ", silently"
         }
 
@@ -198,11 +200,13 @@ class OptionCmd: Command {
 }
 
 class FlagCmd: OptionCmd {
-    let flag = Flag("-a", "--alpha")
+    @Flag("-a", "--alpha")
+    var flag: Bool
 }
 
 class ReverseFlagCmd: OptionCmd {
-    let flag = Flag("-r", "--reverse", defaultValue: true)
+    @Flag("-r", "--reverse")
+    var flag: Bool = true
 }
 
 class KeyCmd: OptionCmd {
@@ -210,8 +214,11 @@ class KeyCmd: OptionCmd {
 }
 
 class DoubleFlagCmd: OptionCmd {
-    let alpha = Flag("-a", "--alpha", description: "The alpha flag")
-    let beta = Flag("-b", "--beta", description: "The beta flag")
+    @Flag("-a", "--alpha", description: "The alpha flag")
+    var alpha: Bool
+    
+    @Flag("-b", "--beta", description: "The beta flag")
+    var beta: Bool
 }
 
 class DoubleKeyCmd: OptionCmd {
@@ -220,14 +227,19 @@ class DoubleKeyCmd: OptionCmd {
 }
 
 class FlagKeyCmd: OptionCmd {
-    let alpha = Flag("-a", "--alpha")
+    @Flag("-a", "--alpha")
+    var alpha: Bool
+    
     let beta = Key<String>("-b", "--beta")
 }
 
 class FlagKeyParamCmd: OptionCmd {
-    let alpha = Flag("-a", "--alpha")
+    @Flag("-a", "--alpha")
+    var alpha: Bool
+    
     let beta = Key<String>("-b", "--beta")
-    let param = Parameter()
+    
+    @Pram var param: String
 }
 
 class IntKeyCmd: OptionCmd {
@@ -240,25 +252,26 @@ class ExactlyOneCmd: Command {
     var helpFlag: Flag? = nil
     func execute() throws {}
     
-    let alpha = Flag("-a", "--alpha", description: "the alpha flag")
-    let beta = Flag("-b", "--beta", description: "the beta flag")
+    @Flag("-a", "--alpha", description: "the alpha flag")
+    var alpha: Bool
     
-    let optionGroups: [OptionGroup]
+    @Flag("-b", "--beta", description: "the beta flag")
+    var beta: Bool
     
-    init() {
-        optionGroups = [.exactlyOne(alpha, beta)]
-    }
-    
+    lazy var optionGroups: [OptionGroup] = [.exactlyOne($alpha, $beta)]
 }
 
 class MultipleRestrictionsCmd: Command {
     let name = "cmd"
     
-    let alpha = Flag("-a", "--alpha", description: "the alpha flag")
-    let beta = Flag("-b", "--beta", description: "the beta flag")
+    @Flag("-a", "--alpha", description: "the alpha flag")
+    var alpha: Bool
     
-    lazy var atMostOne: OptionGroup = .atMostOne(alpha, beta)
-    lazy var atMostOneAgain: OptionGroup = .atMostOne(alpha, beta)
+    @Flag("-b", "--beta", description: "the beta flag")
+    var beta: Bool
+    
+    lazy var atMostOne: OptionGroup = .atMostOne($alpha, $beta)
+    lazy var atMostOneAgain: OptionGroup = .atMostOne($alpha, $beta)
     
     var optionGroups: [OptionGroup] {
         return [atMostOne, atMostOneAgain]

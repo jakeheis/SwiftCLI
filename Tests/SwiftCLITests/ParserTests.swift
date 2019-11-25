@@ -19,8 +19,8 @@ class ParserTests: XCTestCase {
         let cli = CLI.createTester(commands: [cmd])
         
         _ = try Parser().parse(cli: cli, arguments: arguments)
-        XCTAssertTrue(cmd.alpha.value)
-        XCTAssertTrue(cmd.beta.value)
+        XCTAssertTrue(cmd.alpha)
+        XCTAssertTrue(cmd.beta)
     }
     
     func testSimpleKeyParsing() throws {
@@ -51,7 +51,7 @@ class ParserTests: XCTestCase {
         
         _ = try Parser().parse(cli: cli, arguments: arguments)
         
-        XCTAssertTrue(cmd.alpha.value, "Options should execute the closures of passed flags")
+        XCTAssertTrue(cmd.alpha, "Options should execute the closures of passed flags")
         XCTAssertEqual(cmd.beta.value, "banana", "Options should execute the closures of passed keys")
     }
     
@@ -62,9 +62,9 @@ class ParserTests: XCTestCase {
         
         _ = try Parser().parse(cli: cli, arguments: arguments)
         
-        XCTAssert(cmd.alpha.value, "Options should execute the closures of passed flags")
+        XCTAssert(cmd.alpha, "Options should execute the closures of passed flags")
         XCTAssertEqual(cmd.beta.value, "banana", "Options should execute the closures of passed keys")
-        XCTAssertEqual(cmd.param.value, "argument")
+        XCTAssertEqual(cmd.param, "argument")
     }
     
     func testUnrecognizedOptions() throws {
@@ -124,8 +124,8 @@ class ParserTests: XCTestCase {
         
         _ = try Parser().parse(cli: cli, arguments: arguments)
         
-        XCTAssertTrue(cmd.alpha.value)
-        XCTAssertTrue(cmd.beta.value)
+        XCTAssertTrue(cmd.alpha)
+        XCTAssertTrue(cmd.beta)
     }
     
     func testGroupRestriction() throws {
@@ -147,14 +147,14 @@ class ParserTests: XCTestCase {
         let cmd2 = ExactlyOneCmd()
         let arguments2 = ArgumentList(arguments: ["cmd", "-a"])
         _ = try Parser().parse(cli: CLI.createTester(commands: [cmd2]), arguments: arguments2)
-        XCTAssertTrue(cmd2.alpha.value)
-        XCTAssertFalse(cmd2.beta.value)
+        XCTAssertTrue(cmd2.alpha)
+        XCTAssertFalse(cmd2.beta)
         
         let cmd3 = ExactlyOneCmd()
         let arguments3 = ArgumentList(arguments: ["cmd", "-b"])
         _ = try Parser().parse(cli: CLI.createTester(commands: [cmd3]), arguments: arguments3)
-        XCTAssertTrue(cmd3.beta.value)
-        XCTAssertFalse(cmd3.alpha.value)
+        XCTAssertTrue(cmd3.beta)
+        XCTAssertFalse(cmd3.alpha)
         
         let cmd4 = ExactlyOneCmd()
         let arguments4 = ArgumentList(arguments: ["cmd"])
@@ -188,7 +188,7 @@ class ParserTests: XCTestCase {
         let flagCmd = FlagCmd()
         let flagCli = CLI.createTester(commands: [flagCmd])
         _ = try Parser().parse(cli: flagCli, arguments: ArgumentList(arguments: ["cmd", "-a", "-a"]))
-        XCTAssertTrue(flagCmd.flag.value)
+        XCTAssertTrue(flagCmd.flag)
     }
     
     func testBeforeCommand() throws {
@@ -200,19 +200,19 @@ class ParserTests: XCTestCase {
         let arguments = ArgumentList(arguments: ["-y", "cmd"])
         
         _ = try Parser().parse(cli: cli, arguments: arguments)
-        XCTAssertTrue(yes.value)
+        XCTAssertTrue(yes.wrappedValue)
     }
     
     func testDefaultFlagValue() throws {
         let cmd = ReverseFlagCmd()
         
-        XCTAssertTrue(cmd.flag.value)
+        XCTAssertTrue(cmd.flag)
         
         let cli = CLI.createTester(commands: [cmd])
         let arguments = ArgumentList(arguments: ["cmd", "-r"])
         _ = try Parser().parse(cli: cli, arguments: arguments)
         
-        XCTAssertFalse(cmd.flag.value)
+        XCTAssertFalse(cmd.flag)
     }
     
     func testValidation() throws {
@@ -308,18 +308,18 @@ class ParserTests: XCTestCase {
         
         XCTAssertTrue(result.command === cmd)
         
-        XCTAssertEqual(cmd.testName.value, "favTest")
+        XCTAssertEqual(cmd.testName, "favTest")
         XCTAssertEqual(cmd.testerName.value, "SwiftCLI")
-        XCTAssertTrue(cmd.silent.value)
+        XCTAssertTrue(cmd.silent)
         XCTAssertEqual(cmd.times.value, 3)
     }
     
     func testCollectedOptions() throws {
         class RunCmd: Command {
             let name = "run"
-            let executable = Parameter()
+            @Pram var executable: String
             let args = OptionalCollectedParameter()
-            let verbose = Flag("-v")
+            @Flag("-v") var verbose: Bool
             func execute() throws {}
         }
         
@@ -330,9 +330,9 @@ class ParserTests: XCTestCase {
         let result = try Parser().parse(cli: cli, arguments: args)
         XCTAssertTrue(result.command === cmd)
         
-        XCTAssertEqual(cmd.executable.value, "cli")
+        XCTAssertEqual(cmd.executable, "cli")
         XCTAssertEqual(cmd.args.value, ["-v", "arg"])
-        XCTAssertFalse(cmd.verbose.value)
+        XCTAssertFalse(cmd.verbose)
         
         let cmd2 = RunCmd()
         let cli2 = CLI.createTester(commands: [cmd2])
@@ -341,9 +341,9 @@ class ParserTests: XCTestCase {
         let result2 = try Parser().parse(cli: cli2, arguments: args2)
         XCTAssertTrue(result2.command === cmd2)
         
-        XCTAssertEqual(cmd2.executable.value, "cli")
+        XCTAssertEqual(cmd2.executable, "cli")
         XCTAssertEqual(cmd2.args.value, ["arg"])
-        XCTAssertTrue(cmd2.verbose.value)
+        XCTAssertTrue(cmd2.verbose)
         
         let cmd3 = RunCmd()
         let cli3 = CLI.createTester(commands: [cmd3])
@@ -354,9 +354,9 @@ class ParserTests: XCTestCase {
         let result3 = try parser.parse(cli: cli3, arguments: args3)
         XCTAssertTrue(result3.command === cmd3)
         
-        XCTAssertEqual(cmd3.executable.value, "cli")
+        XCTAssertEqual(cmd3.executable, "cli")
         XCTAssertEqual(cmd3.args.value, ["arg"])
-        XCTAssertTrue(cmd3.verbose.value)
+        XCTAssertTrue(cmd3.verbose)
     }
     
 }

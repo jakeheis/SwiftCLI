@@ -62,7 +62,7 @@ class SwiftCLITests: XCTestCase {
         }
         XCTAssertEqual(result, 0, "Command should have succeeded")
         XCTAssertEqual(executionString, "defaultTester will test myTest, 1 times", "Command should have produced accurate output")
-        XCTAssertTrue(verboseFlag.value)
+        XCTAssertTrue(verboseFlag.wrappedValue)
         XCTAssertEqual(out, "")
         XCTAssertEqual(err, "")
     }

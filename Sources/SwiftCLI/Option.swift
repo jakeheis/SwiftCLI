@@ -33,12 +33,16 @@ public protocol AnyFlag: Option {
     func update()
 }
 
+@propertyWrapper
 public class Flag: AnyFlag {
     
     public let names: [String]
     public let shortDescription: String
-    public private(set) var value: Bool
     private let defaultValue: Bool
+    
+    public private(set) var wrappedValue: Bool
+    
+    public var projectedValue: Flag { self }
     
     public var identifier: String {
         return names.joined(separator: ", ")
@@ -50,16 +54,32 @@ public class Flag: AnyFlag {
     ///   - names: the names for the flag; convention is to include a short name (-a) and a long name (--all)
     ///   - description: A short description of what this flag does for usage statements
     ///   - defaultValue: the default value of this flag; default false
-    public init(_ names: String ..., description: String = "", defaultValue: Bool = false) {
+    public init(names: [String], description: String, defaultValue: Bool) {
         self.names = names
         self.shortDescription = description
-        self.value = defaultValue
         self.defaultValue = defaultValue
+        self.wrappedValue = defaultValue
+    }
+    
+    public convenience init(wrappedValue value: Bool = false, _ first: String, _ second: String) {
+        self.init(names: [first, second], description: "", defaultValue: value)
+      }
+    
+    public convenience init(wrappedValue value: Bool = false, _ single: String) {
+        self.init(names: [single], description: "", defaultValue: value)
+    }
+    
+    public convenience init(wrappedValue value: Bool = false, _ first: String, _ second: String, description: String) {
+        self.init(names: [first, second], description: description, defaultValue: value)
+      }
+    
+    public convenience init(wrappedValue value: Bool = false, _ single: String, description: String) {
+        self.init(names: [single], description: description, defaultValue: value)
     }
     
     /// Toggles the flag's value; don't call directly
     public func update() {
-        value = !defaultValue
+        wrappedValue = !defaultValue
     }
     
 }

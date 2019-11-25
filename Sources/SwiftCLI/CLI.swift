@@ -110,7 +110,7 @@ public class CLI {
         
         do {
             let path = try parse(arguments: arguments)
-            if helpFlag?.value == true {
+            if helpFlag?.wrappedValue == true {
                 helpMessageGenerator.writeUsageStatement(for: path, to: stdout)
             } else {
                 try path.command.execute()
@@ -142,7 +142,7 @@ public class CLI {
             helpMessageGenerator.writeMisusedOptionsStatement(for: error, to: stderr)
             throw CLI.Error()
         } catch let error as ParameterError {
-            if error.command.command is HelpCommand || helpFlag?.value == true {
+            if error.command.command is HelpCommand || helpFlag?.wrappedValue == true {
                 return error.command
             }
             

@@ -45,7 +45,7 @@ class RouterTests: XCTestCase {
         XCTAssert(path.groupPath.bottom === cli, "Router should generate correct group path")
         XCTAssertTrue(path.ignoreName)
         XCTAssert(path.command === cmd, "Router should route to the single command")
-        XCTAssertTrue(cmd.flag.value)
+        XCTAssertTrue(cmd.flag)
         
         let cmd2 = FlagCmd()
         let cli2 = CLI.createTester(commands: [cmd2])
@@ -55,7 +55,7 @@ class RouterTests: XCTestCase {
         XCTAssert(path2.groupPath.bottom === cli2, "Router should generate correct group path")
         XCTAssertTrue(path2.ignoreName)
         XCTAssert(path2.command === cmd2, "Router should route to the single command")
-        XCTAssertFalse(cmd2.flag.value)
+        XCTAssertFalse(cmd2.flag)
     }
     
     func testFailedRoute() throws {
