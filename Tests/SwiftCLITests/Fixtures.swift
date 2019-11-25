@@ -285,7 +285,8 @@ class VariadicKeyCmd: OptionCmd {
 }
 
 class CounterFlagCmd: OptionCmd {
-    let verbosity = CounterFlag("-v", "--verbose", description: "Increase the verbosity")
+    @CounterFlag("-v", "--verbose", description: "Increase the verbosity")
+    var verbosity: Int
 }
 
 class ValidatedKeyCmd: OptionCmd {

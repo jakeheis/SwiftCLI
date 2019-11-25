@@ -41,7 +41,6 @@ public class Flag: AnyFlag {
     private let defaultValue: Bool
     
     public private(set) var wrappedValue: Bool
-    
     public var projectedValue: Flag { self }
     
     public var identifier: String {
@@ -84,11 +83,14 @@ public class Flag: AnyFlag {
     
 }
 
+@propertyWrapper
 public class CounterFlag: AnyFlag {
     
     public let names: [String]
     public let shortDescription: String
-    public private(set) var value: Int = 0
+    
+    public private(set) var wrappedValue: Int = 0
+    public var projectedValue: CounterFlag { self }
     
     public var identifier: String {
         return names.joined(separator: ", ")
@@ -106,7 +108,7 @@ public class CounterFlag: AnyFlag {
     
     /// Increments the flag's value; don't call directly
     public func update() {
-        value += 1
+        wrappedValue += 1
     }
     
 }

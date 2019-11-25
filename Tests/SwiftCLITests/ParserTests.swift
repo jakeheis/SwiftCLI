@@ -183,7 +183,7 @@ class ParserTests: XCTestCase {
         let counterCmd = CounterFlagCmd()
         let counterCli = CLI.createTester(commands: [counterCmd])
         _ = try Parser().parse(cli: counterCli, arguments: ArgumentList(arguments: ["cmd", "-v", "-v"]))
-        XCTAssertEqual(counterCmd.verbosity.value, 2)
+        XCTAssertEqual(counterCmd.verbosity, 2)
         
         let flagCmd = FlagCmd()
         let flagCli = CLI.createTester(commands: [flagCmd])
