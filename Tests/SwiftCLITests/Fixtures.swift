@@ -328,7 +328,7 @@ class EnumCmd: Command {
     let name = "cmd"
     let shortDescription = "Limits param values to enum"
     
-    let speed = Param.Required<Speed>()
+    @Pram var speed: Speed
     let single = Param.Optional<Single>()
     let int = Param.Optional<Int>()
     

@@ -233,12 +233,6 @@ class SwiftCLITests: XCTestCase {
         XCTAssertEqual(out5, "")
     }
     
-    func testYou() {
-        let cmd = SwiftCLI.Cmd()
-        let cli = CLI.createTester(commands: [cmd])
-        cli.go(with: ["cmd"])
-    }
-    
     private func runCLI(_ run: (CLI) -> Int32) -> (Int32, String, String) {
         let cmd = TestCommand { (executionString) in
             self.executionString = executionString

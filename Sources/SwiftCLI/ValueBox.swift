@@ -52,6 +52,16 @@ extension ValueBox {
     
 }
 
+// MARK: -
+
+public protocol OptionType {
+    associatedtype Wrapped
+    static var empty: Self { get }
+}
+extension Optional: OptionType {
+    public static var empty: Self { return Optional.none }
+}
+
 // MARK: - ConvertibleFromString
 
 /// A type that can be created from a string
@@ -145,3 +155,10 @@ extension Bool: ConvertibleFromString {
     
 }
 
+//extension Optional: ConvertibleFromString where Wrapped: ConvertibleFromString {
+//
+//    public static func convert(from: String) -> Wrapped?? {
+//        return Wrapped.convert(from: from)
+//    }
+//
+//}

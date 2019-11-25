@@ -388,7 +388,7 @@ class HelpMessageGeneratorTests: XCTestCase {
         let path = CommandGroupPath(top: cli).appending(command)
         
         let capture1 = CaptureStream()
-        let error1 = ParameterError(command: path, kind: .invalidValue(.init(name: "speed", param: command.speed), .conversionError))
+        let error1 = ParameterError(command: path, kind: .invalidValue(.init(name: "speed", param: command.$speed), .conversionError))
         DefaultHelpMessageGenerator().writeParameterErrorMessage(for: error1, to: capture1)
         capture1.closeWrite()
         

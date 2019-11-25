@@ -114,6 +114,9 @@ extension Command {
                 if label.hasPrefix("$") {
                     label = String(label[label.index(after: label.startIndex)...])
                 }
+                if param is ParameterPropertyWrapper && label.hasPrefix("_") {
+                    label = String(label[label.index(after: label.startIndex)...])
+                }
                 return NamedParameter(name: label, param: param)
             }
             return nil

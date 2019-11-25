@@ -26,22 +26,41 @@ public class _Param<Value: ConvertibleFromString> {
     
 }
 
-@propertyDelegate
-public class Pram<Value: ConvertibleFromString> : _Param<Value>, AnyParameter, ValueBox {
+protocol ParameterPropertyWrapper {}
+
+@propertyWrapper
+public class Pram<Value: ConvertibleFromString> : _Param<Value>, AnyParameter, ValueBox, ParameterPropertyWrapper {
     
     private var privValue: Value?
-    public var value: Value {
-        return privValue!
+    public var wrappedValue: Value {
+        guard let val = privValue else {
+            fatalError("cannot access parameter value outside of 'execute' func")
+        }
+        return val
+    }
+    public var value: Value { wrappedValue }
+    
+    public var projectedValue: Pram {
+        return self
     }
     
-    public var required: Bool { return true }
+    public let required = true
     public var satisfied = false
     
     public init() {
         super.init()
     }
     
+    public init(default: Value) {
+        super.init()
+        privValue = value
+    }
+    
     public override init(completion: ShellCompletion = .filename, validation: [Validation<Value>] = []) {
+        super.init(completion: completion, validation: validation)
+    }
+    
+    public init(completion: ShellCompletion = .filename, validation: Validation<Value>...) {
         super.init(completion: completion, validation: validation)
     }
     
@@ -51,69 +70,32 @@ public class Pram<Value: ConvertibleFromString> : _Param<Value>, AnyParameter, V
     
 }
 
-public protocol OptionType {
-    static var empty: Self { get }
-}
-extension Optional: OptionType {
-    public static var empty: Self { return Optional.none }
-}
-
-@propertyDelegate
-public class OptPram<Value: OptionType & ConvertibleFromString> : Pram<Value> {
-    
-    public override var value: Value {
-        return super.value
-    }
-    
-    public override var required: Bool { return false }
-    
-    public override init() {
-        super.init()
-    }
-    
-    public init(initialValue: Value) {
-        <#code#>
-    }
-    
-}
-
+//@propertyWrapper
+//public class OptPram<OptionalValue> : _Param<OptionalValue.Wrapped>, AnyParameter, ValueBox, ParameterPropertyWrapper where OptionalValue.Wrapped: ConvertibleFromString {
 //
-//@propertyDelegate
-//public class OptPram<Value: OptionType> : _Param<Value>, AnyParameter, ValueBox {
-//
-//    public var value: Value
+//    public var wrappedValue: OptionalValue.Wrapped?
+//    public var value: OptionalValue.Wrapped? { wrappedValue }
 //
 //    public let required = false
-//    public var satisfied = false
+//    public var satisfied = true
 //
 //    public init() {
-//        value = Value.empty
+//        super.init()
 //    }
 //
-//    public override init(completion: ShellCompletion = .filename, validation: [Validation<Value>] = []) {
-//        value = Value.empty
+//    public override init(completion: ShellCompletion = .filename, validation: [Validation<OptionalValue.Wrapped>] = []) {
 //        super.init(completion: completion, validation: validation)
 //    }
 //
-//    public func update(to value: Value) {
-//        self.value = value
+//    public init(completion: ShellCompletion = .filename, validation: Validation<OptionalValue.Wrapped>...) {
+//        super.init(completion: completion, validation: validation)
+//    }
+//
+//    public func update(to value: OptionalValue.Wrapped) {
+//        self.wrappedValue = value
 //    }
 //
 //}
-
-public class Cmd: Command {
-    public let name = "cmd"
-    
-    @Pram var person: String
-    @OptPram var age: Int?
-    
-    public func execute() throws {
-        print("Hello \(person)!")
-        if let age = age {
-            print("You are \(age) years old.")
-        }
-    }
-}
 
 public enum Param {
     

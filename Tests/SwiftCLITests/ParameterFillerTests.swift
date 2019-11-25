@@ -140,14 +140,14 @@ class ParameterFillerTests: XCTestCase {
                 }
                 
                 XCTAssertEqual(namedParam.name, "speed")
-                XCTAssert(namedParam.param === cmd.speed)
+                XCTAssert(namedParam.param === cmd.$speed)
         })
         
         let fast = try parse(command: EnumCmd(), args: ["fast"])
-        XCTAssertEqual(fast.speed.value.rawValue, "fast")
+        XCTAssertEqual(fast.speed.rawValue, "fast")
         
         let slow = try parse(command: EnumCmd(), args: ["slow"])
-        XCTAssertEqual(slow.speed.value.rawValue, "slow")
+        XCTAssertEqual(slow.speed.rawValue, "slow")
         
         assertParseNumberError(command: EnumCmd(), args: ["slow", "value", "3", "fourth"], min: 1, max: 3)
     }
