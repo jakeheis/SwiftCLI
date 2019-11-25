@@ -287,7 +287,7 @@ class HelpMessageGeneratorTests: XCTestCase {
         let capture = CaptureStream()
         let command = TestCommand()
         let path = CommandGroupPath(top: CLI.createTester(commands: [command])).appending(command)
-        let error = OptionError(command: path, kind: .invalidKeyValue(command.times, "-t", .conversionError))
+        let error = OptionError(command: path, kind: .invalidKeyValue(command.$times, "-t", .conversionError))
         DefaultHelpMessageGenerator().writeMisusedOptionsStatement(for: error, to: capture)
         capture.closeWrite()
         
@@ -312,7 +312,7 @@ class HelpMessageGeneratorTests: XCTestCase {
         let capture = CaptureStream()
         let command = ValidatedKeyCmd()
         let path = CommandGroupPath(top: CLI.createTester(commands: [command])).appending(command)
-        let error = OptionError(command: path, kind: .invalidKeyValue(command.location, "-l", .validationError(command.location.validation[0])))
+        let error = OptionError(command: path, kind: .invalidKeyValue(command.$location, "-l", .validationError(command.$location.validation[0])))
         DefaultHelpMessageGenerator().writeMisusedOptionsStatement(for: error, to: capture)
         capture.closeWrite()
         

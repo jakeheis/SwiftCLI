@@ -28,7 +28,8 @@ class TestCommand: Command {
     @Flag("-s", "--silent", description: "Silence all test output")
     var silent: Bool
     
-    let times = Key<Int>("-t", "--times", description: "Number of times to run the test")
+    @Key("-t", "--times", description: "Number of times to run the test")
+    var times: Int?
 
     let completion: ((_ executionString: String) -> ())?
 
@@ -37,7 +38,7 @@ class TestCommand: Command {
     }
 
     func execute() throws {
-        executionString = "\(testerName.value ?? "defaultTester") will test \(testName), \(times.value ?? 1) times"
+        executionString = "\(testerName.value ?? "defaultTester") will test \(testName), \(times ?? 1) times"
         if silent {
             executionString += ", silently"
         }
@@ -210,7 +211,8 @@ class ReverseFlagCmd: OptionCmd {
 }
 
 class KeyCmd: OptionCmd {
-    let key = Key<String>("-a", "--alpha")
+    @Key("-a", "--alpha")
+    var key: String?
 }
 
 class DoubleFlagCmd: OptionCmd {
@@ -222,28 +224,34 @@ class DoubleFlagCmd: OptionCmd {
 }
 
 class DoubleKeyCmd: OptionCmd {
-    let alpha = Key<String>("-a", "--alpha")
-    let beta = Key<String>("-b", "--beta")
+    @Key("-a", "--alpha")
+    var alpha: String?
+ 
+    @Key("-b", "--beta")
+    var beta: String?
 }
 
 class FlagKeyCmd: OptionCmd {
     @Flag("-a", "--alpha")
     var alpha: Bool
     
-    let beta = Key<String>("-b", "--beta")
+    @Key("-b", "--beta")
+    var beta: String?
 }
 
 class FlagKeyParamCmd: OptionCmd {
     @Flag("-a", "--alpha")
     var alpha: Bool
     
-    let beta = Key<String>("-b", "--beta")
+    @Key("-b", "--beta")
+    var beta: String?
     
     @Pram var param: String
 }
 
 class IntKeyCmd: OptionCmd {
-    let alpha = Key<Int>("-a", "--alpha")
+    @Key("-a", "--alpha")
+    var alpha: Int?
 }
 
 class ExactlyOneCmd: Command {
@@ -291,19 +299,19 @@ class CounterFlagCmd: OptionCmd {
 
 class ValidatedKeyCmd: OptionCmd {
     
-    static func isCapitalized(_ value: String) -> Bool {
-        return value.capitalized == value
-    }
+    static let capitalizedFirstName = Validation.custom("Must be a capitalized first name") { $0.capitalized == $0 }
     
-    let firstName = Key<String>("-n", "--name", validation: [
-        .custom("Must be a capitalized first name", isCapitalized)
-    ])
+    @Key("-n", "--name", validation: [capitalizedFirstName])
+    var firstName: String?
     
-    let age = Key<Int>("-a", "--age", validation: [.greaterThan(18)])
+    @Key("-a", "--age", validation: [.greaterThan(18)])
+    var age: Int?
     
-    let location = Key<String>("-l", "--location", validation: [.rejecting("Chicago", "Boston")])
+    @Key("-l", "--location", validation: [.rejecting("Chicago", "Boston")])
+    var location: String?
     
-    let holiday = Key<String>("--holiday", validation: [.allowing("Thanksgiving", "Halloween")])
+    @Key("--holiday", validation: [.allowing("Thanksgiving", "Halloween")])
+    var holiday: String?
     
 }
 
@@ -311,19 +319,30 @@ class QuoteDesciptionCmd: Command {
     let name = "cmd"
     let shortDescription = "this description has a \"quoted section\""
     
-    let flag = Flag("-q", "--quoted", description: "also has \"quotes\"")
+    @Flag("-q", "--quoted", description: "also has \"quotes\"")
+    var flag: Bool
     
     func execute() throws {}
 }
 
 class CompletionOptionCmd: OptionCmd {
-    let values = Key<String>("-v", "--values", completion: .values([("opt1", "first option"), ("opt2", "second option")]))
-    let function = Key<String>("-f", "--function", completion: .function("_a_func"))
-    let filename = Key<String>("-n", "--name", completion: .filename)
-    let none = Key<String>("-z", "--zero", completion: .none)
-    let def = Key<String>("-d", "--default")
+    @Key("-v", "--values", completion: .values([("opt1", "first option"), ("opt2", "second option")]))
+    var values: String?
     
-    let flag = Flag("-f", "--flag")
+    @Key<String>("-f", "--function", completion: .function("_a_func"))
+    var function: String?
+    
+    @Key<String>("-n", "--name", completion: .filename)
+    var filename: String?
+    
+    @Key<String>("-z", "--zero", completion: .none)
+    var none: String?
+    
+    @Key<String>("-d", "--default")
+    var def: String?
+    
+    @Flag("-f", "--flag")
+    var flag: Bool
 }
 
 class EnumCmd: Command {

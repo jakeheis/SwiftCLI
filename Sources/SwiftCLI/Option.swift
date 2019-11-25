@@ -142,16 +142,18 @@ public class _Key<Value: ConvertibleFromString> {
     
 }
 
+@propertyWrapper
 public class Key<Value: ConvertibleFromString>: _Key<Value>, AnyKey, ValueBox {
     
-    public var value: Value?
+    public var wrappedValue: Value?
+    public var projectedValue: Key { self }
     
     public init(_ names: String ..., description: String = "", completion: ShellCompletion = .filename, validation: [Validation<Value>] = []) {
         super.init(names, description: description, completion: completion, validation: validation)
     }
     
     public func update(to value: Value) {
-        self.value = value
+        self.wrappedValue = value
     }
     
 }

@@ -30,8 +30,8 @@ class ParserTests: XCTestCase {
         
         _ = try Parser().parse(cli: cli, arguments: arguments)
         
-        XCTAssertEqual(cmd.alpha.value, "apple", "Options should update the values of passed keys")
-        XCTAssertEqual(cmd.beta.value, "banana", "Options should update the values of passed keys")
+        XCTAssertEqual(cmd.alpha, "apple", "Options should update the values of passed keys")
+        XCTAssertEqual(cmd.beta, "banana", "Options should update the values of passed keys")
     }
     
     func testKeyValueParsing() throws {
@@ -41,7 +41,7 @@ class ParserTests: XCTestCase {
         
         _ = try Parser().parse(cli: cli, arguments: arguments)
         
-        XCTAssertEqual(cmd.alpha.value, 7, "Options should parse int")
+        XCTAssertEqual(cmd.alpha, 7, "Options should parse int")
     }
     
     func testCombinedFlagsAndKeysParsing() throws {
@@ -52,7 +52,7 @@ class ParserTests: XCTestCase {
         _ = try Parser().parse(cli: cli, arguments: arguments)
         
         XCTAssertTrue(cmd.alpha, "Options should execute the closures of passed flags")
-        XCTAssertEqual(cmd.beta.value, "banana", "Options should execute the closures of passed keys")
+        XCTAssertEqual(cmd.beta, "banana", "Options should execute the closures of passed keys")
     }
     
     func testCombinedFlagsAndKeysAndArgumentsParsing() throws {
@@ -63,7 +63,7 @@ class ParserTests: XCTestCase {
         _ = try Parser().parse(cli: cli, arguments: arguments)
         
         XCTAssert(cmd.alpha, "Options should execute the closures of passed flags")
-        XCTAssertEqual(cmd.beta.value, "banana", "Options should execute the closures of passed keys")
+        XCTAssertEqual(cmd.beta, "banana", "Options should execute the closures of passed keys")
         XCTAssertEqual(cmd.param, "argument")
     }
     
@@ -109,7 +109,7 @@ class ParserTests: XCTestCase {
             _ = try Parser().parse(cli: cli, arguments: arguments)
             XCTFail()
         } catch let error as OptionError {
-            guard case .invalidKeyValue(let key, "-a", .conversionError) = error.kind, key === cmd.alpha else {
+            guard case .invalidKeyValue(let key, "-a", .conversionError) = error.kind, ObjectIdentifier(key) == ObjectIdentifier(cmd.$alpha) else {
                 XCTFail()
                 return
             }
@@ -227,14 +227,14 @@ class ParserTests: XCTestCase {
                 XCTFail()
                 return
             }
-            XCTAssert(key === cmd1.firstName)
+            XCTAssert(ObjectIdentifier(key) == ObjectIdentifier(cmd1.$firstName))
             XCTAssertEqual(validator.message, "Must be a capitalized first name")
         }
         
         let cmd2 = ValidatedKeyCmd()
         let arguments2 = ArgumentList(arguments: ["cmd", "-n", "Jake"])
         _ = try Parser().parse(cli: CLI.createTester(commands: [cmd2]), arguments: arguments2)
-        XCTAssertEqual(cmd2.firstName.value, "Jake")
+        XCTAssertEqual(cmd2.firstName, "Jake")
         
         let cmd3 = ValidatedKeyCmd()
         let arguments3 = ArgumentList(arguments: ["cmd", "-a", "15"])
@@ -247,14 +247,14 @@ class ParserTests: XCTestCase {
                 XCTFail(String(describing: error))
                 return
             }
-            XCTAssert(key === cmd3.age)
+            XCTAssert(ObjectIdentifier(key) == ObjectIdentifier(cmd3.$age))
             XCTAssertEqual(validator.message, "must be greater than 18")
         }
         
         let cmd4 = ValidatedKeyCmd()
         let arguments4 = ArgumentList(arguments: ["cmd", "-a", "19"])
         _ = try Parser().parse(cli: CLI.createTester(commands: [cmd4]), arguments: arguments4)
-        XCTAssertEqual(cmd4.age.value, 19)
+        XCTAssertEqual(cmd4.age, 19)
         
         let cmd5 = ValidatedKeyCmd()
         let arguments5 = ArgumentList(arguments: ["cmd", "-l", "Chicago"])
@@ -267,14 +267,15 @@ class ParserTests: XCTestCase {
                 XCTFail()
                 return
             }
-            XCTAssert(key === cmd5.location)
+            
+            XCTAssert(ObjectIdentifier(key) == ObjectIdentifier(cmd5.$location))
             XCTAssertEqual(validator.message, "must not be: Chicago, Boston")
         }
         
         let cmd6 = ValidatedKeyCmd()
         let arguments6 = ArgumentList(arguments: ["cmd", "-l", "Denver"])
         _ = try Parser().parse(cli: CLI.createTester(commands: [cmd6]), arguments: arguments6)
-        XCTAssertEqual(cmd6.location.value, "Denver")
+        XCTAssertEqual(cmd6.location, "Denver")
         
         let cmd7 = ValidatedKeyCmd()
         let arguments7 = ArgumentList(arguments: ["cmd", "--holiday", "4th"])
@@ -287,14 +288,14 @@ class ParserTests: XCTestCase {
                 XCTFail(String(describing: error))
                 return
             }
-            XCTAssert(key === cmd7.holiday)
+            XCTAssert(ObjectIdentifier(key) == ObjectIdentifier(cmd7.$holiday))
             XCTAssertEqual(validator.message, "must be one of: Thanksgiving, Halloween")
         }
         
         let cmd8 = ValidatedKeyCmd()
         let arguments8 = ArgumentList(arguments: ["cmd", "--holiday", "Thanksgiving"])
         _ = try Parser().parse(cli: CLI.createTester(commands: [cmd8]), arguments: arguments8)
-        XCTAssertEqual(cmd8.holiday.value, "Thanksgiving")
+        XCTAssertEqual(cmd8.holiday, "Thanksgiving")
     }
     
     // MARK: - Combined test
@@ -311,7 +312,7 @@ class ParserTests: XCTestCase {
         XCTAssertEqual(cmd.testName, "favTest")
         XCTAssertEqual(cmd.testerName.value, "SwiftCLI")
         XCTAssertTrue(cmd.silent)
-        XCTAssertEqual(cmd.times.value, 3)
+        XCTAssertEqual(cmd.times, 3)
     }
     
     func testCollectedOptions() throws {
