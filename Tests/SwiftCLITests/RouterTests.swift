@@ -169,19 +169,19 @@ class RouterTests: XCTestCase {
         let firstResult = try parser.parse(cli: cli, arguments: ArgumentList(arguments: ["cmd", "value"]))
         XCTAssert(opt1 === firstResult.command)
         XCTAssertFalse(firstResult.ignoreName)
-        XCTAssertEqual(opt1.opt1.value, "value")
+        XCTAssertEqual(opt1.opt1, "value")
         
         let secondResult = try parser.parse(cli: cli, arguments: ArgumentList(arguments: ["value2"]))
         XCTAssert(opt1 === secondResult.command)
         XCTAssertTrue(secondResult.ignoreName)
-        XCTAssertEqual(opt1.opt1.value, "value2")
+        XCTAssertEqual(opt1.opt1, "value2")
         
-        opt1.opt1.value = nil
+        opt1.opt1 = nil
         
         let thirdResult = try parser.parse(cli: cli, arguments: ArgumentList(arguments: []))
         XCTAssert(opt1 === thirdResult.command)
         XCTAssertTrue(thirdResult.ignoreName)
-        XCTAssertNil(opt1.opt1.value)
+        XCTAssertNil(opt1.opt1)
     }
     
 }

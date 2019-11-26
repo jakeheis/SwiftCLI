@@ -106,10 +106,10 @@ class SwiftCLITests: XCTestCase {
         XCTAssertEqual(out, "")
         XCTAssertEqual(err, "")
         XCTAssertTrue(cmd.executed)
-        XCTAssertEqual(cmd.param.value, "aTest")
+        XCTAssertEqual(cmd.param, "aTest")
         
         cmd.executed = false
-        cmd.param.value = nil
+        cmd.param = nil
         
         let (out2, err2) = CLI.capture {
             let result = cli.go(with: [])
@@ -118,7 +118,7 @@ class SwiftCLITests: XCTestCase {
         XCTAssertEqual(out2, "")
         XCTAssertEqual(err2, "")
         XCTAssertTrue(cmd.executed)
-        XCTAssertNil(cmd.param.value)
+        XCTAssertNil(cmd.param)
         
         let (out3, err3) = CLI.capture {
             let result = cli.go(with: ["-h"])

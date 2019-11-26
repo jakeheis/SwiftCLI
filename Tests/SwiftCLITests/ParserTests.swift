@@ -310,7 +310,7 @@ class ParserTests: XCTestCase {
         XCTAssertTrue(result.command === cmd)
         
         XCTAssertEqual(cmd.testName, "favTest")
-        XCTAssertEqual(cmd.testerName.value, "SwiftCLI")
+        XCTAssertEqual(cmd.testerName, "SwiftCLI")
         XCTAssertTrue(cmd.silent)
         XCTAssertEqual(cmd.times, 3)
     }

@@ -423,7 +423,7 @@ class HelpMessageGeneratorTests: XCTestCase {
         #endif
         
         let capture2 = CaptureStream()
-        let error2 = ParameterError(command: path, kind: .invalidValue(.init(name: "single", param: command.single), .conversionError))
+        let error2 = ParameterError(command: path, kind: .invalidValue(.init(name: "single", param: command.$single), .conversionError))
         DefaultHelpMessageGenerator().writeParameterErrorMessage(for: error2, to: capture2)
         capture2.closeWrite()
         
@@ -442,7 +442,7 @@ class HelpMessageGeneratorTests: XCTestCase {
         """)
         
         let capture3 = CaptureStream()
-        let error3 = ParameterError(command: path, kind: .invalidValue(.init(name: "int", param: command.int), .conversionError))
+        let error3 = ParameterError(command: path, kind: .invalidValue(.init(name: "int", param: command.$int), .conversionError))
         DefaultHelpMessageGenerator().writeParameterErrorMessage(for: error3, to: capture3)
         capture3.closeWrite()
         
@@ -467,7 +467,7 @@ class HelpMessageGeneratorTests: XCTestCase {
         let path = CommandGroupPath(top: cli).appending(command)
         
         let capture1 = CaptureStream()
-        let error1 = ParameterError(command: path, kind: .invalidValue(.init(name: "age", param: command.age), .validationError(command.age.validation[0])))
+        let error1 = ParameterError(command: path, kind: .invalidValue(.init(name: "age", param: command.$age), .validationError(command.$age.validation[0])))
         DefaultHelpMessageGenerator().writeParameterErrorMessage(for: error1, to: capture1)
         capture1.closeWrite()
         

@@ -20,48 +20,48 @@ class ParameterFillerTests: XCTestCase {
         assertParseNumberError(command: Req2Cmd(), args: ["arg"], min: 2, max: 2)
         
         let req2 = try parse(command: Req2Cmd(), args: ["arg1", "arg2"])
-        XCTAssertEqual(req2.req1.value, "arg1")
-        XCTAssertEqual(req2.req2.value, "arg2")
+        XCTAssertEqual(req2.req1, "arg1")
+        XCTAssertEqual(req2.req2, "arg2")
         
         assertParseNumberError(command: Req2Cmd(), args: ["arg1", "arg2", "arg3"], min: 2, max: 2)
     }
     
     func testOptionalParameters() throws {
         let cmd1 = try parse(command: Opt2Cmd(), args: [])
-        XCTAssertEqual(cmd1.opt1.value, nil)
-        XCTAssertEqual(cmd1.opt2.value, nil)
+        XCTAssertEqual(cmd1.opt1, nil)
+        XCTAssertEqual(cmd1.opt2, nil)
         
         let cmd2 = try parse(command: Opt2Cmd(), args: ["arg1"])
-        XCTAssertEqual(cmd2.opt1.value, "arg1")
-        XCTAssertEqual(cmd2.opt2.value, nil)
+        XCTAssertEqual(cmd2.opt1, "arg1")
+        XCTAssertEqual(cmd2.opt2, nil)
         
         let cmd3 = try parse(command: Opt2Cmd(), args: ["arg1", "arg2"])
-        XCTAssertEqual(cmd3.opt1.value, "arg1")
-        XCTAssertEqual(cmd3.opt2.value, "arg2")
+        XCTAssertEqual(cmd3.opt1, "arg1")
+        XCTAssertEqual(cmd3.opt2, "arg2")
         
         assertParseNumberError(command: Opt2Cmd(), args: ["arg1", "arg2", "arg3"], min: 0, max: 2)
     }
     
     func testOptionalParametersWithInheritance() throws {
         let cmd1 = try parse(command: Opt2InhCmd(), args: [])
-        XCTAssertEqual(cmd1.opt1.value, nil)
-        XCTAssertEqual(cmd1.opt2.value, nil)
-        XCTAssertEqual(cmd1.opt3.value, nil)
+        XCTAssertEqual(cmd1.opt1, nil)
+        XCTAssertEqual(cmd1.opt2, nil)
+        XCTAssertEqual(cmd1.opt3, nil)
         
         let cmd2 = try parse(command: Opt2InhCmd(), args: ["arg1"])
-        XCTAssertEqual(cmd2.opt1.value, "arg1")
-        XCTAssertEqual(cmd2.opt2.value, nil)
-        XCTAssertEqual(cmd2.opt3.value, nil)
+        XCTAssertEqual(cmd2.opt1, "arg1")
+        XCTAssertEqual(cmd2.opt2, nil)
+        XCTAssertEqual(cmd2.opt3, nil)
         
         let cmd3 = try parse(command: Opt2InhCmd(), args: ["arg1", "arg2"])
-        XCTAssertEqual(cmd3.opt1.value, "arg1")
-        XCTAssertEqual(cmd3.opt2.value, "arg2")
-        XCTAssertEqual(cmd3.opt3.value, nil)
+        XCTAssertEqual(cmd3.opt1, "arg1")
+        XCTAssertEqual(cmd3.opt2, "arg2")
+        XCTAssertEqual(cmd3.opt3, nil)
         
         let cmd4 = try parse(command: Opt2InhCmd(), args: ["arg1", "arg2", "arg3"])
-        XCTAssertEqual(cmd4.opt1.value, "arg1")
-        XCTAssertEqual(cmd4.opt2.value, "arg2")
-        XCTAssertEqual(cmd4.opt3.value, "arg3")
+        XCTAssertEqual(cmd4.opt1, "arg1")
+        XCTAssertEqual(cmd4.opt2, "arg2")
+        XCTAssertEqual(cmd4.opt3, "arg3")
         
         assertParseNumberError(command: Opt2InhCmd(), args: ["arg1", "arg2", "arg3", "arg4"], min: 0, max: 3)
     }
@@ -72,29 +72,29 @@ class ParameterFillerTests: XCTestCase {
         assertParseNumberError(command: Req2CollectedCmd(), args: ["arg1"], min: 2, max: nil)
         
         let cmd1 = try parse(command: Req2CollectedCmd(), args: ["arg1", "arg2"])
-        XCTAssertEqual(cmd1.req1.value, "arg1")
+        XCTAssertEqual(cmd1.req1, "arg1")
         XCTAssertEqual(cmd1.req2.value, ["arg2"])
         
         let cmd2 = try parse(command: Req2CollectedCmd(), args: ["arg1", "arg2", "arg3"])
-        XCTAssertEqual(cmd2.req1.value, "arg1")
+        XCTAssertEqual(cmd2.req1, "arg1")
         XCTAssertEqual(cmd2.req2.value, ["arg2", "arg3"])
     }
     
     func testCollectedOptionalParameters() throws {
         let cmd1 = try parse(command: Opt2CollectedCmd(), args: [])
-        XCTAssertEqual(cmd1.opt1.value, nil)
+        XCTAssertEqual(cmd1.opt1, nil)
         XCTAssertEqual(cmd1.opt2.value, [])
         
         let cmd2 = try parse(command: Opt2CollectedCmd(), args: ["arg1"])
-        XCTAssertEqual(cmd2.opt1.value, "arg1")
+        XCTAssertEqual(cmd2.opt1, "arg1")
         XCTAssertEqual(cmd2.opt2.value, [])
         
         let cmd3 = try parse(command: Opt2CollectedCmd(), args: ["arg1", "arg2"])
-        XCTAssertEqual(cmd3.opt1.value, "arg1")
+        XCTAssertEqual(cmd3.opt1, "arg1")
         XCTAssertEqual(cmd3.opt2.value, ["arg2"])
         
         let cmd4 = try parse(command: Opt2CollectedCmd(), args: ["arg1", "arg2", "arg3"])
-        XCTAssertEqual(cmd4.opt1.value, "arg1")
+        XCTAssertEqual(cmd4.opt1, "arg1")
         XCTAssertEqual(cmd4.opt2.value, ["arg2", "arg3"])
     }
     
@@ -102,22 +102,22 @@ class ParameterFillerTests: XCTestCase {
         assertParseNumberError(command: Req2Opt2Cmd(), args: ["arg1"], min: 2, max: 4)
         
         let cmd1 = try parse(command: Req2Opt2Cmd(), args: ["arg1", "arg2"])
-        XCTAssertEqual(cmd1.req1.value, "arg1")
-        XCTAssertEqual(cmd1.req2.value, "arg2")
-        XCTAssertNil(cmd1.opt1.value)
-        XCTAssertNil(cmd1.opt2.value)
+        XCTAssertEqual(cmd1.req1, "arg1")
+        XCTAssertEqual(cmd1.req2, "arg2")
+        XCTAssertNil(cmd1.opt1)
+        XCTAssertNil(cmd1.opt2)
         
         let cmd2 = try parse(command: Req2Opt2Cmd(), args: ["arg1", "arg2", "arg3"])
-        XCTAssertEqual(cmd2.req1.value, "arg1")
-        XCTAssertEqual(cmd2.req2.value, "arg2")
-        XCTAssertEqual(cmd2.opt1.value, "arg3")
-        XCTAssertNil(cmd2.opt2.value)
+        XCTAssertEqual(cmd2.req1, "arg1")
+        XCTAssertEqual(cmd2.req2, "arg2")
+        XCTAssertEqual(cmd2.opt1, "arg3")
+        XCTAssertNil(cmd2.opt2)
         
         let cmd3 = try parse(command: Req2Opt2Cmd(), args: ["arg1", "arg2", "arg3", "arg4"])
-        XCTAssertEqual(cmd3.req1.value, "arg1")
-        XCTAssertEqual(cmd3.req2.value, "arg2")
-        XCTAssertEqual(cmd3.opt1.value, "arg3")
-        XCTAssertEqual(cmd3.opt2.value, "arg4")
+        XCTAssertEqual(cmd3.req1, "arg1")
+        XCTAssertEqual(cmd3.req2, "arg2")
+        XCTAssertEqual(cmd3.opt1, "arg3")
+        XCTAssertEqual(cmd3.opt2, "arg4")
         
         assertParseNumberError(command: Req2Opt2Cmd(), args: ["arg1", "arg2", "arg3", "arg4", "arg5"], min: 2, max: 4)
     }
@@ -154,7 +154,7 @@ class ParameterFillerTests: XCTestCase {
     
     func testValidatedParameter() throws {
         let cmd1 = try parse(command: ValidatedParamCmd(), args: [])
-        XCTAssertNil(cmd1.age.value)
+        XCTAssertNil(cmd1.age)
         
         let cmd2 = ValidatedParamCmd()
         XCTAssertThrowsSpecificError(
@@ -166,12 +166,12 @@ class ParameterFillerTests: XCTestCase {
                 }
                 
                 XCTAssertEqual(namedParam.name, "age")
-                XCTAssert(namedParam.param === cmd2.age)
+                XCTAssertEqual(ObjectIdentifier(namedParam.param), ObjectIdentifier(cmd2.$age))
                 XCTAssertEqual(validation.message, "must be greater than 18")
         })
         
         let cmd3 = try parse(command: ValidatedParamCmd(), args: ["20"])
-        XCTAssertEqual(cmd3.age.value, 20)
+        XCTAssertEqual(cmd3.age, 20)
     }
     
     // MARK: -

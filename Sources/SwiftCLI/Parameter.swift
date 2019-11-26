@@ -45,6 +45,8 @@ public class Pram<Value: ConvertibleFromString> : _Param<Value>, AnyParameter, V
     }
     
     public let required = true
+    
+    // This should be an error, find out why it's not failing tests
     public var satisfied = false
     
     public init() {
@@ -70,32 +72,41 @@ public class Pram<Value: ConvertibleFromString> : _Param<Value>, AnyParameter, V
     
 }
 
-//@propertyWrapper
-//public class OptPram<OptionalValue> : _Param<OptionalValue.Wrapped>, AnyParameter, ValueBox, ParameterPropertyWrapper where OptionalValue.Wrapped: ConvertibleFromString {
-//
-//    public var wrappedValue: OptionalValue.Wrapped?
-//    public var value: OptionalValue.Wrapped? { wrappedValue }
-//
-//    public let required = false
-//    public var satisfied = true
-//
-//    public init() {
-//        super.init()
-//    }
-//
-//    public override init(completion: ShellCompletion = .filename, validation: [Validation<OptionalValue.Wrapped>] = []) {
-//        super.init(completion: completion, validation: validation)
-//    }
-//
-//    public init(completion: ShellCompletion = .filename, validation: Validation<OptionalValue.Wrapped>...) {
-//        super.init(completion: completion, validation: validation)
-//    }
-//
-//    public func update(to value: OptionalValue.Wrapped) {
-//        self.wrappedValue = value
-//    }
-//
-//}
+@propertyWrapper
+public class OPram<Value: ConvertibleFromString> : _Param<Value>, AnyParameter, ValueBox, ParameterPropertyWrapper {
+    
+    public var wrappedValue: Value?
+    public var value: Value? { wrappedValue }
+    
+    public var projectedValue: OPram {
+        return self
+    }
+    
+    public let required = false
+    public var satisfied = true
+    
+    public init() {
+        super.init()
+    }
+    
+    public init(default: Value) {
+        super.init()
+        wrappedValue = value
+    }
+    
+    public override init(completion: ShellCompletion = .filename, validation: [Validation<Value>] = []) {
+        super.init(completion: completion, validation: validation)
+    }
+    
+    public init(completion: ShellCompletion = .filename, validation: Validation<Value>...) {
+        super.init(completion: completion, validation: validation)
+    }
+    
+    public func update(to value: Value) {
+        self.wrappedValue = value
+    }
+    
+}
 
 public enum Param {
     

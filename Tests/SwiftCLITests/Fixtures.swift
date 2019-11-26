@@ -23,7 +23,7 @@ class TestCommand: Command {
     var executionString = ""
 
     @Pram var testName: String
-    let testerName = OptionalParameter()
+    @OPram var testerName: String?
     
     @Flag("-s", "--silent", description: "Silence all test output")
     var silent: Bool
@@ -38,7 +38,7 @@ class TestCommand: Command {
     }
 
     func execute() throws {
-        executionString = "\(testerName.value ?? "defaultTester") will test \(testName), \(times ?? 1) times"
+        executionString = "\(testerName ?? "defaultTester") will test \(testName), \(times ?? 1) times"
         if silent {
             executionString += ", silently"
         }
@@ -49,13 +49,11 @@ class TestCommand: Command {
 }
 
 class TestCommandWithLongDescription: Command {
-
     let name = "test"
     let shortDescription = "A command to test stuff"
     let longDescription = "This is a long\nmultiline description"
 
-    func execute() throws {
-    }
+    func execute() throws {}
 }
 
 class MultilineCommand: Command {
@@ -63,17 +61,19 @@ class MultilineCommand: Command {
     let name = "test"
     let shortDescription = "A command that has multiline comments.\nNew line"
 
-    let silent = Flag("-s", "--silent", description: "Silence all test output\nNewline")
-    let times = Key<Int>("-t", "--times", description: "Number of times to run the test")
+    @Flag("-s", "--silent", description: "Silence all test output\nNewline")
+    var silent: Bool
+    
+    @Key("-t", "--times", description: "Number of times to run the test")
+    var times: Int?
 
-    func execute() throws {
-
-    }
+    func execute() throws {}
 
 }
 
 class TestInheritedCommand: TestCommand {
-    let verbose = Flag("-v", "--verbose", description: "Show more output information")
+    @Flag("-v", "--verbose", description: "Show more output information")
+    var verbose: Bool
 }
 
 // MARK: -
@@ -117,32 +117,41 @@ class EmptyCmd: Command {
 }
 
 class Req1Cmd: EmptyCmd {
-    let req1 = Parameter(completion: .function("_ice_targets"))
+    @Pram(completion: .function("_ice_targets"))
+    var req1: String
 }
 
 class Opt1Cmd: EmptyCmd {
-    let opt1 = OptionalParameter()
+    @OPram
+    var opt1: String?
 }
 
 class Req2Cmd: EmptyCmd {
-    let req1 = Parameter(completion: .filename)
-    let req2 = Parameter(completion: .values([
+    @Pram(completion: .filename)
+    var req1: String
+    
+    @Pram(completion: .values([
         ("executable", "generates a project for a cli executable"),
         ("library", "generates project for a dynamic library"),
         ("other", "")
     ]))
+    var req2: String
 }
 
 class Opt2Cmd: EmptyCmd {
-    let opt1 = OptionalParameter(completion: .filename)
-    let opt2 = OptionalParameter(completion: .values([
+    @OPram(completion: .filename)
+    var opt1: String?
+    
+    @OPram(completion: .values([
         ("executable", "generates a project for a cli executable"),
         ("library", "generates project for a dynamic library")
     ]))
+    var opt2: String?
 }
 
 class Opt2InhCmd: Opt2Cmd {
-    let opt3 = OptionalParameter()
+    @OPram
+    var opt3: String?
 }
 
 class ReqCollectedCmd: EmptyCmd {
@@ -154,23 +163,31 @@ class OptCollectedCmd: EmptyCmd {
 }
 
 class Req2CollectedCmd: EmptyCmd {
-    let req1 = Parameter(completion: .values([
+    @Pram(completion: .values([
         ("executable", "generates a project for a cli executable"),
         ("library", "generates project for a dynamic library")
         ]))
+    var req1: String
     let req2 = CollectedParameter(completion: .filename)
 }
 
 class Opt2CollectedCmd: EmptyCmd {
-    let opt1 = OptionalParameter()
+    @OPram var opt1: String?
     let opt2 = OptionalCollectedParameter()
 }
 
 class Req2Opt2Cmd: EmptyCmd {
-    let req1 = Parameter(completion: .filename)
-    let req2 = Parameter(completion: .function("_swift_dependency"))
-    let opt1 = OptionalParameter(completion: .none)
-    let opt2 = OptionalParameter(completion: .filename)
+    @Pram(completion: .filename)
+    var req1: String
+    
+    @Pram(completion: .function("_swift_dependency"))
+    var req2: String
+    
+    @OPram(completion: .none)
+    var opt1: String?
+    
+    @OPram(completion: .filename)
+    var opt2: String?
 }
 
 // MARK: -
@@ -362,8 +379,8 @@ class EnumCmd: Command {
     let shortDescription = "Limits param values to enum"
     
     @Pram var speed: Speed
-    let single = Param.Optional<Single>()
-    let int = Param.Optional<Int>()
+    @OPram var single: Single?
+    @OPram var int: Int?
     
     func execute() throws {}
     
@@ -378,7 +395,8 @@ class ValidatedParamCmd: Command {
     let name = "cmd"
     let shortDescription = "Validates param values"
     
-    let age = Param.Optional<Int>(validation: [.greaterThan(18)])
+    @OPram(validation: [.greaterThan(18)])
+    var age: Int?
     
     func execute() throws {}
     
@@ -389,7 +407,7 @@ class RememberExecutionCmd: Command {
     let name = "cmd"
     let shortDescription = "Remembers execution"
     
-    let param = OptionalParameter()
+    @OPram var param: String?
     
     var executed = false
     
