@@ -28,114 +28,91 @@ public class _Param<Value: ConvertibleFromString> {
 
 protocol ParameterPropertyWrapper {}
 
-@propertyWrapper
-public class Pram<Value: ConvertibleFromString> : _Param<Value>, AnyParameter, ValueBox, ParameterPropertyWrapper {
+extension CLI {
     
-    private var privValue: Value?
-    public var wrappedValue: Value {
-        guard let val = privValue else {
-            fatalError("cannot access parameter value outside of 'execute' func")
+    @propertyWrapper
+    public class Param<Value: ConvertibleFromString> : _Param<Value>, AnyParameter, ValueBox, ParameterPropertyWrapper {
+        
+        public let required = true
+        public var satisfied = false // This should be an error, find out why it's not failing tests
+        
+        private var privValue: Value?
+        public var wrappedValue: Value {
+            guard let val = privValue else {
+                fatalError("cannot access parameter value outside of 'execute' func")
+            }
+            return val
         }
-        return val
-    }
-    public var value: Value { wrappedValue }
-    
-    public var projectedValue: Pram {
-        return self
-    }
-    
-    public let required = true
-    
-    // This should be an error, find out why it's not failing tests
-    public var satisfied = false
-    
-    public init() {
-        super.init()
-    }
-    
-    public init(default: Value) {
-        super.init()
-        privValue = value
-    }
-    
-    public override init(completion: ShellCompletion = .filename, validation: [Validation<Value>] = []) {
-        super.init(completion: completion, validation: validation)
+        public var value: Value { wrappedValue }
+        
+        public var projectedValue: Param {
+            return self
+        }
+        
+        public init() {
+            super.init()
+        }
+        
+        public override init(completion: ShellCompletion = .filename, validation: [Validation<Value>] = []) {
+            super.init(completion: completion, validation: validation)
+        }
+        
+        public init(completion: ShellCompletion = .filename, validation: Validation<Value>...) {
+            super.init(completion: completion, validation: validation)
+        }
+        
+        public func update(to value: Value) {
+            self.privValue = value
+        }
+        
     }
     
-    public init(completion: ShellCompletion = .filename, validation: Validation<Value>...) {
-        super.init(completion: completion, validation: validation)
+    @propertyWrapper
+    public class OptParam<Value: ConvertibleFromString> : _Param<Value>, AnyParameter, ValueBox, ParameterPropertyWrapper {
+        
+        public let required = false
+        public var satisfied = true
+        
+        public var wrappedValue: Value?
+        public var value: Value? { wrappedValue }
+        
+        public var projectedValue: OptParam {
+            return self
+        }
+        
+        public init() {
+            super.init()
+        }
+        
+        public override init(completion: ShellCompletion = .filename, validation: [Validation<Value>] = []) {
+            super.init(completion: completion, validation: validation)
+        }
+        
+        public init(completion: ShellCompletion = .filename, validation: Validation<Value>...) {
+            super.init(completion: completion, validation: validation)
+        }
+        
+        public func update(to value: Value) {
+            self.wrappedValue = value
+        }
+        
     }
-    
-    public func update(to value: Value) {
-        self.privValue = value
-    }
-    
-}
-
-@propertyWrapper
-public class OPram<Value: ConvertibleFromString> : _Param<Value>, AnyParameter, ValueBox, ParameterPropertyWrapper {
-    
-    public var wrappedValue: Value?
-    public var value: Value? { wrappedValue }
-    
-    public var projectedValue: OPram {
-        return self
-    }
-    
-    public let required = false
-    public var satisfied = true
-    
-    public init() {
-        super.init()
-    }
-    
-    public init(default: Value) {
-        super.init()
-        wrappedValue = value
-    }
-    
-    public override init(completion: ShellCompletion = .filename, validation: [Validation<Value>] = []) {
-        super.init(completion: completion, validation: validation)
-    }
-    
-    public init(completion: ShellCompletion = .filename, validation: Validation<Value>...) {
-        super.init(completion: completion, validation: validation)
-    }
-    
-    public func update(to value: Value) {
-        self.wrappedValue = value
-    }
-    
 }
 
 public enum Param {
-    
+    @available(*, unavailable, message: "Use CLI.Param instead")
     public class Required<Value: ConvertibleFromString>: _Param<Value>, AnyParameter, ValueBox {
         public let required = true
-        public var satisfied: Bool { return privateValue != nil }
-        
-        private var privateValue: Value? = nil
-        
-        public var value: Value {
-            return privateValue!
-        }
-        
-        public func update(to value: Value) {
-            privateValue = value
-        }
+        public var satisfied = true
+        public func update(to value: Value) {}
     }
     
+    @available(*, unavailable, message: "Use CLI.OptParam instead")
     public class Optional<Value: ConvertibleFromString>: _Param<Value>, AnyParameter, ValueBox {
         public let required = false
         public let satisfied = true
-        
-        public var value: Value? = nil
-        
-        public func update(to value: Value) {
-            self.value = value
-        }
+        public func update(to value: Value) {}
     }
-    
 }
 
 public protocol AnyCollectedParameter: AnyParameter {}
@@ -166,8 +143,8 @@ public enum CollectedParam {
     
 }
 
-public typealias Parameter = Param.Required<String>
-public typealias OptionalParameter = Param.Optional<String>
+public typealias Parameter = CLI.Param<String>
+public typealias OptionalParameter = CLI.OptParam<String>
 public typealias CollectedParameter = CollectedParam.Required<String>
 public typealias OptionalCollectedParameter = CollectedParam.Optional<String>
 

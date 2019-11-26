@@ -22,8 +22,8 @@ class TestCommand: Command {
 
     var executionString = ""
 
-    @Pram var testName: String
-    @OPram var testerName: String?
+    @CLI.Param var testName: String
+    @CLI.OptParam var testerName: String?
     
     @Flag("-s", "--silent", description: "Silence all test output")
     var silent: Bool
@@ -117,20 +117,20 @@ class EmptyCmd: Command {
 }
 
 class Req1Cmd: EmptyCmd {
-    @Pram(completion: .function("_ice_targets"))
+    @CLI.Param(completion: .function("_ice_targets"))
     var req1: String
 }
 
 class Opt1Cmd: EmptyCmd {
-    @OPram
+    @CLI.OptParam
     var opt1: String?
 }
 
 class Req2Cmd: EmptyCmd {
-    @Pram(completion: .filename)
+    @CLI.Param(completion: .filename)
     var req1: String
     
-    @Pram(completion: .values([
+    @CLI.Param(completion: .values([
         ("executable", "generates a project for a cli executable"),
         ("library", "generates project for a dynamic library"),
         ("other", "")
@@ -139,10 +139,10 @@ class Req2Cmd: EmptyCmd {
 }
 
 class Opt2Cmd: EmptyCmd {
-    @OPram(completion: .filename)
+    @CLI.OptParam(completion: .filename)
     var opt1: String?
     
-    @OPram(completion: .values([
+    @CLI.OptParam(completion: .values([
         ("executable", "generates a project for a cli executable"),
         ("library", "generates project for a dynamic library")
     ]))
@@ -150,8 +150,7 @@ class Opt2Cmd: EmptyCmd {
 }
 
 class Opt2InhCmd: Opt2Cmd {
-    @OPram
-    var opt3: String?
+    @CLI.OptParam var opt3: String?
 }
 
 class ReqCollectedCmd: EmptyCmd {
@@ -163,7 +162,7 @@ class OptCollectedCmd: EmptyCmd {
 }
 
 class Req2CollectedCmd: EmptyCmd {
-    @Pram(completion: .values([
+    @CLI.Param(completion: .values([
         ("executable", "generates a project for a cli executable"),
         ("library", "generates project for a dynamic library")
         ]))
@@ -172,21 +171,21 @@ class Req2CollectedCmd: EmptyCmd {
 }
 
 class Opt2CollectedCmd: EmptyCmd {
-    @OPram var opt1: String?
+    @CLI.OptParam var opt1: String?
     let opt2 = OptionalCollectedParameter()
 }
 
 class Req2Opt2Cmd: EmptyCmd {
-    @Pram(completion: .filename)
+    @CLI.Param(completion: .filename)
     var req1: String
     
-    @Pram(completion: .function("_swift_dependency"))
+    @CLI.Param(completion: .function("_swift_dependency"))
     var req2: String
     
-    @OPram(completion: .none)
+    @CLI.OptParam(completion: .none)
     var opt1: String?
     
-    @OPram(completion: .filename)
+    @CLI.OptParam(completion: .filename)
     var opt2: String?
 }
 
@@ -263,7 +262,7 @@ class FlagKeyParamCmd: OptionCmd {
     @Key("-b", "--beta")
     var beta: String?
     
-    @Pram var param: String
+    @CLI.Param var param: String
 }
 
 class IntKeyCmd: OptionCmd {
@@ -378,9 +377,9 @@ class EnumCmd: Command {
     let name = "cmd"
     let shortDescription = "Limits param values to enum"
     
-    @Pram var speed: Speed
-    @OPram var single: Single?
-    @OPram var int: Int?
+    @CLI.Param var speed: Speed
+    @CLI.OptParam var single: Single?
+    @CLI.OptParam var int: Int?
     
     func execute() throws {}
     
@@ -395,7 +394,7 @@ class ValidatedParamCmd: Command {
     let name = "cmd"
     let shortDescription = "Validates param values"
     
-    @OPram(validation: [.greaterThan(18)])
+    @CLI.OptParam(validation: [.greaterThan(18)])
     var age: Int?
     
     func execute() throws {}
@@ -407,7 +406,7 @@ class RememberExecutionCmd: Command {
     let name = "cmd"
     let shortDescription = "Remembers execution"
     
-    @OPram var param: String?
+    @CLI.OptParam var param: String?
     
     var executed = false
     

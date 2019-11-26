@@ -318,7 +318,7 @@ class ParserTests: XCTestCase {
     func testCollectedOptions() throws {
         class RunCmd: Command {
             let name = "run"
-            @Pram var executable: String
+            @CLI.Param var executable: String
             let args = OptionalCollectedParameter()
             @Flag("-v") var verbose: Bool
             func execute() throws {}

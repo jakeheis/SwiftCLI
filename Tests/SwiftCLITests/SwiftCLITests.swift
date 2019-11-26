@@ -152,53 +152,57 @@ class SwiftCLITests: XCTestCase {
             func execute() throws { built = true }
         }
         
-        let execute = Execute()
-        let build = Build()
+        let execute1 = Execute()
+        let build1 = Build()
         
         let (out, err) = CLI.capture {
-            let cli = CLI(name: "swift", commands: [build])
-            cli.parser.routeBehavior = .searchWithFallback(execute)
+            let cli = CLI(name: "swift", commands: [build1])
+            cli.parser.routeBehavior = .searchWithFallback(execute1)
             let result = cli.go(with: ["build"])
             XCTAssertEqual(result, 0)
         }
         XCTAssertEqual(out, "")
         XCTAssertEqual(err, "")
-        XCTAssertTrue(build.built)
-        XCTAssertFalse(execute.executed)
-        XCTAssertNil(execute.file.value)
+        XCTAssertTrue(build1.built)
+        XCTAssertFalse(execute1.executed)
+        XCTAssertNil(execute1.file.value)
         
-        build.built = false
+        let execute2 = Execute()
+        let build2 = Build()
         
         let (out2, err2) = CLI.capture {
-            let cli = CLI(name: "swift", commands: [build])
-            cli.parser.routeBehavior = .searchWithFallback(execute)
+            let cli = CLI(name: "swift", commands: [build2])
+            cli.parser.routeBehavior = .searchWithFallback(execute2)
             let result = cli.go(with: ["file.swift"])
             XCTAssertEqual(result, 0)
         }
         XCTAssertEqual(out2, "")
         XCTAssertEqual(err2, "")
-        XCTAssertFalse(build.built)
-        XCTAssertTrue(execute.executed)
-        XCTAssertEqual(execute.file.value, "file.swift")
+        XCTAssertFalse(build2.built)
+        XCTAssertTrue(execute2.executed)
+        XCTAssertEqual(execute2.file.value, "file.swift")
         
-        execute.executed = false
-        execute.file.value = nil
+        let execute3 = Execute()
+        let build3 = Build()
         
         let (out3, err3) = CLI.capture {
-            let cli = CLI(name: "swift", commands: [build])
-            cli.parser.routeBehavior = .searchWithFallback(execute)
+            let cli = CLI(name: "swift", commands: [build3])
+            cli.parser.routeBehavior = .searchWithFallback(execute3)
             let result = cli.go(with: [])
             XCTAssertEqual(result, 0)
         }
         XCTAssertEqual(out3, "")
         XCTAssertEqual(err3, "")
-        XCTAssertFalse(build.built)
-        XCTAssertTrue(execute.executed)
-        XCTAssertNil(execute.file.value)
+        XCTAssertFalse(build3.built)
+        XCTAssertTrue(execute3.executed)
+        XCTAssertNil(execute3.file.value)
+        
+        let execute4 = Execute()
+        let build4 = Build()
         
         let (out4, err4) = CLI.capture {
-            let cli = CLI(name: "swift", commands: [build])
-            cli.parser.routeBehavior = .searchWithFallback(execute)
+            let cli = CLI(name: "swift", commands: [build4])
+            cli.parser.routeBehavior = .searchWithFallback(execute4)
             let result = cli.go(with: ["-h"])
             XCTAssertEqual(result, 0)
         }
@@ -213,9 +217,12 @@ class SwiftCLITests: XCTestCase {
         """)
         XCTAssertEqual(err4, "")
         
+        let execute5 = Execute()
+        let build5 = Build()
+        
         let (out5, err5) = CLI.capture {
-            let cli = CLI(name: "swift", commands: [build])
-            cli.parser.routeBehavior = .searchWithFallback(execute)
+            let cli = CLI(name: "swift", commands: [build5])
+            cli.parser.routeBehavior = .searchWithFallback(execute5)
             let result = cli.go(with: ["hi.swift", "this.swift"])
             XCTAssertEqual(result, 1)
         }
