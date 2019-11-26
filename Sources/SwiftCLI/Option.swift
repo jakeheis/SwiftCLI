@@ -41,6 +41,7 @@ public class Flag: AnyFlag {
     private let defaultValue: Bool
     
     public private(set) var wrappedValue: Bool
+    public var value: Bool { wrappedValue }
     public var projectedValue: Flag { self }
     
     public var identifier: String {
@@ -90,6 +91,7 @@ public class CounterFlag: AnyFlag {
     public let shortDescription: String
     
     public private(set) var wrappedValue: Int = 0
+    public var value: Int { wrappedValue }
     public var projectedValue: CounterFlag { self }
     
     public var identifier: String {
@@ -146,6 +148,7 @@ public class _Key<Value: ConvertibleFromString> {
 public class Key<Value: ConvertibleFromString>: _Key<Value>, AnyKey, ValueBox {
     
     public var wrappedValue: Value?
+    public var value: Value? { wrappedValue }
     public var projectedValue: Key { self }
     
     public init(_ names: String ..., description: String = "", completion: ShellCompletion = .filename, validation: [Validation<Value>] = []) {

@@ -318,8 +318,8 @@ class ParserTests: XCTestCase {
     func testCollectedOptions() throws {
         class RunCmd: Command {
             let name = "run"
-            @CLI.Param var executable: String
-            let args = OptionalCollectedParameter()
+            @Param.Required var executable: String
+            @CollectedParam.Optional var args: [String]
             @Flag("-v") var verbose: Bool
             func execute() throws {}
         }
@@ -332,7 +332,7 @@ class ParserTests: XCTestCase {
         XCTAssertTrue(result.command === cmd)
         
         XCTAssertEqual(cmd.executable, "cli")
-        XCTAssertEqual(cmd.args.value, ["-v", "arg"])
+        XCTAssertEqual(cmd.args, ["-v", "arg"])
         XCTAssertFalse(cmd.verbose)
         
         let cmd2 = RunCmd()
@@ -343,7 +343,7 @@ class ParserTests: XCTestCase {
         XCTAssertTrue(result2.command === cmd2)
         
         XCTAssertEqual(cmd2.executable, "cli")
-        XCTAssertEqual(cmd2.args.value, ["arg"])
+        XCTAssertEqual(cmd2.args, ["arg"])
         XCTAssertTrue(cmd2.verbose)
         
         let cmd3 = RunCmd()
@@ -356,7 +356,7 @@ class ParserTests: XCTestCase {
         XCTAssertTrue(result3.command === cmd3)
         
         XCTAssertEqual(cmd3.executable, "cli")
-        XCTAssertEqual(cmd3.args.value, ["arg"])
+        XCTAssertEqual(cmd3.args, ["arg"])
         XCTAssertTrue(cmd3.verbose)
     }
     

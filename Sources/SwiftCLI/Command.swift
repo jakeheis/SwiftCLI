@@ -79,7 +79,7 @@ public protocol Command: Routable {
     /// - Throws: CLI.Error if command cannot execute successfully
     func execute() throws
     
-    /// The paramters this command accepts; derived automatically, don't implement unless custom functionality needed
+    /// The parameters this command accepts; derived automatically, don't implement unless custom functionality needed
     var parameters: [NamedParameter] { get }
     
 }
@@ -111,10 +111,7 @@ extension Command {
             #endif
             
             if let param = child.value as? AnyParameter {
-                if label.hasPrefix("$") {
-                    label = String(label[label.index(after: label.startIndex)...])
-                }
-                if param is ParameterPropertyWrapper && label.hasPrefix("_") {
+                if label.hasPrefix("_") {
                     label = String(label[label.index(after: label.startIndex)...])
                 }
                 return NamedParameter(name: label, param: param)
