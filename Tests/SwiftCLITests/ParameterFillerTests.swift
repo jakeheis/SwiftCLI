@@ -73,11 +73,11 @@ class ParameterFillerTests: XCTestCase {
         
         let cmd1 = try parse(command: Req2CollectedCmd(), args: ["arg1", "arg2"])
         XCTAssertEqual(cmd1.req1, "arg1")
-        XCTAssertEqual(cmd1.req2.value, ["arg2"])
+        XCTAssertEqual(cmd1.req2, ["arg2"])
         
         let cmd2 = try parse(command: Req2CollectedCmd(), args: ["arg1", "arg2", "arg3"])
         XCTAssertEqual(cmd2.req1, "arg1")
-        XCTAssertEqual(cmd2.req2.value, ["arg2", "arg3"])
+        XCTAssertEqual(cmd2.req2, ["arg2", "arg3"])
     }
     
     func testCollectedOptionalParameters() throws {

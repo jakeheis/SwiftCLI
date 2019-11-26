@@ -154,7 +154,7 @@ class Opt2InhCmd: Opt2Cmd {
 }
 
 class ReqCollectedCmd: EmptyCmd {
-    let req1 = CollectedParameter()
+    @CLI.CollectedParam var req1: [String]
 }
 
 class OptCollectedCmd: EmptyCmd {
@@ -167,7 +167,9 @@ class Req2CollectedCmd: EmptyCmd {
         ("library", "generates project for a dynamic library")
         ]))
     var req1: String
-    let req2 = CollectedParameter(completion: .filename)
+    
+    @CLI.CollectedParam(completion: .filename)
+    var req2: [String]
 }
 
 class Opt2CollectedCmd: EmptyCmd {

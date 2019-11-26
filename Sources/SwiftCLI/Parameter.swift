@@ -26,7 +26,8 @@ public class _Param<Value: ConvertibleFromString> {
     
 }
 
-protocol ParameterPropertyWrapper {}
+public protocol ParameterPropertyWrapper {}
+public protocol AnyCollectedParameter: AnyParameter {}
 
 extension CLI {
     
@@ -97,6 +98,38 @@ extension CLI {
         }
         
     }
+    
+    @propertyWrapper
+    public class CollectedParam<Value: ConvertibleFromString> : _Param<Value>, AnyCollectedParameter, ValueBox, ParameterPropertyWrapper {
+        
+        public let required = true
+        public var satisfied: Bool { return !value.isEmpty }
+               
+        public var wrappedValue: [Value] = []
+        public var value: [Value] { wrappedValue }
+        
+        public var projectedValue: CollectedParam {
+            return self
+        }
+        
+        public init() {
+            super.init()
+        }
+        
+        public override init(completion: ShellCompletion = .filename, validation: [Validation<Value>] = []) {
+            super.init(completion: completion, validation: validation)
+        }
+        
+        public init(completion: ShellCompletion = .filename, validation: Validation<Value>...) {
+            super.init(completion: completion, validation: validation)
+        }
+        
+        public func update(to value: Value) {
+            self.wrappedValue.append(value)
+        }
+        
+    }
+    
 }
 
 public enum Param {
@@ -115,7 +148,6 @@ public enum Param {
     }
 }
 
-public protocol AnyCollectedParameter: AnyParameter {}
 
 public enum CollectedParam {
     
