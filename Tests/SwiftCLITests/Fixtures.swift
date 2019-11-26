@@ -158,7 +158,7 @@ class ReqCollectedCmd: EmptyCmd {
 }
 
 class OptCollectedCmd: EmptyCmd {
-    let opt1 = OptionalCollectedParameter()
+    @CLI.OptCollectedParam var opt1: [String]
 }
 
 class Req2CollectedCmd: EmptyCmd {
@@ -174,7 +174,7 @@ class Req2CollectedCmd: EmptyCmd {
 
 class Opt2CollectedCmd: EmptyCmd {
     @CLI.OptParam var opt1: String?
-    let opt2 = OptionalCollectedParameter()
+    @CLI.OptCollectedParam var opt2: [String]
 }
 
 class Req2Opt2Cmd: EmptyCmd {

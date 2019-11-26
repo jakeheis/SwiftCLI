@@ -130,6 +130,37 @@ extension CLI {
         
     }
     
+    @propertyWrapper
+    public class OptCollectedParam<Value: ConvertibleFromString> : _Param<Value>, AnyCollectedParameter, ValueBox, ParameterPropertyWrapper {
+        
+        public let required = false
+        public let satisfied = true
+               
+        public var wrappedValue: [Value] = []
+        public var value: [Value] { wrappedValue }
+        
+        public var projectedValue: OptCollectedParam {
+            return self
+        }
+        
+        public init() {
+            super.init()
+        }
+        
+        public override init(completion: ShellCompletion = .filename, validation: [Validation<Value>] = []) {
+            super.init(completion: completion, validation: validation)
+        }
+        
+        public init(completion: ShellCompletion = .filename, validation: Validation<Value>...) {
+            super.init(completion: completion, validation: validation)
+        }
+        
+        public func update(to value: Value) {
+            self.wrappedValue.append(value)
+        }
+        
+    }
+    
 }
 
 public enum Param {
@@ -230,7 +261,7 @@ public class ParameterIterator {
         self.params = all
         
         assert(all.firstIndex(where: { $0.param is AnyCollectedParameter }) == nil, "can only have one collected parameter, and it must be the last parameter")
-        assert(all.firstIndex(where: { $0.param is OptionalParameter }).flatMap({ $0 >= minCount }) ?? true, "optional parameters must come after all required parameters")
+        assert(all.firstIndex(where: { !$0.param.required }).flatMap({ $0 >= minCount }) ?? true, "optional parameters must come after all required parameters")
     }
     
     public func nextIsCollection() -> Bool {

@@ -83,19 +83,19 @@ class ParameterFillerTests: XCTestCase {
     func testCollectedOptionalParameters() throws {
         let cmd1 = try parse(command: Opt2CollectedCmd(), args: [])
         XCTAssertEqual(cmd1.opt1, nil)
-        XCTAssertEqual(cmd1.opt2.value, [])
+        XCTAssertEqual(cmd1.opt2, [])
         
         let cmd2 = try parse(command: Opt2CollectedCmd(), args: ["arg1"])
         XCTAssertEqual(cmd2.opt1, "arg1")
-        XCTAssertEqual(cmd2.opt2.value, [])
+        XCTAssertEqual(cmd2.opt2, [])
         
         let cmd3 = try parse(command: Opt2CollectedCmd(), args: ["arg1", "arg2"])
         XCTAssertEqual(cmd3.opt1, "arg1")
-        XCTAssertEqual(cmd3.opt2.value, ["arg2"])
+        XCTAssertEqual(cmd3.opt2, ["arg2"])
         
         let cmd4 = try parse(command: Opt2CollectedCmd(), args: ["arg1", "arg2", "arg3"])
         XCTAssertEqual(cmd4.opt1, "arg1")
-        XCTAssertEqual(cmd4.opt2.value, ["arg2", "arg3"])
+        XCTAssertEqual(cmd4.opt2, ["arg2", "arg3"])
     }
     
     func testCombinedRequiredAndOptionalParameters() throws {
@@ -124,7 +124,7 @@ class ParameterFillerTests: XCTestCase {
     
     func testEmptyOptionalCollectedParameter() throws { // Tests regression
         let cmd = try parse(command: OptCollectedCmd(), args: [])
-        XCTAssertEqual(cmd.opt1.value, [])
+        XCTAssertEqual(cmd.opt1, [])
     }
     
     func testCustomParameter() throws {
