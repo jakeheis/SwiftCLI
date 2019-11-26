@@ -44,9 +44,7 @@ public enum Param {
             return val
         }
         public var value: Value { wrappedValue }
-        public var projectedValue: Required {
-            return self
-        }
+        public var projectedValue: Required { self }
         
         public init() {
             super.init()
@@ -73,11 +71,9 @@ public enum Param {
         public var satisfied = true
         public let collected = false
         
-        public var wrappedValue: Value?
+        public private(set) var wrappedValue: Value?
         public var value: Value? { wrappedValue }
-        public var projectedValue: Optional {
-            return self
-        }
+        public var projectedValue: Optional { self }
         
         public init() {
             super.init()
@@ -108,7 +104,7 @@ public enum CollectedParam {
         public var satisfied: Bool { !value.isEmpty }
         public let collected = true
         
-        public var wrappedValue: [Value] = []
+        public private(set) var wrappedValue: [Value] = []
         public var value: [Value] { wrappedValue }
         public var projectedValue: Required {
             return self
@@ -139,7 +135,7 @@ public enum CollectedParam {
         public let satisfied = true
         public let collected = true
                
-        public var wrappedValue: [Value] = []
+        public private(set) var wrappedValue: [Value] = []
         public var value: [Value] { wrappedValue }
         public var projectedValue: Optional {
             return self

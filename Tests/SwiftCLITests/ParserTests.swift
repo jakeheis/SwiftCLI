@@ -176,7 +176,7 @@ class ParserTests: XCTestCase {
         let arguments = ArgumentList(arguments: ["cmd", "-f", "firstFile", "--file", "secondFile"])
         
         _ = try Parser().parse(cli: cli, arguments: arguments)
-        XCTAssertEqual(cmd.files.value, ["firstFile", "secondFile"])
+        XCTAssertEqual(cmd.files, ["firstFile", "secondFile"])
     }
     
     func testCounterParse() throws {

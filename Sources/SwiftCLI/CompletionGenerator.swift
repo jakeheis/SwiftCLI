@@ -224,7 +224,7 @@ public final class ZshCompletionGenerator: CompletionGenerator {
                 completion = nil
             }
             
-            if option is AnyVariadicOption {
+            if option.variadic {
                 return option.names.map { (name) in
                     return genOptionLine(names: [name], mode: .variadic, description: option.shortDescription, completion: completion)
                 }
@@ -249,9 +249,3 @@ public final class ZshCompletionGenerator: CompletionGenerator {
     }
     
 }
-
-// MARK: -
-
-fileprivate protocol AnyVariadicOption: Option {}
-extension VariadicKey: AnyVariadicOption {}
-extension CounterFlag: AnyVariadicOption {}

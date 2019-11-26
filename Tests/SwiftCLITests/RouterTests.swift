@@ -160,28 +160,34 @@ class RouterTests: XCTestCase {
     }
 
     func testFallback() throws {
-        let opt1 = Opt1Cmd()
-        let cli = CLI.createTester(commands: [opt1])
+        func setup() -> (Opt1Cmd, CLI, Parser) {
+            let opt1 = Opt1Cmd()
+            let cli = CLI.createTester(commands: [opt1])
+            let parser = Parser()
+            parser.routeBehavior = .searchWithFallback(opt1)
+            return (opt1, cli, parser)
+        }
         
-        let parser = Parser()
-        parser.routeBehavior = .searchWithFallback(opt1)
+        let (opt1, cli1, parser1) = setup()
         
-        let firstResult = try parser.parse(cli: cli, arguments: ArgumentList(arguments: ["cmd", "value"]))
+        let firstResult = try parser1.parse(cli: cli1, arguments: ArgumentList(arguments: ["cmd", "value"]))
         XCTAssert(opt1 === firstResult.command)
         XCTAssertFalse(firstResult.ignoreName)
         XCTAssertEqual(opt1.opt1, "value")
         
-        let secondResult = try parser.parse(cli: cli, arguments: ArgumentList(arguments: ["value2"]))
-        XCTAssert(opt1 === secondResult.command)
+        let (opt2, cli2, parser2) = setup()
+        
+        let secondResult = try parser2.parse(cli: cli2, arguments: ArgumentList(arguments: ["value2"]))
+        XCTAssert(opt2 === secondResult.command)
         XCTAssertTrue(secondResult.ignoreName)
-        XCTAssertEqual(opt1.opt1, "value2")
+        XCTAssertEqual(opt2.opt1, "value2")
         
-        opt1.opt1 = nil
+        let (opt3, cli3, parser3) = setup()
         
-        let thirdResult = try parser.parse(cli: cli, arguments: ArgumentList(arguments: []))
-        XCTAssert(opt1 === thirdResult.command)
+        let thirdResult = try parser3.parse(cli: cli3, arguments: ArgumentList(arguments: []))
+        XCTAssert(opt3 === thirdResult.command)
         XCTAssertTrue(thirdResult.ignoreName)
-        XCTAssertNil(opt1.opt1)
+        XCTAssertNil(opt3.opt1)
     }
     
 }

@@ -307,7 +307,8 @@ class MultipleRestrictionsCmd: Command {
 }
 
 class VariadicKeyCmd: OptionCmd {
-    let files = VariadicKey<String>("-f", "--file", description: "a file")
+    @VariadicKey("-f", "--file", description: "a file")
+    var files: [String]
 }
 
 class CounterFlagCmd: OptionCmd {

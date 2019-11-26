@@ -10,6 +10,7 @@ public protocol Option: class, CustomStringConvertible {
     var names: [String] { get }
     var shortDescription: String { get }
     var identifier: String { get }
+    var variadic: Bool { get }
 }
 
 extension Option {
@@ -39,6 +40,7 @@ public class Flag: AnyFlag {
     public let names: [String]
     public let shortDescription: String
     private let defaultValue: Bool
+    public let variadic = false
     
     public private(set) var wrappedValue: Bool
     public var value: Bool { wrappedValue }
@@ -89,6 +91,7 @@ public class CounterFlag: AnyFlag {
     
     public let names: [String]
     public let shortDescription: String
+    public let variadic = true
     
     public private(set) var wrappedValue: Int = 0
     public var value: Int { wrappedValue }
@@ -147,7 +150,9 @@ public class _Key<Value: ConvertibleFromString> {
 @propertyWrapper
 public class Key<Value: ConvertibleFromString>: _Key<Value>, AnyKey, ValueBox {
     
-    public var wrappedValue: Value?
+    public let variadic = false
+    
+    public private(set) var wrappedValue: Value?
     public var value: Value? { wrappedValue }
     public var projectedValue: Key { self }
     
@@ -161,16 +166,21 @@ public class Key<Value: ConvertibleFromString>: _Key<Value>, AnyKey, ValueBox {
     
 }
 
+@propertyWrapper
 public class VariadicKey<Value: ConvertibleFromString>: _Key<Value>, AnyKey, ValueBox {
     
-    public var value: [Value] = []
+    public let variadic = true
+    
+    public private(set) var wrappedValue: [Value] = []
+    public var value: [Value] { wrappedValue }
+    public var projectedValue: VariadicKey { self }
     
     public init(_ names: String ..., description: String = "", completion: ShellCompletion = .filename, validation: [Validation<Value>] = []) {
         super.init(names, description: description, completion: completion, validation: validation)
     }
     
     public func update(to value: Value) {
-        self.value.append(value)
+        self.wrappedValue.append(value)
     }
     
 }
