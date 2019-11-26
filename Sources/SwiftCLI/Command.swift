@@ -47,21 +47,7 @@ extension Routable {
             options = optionsFromMirror(superMirror)
         }
         
-        options.append(contentsOf: mirror.children.compactMap { (child) -> Option? in
-            #if !os(macOS)
-            #if swift(>=4.1.50)
-            print(child.label as Any, to: &NoStream.stream)
-            guard child.label != "children" && child.label != "optionGroups" else {
-                return nil
-            }
-            #endif
-            #endif
-            
-            if let option = child.value as? Option {
-                return option
-            }
-            return nil
-        })
+        options.append(contentsOf: mirror.children.compactMap { $0.value as? Option })
         return options
     }
     
@@ -99,16 +85,6 @@ extension Command {
             guard var label = child.label else {
                 return nil
             }
-            
-            #if !os(macOS)
-            #if swift(>=4.1.50)
-            print("label \(label)", to: &NoStream.stream)
-            print("label \(label)", to: &NoStream.stream)
-            guard label != "children" && label != "optionGroups" else {
-                return nil
-            }
-            #endif
-            #endif
             
             if let param = child.value as? AnyParameter {
                 if label.hasPrefix("_") {
@@ -150,19 +126,3 @@ extension CommandGroup {
         return ""
     }
 }
-
-#if !os(macOS)
-#if swift(>=4.1.50)
-struct NoStream: TextOutputStream {
-    
-    // Fix for strange crash on Linux with Swift 4.2
-    
-    static var stream = NoStream()
-    
-    mutating func write(_ string: String) {
-        // No-op
-    }
-    
-}
-#endif
-#endif
