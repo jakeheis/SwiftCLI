@@ -144,11 +144,3 @@ extension Bool: ConvertibleFromString {
     }
     
 }
-
-//extension Optional: ConvertibleFromString where Wrapped: ConvertibleFromString {
-//
-//    public static func convert(from: String) -> Wrapped?? {
-//        return Wrapped.convert(from: from)
-//    }
-//
-//}
