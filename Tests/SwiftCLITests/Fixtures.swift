@@ -426,7 +426,7 @@ func XCTAssertThrowsSpecificError<T, E: Error>(
     file: StaticString = #file,
     line: UInt = #line,
     error errorHandler: @escaping (E) -> Void) {
-    XCTAssertThrowsError(expression, file: file, line: line) { (error) in
+    XCTAssertThrowsError(try expression(), file: file, line: line) { (error) in
         guard let specificError = error as? E else {
             XCTFail("Error must be type \(String(describing: E.self)), is \(String(describing: type(of: error)))", file: file, line: line)
             return
