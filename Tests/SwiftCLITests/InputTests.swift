@@ -15,7 +15,7 @@ class InputTests: XCTestCase {
     override func setUp() {
         super.setUp()
 
-        ReadInput.read = {
+        Term.read = {
             return self.input.removeFirst()
         }
     }
