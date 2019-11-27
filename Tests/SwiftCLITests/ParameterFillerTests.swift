@@ -132,7 +132,7 @@ class ParameterFillerTests: XCTestCase {
         
         let cmd = EnumCmd()
         XCTAssertThrowsSpecificError(
-            expression: try parse(command: cmd, args: ["value"]),
+            expression: try self.parse(command: cmd, args: ["value"]),
             error: { (error: ParameterError) in
                 guard case .invalidValue(let namedParam, .conversionError) = error.kind else {
                     XCTFail()
@@ -158,7 +158,7 @@ class ParameterFillerTests: XCTestCase {
         
         let cmd2 = ValidatedParamCmd()
         XCTAssertThrowsSpecificError(
-            expression: try parse(command: cmd2, args: ["16"]),
+            expression: try self.parse(command: cmd2, args: ["16"]),
             error: { (error: ParameterError) in
                 guard case .invalidValue(let namedParam, .validationError(let validation)) = error.kind else {
                     XCTFail()
@@ -188,7 +188,7 @@ class ParameterFillerTests: XCTestCase {
     
     private func assertParseNumberError<T: Command>(command: T, args: [String], min: Int, max: Int?, file: StaticString = #file, line: UInt = #line) {
         XCTAssertThrowsSpecificError(
-            expression: try parse(command: command, args: args), file: file, line: line,
+            expression: try self.parse(command: command, args: args), file: file, line: line,
             error: { (error: ParameterError) in
                 guard case let .wrongNumber(aMin, aMax) = error.kind else {
                     XCTFail("Expected error to be .wrongNumber(\(min), \(max as Any)); got .\(error.kind)", file: file, line: line)

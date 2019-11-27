@@ -10,9 +10,11 @@ import SwiftCLI
 
 class GreetCommand: Command {
     let name = "greet"
-    let person = Parameter()
+    
+    @Param.Required var person: String
+
     func execute() throws {
-        stdout <<< "Hello \(person.value)!"
+        stdout <<< "Hello \(person)!"
     }
 }
 
@@ -70,7 +72,7 @@ Add SwiftCLI as a dependency to your project:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/jakeheis/SwiftCLI", from: "5.0.0")
+    .package(url: "https://github.com/jakeheis/SwiftCLI", from: "6.0.0")
 ]
 ```
 
@@ -150,12 +152,12 @@ Required parameters take the form of the type `Parameter`. If the command is not
 class GreetCommand: Command {
     let name = "greet"
 
-    let person = Parameter()
-    let followUp = Parameter()
+    @Param.Required var person: String
+    @Param.Required var followUp: String
 
     func execute() throws {
-        stdout <<< "Hey there, \(person.value)!"
-        stdout <<< followUp.value
+        stdout <<< "Hey there, \(person)!"
+        stdout <<< followUp
     }
 }
 ```
@@ -183,12 +185,12 @@ Optional parameters take the form of the type `OptionalParameter`. Optional para
 class GreetCommand: Command {
     let name = "greet"
 
-    let person = Parameter()
-    let followUp = OptionalParameter()
+    @Param.Required var person: String
+    @Param.Optional var followUp: String?
 
     func execute() throws {
-        stdout <<< "Hey there, \(person.value)!"
-        if let followUpText = followUp.value {
+        stdout <<< "Hey there, \(person)!"
+        if let followUpText = followUp {
             stdout <<< followUpText
         }
     }
@@ -211,10 +213,10 @@ Commands may have a single collected parameter, a `CollectedParameter` or a `Opt
 class GreetCommand: Command {
     let name = "greet"
 
-    let people = CollectedParameter()
+    @CollectedParam.Required var people: [String]
 
     func execute() throws {
-        for person in people.value {
+        for person in people {
             stdout <<< "Hey there, \(person)!"
         }        
     }
@@ -238,10 +240,10 @@ All of the parameters above will have a `value` of type `String`. To create a pa
 class GreetCommand: Command {
     let name = "greet"
 
-    let number = Param.Required<Int>()
+    @Param.Required var number: Int
 
     func execute() throws {
-        stdout <<< "Hey there, number \(number.value)!"     
+        stdout <<< "Hey there, number \(number)!"     
     }
 }
 ```
@@ -272,12 +274,12 @@ class GreetCommand: Command {
         case quiet
     }
     
-    let volume = Param.Required<Volume>()
+    @Param.Required var volume: Volume
     
     func execute() throws {
         let greeting = "Hello world!"
         
-        switch volume.value {
+        switch volume {
         case .loud: stdout <<< greeting.uppercased()
         case .quiet: stdout <<< greeting.lowercased()
         }
@@ -318,8 +320,12 @@ Options are specified as instance variables on the command class, just like para
 ```swift
 class ExampleCommand: Command {
     ...
-    let flag = Flag("-a", "--all")
-    let key = Key<Int>("-t", "--times")
+
+    @Flag("-a", "--all")
+    var flag: Bool
+
+    @Key("-t", "--times")
+    var key: Int?
     ...
 }
 ```
@@ -333,10 +339,11 @@ class GreetCommand: Command {
 
     ...
 
-    let loudly = Flag("-l", "--loudly", description: "Say the greeting loudly")
+    @Flag("-l", "--loudly", description: "Say the greeting loudly")
+    var loudly: Bool
 
     func execute() throws {
-        if loudly.value {
+        if loudly {
              ...
         } else {
             ...
@@ -351,7 +358,8 @@ A related option type is `CounterFlag`, which counts the nubmer of times the use
 ```swift
 class GreetCommand: Command {
     ...
-    let softly = CounterFlag("-s", "--softly", description: "Say the greeting softly")
+    @CounterFlag("-s", "--softly", description: "Say the greeting softly")
+    var softly: Int
     ...
 }
 ```
@@ -367,10 +375,11 @@ class GreetCommand: Command {
 
     ...
 
-    let numberOfTimes = Key<Int>("-n", "--number-of-times", description: "Say the greeting a certain number of times")
+    @Key("-n", "--number-of-times", description: "Say the greeting a certain number of times")
+    var numberOfTimes: Int?
 
     func execute() throws {
-        for i in 0..<(numberOfTimes.value ?? 1) {
+        for i in 0..<(numberOfTimes ?? 1) {
             ...
         }
     }
@@ -383,7 +392,8 @@ A related option type is `VariadicKey`, which allows the user to pass the same k
 ```swift
 class GreetCommand: Command {
     ...
-    let locations = VariadicKey<String>("-l", "--location", description: "Say the greeting in a certain location")
+    @VariadicKey("-l", "--location", description: "Say the greeting in a certain location")
+    var locations: [String]
     ...
 }
 ```
@@ -401,17 +411,20 @@ class GreetCommand: Command {
 
     ...
 
-    let loudly = Flag("-l", "--loudly", description: "Say the greeting loudly")
-    let whisper = Flag("-w", "--whisper", description: "Whisper the greeting")
+    @Flag("-l", "--loudly", description: "Say the greeting loudly")
+    var loudly: Bool
+
+    @Flag("-w", "--whisper", description: "Whisper the greeting")
+    var whisper: Bool
     
     var optionGroups: [OptionGroup] {
-        return [.atMostOne(loudly, whipser)]
+        return [.atMostOne($loudly, $whipser)]
     }
 
     func execute() throws {
-        if loudly.value {
+        if loudly {
             ...
-        } else if whisper.value{
+        } else if whisper {
             ...
         } else {
             ...
