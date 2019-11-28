@@ -144,7 +144,7 @@ class SwiftCLITests: XCTestCase {
     func testFallback() {
         class Execute: Command {
             let name = "execute"
-            let file = OptionalParameter()
+            @OptParam var file: String?
             var executed = false
             func execute() throws { executed = true }
         }
@@ -168,7 +168,7 @@ class SwiftCLITests: XCTestCase {
         XCTAssertEqual(err, "")
         XCTAssertTrue(build1.built)
         XCTAssertFalse(execute1.executed)
-        XCTAssertNil(execute1.file.value)
+        XCTAssertNil(execute1.file)
         
         let execute2 = Execute()
         let build2 = Build()
@@ -183,7 +183,7 @@ class SwiftCLITests: XCTestCase {
         XCTAssertEqual(err2, "")
         XCTAssertFalse(build2.built)
         XCTAssertTrue(execute2.executed)
-        XCTAssertEqual(execute2.file.value, "file.swift")
+        XCTAssertEqual(execute2.file, "file.swift")
         
         let execute3 = Execute()
         let build3 = Build()
@@ -198,7 +198,7 @@ class SwiftCLITests: XCTestCase {
         XCTAssertEqual(err3, "")
         XCTAssertFalse(build3.built)
         XCTAssertTrue(execute3.executed)
-        XCTAssertNil(execute3.file.value)
+        XCTAssertNil(execute3.file)
         
         let execute4 = Execute()
         let build4 = Build()
