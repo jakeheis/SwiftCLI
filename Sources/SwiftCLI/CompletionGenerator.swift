@@ -133,7 +133,7 @@ public final class ZshCompletionGenerator: CompletionGenerator {
         let optionArgs = genOptionArgs(for: command.command).joined(separator: " \\\n")
         let paramArgs = command.command.parameters.map { (namedParam) -> String in
             var line = "      \""
-            if namedParam.param.collected {
+            if namedParam.param is AnyCollectedParameter {
                 line += "*"
             }
             line += ":"

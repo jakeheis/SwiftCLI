@@ -68,7 +68,7 @@ class ParameterFillerTests: XCTestCase {
     
     func testCollectedRequiredParameters() throws {
         assertParseNumberError(command: ReqCollectedCmd(), args: [], min: 1, max: nil)
-        
+
         assertParseNumberError(command: Req2CollectedCmd(), args: ["arg1"], min: 2, max: nil)
         
         let cmd1 = try parse(command: Req2CollectedCmd(), args: ["arg1", "arg2"])
@@ -78,6 +78,12 @@ class ParameterFillerTests: XCTestCase {
         let cmd2 = try parse(command: Req2CollectedCmd(), args: ["arg1", "arg2", "arg3"])
         XCTAssertEqual(cmd2.req1, "arg1")
         XCTAssertEqual(cmd2.req2, ["arg2", "arg3"])
+        
+        assertParseNumberError(command: TriReqCollectedCmd(), args: ["arg1"], min: 3, max: nil)
+        assertParseNumberError(command: TriReqCollectedCmd(), args: ["arg1", "arg2"], min: 3, max: nil)
+        
+        let cmd3 = try parse(command: TriReqCollectedCmd(), args: ["arg1", "arg2", "arg3"])
+        XCTAssertEqual(cmd3.triReq, ["arg1", "arg2", "arg3"])
     }
     
     func testCollectedOptionalParameters() throws {

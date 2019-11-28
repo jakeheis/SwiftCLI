@@ -22,8 +22,8 @@ class TestCommand: Command {
 
     var executionString = ""
 
-    @Param.Required var testName: String
-    @Param.Optional var testerName: String?
+    @Param var testName: String
+    @OptParam var testerName: String?
     
     @Flag("-s", "--silent", description: "Silence all test output")
     var silent: Bool
@@ -117,20 +117,19 @@ class EmptyCmd: Command {
 }
 
 class Req1Cmd: EmptyCmd {
-    @Param.Required(completion: .function("_ice_targets"))
+    @Param(completion: .function("_ice_targets"))
     var req1: String
 }
 
 class Opt1Cmd: EmptyCmd {
-    @Param.Optional
-    var opt1: String?
+    @OptParam var opt1: String?
 }
 
 class Req2Cmd: EmptyCmd {
-    @Param.Required(completion: .filename)
+    @Param(completion: .filename)
     var req1: String
     
-    @Param.Required(completion: .values([
+    @Param(completion: .values([
         ("executable", "generates a project for a cli executable"),
         ("library", "generates project for a dynamic library"),
         ("other", "")
@@ -139,10 +138,10 @@ class Req2Cmd: EmptyCmd {
 }
 
 class Opt2Cmd: EmptyCmd {
-    @Param.Optional(completion: .filename)
+    @OptParam(completion: .filename)
     var opt1: String?
     
-    @Param.Optional(completion: .values([
+    @OptParam(completion: .values([
         ("executable", "generates a project for a cli executable"),
         ("library", "generates project for a dynamic library")
     ]))
@@ -150,44 +149,49 @@ class Opt2Cmd: EmptyCmd {
 }
 
 class Opt2InhCmd: Opt2Cmd {
-    @Param.Optional var opt3: String?
+    @OptParam var opt3: String?
 }
 
 class ReqCollectedCmd: EmptyCmd {
-    @CollectedParam.Required var req1: [String]
+    @CollectedParam(minCount: 1) var req1: [String]
 }
 
 class OptCollectedCmd: EmptyCmd {
-    @CollectedParam.Optional var opt1: [String]
+    @CollectedParam var opt1: [String]
 }
 
 class Req2CollectedCmd: EmptyCmd {
-    @Param.Required(completion: .values([
+    @Param(completion: .values([
         ("executable", "generates a project for a cli executable"),
         ("library", "generates project for a dynamic library")
-        ]))
+    ]))
     var req1: String
     
-    @CollectedParam.Required(completion: .filename)
+    @CollectedParam(minCount: 1, completion: .filename)
     var req2: [String]
 }
 
+class TriReqCollectedCmd: EmptyCmd {
+    @CollectedParam(minCount: 3)
+    var triReq: [String]
+}
+
 class Opt2CollectedCmd: EmptyCmd {
-    @Param.Optional var opt1: String?
-    @CollectedParam.Optional var opt2: [String]
+    @OptParam var opt1: String?
+    @CollectedParam var opt2: [String]
 }
 
 class Req2Opt2Cmd: EmptyCmd {
-    @Param.Required(completion: .filename)
+    @Param(completion: .filename)
     var req1: String
     
-    @Param.Required(completion: .function("_swift_dependency"))
+    @Param(completion: .function("_swift_dependency"))
     var req2: String
     
-    @Param.Optional(completion: .none)
+    @OptParam(completion: .none)
     var opt1: String?
     
-    @Param.Optional(completion: .filename)
+    @OptParam(completion: .filename)
     var opt2: String?
 }
 
@@ -264,7 +268,7 @@ class FlagKeyParamCmd: OptionCmd {
     @Key("-b", "--beta")
     var beta: String?
     
-    @Param.Required var param: String
+    @Param var param: String
 }
 
 class IntKeyCmd: OptionCmd {
@@ -380,9 +384,9 @@ class EnumCmd: Command {
     let name = "cmd"
     let shortDescription = "Limits param values to enum"
     
-    @Param.Required var speed: Speed
-    @Param.Optional var single: Single?
-    @Param.Optional var int: Int?
+    @Param var speed: Speed
+    @OptParam var single: Single?
+    @OptParam var int: Int?
     
     func execute() throws {}
     
@@ -397,7 +401,7 @@ class ValidatedParamCmd: Command {
     let name = "cmd"
     let shortDescription = "Validates param values"
     
-    @Param.Optional(validation: [.greaterThan(18)])
+    @OptParam(validation: [.greaterThan(18)])
     var age: Int?
     
     func execute() throws {}
@@ -409,7 +413,7 @@ class RememberExecutionCmd: Command {
     let name = "cmd"
     let shortDescription = "Remembers execution"
     
-    @Param.Optional var param: String?
+    @OptParam var param: String?
     
     var executed = false
     

@@ -11,7 +11,8 @@ public class HelpCommand: Command {
     public let name = "help"
     public let shortDescription = "Prints help information"
     
-    public let command = OptionalCollectedParameter(completion: .none)
+    @CollectedParam(completion: .none)
+    var command: [String]
     
     let cli: CLI
     
@@ -22,7 +23,7 @@ public class HelpCommand: Command {
     public func execute() throws {
         var path = CommandGroupPath(top: cli)
         
-        for pathSegment in command.value {
+        for pathSegment in command {
             let child = path.bottom.children.first(where:  { $0.name == pathSegment })
             if let group = child as? CommandGroup {
                 path = path.appending(group)

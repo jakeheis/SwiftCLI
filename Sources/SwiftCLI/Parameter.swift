@@ -9,7 +9,6 @@
 public protocol AnyParameter: AnyValueBox {
     var required: Bool { get }
     var satisfied: Bool { get }
-    var collected: Bool { get }
 }
 
 public class _Param<Value: ConvertibleFromString> {
@@ -27,144 +26,106 @@ public class _Param<Value: ConvertibleFromString> {
     
 }
 
-public enum Param {
+@propertyWrapper
+public class Param<Value: ConvertibleFromString> : _Param<Value>, AnyParameter, ValueBox {
     
-    @propertyWrapper
-    public class Required<Value: ConvertibleFromString> : _Param<Value>, AnyParameter, ValueBox {
-        
-        public let required = true
-        public var satisfied: Bool { privValue != nil }
-        public let collected = false
-        
-        private var privValue: Value?
-        public var wrappedValue: Value {
-            guard let val = privValue else {
-                fatalError("cannot access parameter value outside of 'execute' func")
-            }
-            return val
+    public let required = true
+    public var satisfied: Bool { privValue != nil }
+    
+    private var privValue: Value?
+    public var wrappedValue: Value {
+        guard let val = privValue else {
+            fatalError("cannot access parameter value outside of 'execute' func")
         }
-        public var value: Value { wrappedValue }
-        public var projectedValue: Required { self }
-        
-        public init() {
-            super.init()
-        }
-        
-        public override init(completion: ShellCompletion = .filename, validation: [Validation<Value>] = []) {
-            super.init(completion: completion, validation: validation)
-        }
-        
-        public init(completion: ShellCompletion = .filename, validation: Validation<Value>...) {
-            super.init(completion: completion, validation: validation)
-        }
-        
-        public func update(to value: Value) {
-            self.privValue = value
-        }
-        
+        return val
+    }
+    public var value: Value { wrappedValue }
+    public var projectedValue: Param { self }
+    
+    public init() {
+        super.init()
     }
     
-    @propertyWrapper
-    public class Optional<Value: ConvertibleFromString> : _Param<Value>, AnyParameter, ValueBox {
-        
-        public let required = false
-        public var satisfied = true
-        public let collected = false
-        
-        public private(set) var wrappedValue: Value?
-        public var value: Value? { wrappedValue }
-        public var projectedValue: Optional { self }
-        
-        public init() {
-            super.init()
-        }
-        
-        public override init(completion: ShellCompletion = .filename, validation: [Validation<Value>] = []) {
-            super.init(completion: completion, validation: validation)
-        }
-        
-        public init(completion: ShellCompletion = .filename, validation: Validation<Value>...) {
-            super.init(completion: completion, validation: validation)
-        }
-        
-        public func update(to value: Value) {
-            self.wrappedValue = value
-        }
-        
+    public override init(completion: ShellCompletion = .filename, validation: [Validation<Value>] = []) {
+        super.init(completion: completion, validation: validation)
+    }
+    
+    public init(completion: ShellCompletion = .filename, validation: Validation<Value>...) {
+        super.init(completion: completion, validation: validation)
+    }
+    
+    public func update(to value: Value) {
+        self.privValue = value
+    }
+    
+}
+    
+@propertyWrapper
+public class OptParam<Value: ConvertibleFromString> : _Param<Value>, AnyParameter, ValueBox {
+    
+    public let required = false
+    public var satisfied = true
+    
+    public private(set) var wrappedValue: Value?
+    public var value: Value? { wrappedValue }
+    public var projectedValue: OptParam { self }
+    
+    public init() {
+        super.init()
+    }
+    
+    public override init(completion: ShellCompletion = .filename, validation: [Validation<Value>] = []) {
+        super.init(completion: completion, validation: validation)
+    }
+    
+    public init(completion: ShellCompletion = .filename, validation: Validation<Value>...) {
+        super.init(completion: completion, validation: validation)
+    }
+    
+    public func update(to value: Value) {
+        self.wrappedValue = value
     }
     
 }
 
-public enum CollectedParam {
+public protocol AnyCollectedParameter: AnyParameter {
+    var minCount: Int { get }
+}
+
+@propertyWrapper
+public class CollectedParam<Value: ConvertibleFromString> : _Param<Value>, AnyCollectedParameter, ValueBox {
     
-    @propertyWrapper
-    public class Required<Value: ConvertibleFromString> : _Param<Value>, AnyParameter, ValueBox {
-        
-        public let required = true
-        public var satisfied: Bool { !value.isEmpty }
-        public let collected = true
-        
-        public private(set) var wrappedValue: [Value] = []
-        public var value: [Value] { wrappedValue }
-        public var projectedValue: Required {
-            return self
-        }
-        
-        public init() {
-            super.init()
-        }
-        
-        public override init(completion: ShellCompletion = .filename, validation: [Validation<Value>] = []) {
-            super.init(completion: completion, validation: validation)
-        }
-        
-        public init(completion: ShellCompletion = .filename, validation: Validation<Value>...) {
-            super.init(completion: completion, validation: validation)
-        }
-        
-        public func update(to value: Value) {
-            self.wrappedValue.append(value)
-        }
-        
+    public var required: Bool { minCount > 0 }
+    public var satisfied: Bool { value.count >= minCount }
+    
+    public private(set) var wrappedValue: [Value] = []
+    public var value: [Value] { wrappedValue }
+    public var projectedValue: CollectedParam {
+        return self
     }
     
-    @propertyWrapper
-    public class Optional<Value: ConvertibleFromString> : _Param<Value>, AnyParameter, ValueBox {
-        
-        public let required = false
-        public let satisfied = true
-        public let collected = true
-               
-        public private(set) var wrappedValue: [Value] = []
-        public var value: [Value] { wrappedValue }
-        public var projectedValue: Optional {
-            return self
-        }
-        
-        public init() {
-            super.init()
-        }
-        
-        public override init(completion: ShellCompletion = .filename, validation: [Validation<Value>] = []) {
-            super.init(completion: completion, validation: validation)
-        }
-        
-        public init(completion: ShellCompletion = .filename, validation: Validation<Value>...) {
-            super.init(completion: completion, validation: validation)
-        }
-        
-        public func update(to value: Value) {
-            self.wrappedValue.append(value)
-        }
-        
+    public let minCount: Int
+    
+    public init() {
+        self.minCount = 0
+        super.init()
+    }
+    
+    public init(minCount: Int = 0, completion: ShellCompletion = .filename, validation: [Validation<Value>] = []) {
+        self.minCount = minCount
+        super.init(completion: completion, validation: validation)
+    }
+    
+    public init(minCount: Int = 0, completion: ShellCompletion = .filename, validation: Validation<Value>...) {
+        self.minCount = minCount
+        super.init(completion: completion, validation: validation)
+    }
+    
+    public func update(to value: Value) {
+        self.wrappedValue.append(value)
     }
     
 }
-
-public typealias Parameter = Param.Required<String>
-public typealias OptionalParameter = Param.Optional<String>
-public typealias CollectedParameter = CollectedParam.Required<String>
-public typealias OptionalCollectedParameter = CollectedParam.Optional<String>
 
 // MARK: - NamedParameter
 
@@ -177,7 +138,7 @@ public struct NamedParameter {
         if param.required == false {
             sig = "[\(sig)]"
         }
-        if param.collected {
+        if param is AnyCollectedParameter {
             sig += " ..."
         }
         return sig
@@ -202,21 +163,25 @@ public class ParameterIterator {
     public init(command: CommandPath) {
         var all = command.command.parameters
         
-        self.minCount = all.filter({ $0.param.required }).count
+        assert(all.firstIndex(where: { !$0.param.required }) ?? all.endIndex >= all.filter({ $0.param.required }).count, "optional parameters must come after all required parameters")
         
-        if let collected = all.last, collected.param.collected {
-            self.collected = collected
+        var minCount = 0
+        
+        if let last = all.last, let collected = last.param as? AnyCollectedParameter {
             all.removeLast()
+            assert(!all.contains(where: { $0.param is AnyCollectedParameter }), "can only have one collected parameter")
+            
+            self.collected = last
             self.maxCount = nil
+            minCount = collected.minCount
         } else {
+            assert(!all.contains(where: { $0.param is AnyCollectedParameter }), "the collected parameter must be the last parameter")
             self.collected = nil
             self.maxCount = all.count
         }
         
+        self.minCount = all.filter({ $0.param.required }).count + minCount
         self.params = all
-        
-        assert(all.firstIndex(where: { $0.param.collected }) == nil, "can only have one collected parameter, and it must be the last parameter")
-        assert(all.firstIndex(where: { !$0.param.required }).flatMap({ $0 >= minCount }) ?? true, "optional parameters must come after all required parameters")
     }
     
     public func nextIsCollection() -> Bool {

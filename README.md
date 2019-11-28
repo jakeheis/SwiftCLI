@@ -1,7 +1,7 @@
 SwiftCLI
 ========
 
-[![Build Status](https://travis-ci.org/jakeheis/SwiftCLI.svg?branch=master)](https://travis-ci.org/jakeheis/SwiftCLI)
+[![Build Status](https://github.com/jakeheis/SwiftCLI/workflows/Test/badge.svg)](https://github.com/jakeheis/SwiftCLI/actions)
 
 A powerful framework for developing CLIs, from the simplest to the most complex, in Swift.
 
@@ -11,7 +11,7 @@ import SwiftCLI
 class GreetCommand: Command {
     let name = "greet"
     
-    @Param.Required var person: String
+    @Param var person: String
 
     func execute() throws {
         stdout <<< "Hello \(person)!"
@@ -133,27 +133,28 @@ class GreetCommand: Command {
 
 ### Parameters
 
-A command can specify what parameters it accepts through certain instance variables. Using reflection, SwiftCLI will identify instance variables of type `Parameter`, `OptionalParameter`, `CollectedParameter`, and `OptionalCollectedParameter`. These instance variables should appear in the order that the command expects the user to pass the arguments:
+A command can specify what parameters it accepts through certain instance variables. Using reflection, SwiftCLI will identify property wrappers of type `@Param`, `@OptParam`, and `@CollectedParam`. These properties should appear in the order that the command expects the user to pass the arguments:
 
 ```swift
 class GreetCommand: Command {
     let name = "greet"
-    let firstParam = Parameter()
-    let secondParam = Parameter()
+
+    @Param var firstParam: String
+    @Param var secondParam: String
 }
 ```
 In this example, if the user runs `greeter greet Jack Jill`, `firstParam` will contain the value `Jack` and `secondParam` will contain the value `Jill`. You can access the values of these parameters in `func execute()` by calling `firstParam.value`, etc.
 
 #### Required parameters
 
-Required parameters take the form of the type `Parameter`. If the command is not passed enough arguments to satisfy all required parameters, the command will fail.
+Required parameters take the form of the property wrapper `@Param`. If the command is not passed enough arguments to satisfy all required parameters, the command will fail.
 
 ```swift
 class GreetCommand: Command {
     let name = "greet"
 
-    @Param.Required var person: String
-    @Param.Required var followUp: String
+    @Param var person: String
+    @Param var followUp: String
 
     func execute() throws {
         stdout <<< "Hey there, \(person)!"
@@ -179,14 +180,14 @@ What's up?
 
 #### Optional parameters
 
-Optional parameters take the form of the type `OptionalParameter`. Optional parameters must come after all required parameters. If the user does not pass enough arguments to satisfy all optional parameters, the `.value` of these unsatisfied parameters will be `nil`.
+Optional parameters take the form of the property wrapper `@OptParam`. Optional parameters must come after all required parameters. If the user does not pass enough arguments to satisfy all optional parameters, the value of these unsatisfied parameters will be `nil`. The property wrapped by `@OptParam` **must** be optional, or the Swift compiler will crash.
 
 ```swift
 class GreetCommand: Command {
     let name = "greet"
 
-    @Param.Required var person: String
-    @Param.Optional var followUp: String?
+    @Param var person: String
+    @OptParam var followUp: String?
 
     func execute() throws {
         stdout <<< "Hey there, \(person)!"
@@ -207,13 +208,13 @@ What's up?
 
 #### Collected parameters
 
-Commands may have a single collected parameter, a `CollectedParameter` or a `OptionalCollectedParameter`. These parameters allow the user to pass any number of arguments, and these arguments will be collected into the `value` array of the collected parameter.
+Commands may have a single collected parameter after all the other parameters called a `@CollectedParam`. This parameter allows the user to pass any number of arguments, and these arguments will be collected into the array wrapped by the collected parameter. The property wrapped by `@CollectedParam` **must** be an array. By default, `@CollectedParam` does not require the user to pass any arguments. The parameter can require a certain number of values by using the `@CollectedParam(minCount:)` initializer.
 
 ```swift
 class GreetCommand: Command {
     let name = "greet"
 
-    @CollectedParam.Required var people: [String]
+    @CollectedParam(minCount: 1) var people: [String]
 
     func execute() throws {
         for person in people {
@@ -232,15 +233,15 @@ Hey there, Jill!
 Hey there, Water!
 ```
 
-#### Parameters with non-String values
+#### Value type of parameter
 
-All of the parameters above will have a `value` of type `String`. To create a parameter with a different type, use `Param.Required<MyType>`, `Param.Optional<MyType>`, `CollectedParam.Required<MyType>`, or `CollectedParam.Optional<MyType>`.
+With all of these parameter property wrappers, any type can be used so long as it conforms to `ConvertibleFromString`. Most primitive types (e.g. `Int`) conform to `ConvertibleFromString` already, as do enums with raw values that are primitive types. 
 
 ```swift
 class GreetCommand: Command {
     let name = "greet"
 
-    @Param.Required var number: Int
+    @Param var number: Int
 
     func execute() throws {
         stdout <<< "Hey there, number \(number)!"     
@@ -274,7 +275,7 @@ class GreetCommand: Command {
         case quiet
     }
     
-    @Param.Required var volume: Volume
+    @Param var volume: Volume
     
     func execute() throws {
         let greeting = "Hello world!"
@@ -302,7 +303,7 @@ Error: invalid value passed to 'volume'; expected one of: loud, quiet
 HELLO WORLD!
 ```
 
-Any type can be used so long as it conforms to `ConvertibleFromString`. Most primitive types (e.g. `Int`) conform to `ConvertibleFromString` already, as do enums with raw values that are primitive types. To conform a custom type to `ConvertibleFromString`, simply implement one function:
+To conform a custom type to `ConvertibleFromString`, simply implement one function:
 
 ```swift
 extension MyType: ConvertibleFromString {
@@ -314,13 +315,14 @@ extension MyType: ConvertibleFromString {
 ```
 
 ### Options
+
 Commands have support for two types of options: flag options and keyed options. Both types of options can be denoted by either a dash followed by a single letter (e.g. `git commit -a`) or two dashes followed by the option name (e.g. `git commit --all`). Single letter options can be cascaded into a single dash followed by all the desired options: `git commit -am "message"` == `git commit -a -m "message"`.
 
-Options are specified as instance variables on the command class, just like parameters:
+Options are specified with property wrappers on the command class, just like parameters:
+
 ```swift
 class ExampleCommand: Command {
     ...
-
     @Flag("-a", "--all")
     var flag: Bool
 
@@ -330,10 +332,12 @@ class ExampleCommand: Command {
 }
 ```
 
-#### Flag options
-Flag options are simple options that act as boolean switches. For example, if you were to implement `git commit`, `-a` would be a flag option. They take the form of variables of the type `Flag`.
+#### Flags
+
+Flags are simple options that act as boolean switches. For example, if you were to implement `git commit`, `-a` would be a flag option. They take the form of booleans wrapped by `@Flag`.
 
 The `GreetCommand` could take a "loudly" flag:
+
 ```swift
 class GreetCommand: Command {
 
@@ -353,7 +357,7 @@ class GreetCommand: Command {
 }
 ```
 
-A related option type is `CounterFlag`, which counts the nubmer of times the user passes the same flag. For example, with a flag declaration like:
+A related option type is `@CounterFlag`, which counts the nubmer of times the user passes the same flag. `@CounterFlag` can only wrap properties of type `Int`. For example, with a flag declaration like:
 
 ```swift
 class GreetCommand: Command {
@@ -366,10 +370,12 @@ class GreetCommand: Command {
 
 the user can write `greeter greet -s -s`, and `softly.value` will be `2`.
 
-#### Keyed options
-Keyed options are options that have an associated value. Using "git commit" as an example, "-m" would be a keyed option, as it has an associated value - the commit message. They take the form of variables of the generic type `Key<T>`, where `T` is the type of the option.
+#### Keys
+
+Keys are options that have an associated value. Using "git commit" as an example, "-m" would be a keyed option, as it has an associated value - the commit message. They take the form of variables wrapped by '@Key`.
 
 The `GreetCommand` could take a "number of times" option:
+
 ```swift
 class GreetCommand: Command {
 
@@ -387,6 +393,8 @@ class GreetCommand: Command {
 }
 ```
 
+The variable wrapped by `@Key` can be any type conforming to `ConvertibleFromString` as described above. It **must** be optional, or the Swift compiler will crash.
+
 A related option type is `VariadicKey`, which allows the user to pass the same key multiples times with different values. For example, with a key declaration like:
 
 ```swift
@@ -398,13 +406,13 @@ class GreetCommand: Command {
 }
 ```
 
-the user can write `greeter greet -l Chicago -l NYC`, and `locations.value` will be `["Chicago", "NYC"]`.
+the user can write `greeter greet -l Chicago -l NYC`, and `locations.value` will be `["Chicago", "NYC"]`. The variable wrapped by `@VariadicKey` must be an array of a type conforming to `ConvertibleFromString`.
 
 #### Option groups
 
 The relationship between multiple options can be specified through option groups. Option groups allow a command to specify that the user must pass at most one option of a group (passing more than one is an error), must pass exactly one option of a group (passing zero or more than one is an error), or must pass one or more options of a group (passing zero is an error). 
 
-To add option groups, a `Command` should implement the property `optionGroups`. For example, if the `GreetCommand` had a `loudly` flag and a `whisper` flag but didn't want the user to be able to pass both, an `OptionGroup` could be used:
+To add option groups, a `Command` should implement the property `optionGroups`. Option groups refer to options through the `$` syntax. For example, if the `GreetCommand` had a `loudly` flag and a `whisper` flag but didn't want the user to be able to pass both, an `OptionGroup` could be used:
 
 ```swift
 class GreetCommand: Command {
@@ -418,7 +426,7 @@ class GreetCommand: Command {
     var whisper: Bool
     
     var optionGroups: [OptionGroup] {
-        return [.atMostOne($loudly, $whipser)]
+        return [.atMostOne($loudly, $whipser)] // Note: $loudly and $whisper, not loudly and whisper
     }
 
     func execute() throws {
@@ -441,8 +449,8 @@ Global options can be used to specify that every command should have a certain o
 ```swift
 private let verboseFlag = Flag("-v")
 extension Command {
-    var verbose: Flag {
-        return verboseFlag
+    var verbose: Bool {
+        return verboseFlag.value
     }
 }
 
@@ -456,7 +464,8 @@ myCli.helpFlag = nil
 ```
 
 #### Usage of options
-As seen in the above examples, `Flag()` and `Key()` both take an optional `description` parameter. A concise description of what the option does should be included here. This allows the `HelpMessageGenerator` to generate a fully informative usage statement for the command.
+
+As seen in the above examples, `@Flag` and `@Key` both take an optional `description` parameter. A concise description of what the option does should be included here. This allows the `HelpMessageGenerator` to generate a fully informative usage statement for the command.
 
 A command's usage statement is shown in three situations:
 - The user passed an option that the command does not support -- ```greeter greet -z```
@@ -527,16 +536,20 @@ generator.writeCompletions()
 Completions will be automatically generated for command names and options. Parameter completion mode can be specified:
 
 ```swift
-let noCompletions = Parameter(completion: .none)
+@Param(completion: .none)
+var noCompletions: String
 
-let aFile = Parameter(completion: .filename)
+@Param(completion: .filename)
+var aFile: String
 
-let aValue = Parameter(completion: .values([
+@Param(completion: .values([
     ("optionA", "the first available option"),
     ("optionB", "the second available option")
 ]))
+var aValue: String
 
-let aFunction = Parameter(completion: .function("_my_custom_func"))
+@Param(completion: .function("_my_custom_func"))
+var aFunction: String
 ```
 
 The default parameter completion mode is `.filename`. If you specify a custom function with `.function`, that function must be supplied when creating the completion generator:
@@ -544,7 +557,8 @@ The default parameter completion mode is `.filename`. If you specify a custom fu
 ```swift
 class MyCommand {
     ...
-    let pids = Parameter(completion: .function("_list_processes"))
+    @Param(completion: .function("_list_processes"))
+    var pid: String
     ...
 }
 
@@ -560,10 +574,12 @@ let generator = ZshCompletionGenerator(cli: myCli, functions: [
 ```
 
 ## Built-in commands
+
 `CLI` has two built-in commands: `HelpCommand` and `VersionCommand`.
 
 ### Help Command
-The `HelpCommand` can be invoked with `myapp help`. The `HelpCommand` first prints the app description (if any was given during `CLI.setup()`). It then iterates through all available commands, printing their name and their short description.
+
+The `HelpCommand` can be invoked with `myapp help`. The `HelpCommand` first prints the app description (if any was given during `CLI.init`). It then iterates through all available commands, printing their name and their short description.
 
 ```bash
 ~ > greeter help
@@ -588,7 +604,7 @@ myCLI.helpCommand = nil
 The `VersionCommand` can be invoked with `myapp version` or `myapp --version`. The VersionCommand prints the version of the app given during init `CLI(name:version:)`. If no version is given, the command is not available.
 
 ```bash
-~ > greeter -v
+~ > greeter --version
 Version: 1.0
 ```
 
@@ -692,17 +708,28 @@ SwiftCLI was designed with sensible defaults but also the ability to be customiz
 
 ### `parser`
 
-The `Parser` steps through arguments to find the corresponding command, update its parameter values, and recognizes options. `Parser` has two stages, the first driven by its `Router` and the second by its `ParameterFiller`. SwiftCLI supplies default implementations of these two stages with `DefaultRouter` and `DefaultParameterFiller`. `DefaultRouter` finds commands based on the first passed argument (or, in the case of command groups, the first several arguments), and `DefaultParameterFiller` uses the remaining arguments which don't start with a dash to satisfy the command's parameters.
+The `Parser` steps through arguments to find the corresponding command, update its parameter values, and recognizes options. Each CLI has a `parser` property which has two mutable properties: `routeBehavior` and `parseOptionsAfterCollectedParameter`.
 
-SwiftCLI also supplies an implementation of `Router` called `SingleCommandRouter` which is automatically used if you create your CLI using `CLI(singleCommand: myCmd)`. For example, if you were implementing the `ln` command, you could manually write `myCLI.parser = DefaultParser(router: SingleCommandRouter(command: LinkCommand())`. This router will then always return the same command and will leave all arguments to the `ParameterFiller`. If a user wrote `cli my.txt`, the `DefaultRouter` would look for a command named `my.txt` which takes no arguments, while `SingleCommandRouter` would treat 'my.txt' as an argument to the single command.
+`routeBehavior` has three possible values. The default, `.search`, steps through the arguments the user passed and tries to find a command with a matching name. If it fails, a help message is printed. `git` is an example of a program which operates this way. The second option, `.searchWithFallback(Command)`, also initially tries to find a command with a name matching the arguments passed by the user, but if it fails, rather than printing a help message it falls back to a certain command. 'bundle' is an example of a program which operates this way. The last option is `.automatically(Command)`. In this route behavior, the CLI automatically routes to the given command without considering arguments. 'ln' is an example of a program which operates this way.
 
-You can implement `Router` or `ParameterFiller` on your own types and update your CLI's property to use them:
+`parseOptionsAfterCollectedParameter` controls whether or not options are recognized once a collected parameter is encountered. It defaults to `false`. Given the following command:
 
 ```swift
-myCLI.parser = Parser(router: MyRouter(), parameterFiller: MyParameterFiller())
+class Run: Command {
+    let name = "run"
+
+    @Param var executable: String
+    @CollectedParam var arguments: [String]
+
+    @Flag("-a") var all: Bool
+    ...
+}
 ```
 
-#### Aliases
+if the user calls `swift run myExec -a` and `parseOptionsAfterCollectedParameter` is false, the value of `executable` will be "myExec", the value of `arguments` will be `["-a"]`, and the value of `all` will be false. If `parseOptionsAfterCollectedParameter` were true in this situation, the value of `executable` would be "myExec", the value of `arguments` would be `[]`, and the value of `all` would be true.
+
+### `aliases`
+
 Aliases can be made through the the `aliases` property on CLI. `Parser` will take these aliases into account while routing to the matching command. For example, if you write:
 
 ```swift
@@ -742,6 +769,7 @@ Simply call `swift run`. In order to ensure your `CLI` gets the arguments passed
 ## CLIs build with SwiftCLI
 
 - [XcodeGen](https://github.com/yonaskolb/XcodeGen)
+- [Mint](https://github.com/yonaskolb/Mint)
 - [BartyCrouch](https://github.com/Flinesoft/BartyCrouch)
 - [Ice](https://github.com/jakeheis/Ice)
 
