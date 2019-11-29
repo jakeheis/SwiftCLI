@@ -227,11 +227,6 @@ class FlagCmd: OptionCmd {
     var flag: Bool
 }
 
-class ReverseFlagCmd: OptionCmd {
-    @Flag("-r", "--reverse")
-    var flag: Bool = true
-}
-
 class KeyCmd: OptionCmd {
     @Key("-a", "--alpha")
     var key: String?

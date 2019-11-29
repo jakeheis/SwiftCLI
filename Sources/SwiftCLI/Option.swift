@@ -39,10 +39,9 @@ public class Flag: AnyFlag {
     
     public let names: [String]
     public let shortDescription: String
-    private let defaultValue: Bool
     public let variadic = false
     
-    public private(set) var wrappedValue: Bool
+    public private(set) var wrappedValue = false
     public var value: Bool { wrappedValue }
     public var projectedValue: Flag { self }
     
@@ -55,33 +54,14 @@ public class Flag: AnyFlag {
     /// - Parameters:
     ///   - names: the names for the flag; convention is to include a short name (-a) and a long name (--all)
     ///   - description: A short description of what this flag does for usage statements
-    ///   - defaultValue: the default value of this flag; default false
-    public init(names: [String], description: String, defaultValue: Bool) {
+    public init(_ names: String..., description: String = "") {
         self.names = names
         self.shortDescription = description
-        self.defaultValue = defaultValue
-        self.wrappedValue = defaultValue
-    }
-    
-    public convenience init(wrappedValue value: Bool = false, _ first: String, _ second: String) {
-        self.init(names: [first, second], description: "", defaultValue: value)
-      }
-    
-    public convenience init(wrappedValue value: Bool = false, _ single: String) {
-        self.init(names: [single], description: "", defaultValue: value)
-    }
-    
-    public convenience init(wrappedValue value: Bool = false, _ first: String, _ second: String, description: String) {
-        self.init(names: [first, second], description: description, defaultValue: value)
-      }
-    
-    public convenience init(wrappedValue value: Bool = false, _ single: String, description: String) {
-        self.init(names: [single], description: description, defaultValue: value)
     }
     
     /// Toggles the flag's value; don't call directly
     public func update() {
-        wrappedValue = !defaultValue
+        wrappedValue = true
     }
     
 }
@@ -101,7 +81,7 @@ public class CounterFlag: AnyFlag {
         return names.joined(separator: ", ")
     }
     
-    /// Creates a new flag
+    /// Creates a new counter flag
     ///
     /// - Parameters:
     ///   - names: the names for the flag; convention is to include a short name (-a) and a long name (--all)

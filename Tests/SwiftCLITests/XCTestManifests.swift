@@ -1,4 +1,4 @@
-#if !os(macOS)
+#if !canImport(ObjectiveC)
 import XCTest
 
 extension ArgumentListManipulatorTests {
@@ -114,7 +114,6 @@ extension ParserTests {
         ("testCombinedFlagsAndKeysAndArgumentsParsing", testCombinedFlagsAndKeysAndArgumentsParsing),
         ("testCombinedFlagsAndKeysParsing", testCombinedFlagsAndKeysParsing),
         ("testCounterParse", testCounterParse),
-        ("testDefaultFlagValue", testDefaultFlagValue),
         ("testFlagSplitting", testFlagSplitting),
         ("testFullParse", testFullParse),
         ("testGroupRestriction", testGroupRestriction),
