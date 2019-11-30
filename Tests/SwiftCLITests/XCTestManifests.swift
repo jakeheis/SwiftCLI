@@ -99,6 +99,7 @@ extension ParameterFillerTests {
         ("testEmptySignature", testEmptySignature),
         ("testOptionalParameters", testOptionalParameters),
         ("testOptionalParametersWithInheritance", testOptionalParametersWithInheritance),
+        ("testParameterInit", testParameterInit),
         ("testRequiredParameters", testRequiredParameters),
         ("testValidatedParameter", testValidatedParameter),
     ]

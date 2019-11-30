@@ -12,7 +12,7 @@ public protocol ArgumentListManipulator {
     func manipulate(arguments: ArgumentList)
 }
 
-/// Splits options represented by a single node into multiple nodes; e.g. command -ab -> command -a -b, --option=value -> --option value
+/// Splits options represented by a single string into multiple strings; e.g. command -ab -> command -a -b, --option=value -> --option value
 public class OptionSplitter: ArgumentListManipulator {
     
     public init() {}

@@ -133,21 +133,23 @@ class GreetCommand: Command {
 
 ### Parameters
 
-A command can specify what parameters it accepts through certain instance variables. Using reflection, SwiftCLI will identify property wrappers of type `@Param`, `@OptParam`, and `@CollectedParam`. These properties should appear in the order that the command expects the user to pass the arguments:
+A command can specify what parameters it accepts through certain instance variables. Using reflection, SwiftCLI will identify property wrappers of type `@Param` and `@CollectedParam`. These properties should appear in the order that the command expects the user to pass the arguments:
 
 ```swift
 class GreetCommand: Command {
     let name = "greet"
 
-    @Param var firstParam: String
-    @Param var secondParam: String
+    @Param var first: String
+    @Param var second: String?
+    @CollectedParam var remaining: [String]
 }
 ```
-In this example, if the user runs `greeter greet Jack Jill`, `firstParam` will contain the value `Jack` and `secondParam` will contain the value `Jill`. You can access the values of these parameters in `func execute()` by calling `firstParam.value`, etc.
 
-#### Required parameters
+In this example, if the user runs `greeter greet Jack Jill up the hill`, `first` will contain the value `Jack`, `second` will contain the value `Jill`, and `remaining` will contain the value `["up", "the", "hill"]`.
 
-Required parameters take the form of the property wrapper `@Param`. If the command is not passed enough arguments to satisfy all required parameters, the command will fail.
+#### @Param
+
+Individual parameters take the form of the property wrapper `@Param`. Properties wrapped by `@Param` can be required or optional. If the command is not passed enough arguments to satisfy all required parameters, the command will fail.
 
 ```swift
 class GreetCommand: Command {
@@ -177,17 +179,14 @@ Error: command requires exactly 2 arguments
 Hey there, Jack!
 What's up?
 ```
-
-#### Optional parameters
-
-Optional parameters take the form of the property wrapper `@OptParam`. Optional parameters must come after all required parameters. If the user does not pass enough arguments to satisfy all optional parameters, the value of these unsatisfied parameters will be `nil`. The property wrapped by `@OptParam` **must** be optional, or the Swift compiler will crash.
+If the user does not pass enough arguments to satisfy all optional parameters, the value of these unsatisfied parameters will be `nil`.
 
 ```swift
 class GreetCommand: Command {
     let name = "greet"
 
     @Param var person: String
-    @OptParam var followUp: String?
+    @Param var followUp: String? // Note: String? in this example, not String
 
     func execute() throws {
         stdout <<< "Hey there, \(person)!"
@@ -206,7 +205,7 @@ Hello, Jack!
 What's up?
 ```
 
-#### Collected parameters
+#### @CollectedParam
 
 Commands may have a single collected parameter after all the other parameters called a `@CollectedParam`. This parameter allows the user to pass any number of arguments, and these arguments will be collected into the array wrapped by the collected parameter. The property wrapped by `@CollectedParam` **must** be an array. By default, `@CollectedParam` does not require the user to pass any arguments. The parameter can require a certain number of values by using the `@CollectedParam(minCount:)` initializer.
 
@@ -307,7 +306,7 @@ To conform a custom type to `ConvertibleFromString`, simply implement one functi
 
 ```swift
 extension MyType: ConvertibleFromString {
-    static func convert(from: String) -> Self? {
+    init?(input: String) {
         // Construct an instance of MyType from the String, or return nil if not possible
         ...
     }

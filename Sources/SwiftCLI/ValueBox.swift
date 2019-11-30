@@ -37,7 +37,7 @@ extension ValueBox {
     public var valueType: ConvertibleFromString.Type { return Value.self }
     
      public func update(to value: String) -> UpdateResult {
-        guard let converted = Value(string: value) else {
+        guard let converted = Value(input: value) else {
             return .failure(.conversionError)
         }
         
@@ -58,7 +58,7 @@ extension ValueBox {
 public protocol ConvertibleFromString {
     
     /// Returns an instance of the conforming type from a string representation
-    init?(string: String)
+    init?(input: String)
     
     static var explanationForConversionFailure: String { get }
     
@@ -96,8 +96,8 @@ extension CaseIterable where Self: ConvertibleFromString {
 }
 
 extension LosslessStringConvertible where Self: ConvertibleFromString {
-    public init?(string: String) {
-        guard let val = Self(string) else {
+    public init?(input: String) {
+        guard let val = Self(input) else {
             return nil
         }
         self = val
@@ -105,8 +105,8 @@ extension LosslessStringConvertible where Self: ConvertibleFromString {
 }
 
 extension RawRepresentable where Self: ConvertibleFromString, Self.RawValue: ConvertibleFromString {
-    public init?(string: String) {
-        guard let raw = RawValue(string: string), let val = Self(rawValue: raw) else {
+    public init?(input: String) {
+        guard let raw = RawValue(input: input), let val = Self(rawValue: raw) else {
             return nil
         }
         self = val
@@ -123,8 +123,8 @@ extension Optional: ConvertibleFromString where Wrapped: ConvertibleFromString {
         return Wrapped.messageForInvalidValue(reason: reason, for: id)
     }
     
-    public init?(string: String) {
-        self = Wrapped(string: string)
+    public init?(input: String) {
+        self = Wrapped(input: input)
     }
 }
 
@@ -154,7 +154,7 @@ extension Bool: ConvertibleFromString {
     
     /// Returns a bool from a string representation
     ///
-    /// - parameter from: A string representation of a bool value
+    /// - parameter input: A string representation of a bool value
     ///
     /// This is case insensitive and recognizes several representations:
     ///
@@ -162,8 +162,8 @@ extension Bool: ConvertibleFromString {
     /// - t/f
     /// - yes/no
     /// - y/n
-    public init?(string: String) {
-        let lowercased = string.lowercased()
+    public init?(input: String) {
+        let lowercased = input.lowercased()
         
         if ["y", "yes", "t", "true"].contains(lowercased) {
             self = true
