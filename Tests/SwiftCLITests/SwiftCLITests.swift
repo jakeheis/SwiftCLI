@@ -144,7 +144,7 @@ class SwiftCLITests: XCTestCase {
     func testFallback() {
         class Execute: Command {
             let name = "execute"
-            @OptParam var file: String?
+            @Param var file: String?
             var executed = false
             func execute() throws { executed = true }
         }

@@ -37,7 +37,7 @@ extension ValueBox {
     public var valueType: ConvertibleFromString.Type { return Value.self }
     
      public func update(to value: String) -> UpdateResult {
-        guard let converted = Value.convert(from: value) else {
+        guard let converted = Value(string: value) else {
             return .failure(.conversionError)
         }
         
@@ -58,7 +58,7 @@ extension ValueBox {
 public protocol ConvertibleFromString {
     
     /// Returns an instance of the conforming type from a string representation
-    static func convert(from: String) -> Self?
+    init?(string: String)
     
     static var explanationForConversionFailure: String { get }
     
@@ -66,7 +66,6 @@ public protocol ConvertibleFromString {
 }
 
 extension ConvertibleFromString {
-    
     public static var explanationForConversionFailure: String {
         return "expected \(self)"
     }
@@ -89,31 +88,60 @@ extension ConvertibleFromString {
     
 }
 
-#if swift(>=4.1.50)
-
-extension ConvertibleFromString where Self: CaseIterable {
-    
+extension CaseIterable where Self: ConvertibleFromString {
     public static var explanationForConversionFailure: String {
         let options = allCases.map({ String(describing: $0) }).joined(separator: ", ")
         return "expected one of: \(options)"
     }
-    
 }
 
-#endif
-
-extension ConvertibleFromString where Self: LosslessStringConvertible {
-    public static func convert(from: String) -> Self? {
-        return Self(from)
+extension LosslessStringConvertible where Self: ConvertibleFromString {
+    public init?(string: String) {
+        guard let val = Self(string) else {
+            return nil
+        }
+        self = val
     }
 }
 
-extension ConvertibleFromString where Self: RawRepresentable, Self.RawValue: ConvertibleFromString {
-    public static func convert(from: String) -> Self? {
-        guard let val = RawValue.convert(from: from) else {
+extension RawRepresentable where Self: ConvertibleFromString, Self.RawValue: ConvertibleFromString {
+    public init?(string: String) {
+        guard let raw = RawValue(string: string), let val = Self(rawValue: raw) else {
             return nil
         }
-        return Self.init(rawValue: val)
+        self = val
+    }
+}
+
+extension Optional: ConvertibleFromString where Wrapped: ConvertibleFromString {
+    
+    public static var explanationForConversionFailure: String {
+        return Wrapped.explanationForConversionFailure
+    }
+    
+    public static func messageForInvalidValue(reason: InvalidValueReason, for id: String?) -> String {
+        return Wrapped.messageForInvalidValue(reason: reason, for: id)
+    }
+    
+    public init?(string: String) {
+        self = Wrapped(string: string)
+    }
+}
+
+public protocol OptionType {
+    associatedtype Wrapped
+    static var swiftcli_Empty: Self { get }
+    
+    var swiftcli_Value: Wrapped? { get }
+}
+extension Optional: OptionType {
+    public static var swiftcli_Empty: Self { .none }
+    
+    public var swiftcli_Value: Wrapped? {
+        if case .some(let value) = self {
+            return value
+        }
+        return nil
     }
 }
 
@@ -134,13 +162,16 @@ extension Bool: ConvertibleFromString {
     /// - t/f
     /// - yes/no
     /// - y/n
-    public static func convert(from: String) -> Bool? {
-        let lowercased = from.lowercased()
+    public init?(string: String) {
+        let lowercased = string.lowercased()
         
-        if ["y", "yes", "t", "true"].contains(lowercased) { return true }
-        if ["n", "no", "f", "false"].contains(lowercased) { return false }
-        
-        return nil
+        if ["y", "yes", "t", "true"].contains(lowercased) {
+            self = true
+        } else if ["n", "no", "f", "false"].contains(lowercased) {
+            self = false
+        } else {
+            return nil
+        }
     }
     
 }

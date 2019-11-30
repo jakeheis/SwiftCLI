@@ -392,7 +392,6 @@ class HelpMessageGeneratorTests: XCTestCase {
         DefaultHelpMessageGenerator().writeParameterErrorMessage(for: error1, to: capture1)
         capture1.closeWrite()
         
-        #if swift(>=4.1.50)
         XCTAssertEqual(capture1.readAll(), """
 
         Usage: tester cmd <speed> [<single>] [<int>] [options]
@@ -406,21 +405,6 @@ class HelpMessageGeneratorTests: XCTestCase {
         
         
         """)
-        #else
-        XCTAssertEqual(capture1.readAll(), """
-
-        Usage: tester cmd <speed> [<single>] [<int>] [options]
-
-        Limits param values to enum
-
-        Options:
-          -h, --help      Show help information
-
-        Error: invalid value passed to 'speed'; expected Speed
-
-
-        """)
-        #endif
         
         let capture2 = CaptureStream()
         let error2 = ParameterError(command: path, kind: .invalidValue(.init(name: "single", param: command.$single), .conversionError))

@@ -23,7 +23,7 @@ class TestCommand: Command {
     var executionString = ""
 
     @Param var testName: String
-    @OptParam var testerName: String?
+    @Param var testerName: String?
     
     @Flag("-s", "--silent", description: "Silence all test output")
     var silent: Bool
@@ -122,7 +122,7 @@ class Req1Cmd: EmptyCmd {
 }
 
 class Opt1Cmd: EmptyCmd {
-    @OptParam var opt1: String?
+    @Param var opt1: String?
 }
 
 class Req2Cmd: EmptyCmd {
@@ -138,10 +138,10 @@ class Req2Cmd: EmptyCmd {
 }
 
 class Opt2Cmd: EmptyCmd {
-    @OptParam(completion: .filename)
+    @Param(completion: .filename)
     var opt1: String?
     
-    @OptParam(completion: .values([
+    @Param(completion: .values([
         ("executable", "generates a project for a cli executable"),
         ("library", "generates project for a dynamic library")
     ]))
@@ -149,7 +149,7 @@ class Opt2Cmd: EmptyCmd {
 }
 
 class Opt2InhCmd: Opt2Cmd {
-    @OptParam var opt3: String?
+    @Param var opt3: String?
 }
 
 class ReqCollectedCmd: EmptyCmd {
@@ -177,7 +177,7 @@ class TriReqCollectedCmd: EmptyCmd {
 }
 
 class Opt2CollectedCmd: EmptyCmd {
-    @OptParam var opt1: String?
+    @Param var opt1: String?
     @CollectedParam var opt2: [String]
 }
 
@@ -188,10 +188,10 @@ class Req2Opt2Cmd: EmptyCmd {
     @Param(completion: .function("_swift_dependency"))
     var req2: String
     
-    @OptParam(completion: .none)
+    @Param(completion: .none)
     var opt1: String?
     
-    @OptParam(completion: .filename)
+    @Param(completion: .filename)
     var opt2: String?
 }
 
@@ -380,8 +380,8 @@ class EnumCmd: Command {
     let shortDescription = "Limits param values to enum"
     
     @Param var speed: Speed
-    @OptParam var single: Single?
-    @OptParam var int: Int?
+    @Param var single: Single?
+    @Param var int: Int?
     
     func execute() throws {}
     
@@ -396,7 +396,7 @@ class ValidatedParamCmd: Command {
     let name = "cmd"
     let shortDescription = "Validates param values"
     
-    @OptParam(validation: [.greaterThan(18)])
+    @Param(validation: .greaterThan(18))
     var age: Int?
     
     func execute() throws {}
@@ -408,7 +408,7 @@ class RememberExecutionCmd: Command {
     let name = "cmd"
     let shortDescription = "Remembers execution"
     
-    @OptParam var param: String?
+    @Param var param: String?
     
     var executed = false
     
@@ -416,6 +416,36 @@ class RememberExecutionCmd: Command {
         executed = true
     }
     
+}
+
+class ParamInitCmd: Command {
+    let name = "cmd"
+    
+    @Param(completion: .filename)
+    var reqComp: String
+    
+    @Param(completion: .filename)
+    var optComp: String?
+    
+    @Param(validation: .allowing("hi"))
+    var reqVal: String
+    
+    @Param(validation: .allowing("yo"))
+    var optVal: String?
+    
+    @Param(completion: .filename, validation: .allowing("hi"))
+    var reqCompVal: String
+    
+    @Param(completion: .filename, validation: .allowing("yo"))
+    var optCompVal: String?
+    
+    @Param
+    var reqNone: String
+    
+    @Param
+    var optNone: String?
+    
+    func execute() {}
 }
 
 // MARK: -

@@ -180,6 +180,25 @@ class ParameterFillerTests: XCTestCase {
         XCTAssertEqual(cmd3.age, 20)
     }
     
+    func testParameterInit() {
+        let cmd = ParamInitCmd()
+        
+        XCTAssertTrue(cmd.$reqComp.required)
+        XCTAssertTrue(cmd.$reqVal.required)
+        XCTAssertTrue(cmd.$reqCompVal.required)
+        XCTAssertTrue(cmd.$reqNone.required)
+        
+        XCTAssertFalse(cmd.$optComp.required)
+        XCTAssertFalse(cmd.$optVal.required)
+        XCTAssertFalse(cmd.$optCompVal.required)
+        XCTAssertFalse(cmd.$optNone.required)
+        
+        XCTAssertNil(cmd.optComp)
+        XCTAssertNil(cmd.optVal)
+        XCTAssertNil(cmd.optCompVal)
+        XCTAssertNil(cmd.optNone)
+    }
+    
     // MARK: -
     
     @discardableResult

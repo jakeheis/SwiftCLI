@@ -12,8 +12,8 @@ import Foundation
 @available(*, deprecated, message: "use Param<String>")
 public typealias Parameter = Param<String>
 
-@available(*, deprecated, message: "use OptParam<String>")
-public typealias OptionalParameter = OptParam<String>
+@available(*, deprecated, message: "use Param<String?>")
+public typealias OptionalParameter = Param<String?>
 
 @available(*, deprecated, message: "use CollectedParam<String>(minCount: 1)")
 public class CollectedParameter: CollectedParam<String> {

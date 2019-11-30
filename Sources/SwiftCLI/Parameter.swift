@@ -19,8 +19,8 @@ public class _Param<Value: ConvertibleFromString> {
     /// Creates a new parameter
     ///
     /// - Parameter completion: the completion type for use in ZshCompletionGenerator; default .filename
-    public init(completion: ShellCompletion = .filename, validation: [Validation<Value>] = []) {
-        self.completion = completion
+    fileprivate init(designatedCompletion: ShellCompletion = .filename, validation: [Validation<Value>] = []) {
+        self.completion = designatedCompletion
         self.validation = validation
     }
     
@@ -29,7 +29,7 @@ public class _Param<Value: ConvertibleFromString> {
 @propertyWrapper
 public class Param<Value: ConvertibleFromString> : _Param<Value>, AnyParameter, ValueBox {
     
-    public let required = true
+    public private(set) var required = true
     public var satisfied: Bool { privValue != nil }
     
     private var privValue: Value?
@@ -42,16 +42,16 @@ public class Param<Value: ConvertibleFromString> : _Param<Value>, AnyParameter, 
     public var value: Value { wrappedValue }
     public var projectedValue: Param { self }
     
+    fileprivate override init(designatedCompletion: ShellCompletion, validation: [Validation<Value>]) {
+        super.init(designatedCompletion: designatedCompletion, validation: validation)
+    }
+    
     public init() {
         super.init()
     }
     
-    public override init(completion: ShellCompletion = .filename, validation: [Validation<Value>] = []) {
-        super.init(completion: completion, validation: validation)
-    }
-    
     public init(completion: ShellCompletion = .filename, validation: Validation<Value>...) {
-        super.init(completion: completion, validation: validation)
+        super.init(designatedCompletion: completion, validation: validation)
     }
     
     public func update(to value: Value) {
@@ -59,31 +59,35 @@ public class Param<Value: ConvertibleFromString> : _Param<Value>, AnyParameter, 
     }
     
 }
+
+extension Param where Value: OptionType {
     
-@propertyWrapper
-public class OptParam<Value: ConvertibleFromString> : _Param<Value>, AnyParameter, ValueBox {
-    
-    public let required = false
-    public var satisfied = true
-    
-    public private(set) var wrappedValue: Value?
-    public var value: Value? { wrappedValue }
-    public var projectedValue: OptParam { self }
-    
-    public init() {
-        super.init()
+    public convenience init() {
+        self.init(designatedCompletion: .filename, validation: [])
+        setup()
     }
     
-    public override init(completion: ShellCompletion = .filename, validation: [Validation<Value>] = []) {
-        super.init(completion: completion, validation: validation)
+    public convenience init(completion: ShellCompletion) {
+        self.init(designatedCompletion: completion, validation: [])
+        setup()
     }
     
-    public init(completion: ShellCompletion = .filename, validation: Validation<Value>...) {
-        super.init(completion: completion, validation: validation)
+    public convenience init(completion: ShellCompletion = .filename, validation: Validation<Value.Wrapped>...) {
+        let optValidations = validation.map { (valueValidation) in
+            return Validation<Value>.custom(valueValidation.message) { (option) in
+                if let value = option.swiftcli_Value {
+                    return valueValidation.validate(value)
+                }
+                return false
+            }
+        }
+        self.init(designatedCompletion: completion, validation: optValidations)
+        setup()
     }
     
-    public func update(to value: Value) {
-        self.wrappedValue = value
+    private func setup() {
+        privValue = .some(.swiftcli_Empty)
+        required = false
     }
     
 }
@@ -113,12 +117,12 @@ public class CollectedParam<Value: ConvertibleFromString> : _Param<Value>, AnyCo
     
     public init(minCount: Int = 0, completion: ShellCompletion = .filename, validation: [Validation<Value>] = []) {
         self.minCount = minCount
-        super.init(completion: completion, validation: validation)
+        super.init(designatedCompletion: completion, validation: validation)
     }
     
     public init(minCount: Int = 0, completion: ShellCompletion = .filename, validation: Validation<Value>...) {
         self.minCount = minCount
-        super.init(completion: completion, validation: validation)
+        super.init(designatedCompletion: completion, validation: validation)
     }
     
     public func update(to value: Value) {
@@ -197,4 +201,3 @@ public class ParameterIterator {
     }
     
 }
-
