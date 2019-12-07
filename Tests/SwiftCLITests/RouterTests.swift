@@ -35,7 +35,7 @@ class RouterTests: XCTestCase {
     }
     
     func testSingleRouter() throws {
-        let parser = Parser()
+        var parser = Parser()
         
         let cmd = FlagCmd()
         let cli = CLI.createTester(commands: [cmd])
@@ -50,6 +50,30 @@ class RouterTests: XCTestCase {
         let cmd2 = FlagCmd()
         let cli2 = CLI.createTester(commands: [cmd2])
         parser.routeBehavior = .automatically(cmd2)
+        let path2 = try parser.parse(cli: cli2, arguments: ArgumentList(arguments: []))
+        
+        XCTAssert(path2.groupPath.bottom === cli2, "Router should generate correct group path")
+        XCTAssertTrue(path2.ignoreName)
+        XCTAssert(path2.command === cmd2, "Router should route to the single command")
+        XCTAssertFalse(cmd2.flag)
+    }
+    
+    func testFallbackOption() throws {
+        var parser = Parser()
+        
+        let cmd = FlagCmd()
+        let cli = CLI.createTester(commands: [cmd])
+        parser.routeBehavior = .searchWithFallback(cmd)
+        let path = try parser.parse(cli: cli, arguments: ArgumentList(arguments: ["-a"]))
+        
+        XCTAssert(path.groupPath.bottom === cli, "Router should generate correct group path")
+        XCTAssertTrue(path.ignoreName)
+        XCTAssert(path.command === cmd, "Router should route to the single command")
+        XCTAssertTrue(cmd.flag)
+        
+        let cmd2 = FlagCmd()
+        let cli2 = CLI.createTester(commands: [cmd2])
+        parser.routeBehavior = .searchWithFallback(cmd2)
         let path2 = try parser.parse(cli: cli2, arguments: ArgumentList(arguments: []))
         
         XCTAssert(path2.groupPath.bottom === cli2, "Router should generate correct group path")
@@ -163,7 +187,7 @@ class RouterTests: XCTestCase {
         func setup() -> (Opt1Cmd, CLI, Parser) {
             let opt1 = Opt1Cmd()
             let cli = CLI.createTester(commands: [opt1])
-            let parser = Parser()
+            var parser = Parser()
             parser.routeBehavior = .searchWithFallback(opt1)
             return (opt1, cli, parser)
         }

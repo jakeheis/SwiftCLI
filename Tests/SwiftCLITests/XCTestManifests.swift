@@ -137,6 +137,7 @@ extension RouterTests {
         ("testAliasRoute", testAliasRoute),
         ("testFailedRoute", testFailedRoute),
         ("testFallback", testFallback),
+        ("testFallbackOption", testFallbackOption),
         ("testGroupFailedRoute", testGroupFailedRoute),
         ("testGroupPartialRoute", testGroupPartialRoute),
         ("testGroupSuccessRoute", testGroupSuccessRoute),

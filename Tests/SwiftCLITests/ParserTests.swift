@@ -338,7 +338,7 @@ class ParserTests: XCTestCase {
         let cli3 = CLI.createTester(commands: [cmd3])
         let args3 = ArgumentList(arguments: ["run", "cli", "-v", "arg"])
         
-        let parser = Parser()
+        var parser = Parser()
         parser.parseOptionsAfterCollectedParameter = true
         let result3 = try parser.parse(cli: cli3, arguments: args3)
         XCTAssertTrue(result3.command === cmd3)

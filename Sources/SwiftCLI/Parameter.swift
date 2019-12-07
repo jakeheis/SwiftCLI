@@ -164,8 +164,8 @@ public class ParameterIterator {
     public let minCount: Int
     public let maxCount: Int?
     
-    public init(command: CommandPath) {
-        var all = command.command.parameters
+    public init(command: Command) {
+        var all = command.parameters
         
         assert(all.firstIndex(where: { !$0.param.required }) ?? all.endIndex >= all.filter({ $0.param.required }).count, "optional parameters must come after all required parameters")
         
