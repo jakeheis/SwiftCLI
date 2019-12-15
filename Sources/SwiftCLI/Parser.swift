@@ -18,8 +18,8 @@ public struct Parser {
             case automatically(Command)
         }
         
-        public var parseOptionsAfterCollectedParameter = false
         public var routeBehavior: RouteBehavior = .search
+        public var parseOptionsAfterCollectedParameter = false
         
         public var fallback: Command? {
             switch routeBehavior {

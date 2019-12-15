@@ -116,6 +116,7 @@ myCli.go(with: ["arg1", "arg2"])
 ```
 
 ## Commands
+
 In order to create a command, you must implement the `Command` protocol. All that's required is to implement a `name` property and an `execute` function; the other properties of `Command` are optional (though a `shortDescription` is highly recommended). A simple hello world command could be created as such:
 
 ```swift
@@ -133,7 +134,7 @@ class GreetCommand: Command {
 
 ### Parameters
 
-A command can specify what parameters it accepts through certain instance variables. Using reflection, SwiftCLI will identify property wrappers of type `@Param` and `@CollectedParam`. These properties should appear in the order that the command expects the user to pass the arguments:
+A command can specify what parameters it accepts through certain instance variables. Using reflection, SwiftCLI will identify property wrappers of type `@Param` and `@CollectedParam`. These properties should appear in the order that the command expects the user to pass the arguments. All required parameters must come first, followed by any optional parameters, followed by at most one collected parameter.
 
 ```swift
 class GreetCommand: Command {
@@ -707,7 +708,7 @@ SwiftCLI was designed with sensible defaults but also the ability to be customiz
 
 ### `parser`
 
-The `Parser` steps through arguments to find the corresponding command, update its parameter values, and recognizes options. Each CLI has a `parser` property which has two mutable properties: `routeBehavior` and `parseOptionsAfterCollectedParameter`.
+The `Parser` steps through arguments to find the corresponding command, update its parameter values, and recognizes options. Each CLI has a `parser` property which has three mutable properties: `routeBehavior`, `parseOptionsAfterCollectedParameter`, and `responders`.
 
 `routeBehavior` has three possible values. The default, `.search`, steps through the arguments the user passed and tries to find a command with a matching name. If it fails, a help message is printed. `git` is an example of a program which operates this way. The second option, `.searchWithFallback(Command)`, also initially tries to find a command with a name matching the arguments passed by the user, but if it fails, rather than printing a help message it falls back to a certain command. 'bundle' is an example of a program which operates this way. The last option is `.automatically(Command)`. In this route behavior, the CLI automatically routes to the given command without considering arguments. 'ln' is an example of a program which operates this way.
 
@@ -726,6 +727,8 @@ class Run: Command {
 ```
 
 if the user calls `swift run myExec -a` and `parseOptionsAfterCollectedParameter` is false, the value of `executable` will be "myExec", the value of `arguments` will be `["-a"]`, and the value of `all` will be false. If `parseOptionsAfterCollectedParameter` were true in this situation, the value of `executable` would be "myExec", the value of `arguments` would be `[]`, and the value of `all` would be true.
+
+`responders` allows the parser to be completely customized. Check out `Parser.swift` for more information on how this functions by default and how it can be customized in any way.
 
 ### `aliases`
 
@@ -769,6 +772,7 @@ Simply call `swift run`. In order to ensure your `CLI` gets the arguments passed
 
 - [XcodeGen](https://github.com/yonaskolb/XcodeGen)
 - [Mint](https://github.com/yonaskolb/Mint)
+- [SwiftKit](https://github.com/SvenTiigi/SwiftKit)
 - [BartyCrouch](https://github.com/Flinesoft/BartyCrouch)
 - [Ice](https://github.com/jakeheis/Ice)
 
