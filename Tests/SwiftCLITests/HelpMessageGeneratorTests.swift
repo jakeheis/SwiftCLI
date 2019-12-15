@@ -287,7 +287,7 @@ class HelpMessageGeneratorTests: XCTestCase {
         let capture = CaptureStream()
         let command = TestCommand()
         let path = CommandGroupPath(top: CLI.createTester(commands: [command])).appending(command)
-        let error = OptionError(command: path, kind: .invalidKeyValue(command.times, "-t", .conversionError))
+        let error = OptionError(command: path, kind: .invalidKeyValue(command.$times, "-t", .conversionError))
         DefaultHelpMessageGenerator().writeMisusedOptionsStatement(for: error, to: capture)
         capture.closeWrite()
         
@@ -312,7 +312,7 @@ class HelpMessageGeneratorTests: XCTestCase {
         let capture = CaptureStream()
         let command = ValidatedKeyCmd()
         let path = CommandGroupPath(top: CLI.createTester(commands: [command])).appending(command)
-        let error = OptionError(command: path, kind: .invalidKeyValue(command.location, "-l", .validationError(command.location.validation[0])))
+        let error = OptionError(command: path, kind: .invalidKeyValue(command.$location, "-l", .validationError(command.$location.validation[0])))
         DefaultHelpMessageGenerator().writeMisusedOptionsStatement(for: error, to: capture)
         capture.closeWrite()
         
@@ -388,11 +388,10 @@ class HelpMessageGeneratorTests: XCTestCase {
         let path = CommandGroupPath(top: cli).appending(command)
         
         let capture1 = CaptureStream()
-        let error1 = ParameterError(command: path, kind: .invalidValue(.init(name: "speed", param: command.speed), .conversionError))
+        let error1 = ParameterError(command: path, kind: .invalidValue(.init(name: "speed", param: command.$speed), .conversionError))
         DefaultHelpMessageGenerator().writeParameterErrorMessage(for: error1, to: capture1)
         capture1.closeWrite()
         
-        #if swift(>=4.1.50)
         XCTAssertEqual(capture1.readAll(), """
 
         Usage: tester cmd <speed> [<single>] [<int>] [options]
@@ -406,24 +405,9 @@ class HelpMessageGeneratorTests: XCTestCase {
         
         
         """)
-        #else
-        XCTAssertEqual(capture1.readAll(), """
-
-        Usage: tester cmd <speed> [<single>] [<int>] [options]
-
-        Limits param values to enum
-
-        Options:
-          -h, --help      Show help information
-
-        Error: invalid value passed to 'speed'; expected Speed
-
-
-        """)
-        #endif
         
         let capture2 = CaptureStream()
-        let error2 = ParameterError(command: path, kind: .invalidValue(.init(name: "single", param: command.single), .conversionError))
+        let error2 = ParameterError(command: path, kind: .invalidValue(.init(name: "single", param: command.$single), .conversionError))
         DefaultHelpMessageGenerator().writeParameterErrorMessage(for: error2, to: capture2)
         capture2.closeWrite()
         
@@ -442,7 +426,7 @@ class HelpMessageGeneratorTests: XCTestCase {
         """)
         
         let capture3 = CaptureStream()
-        let error3 = ParameterError(command: path, kind: .invalidValue(.init(name: "int", param: command.int), .conversionError))
+        let error3 = ParameterError(command: path, kind: .invalidValue(.init(name: "int", param: command.$int), .conversionError))
         DefaultHelpMessageGenerator().writeParameterErrorMessage(for: error3, to: capture3)
         capture3.closeWrite()
         
@@ -467,7 +451,7 @@ class HelpMessageGeneratorTests: XCTestCase {
         let path = CommandGroupPath(top: cli).appending(command)
         
         let capture1 = CaptureStream()
-        let error1 = ParameterError(command: path, kind: .invalidValue(.init(name: "age", param: command.age), .validationError(command.age.validation[0])))
+        let error1 = ParameterError(command: path, kind: .invalidValue(.init(name: "age", param: command.$age), .validationError(command.$age.validation[0])))
         DefaultHelpMessageGenerator().writeParameterErrorMessage(for: error1, to: capture1)
         capture1.closeWrite()
         

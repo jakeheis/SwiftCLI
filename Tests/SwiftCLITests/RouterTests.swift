@@ -35,7 +35,7 @@ class RouterTests: XCTestCase {
     }
     
     func testSingleRouter() throws {
-        let parser = Parser()
+        var parser = Parser()
         
         let cmd = FlagCmd()
         let cli = CLI.createTester(commands: [cmd])
@@ -45,7 +45,7 @@ class RouterTests: XCTestCase {
         XCTAssert(path.groupPath.bottom === cli, "Router should generate correct group path")
         XCTAssertTrue(path.ignoreName)
         XCTAssert(path.command === cmd, "Router should route to the single command")
-        XCTAssertTrue(cmd.flag.value)
+        XCTAssertTrue(cmd.flag)
         
         let cmd2 = FlagCmd()
         let cli2 = CLI.createTester(commands: [cmd2])
@@ -55,7 +55,31 @@ class RouterTests: XCTestCase {
         XCTAssert(path2.groupPath.bottom === cli2, "Router should generate correct group path")
         XCTAssertTrue(path2.ignoreName)
         XCTAssert(path2.command === cmd2, "Router should route to the single command")
-        XCTAssertFalse(cmd2.flag.value)
+        XCTAssertFalse(cmd2.flag)
+    }
+    
+    func testFallbackOption() throws {
+        var parser = Parser()
+        
+        let cmd = FlagCmd()
+        let cli = CLI.createTester(commands: [cmd])
+        parser.routeBehavior = .searchWithFallback(cmd)
+        let path = try parser.parse(cli: cli, arguments: ArgumentList(arguments: ["-a"]))
+        
+        XCTAssert(path.groupPath.bottom === cli, "Router should generate correct group path")
+        XCTAssertTrue(path.ignoreName)
+        XCTAssert(path.command === cmd, "Router should route to the single command")
+        XCTAssertTrue(cmd.flag)
+        
+        let cmd2 = FlagCmd()
+        let cli2 = CLI.createTester(commands: [cmd2])
+        parser.routeBehavior = .searchWithFallback(cmd2)
+        let path2 = try parser.parse(cli: cli2, arguments: ArgumentList(arguments: []))
+        
+        XCTAssert(path2.groupPath.bottom === cli2, "Router should generate correct group path")
+        XCTAssertTrue(path2.ignoreName)
+        XCTAssert(path2.command === cmd2, "Router should route to the single command")
+        XCTAssertFalse(cmd2.flag)
     }
     
     func testFailedRoute() throws {
@@ -160,28 +184,34 @@ class RouterTests: XCTestCase {
     }
 
     func testFallback() throws {
-        let opt1 = Opt1Cmd()
-        let cli = CLI.createTester(commands: [opt1])
+        func setup() -> (Opt1Cmd, CLI, Parser) {
+            let opt1 = Opt1Cmd()
+            let cli = CLI.createTester(commands: [opt1])
+            var parser = Parser()
+            parser.routeBehavior = .searchWithFallback(opt1)
+            return (opt1, cli, parser)
+        }
         
-        let parser = Parser()
-        parser.routeBehavior = .searchWithFallback(opt1)
+        let (opt1, cli1, parser1) = setup()
         
-        let firstResult = try parser.parse(cli: cli, arguments: ArgumentList(arguments: ["cmd", "value"]))
+        let firstResult = try parser1.parse(cli: cli1, arguments: ArgumentList(arguments: ["cmd", "value"]))
         XCTAssert(opt1 === firstResult.command)
         XCTAssertFalse(firstResult.ignoreName)
-        XCTAssertEqual(opt1.opt1.value, "value")
+        XCTAssertEqual(opt1.opt1, "value")
         
-        let secondResult = try parser.parse(cli: cli, arguments: ArgumentList(arguments: ["value2"]))
-        XCTAssert(opt1 === secondResult.command)
+        let (opt2, cli2, parser2) = setup()
+        
+        let secondResult = try parser2.parse(cli: cli2, arguments: ArgumentList(arguments: ["value2"]))
+        XCTAssert(opt2 === secondResult.command)
         XCTAssertTrue(secondResult.ignoreName)
-        XCTAssertEqual(opt1.opt1.value, "value2")
+        XCTAssertEqual(opt2.opt1, "value2")
         
-        opt1.opt1.value = nil
+        let (opt3, cli3, parser3) = setup()
         
-        let thirdResult = try parser.parse(cli: cli, arguments: ArgumentList(arguments: []))
-        XCTAssert(opt1 === thirdResult.command)
+        let thirdResult = try parser3.parse(cli: cli3, arguments: ArgumentList(arguments: []))
+        XCTAssert(opt3 === thirdResult.command)
         XCTAssertTrue(thirdResult.ignoreName)
-        XCTAssertNil(opt1.opt1.value)
+        XCTAssertNil(opt3.opt1)
     }
     
 }

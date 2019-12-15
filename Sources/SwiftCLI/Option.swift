@@ -10,6 +10,7 @@ public protocol Option: class, CustomStringConvertible {
     var names: [String] { get }
     var shortDescription: String { get }
     var identifier: String { get }
+    var variadic: Bool { get }
 }
 
 extension Option {
@@ -33,12 +34,16 @@ public protocol AnyFlag: Option {
     func update()
 }
 
+@propertyWrapper
 public class Flag: AnyFlag {
     
     public let names: [String]
     public let shortDescription: String
-    public private(set) var value: Bool
-    private let defaultValue: Bool
+    public let variadic = false
+    
+    public private(set) var wrappedValue = false
+    public var value: Bool { wrappedValue }
+    public var projectedValue: Flag { self }
     
     public var identifier: String {
         return names.joined(separator: ", ")
@@ -49,32 +54,34 @@ public class Flag: AnyFlag {
     /// - Parameters:
     ///   - names: the names for the flag; convention is to include a short name (-a) and a long name (--all)
     ///   - description: A short description of what this flag does for usage statements
-    ///   - defaultValue: the default value of this flag; default false
-    public init(_ names: String ..., description: String = "", defaultValue: Bool = false) {
+    public init(_ names: String..., description: String = "") {
         self.names = names
         self.shortDescription = description
-        self.value = defaultValue
-        self.defaultValue = defaultValue
     }
     
     /// Toggles the flag's value; don't call directly
     public func update() {
-        value = !defaultValue
+        wrappedValue = true
     }
     
 }
 
+@propertyWrapper
 public class CounterFlag: AnyFlag {
     
     public let names: [String]
     public let shortDescription: String
-    public private(set) var value: Int = 0
+    public let variadic = true
+    
+    public private(set) var wrappedValue: Int = 0
+    public var value: Int { wrappedValue }
+    public var projectedValue: CounterFlag { self }
     
     public var identifier: String {
         return names.joined(separator: ", ")
     }
     
-    /// Creates a new flag
+    /// Creates a new counter flag
     ///
     /// - Parameters:
     ///   - names: the names for the flag; convention is to include a short name (-a) and a long name (--all)
@@ -86,7 +93,7 @@ public class CounterFlag: AnyFlag {
     
     /// Increments the flag's value; don't call directly
     public func update() {
-        value += 1
+        wrappedValue += 1
     }
     
 }
@@ -120,30 +127,40 @@ public class _Key<Value: ConvertibleFromString> {
     
 }
 
+@propertyWrapper
 public class Key<Value: ConvertibleFromString>: _Key<Value>, AnyKey, ValueBox {
     
-    public var value: Value?
+    public let variadic = false
+    
+    public private(set) var wrappedValue: Value?
+    public var value: Value? { wrappedValue }
+    public var projectedValue: Key { self }
     
     public init(_ names: String ..., description: String = "", completion: ShellCompletion = .filename, validation: [Validation<Value>] = []) {
         super.init(names: names, description: description, completion: completion, validation: validation)
     }
     
     public func update(to value: Value) {
-        self.value = value
+        self.wrappedValue = value
     }
     
 }
 
+@propertyWrapper
 public class VariadicKey<Value: ConvertibleFromString>: _Key<Value>, AnyKey, ValueBox {
     
-    public var value: [Value] = []
+    public let variadic = true
+    
+    public private(set) var wrappedValue: [Value] = []
+    public var value: [Value] { wrappedValue }
+    public var projectedValue: VariadicKey { self }
     
     public init(_ names: String ..., description: String = "", completion: ShellCompletion = .filename, validation: [Validation<Value>] = []) {
         super.init(names: names, description: description, completion: completion, validation: validation)
     }
     
     public func update(to value: Value) {
-        self.value.append(value)
+        self.wrappedValue.append(value)
     }
     
 }

@@ -47,7 +47,7 @@ extension Routable {
             options = optionsFromMirror(superMirror)
         }
         
-        options.append(contentsOf: mirror.children.compactMap { (child) -> Option? in
+        options.append(contentsOf: mirror.children.compactMap { (child) in
             #if !os(macOS)
             #if swift(>=4.1.50)
             print(child.label as Any, to: &NoStream.stream)
@@ -57,11 +57,9 @@ extension Routable {
             #endif
             #endif
             
-            if let option = child.value as? Option {
-                return option
-            }
-            return nil
+            return child.value as? Option
         })
+        
         return options
     }
     
@@ -79,7 +77,7 @@ public protocol Command: Routable {
     /// - Throws: CLI.Error if command cannot execute successfully
     func execute() throws
     
-    /// The paramters this command accepts; derived automatically, don't implement unless custom functionality needed
+    /// The parameters this command accepts; derived automatically, don't implement unless custom functionality needed
     var parameters: [NamedParameter] { get }
     
 }
@@ -96,7 +94,7 @@ extension Command {
             parameters = parametersFromMirror(superMirror)
         }
         parameters.append(contentsOf: mirror.children.compactMap { (child) in
-            guard let label = child.label else {
+            guard var label = child.label else {
                 return nil
             }
             
@@ -111,6 +109,9 @@ extension Command {
             #endif
             
             if let param = child.value as? AnyParameter {
+                if label.hasPrefix("_") {
+                    label = String(label[label.index(after: label.startIndex)...])
+                }
                 return NamedParameter(name: label, param: param)
             }
             return nil
@@ -152,7 +153,7 @@ extension CommandGroup {
 #if swift(>=4.1.50)
 struct NoStream: TextOutputStream {
     
-    // Fix for strange crash on Linux with Swift 4.2
+    // Fix for strange crash on Linux with Swift >= 4.2
     
     static var stream = NoStream()
     

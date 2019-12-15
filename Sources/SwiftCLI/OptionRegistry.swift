@@ -10,7 +10,7 @@ public class OptionRegistry {
     
     private var flags: [String: AnyFlag]
     private var keys: [String: AnyKey]
-    private var groups: [OptionGroup]
+    public private(set) var groups: [OptionGroup]
     
     public init(routable: Routable) {
         self.flags = [:]
@@ -38,32 +38,6 @@ public class OptionRegistry {
     
     public func recognizesOption(_ opt: String) -> Bool {
         return flags[opt] != nil || keys[opt] != nil
-    }
-    
-    public func parseOneOption(args: ArgumentList, command: CommandPath?) throws {
-        let opt = args.pop()
-        
-        if let flag = flag(for: opt) {
-            flag.update()
-        } else if let key = key(for: opt) {
-             guard args.hasNext(), !args.nextIsOption() else {
-                throw OptionError(command: command, kind: .expectedValueAfterKey(opt))
-            }
-            let updateResult = key.update(to: args.pop())
-            if case let .failure(error) = updateResult {
-               throw OptionError(command: command, kind: .invalidKeyValue(key, opt, error))
-            }
-        } else {
-            throw OptionError(command: command, kind: .unrecognizedOption(opt))
-        }
-    }
-    
-    public func checkGroups(command: CommandPath) throws {
-        for group in groups {
-            if !group.check() {
-                throw OptionError(command: command, kind: .optionGroupMisuse(group))
-            }
-        }
     }
     
     // MARK: - Helpers

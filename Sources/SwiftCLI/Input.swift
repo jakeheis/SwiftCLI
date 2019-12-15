@@ -111,7 +111,7 @@ public class InputReader<T: ConvertibleFromString> {
                 exit(1)
             }
             
-            guard let converted = T.convert(from: input) else {
+            guard let converted = T(input: input) else {
                 errorResponse(input, .conversionError)
                 continue
             }

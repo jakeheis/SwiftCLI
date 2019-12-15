@@ -1,4 +1,4 @@
-#if !os(macOS)
+#if !canImport(ObjectiveC)
 import XCTest
 
 extension ArgumentListManipulatorTests {
@@ -99,6 +99,7 @@ extension ParameterFillerTests {
         ("testEmptySignature", testEmptySignature),
         ("testOptionalParameters", testOptionalParameters),
         ("testOptionalParametersWithInheritance", testOptionalParametersWithInheritance),
+        ("testParameterInit", testParameterInit),
         ("testRequiredParameters", testRequiredParameters),
         ("testValidatedParameter", testValidatedParameter),
     ]
@@ -114,7 +115,6 @@ extension ParserTests {
         ("testCombinedFlagsAndKeysAndArgumentsParsing", testCombinedFlagsAndKeysAndArgumentsParsing),
         ("testCombinedFlagsAndKeysParsing", testCombinedFlagsAndKeysParsing),
         ("testCounterParse", testCounterParse),
-        ("testDefaultFlagValue", testDefaultFlagValue),
         ("testFlagSplitting", testFlagSplitting),
         ("testFullParse", testFullParse),
         ("testGroupRestriction", testGroupRestriction),
@@ -137,6 +137,7 @@ extension RouterTests {
         ("testAliasRoute", testAliasRoute),
         ("testFailedRoute", testFailedRoute),
         ("testFallback", testFallback),
+        ("testFallbackOption", testFallbackOption),
         ("testGroupFailedRoute", testGroupFailedRoute),
         ("testGroupPartialRoute", testGroupPartialRoute),
         ("testGroupSuccessRoute", testGroupSuccessRoute),

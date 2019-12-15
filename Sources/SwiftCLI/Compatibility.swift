@@ -9,6 +9,24 @@ import Foundation
 
 // MARK: Minor version deprecations
 
+@available(*, deprecated, message: "use Param<String>")
+public typealias Parameter = Param<String>
+
+@available(*, deprecated, message: "use Param<String?>")
+public typealias OptionalParameter = Param<String?>
+
+@available(*, deprecated, message: "use CollectedParam<String>(minCount: 1)")
+public class CollectedParameter: CollectedParam<String> {
+    public init(completion: ShellCompletion = .filename, validation: [Validation<Value>] = []) {
+        super.init(minCount: 1, completion: completion, validation: validation)
+    }
+}
+
+@available(*, deprecated, message: "use CollectedParam<String>")
+public typealias OptionalCollectedParameter = CollectedParam<String>
+
+// MARK: -
+
 @available(*, unavailable, renamed: "Task.run")
 public func run(_ executable: String, _ arguments: String...) throws {}
 
@@ -29,32 +47,23 @@ public func capture(bash: String, directory: String? = nil) throws -> CaptureRes
 
 extension Task {
     
-    @available(*, deprecated, message: "Use Task.execvp(_:arguments:directory:env) instead")
+    @available(*, unavailable, message: "Use Task.execvp(_:arguments:directory:env) instead")
     public static func execvp(_ executable: String, directory: String? = nil, _ args: String..., env: [String: String]? = nil) throws -> Never {
-        try execvp(executable, arguments: args, directory: directory, env: env)
+        fatalError()
     }
     
-    @available(*, deprecated, message: "Use Task.execvp(_:arguments:directory:env) instead")
+    @available(*, unavailable, message: "Use Task.execvp(_:arguments:directory:env) instead")
     public static func execvp(_ executable: String, directory: String? = nil, _ args: [String], env: [String: String]? = nil) throws -> Never {
-        try execvp(executable, arguments: args, directory: directory, env: env)
+        fatalError()
     }
     
-    @available(*, deprecated, renamed: "init(executable:arguments:directory:stdout:stderr:stdin:)")
+    @available(*, unavailable, renamed: "init(executable:arguments:directory:stdout:stderr:stdin:)")
     public convenience init(executable: String, args: [String] = [], currentDirectory: String? = nil, stdout: WritableStream = WriteStream.stdout, stderr: WritableStream = WriteStream.stderr, stdin: ReadableStream = ReadStream.stdin) {
-        self.init(executable: executable, arguments: args, directory: currentDirectory, stdout: stdout, stderr: stderr, stdin: stdin)
+        fatalError()
     }
     
-    /// Finds the path to an executable
-    ///
-    /// - Parameter named: the name of the executable to find
-    /// - Returns: the full path to the executable if found, or nil
-    @available(*, deprecated)
-    public static func findExecutable(named: String) -> String? {
-        if named.hasPrefix("/") || named.hasPrefix(".") {
-            return named
-        }
-        return try? capture(bash: "which \(named)").stdout
-    }
+    @available(*, unavailable)
+    public static func findExecutable(named: String) -> String? { nil }
     
 }
 
@@ -88,7 +97,7 @@ extension Input {
 }
 
 extension InputReader {
-    @available(*, deprecated, message: "Use Validation<T>.custom instead of InputReader<T>.Validation")
+    @available(*, unavailable, message: "Use Validation<T>.custom instead of InputReader<T>.Validation")
     public typealias Validation = (T) -> Bool
 }
 
@@ -101,19 +110,19 @@ extension CLI {
     
 }
 
-@available(*, deprecated, renamed: "ShellCompletion")
+@available(*, unavailable, renamed: "ShellCompletion")
 public typealias Completion = ShellCompletion
 
 extension CaptureResult {
     
     /// The full stdout contents; use `stdout` for trimmed contents
-    @available(*, deprecated, message: "Use stdout or stdoutData")
+    @available(*, unavailable, message: "Use stdout or stdoutData")
     public var rawStdout: String {
         return String(data: stdoutData, encoding: .utf8) ?? ""
     }
     
     /// The full stderr contents; use `stderr` for trimmed contents
-    @available(*, deprecated, message: "Use stderr or stderrData")
+    @available(*, unavailable, message: "Use stderr or stderrData")
     public var rawStderr: String {
         return String(data: stderrData, encoding: .utf8) ?? ""
     }

@@ -80,16 +80,9 @@ extension HelpMessageGenerator {
         if !options.isEmpty {
             out <<< ""
             out <<< "Options:"
-            let sortedOptions = options.sorted { (lhs, rhs) in
-                return lhs.names.first! < rhs.names.first!
-            }
-            let maxOptionLength = sortedOptions.reduce(12) { (length, option) in
-                if option.identifier.count > length {
-                    return option.identifier.count
-                }
-                return length
-            }
-            for option in sortedOptions {
+            let sortedOptions = options.sorted { $0.names[0] < $1.names[0] }
+            let maxOptionLength = sortedOptions.reduce(12) { max($0, $1.identifier.count) }
+            sortedOptions.forEach { (option) in
                 let usage = option.usage(padding: maxOptionLength + 4)
                 out <<< "  \(usage)".replacingOccurrences(of: "\n", with: "\n  ")
             }

@@ -22,11 +22,14 @@ class TestCommand: Command {
 
     var executionString = ""
 
-    let testName = Parameter()
-    let testerName = OptionalParameter()
+    @Param var testName: String
+    @Param var testerName: String?
     
-    let silent = Flag("-s", "--silent", description: "Silence all test output")
-    let times = Key<Int>("-t", "--times", description: "Number of times to run the test")
+    @Flag("-s", "--silent", description: "Silence all test output")
+    var silent: Bool
+    
+    @Key("-t", "--times", description: "Number of times to run the test")
+    var times: Int?
 
     let completion: ((_ executionString: String) -> ())?
 
@@ -35,8 +38,8 @@ class TestCommand: Command {
     }
 
     func execute() throws {
-        executionString = "\(testerName.value ?? "defaultTester") will test \(testName.value), \(times.value ?? 1) times"
-        if silent.value {
+        executionString = "\(testerName ?? "defaultTester") will test \(testName), \(times ?? 1) times"
+        if silent {
             executionString += ", silently"
         }
 
@@ -46,13 +49,11 @@ class TestCommand: Command {
 }
 
 class TestCommandWithLongDescription: Command {
-
     let name = "test"
     let shortDescription = "A command to test stuff"
     let longDescription = "This is a long\nmultiline description"
 
-    func execute() throws {
-    }
+    func execute() throws {}
 }
 
 class MultilineCommand: Command {
@@ -60,17 +61,19 @@ class MultilineCommand: Command {
     let name = "test"
     let shortDescription = "A command that has multiline comments.\nNew line"
 
-    let silent = Flag("-s", "--silent", description: "Silence all test output\nNewline")
-    let times = Key<Int>("-t", "--times", description: "Number of times to run the test")
+    @Flag("-s", "--silent", description: "Silence all test output\nNewline")
+    var silent: Bool
+    
+    @Key("-t", "--times", description: "Number of times to run the test")
+    var times: Int?
 
-    func execute() throws {
-
-    }
+    func execute() throws {}
 
 }
 
 class TestInheritedCommand: TestCommand {
-    let verbose = Flag("-v", "--verbose", description: "Show more output information")
+    @Flag("-v", "--verbose", description: "Show more output information")
+    var verbose: Bool
 }
 
 // MARK: -
@@ -114,60 +117,82 @@ class EmptyCmd: Command {
 }
 
 class Req1Cmd: EmptyCmd {
-    let req1 = Parameter(completion: .function("_ice_targets"))
+    @Param(completion: .function("_ice_targets"))
+    var req1: String
 }
 
 class Opt1Cmd: EmptyCmd {
-    let opt1 = OptionalParameter()
+    @Param var opt1: String?
 }
 
 class Req2Cmd: EmptyCmd {
-    let req1 = Parameter(completion: .filename)
-    let req2 = Parameter(completion: .values([
+    @Param(completion: .filename)
+    var req1: String
+    
+    @Param(completion: .values([
         ("executable", "generates a project for a cli executable"),
         ("library", "generates project for a dynamic library"),
         ("other", "")
     ]))
+    var req2: String
 }
 
 class Opt2Cmd: EmptyCmd {
-    let opt1 = OptionalParameter(completion: .filename)
-    let opt2 = OptionalParameter(completion: .values([
+    @Param(completion: .filename)
+    var opt1: String?
+    
+    @Param(completion: .values([
         ("executable", "generates a project for a cli executable"),
         ("library", "generates project for a dynamic library")
     ]))
+    var opt2: String?
 }
 
 class Opt2InhCmd: Opt2Cmd {
-    let opt3 = OptionalParameter()
+    @Param var opt3: String?
 }
 
 class ReqCollectedCmd: EmptyCmd {
-    let req1 = CollectedParameter()
+    @CollectedParam(minCount: 1) var req1: [String]
 }
 
 class OptCollectedCmd: EmptyCmd {
-    let opt1 = OptionalCollectedParameter()
+    @CollectedParam var opt1: [String]
 }
 
 class Req2CollectedCmd: EmptyCmd {
-    let req1 = Parameter(completion: .values([
+    @Param(completion: .values([
         ("executable", "generates a project for a cli executable"),
         ("library", "generates project for a dynamic library")
-        ]))
-    let req2 = CollectedParameter(completion: .filename)
+    ]))
+    var req1: String
+    
+    @CollectedParam(minCount: 1, completion: .filename)
+    var req2: [String]
+}
+
+class TriReqCollectedCmd: EmptyCmd {
+    @CollectedParam(minCount: 3)
+    var triReq: [String]
 }
 
 class Opt2CollectedCmd: EmptyCmd {
-    let opt1 = OptionalParameter()
-    let opt2 = OptionalCollectedParameter()
+    @Param var opt1: String?
+    @CollectedParam var opt2: [String]
 }
 
 class Req2Opt2Cmd: EmptyCmd {
-    let req1 = Parameter(completion: .filename)
-    let req2 = Parameter(completion: .function("_swift_dependency"))
-    let opt1 = OptionalParameter(completion: .none)
-    let opt2 = OptionalParameter(completion: .filename)
+    @Param(completion: .filename)
+    var req1: String
+    
+    @Param(completion: .function("_swift_dependency"))
+    var req2: String
+    
+    @Param(completion: .none)
+    var opt1: String?
+    
+    @Param(completion: .filename)
+    var opt2: String?
 }
 
 // MARK: -
@@ -198,40 +223,52 @@ class OptionCmd: Command {
 }
 
 class FlagCmd: OptionCmd {
-    let flag = Flag("-a", "--alpha")
-}
-
-class ReverseFlagCmd: OptionCmd {
-    let flag = Flag("-r", "--reverse", defaultValue: true)
+    @Flag("-a", "--alpha")
+    var flag: Bool
 }
 
 class KeyCmd: OptionCmd {
-    let key = Key<String>("-a", "--alpha")
+    @Key("-a", "--alpha")
+    var key: String?
 }
 
 class DoubleFlagCmd: OptionCmd {
-    let alpha = Flag("-a", "--alpha", description: "The alpha flag")
-    let beta = Flag("-b", "--beta", description: "The beta flag")
+    @Flag("-a", "--alpha", description: "The alpha flag")
+    var alpha: Bool
+    
+    @Flag("-b", "--beta", description: "The beta flag")
+    var beta: Bool
 }
 
 class DoubleKeyCmd: OptionCmd {
-    let alpha = Key<String>("-a", "--alpha")
-    let beta = Key<String>("-b", "--beta")
+    @Key("-a", "--alpha")
+    var alpha: String?
+ 
+    @Key("-b", "--beta")
+    var beta: String?
 }
 
 class FlagKeyCmd: OptionCmd {
-    let alpha = Flag("-a", "--alpha")
-    let beta = Key<String>("-b", "--beta")
+    @Flag("-a", "--alpha")
+    var alpha: Bool
+    
+    @Key("-b", "--beta")
+    var beta: String?
 }
 
 class FlagKeyParamCmd: OptionCmd {
-    let alpha = Flag("-a", "--alpha")
-    let beta = Key<String>("-b", "--beta")
-    let param = Parameter()
+    @Flag("-a", "--alpha")
+    var alpha: Bool
+    
+    @Key("-b", "--beta")
+    var beta: String?
+    
+    @Param var param: String
 }
 
 class IntKeyCmd: OptionCmd {
-    let alpha = Key<Int>("-a", "--alpha")
+    @Key("-a", "--alpha")
+    var alpha: Int?
 }
 
 class ExactlyOneCmd: Command {
@@ -240,25 +277,26 @@ class ExactlyOneCmd: Command {
     var helpFlag: Flag? = nil
     func execute() throws {}
     
-    let alpha = Flag("-a", "--alpha", description: "the alpha flag")
-    let beta = Flag("-b", "--beta", description: "the beta flag")
+    @Flag("-a", "--alpha", description: "the alpha flag")
+    var alpha: Bool
     
-    let optionGroups: [OptionGroup]
+    @Flag("-b", "--beta", description: "the beta flag")
+    var beta: Bool
     
-    init() {
-        optionGroups = [.exactlyOne(alpha, beta)]
-    }
-    
+    lazy var optionGroups: [OptionGroup] = [.exactlyOne($alpha, $beta)]
 }
 
 class MultipleRestrictionsCmd: Command {
     let name = "cmd"
     
-    let alpha = Flag("-a", "--alpha", description: "the alpha flag")
-    let beta = Flag("-b", "--beta", description: "the beta flag")
+    @Flag("-a", "--alpha", description: "the alpha flag")
+    var alpha: Bool
     
-    lazy var atMostOne: OptionGroup = .atMostOne(alpha, beta)
-    lazy var atMostOneAgain: OptionGroup = .atMostOne(alpha, beta)
+    @Flag("-b", "--beta", description: "the beta flag")
+    var beta: Bool
+    
+    lazy var atMostOne: OptionGroup = .atMostOne($alpha, $beta)
+    lazy var atMostOneAgain: OptionGroup = .atMostOne($alpha, $beta)
     
     var optionGroups: [OptionGroup] {
         return [atMostOne, atMostOneAgain]
@@ -268,28 +306,30 @@ class MultipleRestrictionsCmd: Command {
 }
 
 class VariadicKeyCmd: OptionCmd {
-    let files = VariadicKey<String>("-f", "--file", description: "a file")
+    @VariadicKey("-f", "--file", description: "a file")
+    var files: [String]
 }
 
 class CounterFlagCmd: OptionCmd {
-    let verbosity = CounterFlag("-v", "--verbose", description: "Increase the verbosity")
+    @CounterFlag("-v", "--verbose", description: "Increase the verbosity")
+    var verbosity: Int
 }
 
 class ValidatedKeyCmd: OptionCmd {
     
-    static func isCapitalized(_ value: String) -> Bool {
-        return value.capitalized == value
-    }
+    static let capitalizedFirstName = Validation.custom("Must be a capitalized first name") { $0.capitalized == $0 }
     
-    let firstName = Key<String>("-n", "--name", validation: [
-        .custom("Must be a capitalized first name", isCapitalized)
-    ])
+    @Key("-n", "--name", validation: [capitalizedFirstName])
+    var firstName: String?
     
-    let age = Key<Int>("-a", "--age", validation: [.greaterThan(18)])
+    @Key("-a", "--age", validation: [.greaterThan(18)])
+    var age: Int?
     
-    let location = Key<String>("-l", "--location", validation: [.rejecting("Chicago", "Boston")])
+    @Key("-l", "--location", validation: [.rejecting("Chicago", "Boston")])
+    var location: String?
     
-    let holiday = Key<String>("--holiday", validation: [.allowing("Thanksgiving", "Halloween")])
+    @Key("--holiday", validation: [.allowing("Thanksgiving", "Halloween")])
+    var holiday: String?
     
 }
 
@@ -297,19 +337,30 @@ class QuoteDesciptionCmd: Command {
     let name = "cmd"
     let shortDescription = "this description has a \"quoted section\""
     
-    let flag = Flag("-q", "--quoted", description: "also has \"quotes\"")
+    @Flag("-q", "--quoted", description: "also has \"quotes\"")
+    var flag: Bool
     
     func execute() throws {}
 }
 
 class CompletionOptionCmd: OptionCmd {
-    let values = Key<String>("-v", "--values", completion: .values([("opt1", "first option"), ("opt2", "second option")]))
-    let function = Key<String>("-f", "--function", completion: .function("_a_func"))
-    let filename = Key<String>("-n", "--name", completion: .filename)
-    let none = Key<String>("-z", "--zero", completion: .none)
-    let def = Key<String>("-d", "--default")
+    @Key("-v", "--values", completion: .values([("opt1", "first option"), ("opt2", "second option")]))
+    var values: String?
     
-    let flag = Flag("-f", "--flag")
+    @Key<String>("-f", "--function", completion: .function("_a_func"))
+    var function: String?
+    
+    @Key<String>("-n", "--name", completion: .filename)
+    var filename: String?
+    
+    @Key<String>("-z", "--zero", completion: .none)
+    var none: String?
+    
+    @Key<String>("-d", "--default")
+    var def: String?
+    
+    @Flag("-f", "--flag")
+    var flag: Bool
 }
 
 class EnumCmd: Command {
@@ -328,9 +379,9 @@ class EnumCmd: Command {
     let name = "cmd"
     let shortDescription = "Limits param values to enum"
     
-    let speed = Param.Required<Speed>()
-    let single = Param.Optional<Single>()
-    let int = Param.Optional<Int>()
+    @Param var speed: Speed
+    @Param var single: Single?
+    @Param var int: Int?
     
     func execute() throws {}
     
@@ -345,7 +396,8 @@ class ValidatedParamCmd: Command {
     let name = "cmd"
     let shortDescription = "Validates param values"
     
-    let age = Param.Optional<Int>(validation: [.greaterThan(18)])
+    @Param(validation: .greaterThan(18))
+    var age: Int?
     
     func execute() throws {}
     
@@ -356,7 +408,7 @@ class RememberExecutionCmd: Command {
     let name = "cmd"
     let shortDescription = "Remembers execution"
     
-    let param = OptionalParameter()
+    @Param var param: String?
     
     var executed = false
     
@@ -366,14 +418,44 @@ class RememberExecutionCmd: Command {
     
 }
 
+class ParamInitCmd: Command {
+    let name = "cmd"
+    
+    @Param(completion: .filename)
+    var reqComp: String
+    
+    @Param(completion: .filename)
+    var optComp: String?
+    
+    @Param(validation: .allowing("hi"))
+    var reqVal: String
+    
+    @Param(validation: .allowing("yo"))
+    var optVal: String?
+    
+    @Param(completion: .filename, validation: .allowing("hi"))
+    var reqCompVal: String
+    
+    @Param(completion: .filename, validation: .allowing("yo"))
+    var optCompVal: String?
+    
+    @Param
+    var reqNone: String
+    
+    @Param
+    var optNone: String?
+    
+    func execute() {}
+}
+
 // MARK: -
 
 func XCTAssertThrowsSpecificError<T, E: Error>(
-    expression: @autoclosure () throws -> T,
+    expression: @escaping @autoclosure () throws -> T,
     file: StaticString = #file,
     line: UInt = #line,
-    error errorHandler: (E) -> Void) {
-    XCTAssertThrowsError(expression, file: file, line: line) { (error) in
+    error errorHandler: @escaping (E) -> Void) {
+    XCTAssertThrowsError(try expression(), file: file, line: line) { (error) in
         guard let specificError = error as? E else {
             XCTFail("Error must be type \(String(describing: E.self)), is \(String(describing: type(of: error)))", file: file, line: line)
             return
