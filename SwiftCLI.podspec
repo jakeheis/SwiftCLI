@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
 
   s.name         = "SwiftCLI"
-  s.version      = "5.2.2"
+  s.version      = "6.0.0"
   s.summary      = "A powerful framework that can be used to develop a CLI in Swift"
 
   s.description  = <<-DESC
@@ -18,6 +18,6 @@ Pod::Spec.new do |s|
 
   s.source_files  = "Sources", "Sources/**/*.{swift}"
 
-  s.swift_version = "4.2.1"
+  s.swift_version = "5.1.1"
 
 end

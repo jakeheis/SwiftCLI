@@ -85,7 +85,7 @@ github "jakeheis/SwiftCLI" ~> 5.2.2
 ### CocoaPods
 
 ```ruby
-pod 'SwiftCLI', '~> 5.2.2'
+pod 'SwiftCLI', '~> 6.0.0'
 ```
 
 ## Creating a CLI
