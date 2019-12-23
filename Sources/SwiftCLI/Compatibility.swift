@@ -129,33 +129,59 @@ extension CaptureResult {
     
 }
 
+// MARK: - Foundation
+
+extension Process {
+    
+    var executable: String? {
+        get {
+            if #available(OSX 10.13, *) {
+                return executableURL?.absoluteString
+            } else {
+                return launchPath
+            }
+        }
+        set(newValue) {
+            if #available(OSX 10.13, *) {
+                executableURL = newValue.map{ URL(fileURLWithPath: $0) }
+            } else {
+                launchPath = newValue
+            }
+        }
+    }
+    
+    var currentDirectory: String? {
+        get {
+            if #available(OSX 10.13, *) {
+                return currentDirectoryURL?.absoluteString
+            } else {
+                return currentDirectoryPath
+            }
+        }
+        set(newValue) {
+            if #available(OSX 10.13, *) {
+                currentDirectoryURL = newValue.map{ URL(fileURLWithPath: $0) }
+            } else {
+                currentDirectoryPath = newValue ?? FileManager.default.currentDirectoryPath
+            }
+        }
+    }
+    
+    func go() {
+        do {
+            if #available(OSX 10.13, *) {
+                try run()
+            } else {
+                launch()
+            }
+        } catch {
+            preconditionFailure("couldn't launch executable")
+        }
+    }
+    
+}
+
 // MARK: - Swift versions
-
-#if !swift(>=4.1)
-
-extension Sequence {
-    func compactMap<T>(_ transform: (Element) -> T?) -> [T] {
-        return flatMap(transform)
-    }
-}
-
-#endif
-
-#if !swift(>=5.0)
-
-extension Collection {
-    func firstIndex(where test: (Element) -> Bool) -> Index? {
-        return index(where: test)
-    }
-}
-
-extension Collection where Element: Equatable {
-    func firstIndex(of element: Element) -> Index? {
-        return index(of: element)
-    }
-}
-
-#endif
 
 // MARK: Unavailable
 
