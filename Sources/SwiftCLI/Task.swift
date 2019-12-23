@@ -50,14 +50,23 @@ public class Task {
     public init(executable: String, arguments: [String] = [], directory: String? = nil, stdout: WritableStream = Term.stdout, stderr: WritableStream = Term.stderr, stdin: ReadableStream = ReadStream.stdin) {
         self.process = Process()
         if executable.hasPrefix("/") || executable.hasPrefix(".") {
+            #if os(macOS)
             self.process.launchPath = executable
+            #else
+            self.process.executableURL = URL(fileURLWithPath: executable)
+            #endif
             self.process.arguments = arguments
         } else {
             self.process.launchPath = "/usr/bin/env"
             self.process.arguments = [executable] + arguments
         }
+        
         if let directory = directory {
+            #if os(macOS)
             self.process.currentDirectoryPath = directory
+            #else
+            self.process.currentDirectoryURL = URL(fileURLWithPath: directory)
+            #endif
         }
         
         if stdout !== WriteStream.stdout {
