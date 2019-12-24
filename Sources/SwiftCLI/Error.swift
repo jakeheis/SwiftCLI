@@ -57,6 +57,7 @@ public struct OptionError: Swift.Error {
         case unrecognizedOption(String)
         case optionGroupMisuse(OptionGroup)
         case invalidKeyValue(AnyKey, String, InvalidValueReason)
+        case unexpectedValueAfterFlag(String)
         
         public var message: String {
             switch self {
@@ -81,6 +82,8 @@ public struct OptionError: Swift.Error {
                 return condition + ": \(group.options.compactMap({ $0.names.last }).joined(separator: " "))"
             case let .invalidKeyValue(key, id, reason):
                 return key.valueType.messageForInvalidValue(reason: reason, for: id)
+            case let .unexpectedValueAfterFlag(flag):
+                return "unexpected value following flag '\(flag)'"
             }
         }
     }

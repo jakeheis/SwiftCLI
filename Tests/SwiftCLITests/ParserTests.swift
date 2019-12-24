@@ -53,6 +53,15 @@ class ParserTests: XCTestCase {
         
         XCTAssertTrue(cmd.alpha, "Options should execute the closures of passed flags")
         XCTAssertEqual(cmd.beta, "banana", "Options should execute the closures of passed keys")
+        
+        let cmd2 = FlagKeyCmd()
+        let arguments2 = ArgumentList(arguments: ["cmd", "-ab", "banana"])
+        let cli2 = CLI.createTester(commands: [cmd2])
+        
+        _ = try Parser().parse(cli: cli2, arguments: arguments2)
+        
+        XCTAssertTrue(cmd2.alpha)
+        XCTAssertEqual(cmd2.beta, "banana")
     }
     
     func testCombinedFlagsAndKeysAndArgumentsParsing() throws {
@@ -98,6 +107,38 @@ class ParserTests: XCTestCase {
             }
             XCTAssertEqual(key, "-b")
         }
+        
+        let cmd2 = FlagKeyCmd()
+        let arguments2 = ArgumentList(arguments: ["cmd", "-ba"])
+        let cli2 = CLI.createTester(commands: [cmd2])
+        
+        do {
+            _ = try Parser().parse(cli: cli2, arguments: arguments2)
+            XCTFail()
+        } catch let error as OptionError {
+            guard case let .expectedValueAfterKey(key) = error.kind else {
+                XCTFail()
+                return
+            }
+            XCTAssertEqual(key, "-b")
+        }
+    }
+    
+    func testFlagGivenValue() throws {
+        let cmd = FlagKeyCmd()
+        let arguments = ArgumentList(arguments: ["cmd", "--alpha=value"])
+        let cli = CLI.createTester(commands: [cmd])
+        
+        do {
+            _ = try Parser().parse(cli: cli, arguments: arguments)
+            XCTFail()
+        } catch let error as OptionError {
+            guard case let .unexpectedValueAfterFlag(flag) = error.kind else {
+                XCTFail()
+                return
+            }
+            XCTAssertEqual(flag, "--alpha")
+        }
     }
     
     func testIllegalOptionFormat() throws {
@@ -119,7 +160,6 @@ class ParserTests: XCTestCase {
     func testFlagSplitting() throws {
         let cmd = DoubleFlagCmd()
         let arguments = ArgumentList(arguments: ["cmd", "-ab"])
-        OptionSplitter().manipulate(arguments: arguments)
         let cli = CLI.createTester(commands: [cmd])
         
         _ = try Parser().parse(cli: cli, arguments: arguments)

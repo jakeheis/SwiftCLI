@@ -168,23 +168,59 @@ public struct OptionResponse: ParserResponse {
     }
     
     public func respond(to arguments: ArgumentList, state: Parser.State) throws -> Parser.State {
-        let opt = arguments.pop()
+        let firstArg = arguments.pop()
         
-        if let flag = state.optionRegistry.flag(for: opt) {
-            flag.update()
-        } else if let key = state.optionRegistry.key(for: opt) {
-             guard arguments.hasNext(), !arguments.nextIsOption() else {
-                throw OptionError(command: state.command, kind: .expectedValueAfterKey(opt))
+        if firstArg.hasPrefix("--"), let equalsIndex = firstArg.firstIndex(of: "=") {
+            let optName = String(firstArg[..<equalsIndex])
+            let value = String(firstArg[firstArg.index(after: equalsIndex)...])
+            
+            try parse(option: optName, associatedValue: .required(value), arguments: arguments, state: state)
+        } else if firstArg.hasPrefix("-") && !firstArg.hasPrefix("--") {
+            let options = firstArg.dropFirst().map({ "-\($0)" })
+            for option in options.dropLast() {
+                try parse(option: option, associatedValue: .none, arguments: arguments, state: state)
             }
-            let updateResult = key.update(to: arguments.pop())
-            if case let .failure(error) = updateResult {
-               throw OptionError(command: state.command, kind: .invalidKeyValue(key, opt, error))
-            }
+            try parse(option: options.last!, associatedValue: .unknown, arguments: arguments, state: state)
         } else {
-            throw OptionError(command: state.command, kind: .unrecognizedOption(opt))
+            try parse(option: firstArg, associatedValue: .unknown, arguments: arguments, state: state)
         }
         
         return state
+    }
+    
+    private enum AssociatedValue {
+        case required(String)
+        case unknown
+        case none
+    }
+    
+    private func parse(option: String, associatedValue: AssociatedValue, arguments: ArgumentList, state: Parser.State) throws {
+        if let flag = state.optionRegistry.flag(for: option) {
+            if case .required(_) = associatedValue {
+                throw OptionError(command: state.command, kind: .unexpectedValueAfterFlag(option))
+            }
+            flag.update()
+        } else if let key = state.optionRegistry.key(for: option) {
+            let value: String
+            switch associatedValue {
+            case .required(let val):
+                value = val
+            case .unknown:
+                guard arguments.hasNext(), !arguments.nextIsOption() else {
+                    fallthrough
+                }
+                value = arguments.pop()
+            case .none:
+                throw OptionError(command: state.command, kind: .expectedValueAfterKey(option))
+            }
+            
+            let updateResult = key.update(to: value)
+            if case let .failure(error) = updateResult {
+               throw OptionError(command: state.command, kind: .invalidKeyValue(key, option, error))
+            }
+        } else {
+            throw OptionError(command: state.command, kind: .unrecognizedOption(option))
+        }
     }
     
     public func cleanUp(arguments: ArgumentList, state: Parser.State) throws -> Parser.State {

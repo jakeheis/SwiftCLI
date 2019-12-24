@@ -73,6 +73,14 @@ class SwiftCLITests: XCTestCase {
         XCTAssertEqual(executionString, "MyTester will test firstTest, 5 times, silently", "Command should have produced accurate output")
         XCTAssertEqual(out, "")
         XCTAssertEqual(err, "")
+        
+        executionString = ""
+        
+        let (result2, out2, err2) = runCLI { $0.go(with: ["test", "firstTest", "MyTester", "--times=5"]) }
+        XCTAssertEqual(result2, 0, "Command should have succeeded")
+        XCTAssertEqual(executionString, "MyTester will test firstTest, 5 times", "Command should have produced accurate output")
+        XCTAssertEqual(out2, "")
+        XCTAssertEqual(err2, "")
     }
     
     func testCommandHelp() {

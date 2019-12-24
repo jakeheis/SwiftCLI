@@ -180,7 +180,7 @@ extension CLI {
     public static var helpMessageGenerator: HelpMessageGenerator { return DefaultHelpMessageGenerator() }
     
     @available(*, unavailable, message: "Create a new CLI object: let cli = CLI(..)")
-    public static var argumentListManipulators: [ArgumentListManipulator] { return [] }
+    public static var argumentListManipulators: [_ArgumentListManipulator] { return [] }
 
     @available(*, unavailable, message: "Create a new CLI object: let cli = CLI(..)")
     public static func setup(name: String, version: String? = nil, description: String? = nil) {}
