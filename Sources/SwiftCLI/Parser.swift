@@ -18,8 +18,14 @@ public struct Parser {
             case automatically(Command)
         }
         
+        /// The route behavior to use to find the specified command; default .search
         public var routeBehavior: RouteBehavior = .search
+        
+        /// Continue parsing options after a collected parameter is encountered; default false
         public var parseOptionsAfterCollectedParameter = false
+        
+        /// Split options joined in one argument, e.g. split '-am' into '-a' and '-m'; default true
+        public var splitJoinedOptions = true
         
         public var fallback: Command? {
             switch routeBehavior {
@@ -123,7 +129,7 @@ public protocol ParserResponse {
 }
 
 public struct AliasResponse: ParserResponse {
-    
+        
     public func canRespond(to arguments: ArgumentList, state: Parser.State) -> Bool {
         if case let .routing(groupPath) = state.routeState,
             groupPath.bottom.aliases[arguments.peek()] != nil {
@@ -175,7 +181,7 @@ public struct OptionResponse: ParserResponse {
             let value = String(firstArg[firstArg.index(after: equalsIndex)...])
             
             try parse(option: optName, associatedValue: .required(value), arguments: arguments, state: state)
-        } else if firstArg.hasPrefix("-") && !firstArg.hasPrefix("--") {
+        } else if firstArg.hasPrefix("-") && !firstArg.hasPrefix("--") && state.configuration.splitJoinedOptions {
             let options = firstArg.dropFirst().map({ "-\($0)" })
             for option in options.dropLast() {
                 try parse(option: option, associatedValue: .none, arguments: arguments, state: state)
