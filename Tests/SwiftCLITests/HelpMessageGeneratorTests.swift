@@ -171,6 +171,30 @@ class HelpMessageGeneratorTests: XCTestCase {
         """)
     }
     
+    func testReversedOrderUsageStatementGeneration() {
+        let capture = CaptureStream()
+        let command = ReversedOrderCommand()
+        let cli = CLI.createTester(commands: [command])
+        let path = CommandGroupPath(top: cli).appending(command)
+        DefaultHelpMessageGenerator().writeUsageStatement(for: path, to: capture)
+        capture.closeWrite()
+        
+        XCTAssertEqual(capture.readAll(), """
+
+        Usage: tester test [options]
+
+        A command
+
+        Options:
+          -h, --help             Show help information
+          -s, --silent           Silence all test output
+                                 Newline
+          -t, --times <value>    Number of times to run the test
+
+
+        """)
+    }
+    
     // MARK: - HelpMessageGenerator.writeRouteErrorMessage
     
     func testCommandNotSpecified() {
@@ -321,9 +345,9 @@ class HelpMessageGeneratorTests: XCTestCase {
         Usage: tester cmd [options]
 
         Options:
-          --holiday <value>         \n\
           -a, --age <value>         \n\
           -h, --help                Show help information
+              --holiday <value>     \n\
           -l, --location <value>    \n\
           -n, --name <value>        \n\
 

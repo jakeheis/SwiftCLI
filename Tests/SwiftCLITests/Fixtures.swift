@@ -71,6 +71,21 @@ class MultilineCommand: Command {
 
 }
 
+class ReversedOrderCommand: Command {
+
+    let name = "test"
+    let shortDescription = "A command"
+
+    @Flag("--silent", "-s", description: "Silence all test output\nNewline")
+    var silent: Bool
+    
+    @Key("--times", "-t", description: "Number of times to run the test")
+    var times: Int?
+
+    func execute() throws {}
+
+}
+
 class TestInheritedCommand: TestCommand {
     @Flag("-v", "--verbose", description: "Show more output information")
     var verbose: Bool

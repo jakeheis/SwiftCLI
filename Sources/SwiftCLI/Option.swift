@@ -20,10 +20,14 @@ extension Option {
     }
     
     public func usage(padding: Int) -> String {
-        let spacing = String(repeating: " ", count: padding - identifier.count)
+        var id = identifier
+        if names.count == 1 && names[0].hasPrefix("--") { // no one letter shortcut; indent
+            id = "    " + id
+        }
+        let spacing = String(repeating: " ", count: padding - id.count)
         let descriptionNewlineSpacing = String(repeating: " ", count: padding)
         let description = shortDescription.replacingOccurrences(of: "\n", with: "\n\(descriptionNewlineSpacing)")
-        return "\(identifier)\(spacing)\(description)"
+        return "\(id)\(spacing)\(description)"
     }
     
 }
@@ -55,7 +59,7 @@ public class Flag: AnyFlag {
     ///   - names: the names for the flag; convention is to include a short name (-a) and a long name (--all)
     ///   - description: A short description of what this flag does for usage statements
     public init(_ names: String..., description: String = "") {
-        self.names = names
+        self.names = names.sorted(by: { $0.count < $1.count })
         self.shortDescription = description
     }
     
@@ -87,7 +91,7 @@ public class CounterFlag: AnyFlag {
     ///   - names: the names for the flag; convention is to include a short name (-a) and a long name (--all)
     ///   - description: A short description of what this flag does for usage statements
     public init(_ names: String ..., description: String = "") {
-        self.names = names
+        self.names = names.sorted(by: { $0.count < $1.count })
         self.shortDescription = description
     }
     
@@ -119,7 +123,7 @@ public class _Key<Value: ConvertibleFromString> {
     ///   - names: the names for the key; convention is to include a short name (-m) and a long name (--message)
     ///   - description: A short description of what this key does for usage statements
     public init(names: [String], description: String, completion: ShellCompletion, validation: [Validation<Value>] = []) {
-        self.names = names
+        self.names = names.sorted(by: { $0.count < $1.count })
         self.shortDescription = description
         self.completion = completion
         self.validation = validation
