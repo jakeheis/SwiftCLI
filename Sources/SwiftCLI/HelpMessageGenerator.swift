@@ -81,7 +81,7 @@ extension HelpMessageGenerator {
             out <<< ""
             out <<< "Options:"
             let sortedOptions = options.sorted { $0.names.last!.lowercased() < $1.names.last!.lowercased() }
-            let maxOptionLength = sortedOptions.reduce(12) { max($0, $1.identifier.count) }
+            let maxOptionLength = sortedOptions.reduce(12) { max($0, $1.identifier.count + 2) }
             sortedOptions.forEach { (option) in
                 let usage = option.usage(padding: maxOptionLength + 4)
                 out <<< "  \(usage)".replacingOccurrences(of: "\n", with: "\n  ")
@@ -154,7 +154,6 @@ public class DefaultHelpMessageGenerator: HelpMessageGenerator {
         if colorError || boldError {
             errorWord += Colors.none
         }
-        
         out <<< errorWord + errorMessage
     }
     

@@ -84,12 +84,8 @@ public struct Parser {
     public init() {}
     
     public subscript<U>(dynamicMember keyPath: WritableKeyPath<Configuration, U>) -> U {
-        get {
-            return configuration[keyPath: keyPath]
-        }
-        set(newValue) {
-            configuration[keyPath: keyPath] = newValue
-        }
+        get { configuration[keyPath: keyPath] }
+        set { configuration[keyPath: keyPath] = newValue }
     }
     
     public func parse(cli: CLI, arguments: ArgumentList) throws -> CommandPath {
