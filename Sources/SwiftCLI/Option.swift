@@ -19,6 +19,13 @@ extension Option {
         return "\(type(of: self))(\(identifier))"
     }
     
+    public var indentedIdentifierLength: Int {
+        if names.count == 1 && names[0].hasPrefix("--") { // no one letter shortcut; indent
+            return identifier.count + 4
+        }
+        return identifier.count
+    }
+    
     public func usage(padding: Int) -> String {
         var id = identifier
         if names.count == 1 && names[0].hasPrefix("--") { // no one letter shortcut; indent
