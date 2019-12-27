@@ -48,6 +48,7 @@ extension HelpMessageGeneratorTests {
         ("testOptionGroupMisuse", testOptionGroupMisuse),
         ("testParameterCountError", testParameterCountError),
         ("testParameterTypeError", testParameterTypeError),
+        ("testReversedOrderUsageStatementGeneration", testReversedOrderUsageStatementGeneration),
         ("testUsageStatementGeneration", testUsageStatementGeneration),
     ]
 }
