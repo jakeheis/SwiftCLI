@@ -106,6 +106,7 @@ extension ParserTests {
         ("testCombinedFlagsAndKeysAndArgumentsParsing", testCombinedFlagsAndKeysAndArgumentsParsing),
         ("testCombinedFlagsAndKeysParsing", testCombinedFlagsAndKeysParsing),
         ("testCounterParse", testCounterParse),
+        ("testDefaultKey", testDefaultKey),
         ("testFlagGivenValue", testFlagGivenValue),
         ("testFlagSplitting", testFlagSplitting),
         ("testFullParse", testFullParse),

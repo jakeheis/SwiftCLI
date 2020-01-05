@@ -388,4 +388,22 @@ class ParserTests: XCTestCase {
         XCTAssertTrue(cmd3.verbose)
     }
     
+    func testDefaultKey() throws {
+        let cmd = DefaultKeyCmd()
+        let cli = CLI.createTester(commands: [cmd])
+        
+        let result = try Parser().parse(cli: cli, arguments: ArgumentList(arguments: ["cmd"]))
+        XCTAssert(result.command === cmd)
+        XCTAssertEqual(cmd.first, "first")
+        XCTAssertEqual(cmd.second, "second")
+        
+        let cmd2 = DefaultKeyCmd()
+        let cli2 = CLI.createTester(commands: [cmd2])
+        
+        let result2 = try Parser().parse(cli: cli2, arguments: ArgumentList(arguments: ["cmd", "-f", "value"]))
+        XCTAssert(result2.command === cmd2)
+        XCTAssertEqual(cmd2.first, "value")
+        XCTAssertEqual(cmd.second, "second")
+    }
+    
 }

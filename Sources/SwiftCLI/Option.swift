@@ -129,8 +129,8 @@ public class _Key<Value: ConvertibleFromString> {
     /// - Parameters:
     ///   - names: the names for the key; convention is to include a short name (-m) and a long name (--message)
     ///   - description: A short description of what this key does for usage statements
-    public init(names: [String], description: String, completion: ShellCompletion, validation: [Validation<Value>] = []) {
-        self.names = names.sorted(by: { $0.count < $1.count })
+    public init(designatedNames: [String], description: String, completion: ShellCompletion, validation: [Validation<Value>] = []) {
+        self.names = designatedNames.sorted(by: { $0.count < $1.count })
         self.shortDescription = description
         self.completion = completion
         self.validation = validation
@@ -143,18 +143,37 @@ public class Key<Value: ConvertibleFromString>: _Key<Value>, AnyKey, ValueBox {
     
     public let variadic = false
     
-    public private(set) var wrappedValue: Value?
-    public var value: Value? { wrappedValue }
+    public private(set) var wrappedValue: Value
+    public var value: Value { wrappedValue }
     public var projectedValue: Key { self }
     
-    public init(_ names: String ..., description: String = "", completion: ShellCompletion = .filename, validation: [Validation<Value>] = []) {
-        super.init(names: names, description: description, completion: completion, validation: validation)
+    init(designatedValue: Value, names: [String], description: String = "", completion: ShellCompletion = .filename, validation: [Validation<Value>] = []) {
+        self.wrappedValue = designatedValue
+        super.init(designatedNames: names, description: description, completion: completion, validation: validation)
+    }
+    
+    public convenience init(_ names: String ..., description: String = "", completion: ShellCompletion = .filename, validation: [Validation<Value>] = [], defaultValue: Value) {
+        self.init(designatedValue: defaultValue, names: names, description: description, completion: completion, validation: validation)
     }
     
     public func update(to value: Value) {
         self.wrappedValue = value
     }
     
+}
+
+extension Key where Value: OptionType {
+    public convenience init(_ names: String ..., description: String = "", completion: ShellCompletion = .filename, validation: [Validation<Value.Wrapped>] = []) {
+        let optValidations = validation.map { (valueValidation) in
+            return Validation<Value>.custom(valueValidation.message) { (option) in
+                if let value = option.swiftcli_Value {
+                    return valueValidation.validate(value)
+                }
+                return false
+            }
+        }
+        self.init(designatedValue: .swiftcli_Empty, names: names, description: description, completion: completion, validation: optValidations)
+    }
 }
 
 @propertyWrapper
@@ -167,7 +186,7 @@ public class VariadicKey<Value: ConvertibleFromString>: _Key<Value>, AnyKey, Val
     public var projectedValue: VariadicKey { self }
     
     public init(_ names: String ..., description: String = "", completion: ShellCompletion = .filename, validation: [Validation<Value>] = []) {
-        super.init(names: names, description: description, completion: completion, validation: validation)
+        super.init(designatedNames: names, description: description, completion: completion, validation: validation)
     }
     
     public func update(to value: Value) {

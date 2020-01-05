@@ -362,16 +362,16 @@ class CompletionOptionCmd: OptionCmd {
     @Key("-v", "--values", completion: .values([("opt1", "first option"), ("opt2", "second option")]))
     var values: String?
     
-    @Key<String>("-f", "--function", completion: .function("_a_func"))
+    @Key("-f", "--function", completion: .function("_a_func"))
     var function: String?
     
-    @Key<String>("-n", "--name", completion: .filename)
+    @Key("-n", "--name", completion: .filename)
     var filename: String?
     
-    @Key<String>("-z", "--zero", completion: .none)
+    @Key("-z", "--zero", completion: .none)
     var none: String?
     
-    @Key<String>("-d", "--default")
+    @Key("-d", "--default")
     var def: String?
     
     @Flag("-f", "--flag")
@@ -380,7 +380,7 @@ class CompletionOptionCmd: OptionCmd {
 
 class EnumCmd: Command {
     
-    enum Speed: String, ConvertibleFromString {
+    enum Speed: String, CaseIterable, ConvertibleFromString {
         case slow
         case fast
     }
@@ -401,10 +401,6 @@ class EnumCmd: Command {
     func execute() throws {}
     
 }
-
-#if swift(>=4.1.50)
-extension EnumCmd.Speed: CaseIterable {}
-#endif
 
 class ValidatedParamCmd: Command {
     
@@ -461,6 +457,18 @@ class ParamInitCmd: Command {
     var optNone: String?
     
     func execute() {}
+}
+
+class DefaultKeyCmd: Command {
+    let name = "cmd"
+    
+    @Key("-f")
+    var first: String = "first"
+    
+    @Key("-s", defaultValue: "second")
+    var second: String
+    
+    func execute() throws {}
 }
 
 // MARK: -
