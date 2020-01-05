@@ -156,6 +156,19 @@ class ParameterFillerTests: XCTestCase {
         XCTAssertEqual(slow.speed.rawValue, "slow")
         
         assertParseNumberError(command: EnumCmd(), args: ["slow", "value", "3", "fourth"], min: 1, max: 3)
+        
+        let cmd2 = EnumCmd()
+        XCTAssertThrowsSpecificError(
+            expression: try self.parse(command: cmd2, args: ["slow", "other"]),
+            error: { (error: ParameterError) in
+                guard case .invalidValue(let namedParam, .conversionError) = error.kind else {
+                    XCTFail()
+                    return
+                }
+                
+                XCTAssertEqual(namedParam.name, "single")
+                XCTAssert(ObjectIdentifier(namedParam.param) == ObjectIdentifier(cmd2.$single))
+        })
     }
     
     func testValidatedParameter() throws {

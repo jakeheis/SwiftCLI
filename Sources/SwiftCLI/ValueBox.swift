@@ -36,7 +36,7 @@ extension ValueBox {
     
     public var valueType: ConvertibleFromString.Type { return Value.self }
     
-     public func update(to value: String) -> UpdateResult {
+    public func update(to value: String) -> UpdateResult {
         guard let converted = Value(input: value) else {
             return .failure(.conversionError)
         }
@@ -124,7 +124,11 @@ extension Optional: ConvertibleFromString where Wrapped: ConvertibleFromString {
     }
     
     public init?(input: String) {
-        self = Wrapped(input: input)
+        if let wrapped = Wrapped(input: input) {
+            self = .some(wrapped)
+        } else {
+            return nil
+        }
     }
 }
 
