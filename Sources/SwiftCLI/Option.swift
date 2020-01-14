@@ -42,6 +42,9 @@ extension Option {
 // MARK: - Flags
 
 public protocol AnyFlag: Option {
+    
+    var boolValue: Bool { get }
+    
     func update()
 }
 
@@ -54,6 +57,7 @@ public class Flag: AnyFlag {
     
     public private(set) var wrappedValue = false
     public var value: Bool { wrappedValue }
+    public var boolValue: Bool { value }
     public var projectedValue: Flag { self }
     
     public var identifier: String {
@@ -72,7 +76,7 @@ public class Flag: AnyFlag {
     
     /// Toggles the flag's value; don't call directly
     public func update() {
-        wrappedValue = true
+        wrappedValue = value
     }
     
 }
@@ -86,6 +90,7 @@ public class CounterFlag: AnyFlag {
     
     public private(set) var wrappedValue: Int = 0
     public var value: Int { wrappedValue }
+    public var boolValue: Bool { value != 0 }
     public var projectedValue: CounterFlag { self }
     
     public var identifier: String {
