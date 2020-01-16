@@ -222,14 +222,20 @@ extension Task {
     ///   - executable: the executable to run
     ///   - arguments: arguments to pass to the executable
     ///   - directory: the directory to run in; default current directory
+    ///   - outputStream: stream to redirect output as it's being written (analogous to `tee` command); defaults to nil
+    ///   - errorStream: stream to redirect error output as it's being written; defaults to nil
     ///   - forwardInterrupt: Whether interrupt signals which this process receives should be forwarded to this task; defaults to true
     ///   - env: Environment in which to execute the task; defaults to same as this process
     /// - Returns: the captured data
     /// - Throws: CaptureError if command fails
-    public static func capture(_ executable: String, arguments: [String], directory: String? = nil, forwardInterrupt: Bool = true, env: [String: String] = ProcessInfo.processInfo.environment) throws -> CaptureResult {
-        let out = CaptureStream()
-        let err = CaptureStream()
-        
+    public static func capture(_ executable: String, arguments: [String], directory: String? = nil, outputStream: WritableStream? = nil, errorStream: WritableStream? = nil, forwardInterrupt: Bool = true, env: [String: String] = ProcessInfo.processInfo.environment) throws -> CaptureResult {
+        let out = CaptureStream() { data in
+            outputStream?.writeData(data)
+        }
+        let err = CaptureStream() { data in
+            errorStream?.writeData(data)
+        }
+
         let task = Task(executable: executable, arguments: arguments, directory: directory, stdout: out, stderr: err)
         task.env = env
         task.forwardInterrupt = forwardInterrupt

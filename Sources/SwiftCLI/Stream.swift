@@ -455,7 +455,9 @@ public class CaptureStream: ProcessingStream {
     private var waited = false
     
     /// Creates a new stream which collects all data written to it
-    public init() {
+    ///
+    /// - Parameter each: called every time a chunk of data is written to the stream
+    public init(each: ((Data) -> ())? = nil) {
         let pipe = Pipe()
         self.processObject = pipe
         self.writeHandle = pipe.fileHandleForWriting
@@ -464,6 +466,7 @@ public class CaptureStream: ProcessingStream {
         queue.async { [weak self] in
             while let chunk = readStream.readData() {
                 self?.content += chunk
+                each?(chunk)
             }
             self?.semaphore.signal()
         }

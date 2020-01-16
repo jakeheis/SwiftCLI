@@ -136,11 +136,22 @@ class StreamTests: XCTestCase {
     }
     
     func testCaptureStream() {
-        let capture = CaptureStream()
-        
-        capture <<< "first"
-        capture <<< ""
-        capture <<< "second"
+        var lastChunk = Data()
+        let semaphore = DispatchSemaphore(value: 0)
+        let capture = CaptureStream() { data in
+            lastChunk = data
+            semaphore.signal()
+        }
+        let testCapture = { (input: String) in
+            capture <<< input
+            semaphore.wait()
+            let encodedChunk = String(data: lastChunk, encoding: .utf8)?.trimmingCharacters(in: .newlines) ?? ""
+            XCTAssertEqual(encodedChunk, input)
+        }
+
+        testCapture("first")
+        testCapture("")
+        testCapture("second")
         capture.closeWrite()
         
         XCTAssertEqual(capture.readAll(), """
