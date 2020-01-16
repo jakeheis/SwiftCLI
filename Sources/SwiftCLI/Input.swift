@@ -26,11 +26,12 @@ public enum Input {
     ///
     /// - Parameters:
     ///   - prompt: prompt to be printed before accepting input (e.g. "Name: ")
+    ///   - defaultValue: value to fallback to for empty input; default is nil, meaning an error is shown
     ///   - secure: boolean defining that input should be hidden
     ///   - validation: predicate defining whether the given input is valid
     ///   - errorResponse: what to do if the input is invalid; default prints "Invalid input"
     /// - Returns: input
-    public static func readInt(prompt: String? = nil, secure: Bool = false, validation: [Validation<Int>] = [], errorResponse: InputReader<Int>.ErrorResponse? = nil) -> Int {
+    public static func readInt(prompt: String? = nil, defaultValue: Int? = nil, secure: Bool = false, validation: [Validation<Int>] = [], errorResponse: InputReader<Int>.ErrorResponse? = nil) -> Int {
         return readObject(prompt: prompt, secure: secure, validation: validation, errorResponse: errorResponse)
     }
     
@@ -38,11 +39,12 @@ public enum Input {
     ///
     /// - Parameters:
     ///   - prompt: prompt to be printed before accepting input (e.g. "Name: ")
+    ///   - defaultValue: value to fallback to for empty input; default is nil, meaning an error is shown
     ///   - secure: boolean defining that input should be hidden
     ///   - validation: predicate defining whether the given input is valid
     ///   - errorResponse: what to do if the input is invalid; default prints "Invalid input"
     /// - Returns: input
-    public static func readDouble(prompt: String? = nil, secure: Bool = false, validation: [Validation<Double>] = [], errorResponse: InputReader<Double>.ErrorResponse? = nil) -> Double {
+    public static func readDouble(prompt: String? = nil, defaultValue: Double? = nil, secure: Bool = false, validation: [Validation<Double>] = [], errorResponse: InputReader<Double>.ErrorResponse? = nil) -> Double {
         return readObject(prompt: prompt, secure: secure, validation: validation, errorResponse: errorResponse)
     }
     
@@ -50,24 +52,26 @@ public enum Input {
     ///
     /// - Parameters:
     ///   - prompt: prompt to be printed before accepting input (e.g. "Name: ")
+    ///   - defaultValue: value to fallback to for empty input; default is nil, meaning an error is shown
     ///   - secure: boolean defining that input should be hidden
     ///   - validation: predicate defining whether the given input is valid
     ///   - errorResponse: what to do if the input is invalid; default prints "Invalid input"
     /// - Returns: input
-    public static func readBool(prompt: String? = nil, secure: Bool = false, validation: [Validation<Bool>] = [], errorResponse: InputReader<Bool>.ErrorResponse? = nil) -> Bool {
-        return readObject(prompt: prompt, secure: secure, validation: validation, errorResponse: errorResponse)
+    public static func readBool(prompt: String? = nil, defaultValue: Bool? = nil, secure: Bool = false, validation: [Validation<Bool>] = [], errorResponse: InputReader<Bool>.ErrorResponse? = nil) -> Bool {
+        return readObject(prompt: prompt, defaultValue: defaultValue, secure: secure, validation: validation, errorResponse: errorResponse)
     }
     
     /// Reads an object which conforms to ConvertibleFromString from stdin
     ///
     /// - Parameters:
     ///   - prompt: prompt to be printed before accepting input (e.g. "Name: ")
+    ///   - defaultValue: value to fallback to for empty input; default is nil, meaning an error is shown
     ///   - secure: boolean defining that input should be hidden
     ///   - validation: predicate defining whether the given input is valid
     ///   - errorResponse: what to do if the input is invalid; default prints "Invalid input"
     /// - Returns: input
-    public static func readObject<T: ConvertibleFromString>(prompt: String? = nil, secure: Bool = false, validation: [Validation<T>] = [], errorResponse: InputReader<T>.ErrorResponse? = nil) -> T {
-        return InputReader<T>(prompt: prompt, secure: secure, validation: validation, errorResponse: errorResponse).read()
+    public static func readObject<T: ConvertibleFromString>(prompt: String? = nil, defaultValue: T? = nil, secure: Bool = false, validation: [Validation<T>] = [], errorResponse: InputReader<T>.ErrorResponse? = nil) -> T {
+        return InputReader<T>(prompt: prompt, defaultValue: defaultValue, secure: secure, validation: validation, errorResponse: errorResponse).read()
     }
     
 }
@@ -79,12 +83,14 @@ public class InputReader<T: ConvertibleFromString> {
     public typealias ErrorResponse = (_ input: String, _ resaon: InvalidValueReason) -> ()
     
     public let prompt: String?
+    public let defaultValue: T?
     public let secure: Bool
     public let validation: [SwiftCLI.Validation<T>]
     public let errorResponse: ErrorResponse
-    
-    public init(prompt: String?, secure: Bool, validation: [SwiftCLI.Validation<T>], errorResponse: ErrorResponse?) {
+
+    public init(prompt: String?, defaultValue: T?, secure: Bool, validation: [SwiftCLI.Validation<T>], errorResponse: ErrorResponse?) {
         self.prompt = prompt
+        self.defaultValue = defaultValue
         self.secure = secure
         self.validation = validation
         self.errorResponse = errorResponse ?? { (_, reason) in
@@ -92,7 +98,7 @@ public class InputReader<T: ConvertibleFromString> {
             Term.stderr <<< String(message[message.startIndex]).capitalized + message[message.index(after: message.startIndex)...]
         }
     }
-    
+
     public func read() -> T {
         while true {
             printPrompt()
@@ -110,8 +116,8 @@ public class InputReader<T: ConvertibleFromString> {
                 // Eof reached; no way forward
                 exit(1)
             }
-            
-            guard let converted = T(input: input) else {
+
+            guard let converted = convert(input: input) else {
                 errorResponse(input, .conversionError)
                 continue
             }
@@ -123,6 +129,13 @@ public class InputReader<T: ConvertibleFromString> {
             
             return converted
         }
+    }
+
+    private func convert(input: String) -> T? {
+        if let defaultValue = defaultValue, input.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            return defaultValue
+        }
+        return T(input: input)
     }
     
     private func printPrompt() {
