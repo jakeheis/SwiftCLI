@@ -222,13 +222,17 @@ extension Task {
     ///   - executable: the executable to run
     ///   - arguments: arguments to pass to the executable
     ///   - directory: the directory to run in; default current directory
+    ///   - forwardInterrupt: Whether interrupt signals which this process receives should be forwarded to this task; defaults to true
+    ///   - env: Environment in which to execute the task; defaults to same as this process
     /// - Returns: the captured data
     /// - Throws: CaptureError if command fails
-    public static func capture(_ executable: String, arguments: [String], directory: String? = nil) throws -> CaptureResult {
+    public static func capture(_ executable: String, arguments: [String], directory: String? = nil, forwardInterrupt: Bool = true, env: [String: String] = ProcessInfo.processInfo.environment) throws -> CaptureResult {
         let out = CaptureStream()
         let err = CaptureStream()
         
         let task = Task(executable: executable, arguments: arguments, directory: directory, stdout: out, stderr: err)
+        task.env = env
+        task.forwardInterrupt = forwardInterrupt
         let exitCode = task.runSync()
         
         let captured = CaptureResult(stdoutData: out.readAllData(), stderrData: err.readAllData())
