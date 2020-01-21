@@ -32,7 +32,7 @@ public enum Input {
     ///   - errorResponse: what to do if the input is invalid; default prints "Invalid input"
     /// - Returns: input
     public static func readInt(prompt: String? = nil, defaultValue: Int? = nil, secure: Bool = false, validation: [Validation<Int>] = [], errorResponse: InputReader<Int>.ErrorResponse? = nil) -> Int {
-        return readObject(prompt: prompt, secure: secure, validation: validation, errorResponse: errorResponse)
+        return readObject(prompt: prompt, defaultValue: defaultValue, secure: secure, validation: validation, errorResponse: errorResponse)
     }
     
     /// Reads a double from stdin
@@ -45,7 +45,7 @@ public enum Input {
     ///   - errorResponse: what to do if the input is invalid; default prints "Invalid input"
     /// - Returns: input
     public static func readDouble(prompt: String? = nil, defaultValue: Double? = nil, secure: Bool = false, validation: [Validation<Double>] = [], errorResponse: InputReader<Double>.ErrorResponse? = nil) -> Double {
-        return readObject(prompt: prompt, secure: secure, validation: validation, errorResponse: errorResponse)
+        return readObject(prompt: prompt, defaultValue: defaultValue, secure: secure, validation: validation, errorResponse: errorResponse)
     }
     
     /// Reads a bool from stdin. "y", "yes", "t", and "true" are accepted as truthy values
