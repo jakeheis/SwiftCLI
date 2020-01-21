@@ -76,3 +76,11 @@ extension Key {
     }
     
 }
+
+extension Param {
+    
+    public convenience init(wrappedValue value: Value) {
+        self.init(designatedValue: value, completion: .filename, validation: [])
+    }
+    
+}

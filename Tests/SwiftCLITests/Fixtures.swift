@@ -471,6 +471,15 @@ class DefaultKeyCmd: Command {
     func execute() throws {}
 }
 
+class DefaultParamCmd: Command {
+    let name = "cmd"
+    
+    @Param var first: String
+    @Param var second: String = "fallback"
+    
+    func execute() throws {}
+}
+
 // MARK: -
 
 func XCTAssertThrowsSpecificError<T, E: Error>(

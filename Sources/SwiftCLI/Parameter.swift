@@ -29,7 +29,7 @@ public class _Param<Value: ConvertibleFromString> {
 @propertyWrapper
 public class Param<Value: ConvertibleFromString> : _Param<Value>, AnyParameter, ValueBox {
     
-    public private(set) var required = true
+    public let required: Bool
     public var satisfied: Bool { privValue != nil }
     
     private var privValue: Value?
@@ -42,16 +42,19 @@ public class Param<Value: ConvertibleFromString> : _Param<Value>, AnyParameter, 
     public var value: Value { wrappedValue }
     public var projectedValue: Param { self }
     
-    fileprivate override init(designatedCompletion: ShellCompletion, validation: [Validation<Value>]) {
-        super.init(designatedCompletion: designatedCompletion, validation: validation)
-    }
-    
-    public init() {
-        super.init()
-    }
-    
-    public init(completion: ShellCompletion = .filename, validation: Validation<Value>...) {
+    init(designatedValue: Value?, completion: ShellCompletion = .filename, validation: [Validation<Value>] = []) {
+        self.required = (designatedValue == nil)
+        self.privValue = designatedValue
+        
         super.init(designatedCompletion: completion, validation: validation)
+    }
+    
+    public convenience init() {
+        self.init(designatedValue: nil)
+    }
+    
+    public convenience init(completion: ShellCompletion = .filename, validation: Validation<Value>...) {
+        self.init(designatedValue: nil, completion: completion, validation: validation)
     }
     
     public func update(to value: Value) {
@@ -63,13 +66,11 @@ public class Param<Value: ConvertibleFromString> : _Param<Value>, AnyParameter, 
 extension Param where Value: OptionType {
     
     public convenience init() {
-        self.init(designatedCompletion: .filename, validation: [])
-        setup()
+        self.init(designatedValue: .some(.swiftcli_Empty), completion: .filename, validation: [])
     }
     
     public convenience init(completion: ShellCompletion) {
-        self.init(designatedCompletion: completion, validation: [])
-        setup()
+        self.init(designatedValue: .some(.swiftcli_Empty), completion: completion, validation: [])
     }
     
     public convenience init(completion: ShellCompletion = .filename, validation: Validation<Value.Wrapped>...) {
@@ -81,13 +82,7 @@ extension Param where Value: OptionType {
                 return false
             }
         }
-        self.init(designatedCompletion: completion, validation: optValidations)
-        setup()
-    }
-    
-    private func setup() {
-        privValue = .some(.swiftcli_Empty)
-        required = false
+        self.init(designatedValue: .some(.swiftcli_Empty), completion: completion, validation: optValidations)
     }
     
 }

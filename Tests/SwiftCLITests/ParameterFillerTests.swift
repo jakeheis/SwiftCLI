@@ -212,6 +212,16 @@ class ParameterFillerTests: XCTestCase {
         XCTAssertNil(cmd.optNone)
     }
     
+    func testDefaultParamValue() throws {
+        let cmd = try parse(command: DefaultParamCmd(), args: ["value"])
+        XCTAssertEqual(cmd.first, "value")
+        XCTAssertEqual(cmd.second, "fallback")
+        
+        let cmd2 = try parse(command: DefaultParamCmd(), args: ["value", "value2"])
+        XCTAssertEqual(cmd2.first, "value")
+        XCTAssertEqual(cmd2.second, "value2")
+    }
+    
     // MARK: -
     
     @discardableResult
