@@ -89,6 +89,7 @@ public class CLI {
     ///
     /// - Returns: an Int32 representing the success of the CLI in routing to and executing the correct
     /// command. Usually should be passed to `exit(result)`
+    @discardableResult
     public func go() -> Int32 {
         return go(with: ArgumentList(arguments: Array(CommandLine.arguments.dropFirst())))
     }
@@ -97,6 +98,7 @@ public class CLI {
     ///
     /// - Parameter arguments: the arguments to execute with; should not include CLI name (i.e. if you wanted to execute "greeter greet world", 'arguments' should be ["greet", "world"])
     /// - Returns: an Int32 representing the success of the CLI in routing to and executing the correct command. Usually should be passed to `exit(result)`
+    @discardableResult
     public func go(with arguments: [String]) -> Int32 {
         return go(with: ArgumentList(arguments: arguments))
     }
