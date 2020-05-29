@@ -455,9 +455,7 @@ public class CaptureStream: ProcessingStream {
     private var waited = false
     
     /// Creates a new stream which collects all data written to it
-    ///
-    /// - Parameter each: called every time a chunk of data is written to the stream
-    public init(each: ((Data) -> ())? = nil) {
+    public init() {
         let pipe = Pipe()
         self.processObject = pipe
         self.writeHandle = pipe.fileHandleForWriting
@@ -466,7 +464,6 @@ public class CaptureStream: ProcessingStream {
         queue.async { [weak self] in
             while let chunk = readStream.readData() {
                 self?.content += chunk
-                each?(chunk)
             }
             self?.semaphore.signal()
         }
@@ -495,6 +492,40 @@ public class CaptureStream: ProcessingStream {
         return String(data: readAllData(), encoding: encoding) ?? ""
     }
     
+}
+
+public class SplitStream: WritableStream {
+
+    public let writeHandle: FileHandle
+    public let processObject: Any
+    public var encoding: String.Encoding = .utf8
+
+    private let queue = DispatchQueue(label: "com.jakeheis.SwiftCLI.SplitStream")
+    private let semaphore = DispatchSemaphore(value: 0)
+    private let streams: [WritableStream]
+
+    public init(streams: [WritableStream]) {
+        let pipe = Pipe()
+        self.streams = streams
+        self.processObject = pipe
+        self.writeHandle = pipe.fileHandleForWriting
+
+        let readStream = ReadStream.for(fileHandle: pipe.fileHandleForReading)
+        queue.async { [weak self] in
+            while let data = readStream.readData() {
+                self?.streams.forEach { $0.writeData(data) }
+            }
+            self?.streams.filter { $0 !== WriteStream.stdout && $0 !== WriteStream.stderr }.forEach {
+                $0.closeWrite()
+            }
+            self?.semaphore.signal()
+        }
+    }
+
+    public convenience init(_ streams: WritableStream...) {
+        self.init(streams: streams)
+    }
+
 }
 
 // MARK: -
