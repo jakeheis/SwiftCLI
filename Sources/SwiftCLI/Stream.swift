@@ -494,7 +494,7 @@ public class CaptureStream: ProcessingStream {
     
 }
 
-public class SplitStream: WritableStream {
+public class SplitStream: ProcessingStream {
 
     public let writeHandle: FileHandle
     public let processObject: Any
@@ -524,6 +524,11 @@ public class SplitStream: WritableStream {
 
     public convenience init(_ streams: WritableStream...) {
         self.init(streams: streams)
+    }
+
+     public func waitToFinishProcessing() {
+         semaphore.wait()
+         streams.forEach { ($0 as? ProcessingStream)?.waitToFinishProcessing() }
     }
 
 }
