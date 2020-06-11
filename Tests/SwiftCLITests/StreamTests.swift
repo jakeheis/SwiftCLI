@@ -150,6 +150,30 @@ class StreamTests: XCTestCase {
         
         """)
     }
+
+    func testSplitStream() {
+        let captureA = CaptureStream()
+        let captureB = CaptureStream()
+        let stream = SplitStream(captureA, captureB)
+
+        stream <<< "first"
+        stream <<< ""
+        stream <<< "second"
+        stream.closeWrite()
+
+        XCTAssertEqual(captureA.readAll(), """
+        first
+
+        second
+
+        """)
+        XCTAssertEqual(captureB.readAll(), """
+        first
+
+        second
+
+        """)
+    }
     
     func testNullStream() {
         let nullWrite = WriteStream.null

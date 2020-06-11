@@ -354,6 +354,11 @@ public struct CaptureError: ProcessError {
     public var message: String? {
         return captured.stderr
     }
+
+    public init(exitStatus: Int32, captured: CaptureResult) {
+        self.exitStatus = exitStatus
+        self.captured = captured
+    }
 }
 
 public struct CaptureResult {
@@ -372,6 +377,16 @@ public struct CaptureResult {
     /// The stderr contents, trimmed of whitespace
     public var stderr: String {
         return String(data: stderrData, encoding: .utf8)?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+    }
+
+    public init(stdout: CaptureStream, stderr: CaptureStream) {
+        self.stdoutData = stdout.readAllData()
+        self.stderrData = stderr.readAllData()
+    }
+
+    init(stdoutData: Data, stderrData: Data) {
+        self.stdoutData = stdoutData
+        self.stderrData = stderrData
     }
 }
 

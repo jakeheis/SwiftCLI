@@ -494,6 +494,45 @@ public class CaptureStream: ProcessingStream {
     
 }
 
+public class SplitStream: ProcessingStream {
+
+    public let writeHandle: FileHandle
+    public let processObject: Any
+    public var encoding: String.Encoding = .utf8
+
+    private let queue = DispatchQueue(label: "com.jakeheis.SwiftCLI.SplitStream")
+    private let semaphore = DispatchSemaphore(value: 0)
+    private let streams: [WritableStream]
+
+    public init(streams: [WritableStream]) {
+        let pipe = Pipe()
+        self.streams = streams
+        self.processObject = pipe
+        self.writeHandle = pipe.fileHandleForWriting
+
+        let readStream = ReadStream.for(fileHandle: pipe.fileHandleForReading)
+        queue.async { [weak self] in
+            while let data = readStream.readData() {
+                self?.streams.forEach { $0.writeData(data) }
+            }
+            self?.streams.filter { $0 !== WriteStream.stdout && $0 !== WriteStream.stderr }.forEach {
+                $0.closeWrite()
+            }
+            self?.semaphore.signal()
+        }
+    }
+
+    public convenience init(_ streams: WritableStream...) {
+        self.init(streams: streams)
+    }
+
+     public func waitToFinishProcessing() {
+         semaphore.wait()
+         streams.forEach { ($0 as? ProcessingStream)?.waitToFinishProcessing() }
+    }
+
+}
+
 // MARK: -
 
 infix operator <<<: AssignmentPrecedence
