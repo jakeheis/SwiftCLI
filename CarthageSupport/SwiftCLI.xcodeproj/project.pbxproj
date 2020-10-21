@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2BFD4DB12540BF7B00D0E14D /* ValueBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BFD4DB02540BF7B00D0E14D /* ValueBox.swift */; };
 		825AEC6A2190AF4800A98A4B /* SwiftCLI.h in Headers */ = {isa = PBXBuildFile; fileRef = 825AEC682190AF4800A98A4B /* SwiftCLI.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		825AEC812190AF5B00A98A4B /* ArgumentList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 825AEC6D2190AF5B00A98A4B /* ArgumentList.swift */; };
 		825AEC822190AF5B00A98A4B /* Stream.swift in Sources */ = {isa = PBXBuildFile; fileRef = 825AEC6E2190AF5B00A98A4B /* Stream.swift */; };
@@ -32,6 +33,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		2BFD4DB02540BF7B00D0E14D /* ValueBox.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ValueBox.swift; sourceTree = "<group>"; };
 		825AEC302190AE8200A98A4B /* SwiftCLI.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftCLI.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		825AEC682190AF4800A98A4B /* SwiftCLI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwiftCLI.h; sourceTree = "<group>"; };
 		825AEC692190AF4800A98A4B /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -119,6 +121,7 @@
 				825AEC7F2190AF5B00A98A4B /* Parser.swift */,
 				825AEC802190AF5B00A98A4B /* Task.swift */,
 				EF06C94F21C44951004C67BF /* Validation.swift */,
+				2BFD4DB02540BF7B00D0E14D /* ValueBox.swift */,
 			);
 			name = SwiftCLI;
 			path = ../Sources/SwiftCLI;
@@ -218,6 +221,7 @@
 				825AEC942190AF5B00A98A4B /* Task.swift in Sources */,
 				EF06C95021C44951004C67BF /* Validation.swift in Sources */,
 				825AEC852190AF5B00A98A4B /* Error.swift in Sources */,
+				2BFD4DB12540BF7B00D0E14D /* ValueBox.swift in Sources */,
 				825AEC862190AF5B00A98A4B /* Option.swift in Sources */,
 				825AEC922190AF5B00A98A4B /* CLI.swift in Sources */,
 				825AEC932190AF5B00A98A4B /* Parser.swift in Sources */,
