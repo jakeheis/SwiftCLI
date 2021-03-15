@@ -241,7 +241,12 @@ public final class ZshCompletionGenerator: CompletionGenerator {
     }
     
     private func escapeDescription(_ description: String) -> String {
-        return description.replacingOccurrences(of: "\"", with: "\\\"")
+        // @see `man bash` and search for "Enclosing characters in double quotes"
+        return description
+            .replacingOccurrences(of: #"\"#, with: #"\\"#)
+            .replacingOccurrences(of: "\"", with: "\\\"") // (") -> (\")
+            .replacingOccurrences(of: #"`"#, with: #"\`"#)
+            .replacingOccurrences(of: #"$"#, with: #"\$"#)
     }
     
     private func functionName(for routable: RoutablePath) -> String {
