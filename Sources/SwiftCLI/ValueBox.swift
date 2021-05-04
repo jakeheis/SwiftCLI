@@ -17,7 +17,7 @@ public enum InvalidValueReason {
 
 // MARK: -
 
-public protocol AnyValueBox: class {
+public protocol AnyValueBox: AnyObject {
     var completion: ShellCompletion { get }
     var valueType: ConvertibleFromString.Type { get }
     

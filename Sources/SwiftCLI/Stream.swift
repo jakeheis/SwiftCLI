@@ -10,7 +10,7 @@ import Foundation
 
 // MARK: - WritableStream
 
-public protocol WritableStream: class {
+public protocol WritableStream: AnyObject {
     var writeHandle: FileHandle { get }
     var processObject: Any { get }
     var encoding: String.Encoding { get }
@@ -184,7 +184,7 @@ public enum WriteStream {
 
 // MARK: - Readable
 
-public protocol ReadableStream: class {
+public protocol ReadableStream: AnyObject {
     var readHandle: FileHandle { get }
     var processObject: Any { get }
     var encoding: String.Encoding { get }

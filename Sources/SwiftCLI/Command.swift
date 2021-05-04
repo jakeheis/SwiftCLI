@@ -8,7 +8,7 @@
 
 // MARK: - Routables
 
-public protocol Routable: class {
+public protocol Routable: AnyObject {
     /// The name of the command or command group
     var name: String { get }
     
