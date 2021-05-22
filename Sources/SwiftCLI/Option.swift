@@ -6,7 +6,7 @@
 //  Copyright © 2017 jakeheis. All rights reserved.
 //
 
-public protocol Option: class, CustomStringConvertible {
+public protocol Option: AnyObject, CustomStringConvertible {
     var names: [String] { get }
     var shortDescription: String { get }
     var identifier: String { get }
