@@ -7,6 +7,8 @@
 
 import Foundation
 
+#if !os(iOS)
+
 // MARK: -
 
 public class Task {
@@ -331,6 +333,8 @@ extension Task: CustomStringConvertible {
     }
 }
 
+#endif
+
 // MARK: -
 
 /// The error thrown by run(...) and run(bash:)
@@ -392,8 +396,9 @@ public struct CaptureResult {
 
 // MARK: - Interrupts
 
+#if !os(iOS)
+
 private class InterruptPasser {
-    
     private static var lock = NSLock()
     private static var hasBeenSetup = false
     private static var tasks: [ObjectIdentifier: Task] = [:]
@@ -431,3 +436,5 @@ private class InterruptPasser {
     }
     
 }
+
+#endif

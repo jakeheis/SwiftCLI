@@ -45,6 +45,8 @@ public func run(bash: String, directory: String? = nil) throws {}
 @available(*, unavailable, renamed: "Task.capture")
 public func capture(bash: String, directory: String? = nil) throws -> CaptureResult { fatalError() }
 
+#if !os(iOS)
+
 extension Task {
     
     @available(*, unavailable, message: "Use Task.execvp(_:arguments:directory:env) instead")
@@ -66,6 +68,8 @@ extension Task {
     public static func findExecutable(named: String) -> String? { nil }
     
 }
+
+#endif
 
 extension Input {
     
