@@ -283,7 +283,10 @@ extension Task {
         }
         
         let argv = ([exec] + swiftArgs).map({ $0.withCString(strdup) })
-        defer { argv.forEach { free($0)} }
+        defer {
+            argv.compactMap { $0 }
+                .forEach { free($0)}
+        }
         
         var priorDir: String? = nil
         if let directory = directory {
@@ -297,7 +300,9 @@ extension Task {
             envp[env.count] = nil
             defer {
                 for pair in envp ..< envp + env.count {
-                    free(UnsafeMutableRawPointer(pair.pointee))
+                    pair.pointee.map {
+                        free(UnsafeMutableRawPointer($0))
+                    }
                 }
                 #if swift(>=4.1)
                 envp.deallocate()
