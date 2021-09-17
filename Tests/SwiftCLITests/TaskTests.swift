@@ -10,6 +10,7 @@ import SwiftCLI
 import XCTest
 
 class TaskTests: XCTestCase {
+    #if !os(iOS)
     
     func testRun() throws {
         let file = "file.txt"
@@ -183,4 +184,5 @@ class TaskTests: XCTestCase {
         task.runSync()
     }
     
+    #endif
 }
